@@ -2211,7 +2211,7 @@ ${wash.name}
 • صالون: ${wash.priceSedan} د.ك
 • جيب: ${wash.priceSUV} د.ك
 
-الخدمات ا��مشمولة:
+الخدمات المشمولة:
 ${wash.services.map(s => `• ${s}`).join('\n')}
       `.trim();
       
@@ -2222,7 +2222,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         buttons.forEach(btn => {
           if (btn.onclick && btn.onclick.toString().includes(type)) {
             btn.classList.add('success');
-            btn.textContent = '✅ ت�� النسخ!';
+            btn.textContent = '✅ تم النسخ!';
             
             setTimeout(() => {
               btn.classList.remove('success');
@@ -2328,7 +2328,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         availableSlots.innerHTML = `
           <div class="error-box">
             <strong>❌ مغلق يوم الجمعة</strong><br>
-            ��قرب موعد متاح: يوم السبت
+            أقرب موعد متاح: يوم السبت
           </div>
         `;
         return;
@@ -2479,9 +2479,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         
         html += `
           <div class="info-box" style="background: #1a4a2a; border-color: #10b981; margin-top: 10px;">
-            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">��� اقتراح: ${tomorrowDay}</div>
+            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">اقتراح: ${tomorrowDay}</div>
             <div style="font-size: 11px; color: #10b981; margin: 3px 0;">⭐ غسيل ممتاز: ابتداءً من 10:30 صباحاً</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل ��صوصي: ابتداءً من 10:30 صباحاً</div>
+            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل خصوصي: ابتداءً من 10:30 صباحاً</div>
             <div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ابتداءً من 10:30 صباحاً</div>
           </div>
         `;
@@ -2541,7 +2541,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const unavailableTypes = [];
         if (selectedWashes.includes('premium') && availableTimeSlots.premium.length === 0) unavailableTypes.push('⭐ غسيل ممتاز');
         if (selectedWashes.includes('special') && availableTimeSlots.special.length === 0) unavailableTypes.push('💎 غسيل خصوصي');
-        if (selectedWashes.includes('ultra') && availableTimeSlots.ultra.length === 0) unavailableTypes.push('👑 غ��يل ألترا');
+        if (selectedWashes.includes('ultra') && availableTimeSlots.ultra.length === 0) unavailableTypes.push('👑 غسيل ألترا');
         
         if (unavailableTypes.length > 0) {
           html += `<div class="warning-box">
@@ -2567,7 +2567,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                     <th style="min-width: 80px;">الوقت</th>
                     <th style="min-width: 100px;">الحالة</th>
                     <th style="min-width: 80px;">نوع الغسيل</th>
-                    <th style="min-width: 80px;">ر��م الطلب</th>
+                    <th style="min-width: 80px;">رسوم الطلب</th>
                     <th style="min-width: 120px;">اسم العميل</th>
                     <th style="min-width: 100px;">رقم الهاتف</th>
                     <th style="min-width: 120px;">الموقع</th>
@@ -2616,7 +2616,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               orderStatus = '✅ تم الانتهاء';
               statusColor = '#10b981';
             } else if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
-              orderStatus = '🔄 قيد التنفي����';
+              orderStatus = '🔄 قيد التنفيذ';
               statusColor = '#3b82f6';
             } else if (minutesUntilStart <= 30 && minutesUntilStart > 0) {
               orderStatus = '🚗 بالطريق';
@@ -2625,7 +2625,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               orderStatus = '📅 محجوز';
               statusColor = '#3b82f6';
             } else {
-              orderStatus = '📋 محج��ز';
+              orderStatus = '📋 محجوز';
               statusColor = '#3b82f6';
             }
           } else {
