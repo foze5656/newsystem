@@ -1546,7 +1546,7 @@
         <div class="form-section">
           <h3 class="section-title">اختيار المنطقة</h3>
           <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="ا��تب أو اختر المنطقة">
+            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
             <datalist id="areaOptions"></datalist>
           </div>
         </div>
@@ -1554,9 +1554,9 @@
         <div id="fuelTypeSection" class="form-section hidden">
           <h3 class="section-title">نوع البنزين</h3>
           <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <button class="btn-option" data-fuel="premium">بنزين مم��ا��<br><small>(1.5 د.ك)</small></button>
+            <button class="btn-option" data-fuel="premium">بنزين ممتاز<br><small>(1.5 د.ك)</small></button>
             <button class="btn-option" data-fuel="special">بنزين خصوصي<br><small>(1.5 د.ك)</small></button>
-            <button class="btn-option" data-fuel="ultra">بنزين ��لترا<br><small>(2.5 د.ك)</small></button>
+            <button class="btn-option" data-fuel="ultra">بنزين الترا<br><small>(2.5 د.ك)</small></button>
           </div>
         </div>
         
@@ -1575,7 +1575,7 @@
             </table>
           </div>
           <div class="warning-box">
-            <strong>ملاحظة:</strong> لاز�� تشرحون للعميل انه رسوم الخدمه منفصلة ع�� سعر البنزين والكم ��وصله لاقرب محطه فقط
+            <strong>ملاحظة:</strong> لازم تشرحون للعميل انه رسوم الخدمه منفصلة عن سعر البنزين ويوصله لاقرب محطه فقط
           </div>
         </div>
       `;
@@ -1610,7 +1610,7 @@
           break;
         } else if (row[4] === formData.area) {
           servicePrice = parseFloat(row[5]) || 0;
-          cancellation = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير م��دد';
+          cancellation = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير محدد';
           break;
         }
       }
@@ -1660,8 +1660,8 @@
           </div>
           <div class="info-box">
             <strong>⚠️ تنبيه مهم:</strong><br>
-            • <strong>رقعة خارجية / سبير / تع��ئة هواء:</strong> أي فني + ب��ص التواير<br>
-            • <strong>رقعة داخلية:</strong> فقط باص التواي��
+            • <strong>رقعة خارجية / سبير / تعبئة هواء:</strong> أي فني + باص التواير<br>
+            • <strong>رقعة داخلية:</strong> فقط باص التواير
           </div>
         </div>
         
@@ -1671,7 +1671,7 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>نوع ا��خدمة</th>
+                  <th>نوع الخدمة</th>
                   <th>السعر</th>
                   <th>رسوم الإلغاء</th>
                 </tr>
@@ -1689,11 +1689,11 @@
     }
 
     function calculateTirePrice() {
-      const rows = sheetsData['��دمات5'];
+      const rows = sheetsData['خدمات5'];
       if (!rows) return;
       
       let externalPrice = 'غير متوفر', externalCancel = 'غير محدد';
-      let internalPrice = 'غير متوفر', internalCancel = 'غير محد��';
+      let internalPrice = 'غير متوفر', internalCancel = 'غير محدد';
       
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
@@ -1737,7 +1737,7 @@
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="form-section">
-          <h3 class="section-title">م��در التواير</h3>
+          <h3 class="section-title">مصدر التواير</h3>
           <div class="btn-grid" style="grid-template-columns: 1fr 1fr;">
             <button class="btn-option" data-source="ours">من عندنا</button>
             <button class="btn-option" data-source="customer">من عند العميل</button>
@@ -1843,7 +1843,7 @@
         `;
         
         const noteDiv = document.getElementById('balanceNote');
-        noteDiv.textContent = 'السعر هذا سواء ب��ركب من تاير الى ا����ع تواير نفس رسوم الخدمه';
+        noteDiv.textContent = 'السعر هذا سواء بيركب من تاير الى اربع تواير نفس رسوم الخدمه';
         noteDiv.classList.remove('hidden');
         
       } else {
@@ -1888,7 +1888,7 @@
         `;
         
         const noteDiv = document.getElementById('balanceNote');
-        noteDiv.textContent = 'إذا التواير ��ن عند العميل';
+        noteDiv.textContent = 'إذا التواير من عند العميل';
         noteDiv.classList.remove('hidden');
       }
       
@@ -1911,7 +1911,7 @@
         <div id="mechAreaSection" class="form-section hidden">
           <h3 class="section-title">اختيار المنطقة</h3>
           <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="ا��تب أو اختر المن��قة">
+            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
             <datalist id="areaOptions"></datalist>
           </div>
         </div>
@@ -2050,7 +2050,7 @@
       }
       
       if (formData.mechanicalService === 'oil') {
-        noteDiv.textContent = 'إذا ال��يت والفلتر من عند العميل فقط';
+        noteDiv.textContent = 'إذا الزيت والفلتر من عند العميل فقط';
         noteDiv.classList.remove('hidden');
       } else if (formData.mechanicalService === 'brakes') {
         noteDiv.textContent = 'إذا القطع من عند العميل';
