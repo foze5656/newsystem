@@ -565,13 +565,25 @@
     }
     
     .fullscreen-iframe-header {
-      background: #1a1a1a;
-      border-bottom: 2px solid #F2BC1B;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      background: transparent;
+      border: none;
+      padding: 0;
+      pointer-events: none;
+    }
+    
+    .fullscreen-iframe-header .btn-back {
+      pointer-events: all;
+      background: rgba(242, 188, 27, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .fullscreen-iframe-header .btn-back:hover {
+      background: rgba(217, 166, 22, 0.95);
     }
     
     .fullscreen-iframe-container {
@@ -693,11 +705,23 @@
     </div>
     <div class="service-item" data-service="fuel"><span class="icon">⛽</span> <span class="label">خدمة بنزين</span>
     </div>
-    <div class="service-item" data-service="tire"><span class="icon">🛞</span> <span class="label">العناية بالإطارات</span>
+    <div class="service-item has-submenu" data-service="tire"><span class="icon">🛞</span> <span class="label">العناية بالإطارات</span> <span class="arrow">▼</span>
+    </div>
+    <div class="service-submenu" id="tireSubmenu">
+     <div class="service-item submenu-item" data-service="tireSheet"><span class="label">شيت التواير</span>
+     </div>
+     <div class="service-item submenu-item" data-service="tireIncrease"><span class="label">زيادات التواير</span>
+     </div>
+     <div class="service-item submenu-item" data-service="puncture"><span class="label">بنشر</span>
+     </div>
+     <div class="service-item submenu-item" data-service="balance"><span class="label">ميزان وتركيب</span>
+     </div>
     </div>
     <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمات ميكانيكية</span>
     </div>
     <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
+    </div>
+    <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
@@ -719,8 +743,6 @@
   </div><!-- Fullscreen Iframe Wrapper (Hidden by default) -->
   <div id="fullscreenIframeWrapper" class="fullscreen-iframe-wrapper hidden">
    <div class="fullscreen-iframe-header"><button class="btn-back" onclick="closeFullscreenIframe()"> <span>←</span> <span>رجوع</span> </button>
-    <h2 id="iframeTitle" style="font-size: 18px; font-weight: 700; color: #F2BC1B; margin: 0;">العنوان</h2>
-    <div style="width: 80px;"></div>
    </div>
    <div class="fullscreen-iframe-container" id="fullscreenIframeContainer">
    </div>
@@ -772,7 +794,7 @@
       'أحمد الغانم': 'Ahmed Al-Ghanem',
       'بيكوك كونسيرج': 'Peacock Concierge',
       'بروجكت إكس ريسنق': 'ProjX Racing',
-      'ياماها موتور': 'Yamaha Motor',
+      'ياماه���� موتور': 'Yamaha Motor',
       'فولت قاراج': 'Vault Garage',
       'جيلي': 'Geely',
       'اوتو كابيتال': 'Auto Capital'
@@ -834,7 +856,10 @@
           'خدمات5',
           'ميزان وتركيب',
           'خدمات ميكانيكية',
-          'تركيب بطارية'
+          'تركيب بطارية',
+          'تأمين وربه',
+          'تأمين صفينه VIP',
+          'تأمين إيلاف'
         ];
         
         sheetsData = { currentSheetId: sheetId };
@@ -863,9 +888,7 @@
     function openFullscreenIframe(url, title) {
       const wrapper = document.getElementById('fullscreenIframeWrapper');
       const container = document.getElementById('fullscreenIframeContainer');
-      const titleElement = document.getElementById('iframeTitle');
       
-      titleElement.textContent = title;
       container.innerHTML = `<iframe src="${url}" title="${title}"></iframe>`;
       wrapper.classList.remove('hidden');
     }
@@ -882,10 +905,11 @@
     document.addEventListener('click', (e) => {
       const serviceItem = e.target.closest('.service-item');
       if (serviceItem) {
-        // Handle submenu toggle for battery
-        if (serviceItem.dataset.service === 'battery' && serviceItem.classList.contains('has-submenu')) {
+        // Handle submenu toggle for battery and tire
+        if ((serviceItem.dataset.service === 'battery' || serviceItem.dataset.service === 'tire') && serviceItem.classList.contains('has-submenu')) {
           serviceItem.classList.toggle('expanded');
-          const submenu = document.getElementById('batterySubmenu');
+          const submenuId = serviceItem.dataset.service === 'battery' ? 'batterySubmenu' : 'tireSubmenu';
+          const submenu = document.getElementById(submenuId);
           submenu.classList.toggle('show');
           return;
         }
@@ -906,9 +930,13 @@
           'newBattery': 'بطارية جديدة',
           'batteryInstall': 'تركيب بطارية',
           'fuel': 'خدمة بنزين',
-          'tire': 'العناية بالإطارات',
+          'tireSheet': 'شيت التواير',
+          'tireIncrease': 'زيادات التواير',
+          'puncture': 'بنشر',
+          'balance': 'ميزان وتركيب',
           'mechanical': 'خدمات ميكانيكية',
-          'carwash': 'غسيل السيارات'
+          'carwash': 'غسيل السيارات',
+          'insurance': 'تأمينات'
         };
         
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
@@ -929,14 +957,26 @@
           case 'fuel':
             renderFuelInterface();
             break;
-          case 'tire':
-            renderTireInterface();
+          case 'tireSheet':
+            openFullscreenIframe('https://portiers.netlify.app/', 'شيت التواير');
+            break;
+          case 'tireIncrease':
+            openFullscreenIframe('https://portaragetiers.netlify.app/', 'زيادات التواير');
+            break;
+          case 'puncture':
+            renderPunctureService();
+            break;
+          case 'balance':
+            renderBalanceService();
             break;
           case 'mechanical':
             renderMechanicalInterface();
             break;
           case 'carwash':
             renderCarWashInterface();
+            break;
+          case 'insurance':
+            renderInsuranceInterface();
             break;
         }
       }
@@ -1021,7 +1061,7 @@
             </div>
             <div class="form-field">
               <label>إلى أين</label>
-              <input type="text" list="toLocations" id="toSelect" class="form-control" placeholder="اكتب أو اختر الموقع">
+              <input type="text" list="toLocations" id="toSelect" class="form-control" placeholder="اك��ب أو اختر الموقع">
               <datalist id="toLocations"></datalist>
             </div>
           </div>
@@ -1077,7 +1117,7 @@
         companiesVisible = !companiesVisible;
         if (companiesVisible) {
           moreCompanies.classList.remove('hidden');
-          toggleBtn.textContent = '⬆️ إخفاء الشركات الأخرى';
+          toggleBtn.textContent = '⬆️ إخفاء الشركات ا��أخرى';
         } else {
           moreCompanies.classList.add('hidden');
           toggleBtn.textContent = '⬇️ إظهار الشركات الأخرى';
@@ -1582,7 +1622,7 @@
         <div class="form-section full-width">
           <h3 class="section-title">اختيار المنطقة</h3>
           <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
+            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر الم��طقة">
             <datalist id="areaOptions"></datalist>
           </div>
           <div class="info-box">بطارية عند العميل - هذا السعر فقط إذا البطارية عند العميل</div>
@@ -1640,7 +1680,7 @@
     }
     
     function calculateBatteryInstallPrice() {
-      const rows = sheetsData['تركيب بطارية'];
+      const rows = sheetsData['تركيب بط��رية'];
       if (!rows || !formData.area) return;
       
       let price = null;
@@ -1697,7 +1737,7 @@
         <div id="fuelTypeSection" class="form-section hidden">
           <h3 class="section-title">نوع البنزين</h3>
           <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <button class="btn-option" data-fuel="premium">بنزين ممتاز<br><small>(1.5 د.ك)</small></button>
+            <button class="btn-option" data-fuel="premium">بنز���� ممتا��<br><small>(1.5 د.ك)</small></button>
             <button class="btn-option" data-fuel="special">بنزين خصوصي<br><small>(1.5 د.ك)</small></button>
             <button class="btn-option" data-fuel="ultra">بنزين الترا<br><small>(2.5 د.ك)</small></button>
           </div>
@@ -1718,7 +1758,7 @@
             </table>
           </div>
           <div class="warning-box">
-            <strong>ملاحظة:</strong> لازم تشرحون للعميل انه رسوم الخدمه منفصلة عن سعر البنزين والكم يوصله لاقرب محطه فقط
+            <strong>ملاحظة:</strong> لازم تشرحون للعميل انه رسوم الخدمه منفصلة عن س��ر ا��بنزين والكم يوصله لاقرب محطه فقط
           </div>
         </div>
       `;
@@ -1791,52 +1831,6 @@
       document.getElementById('fuelResultSection').classList.remove('hidden');
     }
 
-    // Render Tire Interface - NEW: العناية بالإطارات
-    function renderTireInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <h3 class="section-title">اختر نوع الخدمة</h3>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-            <button class="btn-option" style="padding: 20px; font-size: 15px;" data-tire-service="tireSheet">
-              <div style="font-size: 24px; margin-bottom: 8px;">📋</div>
-              <div>شيت التواير</div>
-            </button>
-            <button class="btn-option" style="padding: 20px; font-size: 15px;" data-tire-service="tireIncrease">
-              <div style="font-size: 24px; margin-bottom: 8px;">📈</div>
-              <div>زيادات التواير</div>
-            </button>
-          </div>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px;">
-            <button class="btn-option" style="padding: 20px; font-size: 14px;" data-tire-service="puncture">
-              <div style="font-size: 24px; margin-bottom: 8px;">🔧</div>
-              <div>بنشر</div>
-            </button>
-            <button class="btn-option" style="padding: 20px; font-size: 14px;" data-tire-service="balance">
-              <div style="font-size: 24px; margin-bottom: 8px;">⚖️</div>
-              <div>ميزان وتركيب</div>
-            </button>
-          </div>
-        </div>
-      `;
-      
-      document.querySelectorAll('[data-tire-service]').forEach(btn => {
-        btn.onclick = () => {
-          const service = btn.dataset.tireService;
-          
-          if (service === 'tireSheet') {
-            openFullscreenIframe('https://portiers.netlify.app/', 'شيت التواير');
-          } else if (service === 'tireIncrease') {
-            openFullscreenIframe('https://portaragetiers.netlify.app/', 'زيادات التواير');
-          } else if (service === 'puncture') {
-            renderPunctureService();
-          } else if (service === 'balance') {
-            renderBalanceService();
-          }
-        };
-      });
-    }
-
     // Render Puncture Service (بنشر)
     function renderPunctureService() {
       const contentArea = document.getElementById('contentArea');
@@ -1855,7 +1849,7 @@
         </div>
         
         <div id="tireResultSection" class="data-table-container hidden">
-          <div class="table-header">أسعار خدمة البنشر</div>
+          <div class="table-header">أسعار خدمة الب��شر</div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2063,7 +2057,7 @@
             <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
           </tr>
           <tr>
-            <td>عدد التواير</td>
+            <td>��دد التواير</td>
             <td>${tireCount}</td>
           </tr>
           <tr>
@@ -2173,7 +2167,7 @@
                 if (formData.oilSource === 'customer') {
                   // Show area selection and load data from columns 8-14
                   document.getElementById('mechAreaSection').classList.remove('hidden');
-                  loadAreaOptionsDatalist('خدمات ميكانيكية', [8, 9, 10, 12, 13, 14], calculateMechanicalPrice);
+                  loadAreaOptionsDatalist('خدمات م��كانيكية', [8, 9, 10, 12, 13, 14], calculateMechanicalPrice);
                 } else if (formData.oilSource === 'ours') {
                   // Open external oil website
                   openFullscreenIframe('https://portarageoils.netlify.app/', 'زيت وفلتر');
@@ -2351,7 +2345,7 @@
           duration: '1 ساعة',
           priceSedan: 7,
           priceSUV: 8,
-          services: ['غسيل خارجي', 'تنظيف داخلي', 'تلميع التواير والرنقات', 'تنظيف فتحات التكييف', 'عطر']
+          services: ['غسيل خارجي', 'تنظيف داخلي', 'تلميع التواير والرنقات', 'تنظيف فتحات التكييف', '��طر']
         },
         special: {
           name: '💎 غسيل خصوصي',
@@ -2381,7 +2375,7 @@
             <ul>
               ${wash.services.map(s => `<li>${s}</li>`).join('')}
             </ul>
-            <button class="copy-btn-small" onclick="copyWashDetails('${type}')">📋 نسخ</button>
+            <button class="copy-btn-small" onclick="copyWashDetails('${type}')">📋 ��سخ</button>
           </div>
         `;
       });
@@ -2414,7 +2408,7 @@
           duration: 'ساعة واحدة',
           priceSedan: 7,
           priceSUV: 8,
-          services: ['غسيل خارجي', 'تنظيف داخلي', 'تلميع التواير والرنقات', 'تنظيف فتحات التكييف', 'عطر']
+          services: ['غسيل خارجي', 'تنظيف داخلي', 'تلميع التواير والرنقات', '��نظيف فتحات التكييف', 'عطر']
         },
         special: {
           name: 'غسيل خصوصي',
@@ -2557,7 +2551,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       if (dayIndex === 5 && weekNumber % 2 === 1) {
         availableSlots.innerHTML = `
           <div class="error-box">
-            <strong>❌ مغلق يوم الجمعة</strong><br>
+            <strong>❌ مغلق ي��م الجمعة</strong><br>
             أقرب موعد متاح: يوم السبت
           </div>
         `;
@@ -2694,7 +2688,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         html += `
           <div class="warning-box">
             <strong>⚠️ لا يوجد وقت كافٍ لأي نوع غسيل محدد اليوم</strong><br>
-            ساعات العمل تنتهي الساعة 10:00 مساءً
+            ساعات العمل تنتهي الساعة 10:00 ��ساءً
           </div>
         `;
         
@@ -2758,7 +2752,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         
         if (availableTimeSlots.ultra && availableTimeSlots.ultra.length > 0) {
           const timeRange = formatTimeRange(availableTimeSlots.ultra, 180);
-          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ${timeRange}</div>`;
+          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غس��ل ألترا: ${timeRange}</div>`;
         }
         
         html += `</div>`;
@@ -2791,7 +2785,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                   <tr>
                     <th style="min-width: 80px;">الوقت</th>
                     <th style="min-width: 100px;">الحالة</th>
-                    <th style="min-width: 80px;">نوع الغسيل</th>
+                    <th style="min-width: 80px;">��وع الغسيل</th>
                     <th style="min-width: 80px;">رقم الطلب</th>
                     <th style="min-width: 120px;">اسم العميل</th>
                     <th style="min-width: 100px;">رقم الهاتف</th>
@@ -2894,6 +2888,154 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       availableSlots.innerHTML = html;
     }
 
+    // Render Insurance Interface
+    function renderInsuranceInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">البحث في التأمينات</h3>
+          <div class="form-field">
+            <label>البحث برقم اللوحة أو اسم العميل</label>
+            <input type="text" id="insuranceSearch" class="form-control" placeholder="أدخل رقم اللوحة أو اسم العميل" style="font-size: 16px; padding: 12px;">
+          </div>
+          <div id="searchInfo" class="info-box" style="margin-top: 10px;">
+            💡 ابدأ بكتابة رقم اللوحة أو اسم العميل وستظهر النتائج تلقائياً
+          </div>
+        </div>
+        
+        <div id="insuranceResults" class="hidden">
+        </div>
+      `;
+      
+      const searchInput = document.getElementById('insuranceSearch');
+      let searchTimeout;
+      
+      searchInput.oninput = () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const query = searchInput.value.trim();
+          if (query.length >= 2) {
+            searchInsurance(query);
+          } else {
+            document.getElementById('insuranceResults').innerHTML = '';
+            document.getElementById('insuranceResults').classList.add('hidden');
+          }
+        }, 300);
+      };
+    }
+    
+    function searchInsurance(query) {
+      const resultsContainer = document.getElementById('insuranceResults');
+      const insuranceSheets = [
+        { name: 'تأمين وربه', displayName: 'تأمين وربه' },
+        { name: 'تأمين صفينه VIP', displayName: 'تأمين صفينه VIP' },
+        { name: 'تأمين إيلاف', displayName: 'تأمين إيلاف' }
+      ];
+      
+      let foundResults = [];
+      
+      insuranceSheets.forEach(sheet => {
+        if (!sheetsData[sheet.name]) return;
+        
+        const rows = sheetsData[sheet.name];
+        if (rows.length < 2) return;
+        
+        const headers = rows[0];
+        
+        let customerNameCol = -1;
+        let plateNumberCol = -1;
+        
+        for (let i = 0; i < headers.length; i++) {
+          const header = (headers[i] || '').toLowerCase().trim();
+          if (header.includes('customer') && header.includes('name')) {
+            customerNameCol = i;
+          }
+          if (header.includes('plate') && header.includes('number')) {
+            plateNumberCol = i;
+          }
+        }
+        
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          let match = false;
+          
+          if (customerNameCol !== -1 && row[customerNameCol]) {
+            const customerName = (row[customerNameCol] || '').toString().toLowerCase();
+            if (customerName.includes(query.toLowerCase())) {
+              match = true;
+            }
+          }
+          
+          if (plateNumberCol !== -1 && row[plateNumberCol]) {
+            const plateNumber = (row[plateNumberCol] || '').toString().toLowerCase();
+            if (plateNumber.includes(query.toLowerCase())) {
+              match = true;
+            }
+          }
+          
+          if (match) {
+            foundResults.push({
+              sheetName: sheet.displayName,
+              headers: headers,
+              rowData: row,
+              rowIndex: i
+            });
+          }
+        }
+      });
+      
+      if (foundResults.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="form-section full-width">
+            <div class="warning-box">
+              ⚠️ لم يتم العثور على نتائج للبحث: "${query}"
+            </div>
+          </div>
+        `;
+        resultsContainer.classList.remove('hidden');
+        return;
+      }
+      
+      let html = '';
+      
+      foundResults.forEach((result, index) => {
+        html += `
+          <div class="data-table-container" style="margin-bottom: 15px;">
+            <div class="table-header">${result.sheetName} - صف رقم ${result.rowIndex + 1}</div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 30%;">الحقل</th>
+                    <th style="width: 70%;">القيمة</th>
+                  </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        result.headers.forEach((header, colIndex) => {
+          if (header && result.rowData[colIndex]) {
+            html += `
+              <tr>
+                <td style="font-weight: 600; color: #F2BC1B;">${header}</td>
+                <td>${result.rowData[colIndex]}</td>
+              </tr>
+            `;
+          }
+        });
+        
+        html += `
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      });
+      
+      resultsContainer.innerHTML = html;
+      resultsContainer.classList.remove('hidden');
+    }
+
     // Generic Service Interface with Datalist
     function renderServiceWithDatalist(title, sheetName, columns, note = '') {
       const contentArea = document.getElementById('contentArea');
@@ -2901,7 +3043,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         <div class="form-section full-width">
           <h3 class="section-title">اختيار المنطقة</h3>
           <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
+            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اك��ب أو اختر المنطقة">
             <datalist id="areaOptions"></datalist>
           </div>
           ${note}
@@ -3048,5 +3190,5 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     // Load data on page load
     loadAllSheets();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b590520559f5cea',t:'MTc2NzAwODM5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5938e890015cea',t:'MTc2NzAxMDUyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
