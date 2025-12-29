@@ -567,7 +567,7 @@
     .fullscreen-iframe-header {
       position: absolute;
       top: 10px;
-      left: 10px;
+      right: 10px;
       z-index: 10;
       background: transparent;
       border: none;
@@ -705,7 +705,7 @@
     </div>
     <div class="service-item" data-service="fuel"><span class="icon">⛽</span> <span class="label">خدمة بنزين</span>
     </div>
-    <div class="service-item has-submenu" data-service="tire"><span class="icon">🛞</span> <span class="label">العناية بالإطارات</span> <span class="arrow">▼</span>
+    <div class="service-item has-submenu" data-service="tire"><span class="icon">🛞</span> <span class="label">���لعناية بالإطارات</span> <span class="arrow">▼</span>
     </div>
     <div class="service-submenu" id="tireSubmenu">
      <div class="service-item submenu-item" data-service="tireSheet"><span class="label">شيت التواير</span>
@@ -735,7 +735,7 @@
       <div style="font-size: 48px; margin-bottom: 16px;">
        📊
       </div>
-      <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">مرحباً بك في لوحة التحكم</h3>
+      <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">م��حباً بك في لوحة التحكم</h3>
       <p style="color: #999; font-size: 14px;">اختر خدمة من القائمة الجانبية للبدء</p>
      </div>
     </div>
@@ -760,6 +760,7 @@
     let currentService = '';
     let formData = {};
     let carWashData = [];
+    let lastIframeState = null; // Store last iframe state
 
     // Initialize Element SDK
     if (window.elementSdk) {
@@ -889,8 +890,19 @@
       const wrapper = document.getElementById('fullscreenIframeWrapper');
       const container = document.getElementById('fullscreenIframeContainer');
       
+      // Store state before opening
+      lastIframeState = {
+        url: url,
+        title: title,
+        service: currentService,
+        formData: { ...formData }
+      };
+      
       container.innerHTML = `<iframe src="${url}" title="${title}"></iframe>`;
       wrapper.classList.remove('hidden');
+      
+      // Hide the main dashboard
+      document.getElementById('dashboardWrapper').style.display = 'none';
     }
 
     window.closeFullscreenIframe = function() {
@@ -899,6 +911,12 @@
       
       wrapper.classList.add('hidden');
       container.innerHTML = '';
+      
+      // Show the main dashboard again
+      document.getElementById('dashboardWrapper').style.display = 'grid';
+      
+      // Don't reset the service - keep the current state
+      // The user will see the same service they had before opening the iframe
     };
 
     // Service Selection
@@ -995,7 +1013,7 @@
         <div class="form-section">
           <h3 class="section-title">اختيار الجهة</h3>
           <div class="btn-grid" style="grid-template-columns: 1fr;">
-            <button class="btn-option active" data-company="بورتراج">بورتراج</button>
+            <button class="btn-option active" data-company="بورتر��ج">بورتراج</button>
           </div>
           <button id="toggleCompanies" class="btn-option" style="width: 100%; margin-top: 8px; background: #353535; border-color: #666;">
             ⬇️ إظهار الشركات الأخرى
@@ -1022,7 +1040,7 @@
           </div>
           
           <div id="lockedOption" class="hidden" style="margin-top: 10px;">
-            <h3 class="section-title">ونش مسكر</h3>
+            <h3 class="section-title">ونش مس��ر</h3>
             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: #262626; border-radius: 4px; border: 1px solid #404040;">
               <input type="checkbox" id="lockedCheckbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: #F2BC1B;">
               <span style="color: #F2BC1B; font-size: 12px; font-weight: 600;">تفعيل ونش مسكر (+5 د.ك)</span>
@@ -2090,7 +2108,7 @@
           <h3 class="section-title">نوع الخدمة</h3>
           <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
             <button class="btn-option" data-mech="inspection">فحص السيارة</button>
-            <button class="btn-option" data-mech="brakes">سفايف وديسكات</button>
+            <button class="btn-option" data-mech="brakes">سفايف و��يسكات</button>
             <button class="btn-option" data-mech="oilfilter">زيت وفلتر</button>
           </div>
         </div>
@@ -2375,7 +2393,7 @@
             <ul>
               ${wash.services.map(s => `<li>${s}</li>`).join('')}
             </ul>
-            <button class="copy-btn-small" onclick="copyWashDetails('${type}')">📋 ��سخ</button>
+            <button class="copy-btn-small" onclick="copyWashDetails('${type}')">📋 ��س��</button>
           </div>
         `;
       });
@@ -2895,11 +2913,41 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         <div class="form-section full-width">
           <h3 class="section-title">البحث في التأمينات</h3>
           <div class="form-field">
-            <label>البحث برقم اللوحة أو اسم العميل</label>
-            <input type="text" id="insuranceSearch" class="form-control" placeholder="أدخل رقم اللوحة أو اسم العميل" style="font-size: 16px; padding: 12px;">
+            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+              <span>البحث برقم اللوحة أو اسم العميل</span>
+              <span id="insuranceInfoIcon" style="cursor: pointer; background: #3b82f6; color: #fff; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);">i</span>
+            </label>
+            <input type="text" list="insuranceSuggestions" id="insuranceSearch" class="form-control" placeholder="أدخل رقم اللوحة أو اسم العميل" style="font-size: 16px; padding: 12px;">
+            <datalist id="insuranceSuggestions"></datalist>
           </div>
-          <div id="searchInfo" class="info-box" style="margin-top: 10px;">
-            💡 ابدأ بكتابة رقم اللوحة أو اسم العميل وستظهر النتائج تلقائياً
+          
+          <div id="insuranceInfoBox" class="hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); border: 2px solid #60a5fa; border-radius: 8px; padding: 16px; margin-top: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <span style="font-size: 24px;">ℹ️</span>
+              <h4 style="color: #fff; font-size: 15px; font-weight: 700; margin: 0;">الخدمات المتاحة لشركات التأمين</h4>
+            </div>
+            <ul style="list-style: none; padding: 0; margin: 0; color: #dbeafe;">
+              <li style="padding: 6px 0; padding-right: 20px; position: relative; font-size: 13px; line-height: 1.5;">
+                <span style="position: absolute; right: 0; color: #60a5fa;">✓</span>
+                خدمات البنجر (رقعة خارجية – تركيب سبير – تعبئة هواء)
+              </li>
+              <li style="padding: 6px 0; padding-right: 20px; position: relative; font-size: 13px; line-height: 1.5;">
+                <span style="position: absolute; right: 0; color: #60a5fa;">✓</span>
+                فتح قفل
+              </li>
+              <li style="padding: 6px 0; padding-right: 20px; position: relative; font-size: 13px; line-height: 1.5;">
+                <span style="position: absolute; right: 0; color: #60a5fa;">✓</span>
+                اشتراك بطارية
+              </li>
+              <li style="padding: 6px 0; padding-right: 20px; position: relative; font-size: 13px; line-height: 1.5;">
+                <span style="position: absolute; right: 0; color: #60a5fa;">✓</span>
+                تعبئة بنزين (يتم دفع رسوم البنزين فقط)
+              </li>
+              <li style="padding: 6px 0; padding-right: 20px; position: relative; font-size: 13px; line-height: 1.5;">
+                <span style="position: absolute; right: 0; color: #60a5fa;">✓</span>
+                ونش عادي (على الطريق فقط، وفي الكراج/المنزل بموافقة الإدارة)
+              </li>
+            </ul>
           </div>
         </div>
         
@@ -2907,13 +2955,32 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         </div>
       `;
       
+      const infoIcon = document.getElementById('insuranceInfoIcon');
+      const infoBox = document.getElementById('insuranceInfoBox');
+      
+      infoIcon.onclick = () => {
+        if (infoBox.classList.contains('hidden')) {
+          infoBox.classList.remove('hidden');
+          infoIcon.style.background = '#10b981';
+        } else {
+          infoBox.classList.add('hidden');
+          infoIcon.style.background = '#3b82f6';
+        }
+      };
+      
       const searchInput = document.getElementById('insuranceSearch');
       let searchTimeout;
       
       searchInput.oninput = () => {
         clearTimeout(searchTimeout);
+        
+        const query = searchInput.value.trim();
+        
+        if (query.length >= 1) {
+          updateInsuranceSuggestions(query);
+        }
+        
         searchTimeout = setTimeout(() => {
-          const query = searchInput.value.trim();
           if (query.length >= 2) {
             searchInsurance(query);
           } else {
@@ -2922,6 +2989,59 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         }, 300);
       };
+    }
+    
+    function updateInsuranceSuggestions(query) {
+      const datalist = document.getElementById('insuranceSuggestions');
+      const insuranceSheets = [
+        { name: 'تأمين وربه' },
+        { name: 'تأمين صفينه VIP' },
+        { name: 'تأمين إيلاف' }
+      ];
+      
+      let suggestions = new Set();
+      
+      insuranceSheets.forEach(sheet => {
+        if (!sheetsData[sheet.name]) return;
+        
+        const rows = sheetsData[sheet.name];
+        if (rows.length < 2) return;
+        
+        const headers = rows[0];
+        
+        let customerNameCol = -1;
+        let plateNumberCol = -1;
+        
+        for (let i = 0; i < headers.length; i++) {
+          const header = (headers[i] || '').toLowerCase().trim();
+          if (header.includes('customer') && header.includes('name')) {
+            customerNameCol = i;
+          }
+          if (header.includes('plate') && header.includes('number')) {
+            plateNumberCol = i;
+          }
+        }
+        
+        for (let i = 1; i < rows.length && suggestions.size < 20; i++) {
+          const row = rows[i];
+          
+          if (customerNameCol !== -1 && row[customerNameCol]) {
+            const customerName = (row[customerNameCol] || '').toString();
+            if (customerName.toLowerCase().includes(query.toLowerCase())) {
+              suggestions.add(customerName);
+            }
+          }
+          
+          if (plateNumberCol !== -1 && row[plateNumberCol]) {
+            const plateNumber = (row[plateNumberCol] || '').toString();
+            if (plateNumber.toLowerCase().includes(query.toLowerCase())) {
+              suggestions.add(plateNumber);
+            }
+          }
+        }
+      });
+      
+      datalist.innerHTML = Array.from(suggestions).slice(0, 15).map(s => `<option value="${s}">`).join('');
     }
     
     function searchInsurance(query) {
@@ -2977,8 +3097,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             foundResults.push({
               sheetName: sheet.displayName,
               headers: headers,
-              rowData: row,
-              rowIndex: i
+              rowData: row
             });
           }
         }
@@ -3001,30 +3120,35 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       foundResults.forEach((result, index) => {
         html += `
           <div class="data-table-container" style="margin-bottom: 15px;">
-            <div class="table-header">${result.sheetName} - صف رقم ${result.rowIndex + 1}</div>
+            <div class="table-header">${result.sheetName}</div>
             <div class="table-scroll">
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th style="width: 30%;">الحقل</th>
-                    <th style="width: 70%;">القيمة</th>
-                  </tr>
-                </thead>
-                <tbody>
         `;
         
-        result.headers.forEach((header, colIndex) => {
-          if (header && result.rowData[colIndex]) {
-            html += `
-              <tr>
-                <td style="font-weight: 600; color: #F2BC1B;">${header}</td>
-                <td>${result.rowData[colIndex]}</td>
-              </tr>
-            `;
+        result.headers.forEach(header => {
+          if (header) {
+            html += `<th style="min-width: 120px;">${header}</th>`;
           }
         });
         
         html += `
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+        `;
+        
+        result.headers.forEach((header, colIndex) => {
+          if (header) {
+            const value = result.rowData[colIndex] || '-';
+            html += `<td>${value}</td>`;
+          }
+        });
+        
+        html += `
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -3190,5 +3314,5 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     // Load data on page load
     loadAllSheets();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5938e890015cea',t:'MTc2NzAxMDUyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b594f74f0eb5cea',t:'MTc2NzAxMTQ0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
