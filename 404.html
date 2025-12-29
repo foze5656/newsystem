@@ -11,7 +11,7 @@
       box-sizing: border-box;
     }
     
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
     
     * {
       font-family: 'Cairo', sans-serif;
@@ -667,9 +667,9 @@
    <aside class="sidebar hidden" id="sidebar">
     <div class="logo-section"><img src="https://i.top4top.io/p_35860o72q1.png" alt="Logo">
      <h1 id="siteTitle">خدمات بورتراج</h1>
-    </div>
+    </div><!-- 1. ونشات -->
     <div class="service-item" data-service="tow"><span class="icon">🚚</span> <span class="label">ونشات</span>
-    </div><!-- Battery Group -->
+    </div><!-- 2. بطاريات -->
     <div class="service-item has-submenu" data-group="battery"><span class="icon">🔋</span> <span class="label">بطاريات</span>
     </div>
     <div class="service-submenu" id="batterySubmenu">
@@ -682,9 +682,9 @@
      <div class="submenu-item" data-service="batteryInstall">
       تركيب بطارية
      </div>
-    </div>
+    </div><!-- 3. خدمة بنزين -->
     <div class="service-item" data-service="fuel"><span class="icon">⛽</span> <span class="label">خدمة بنزين</span>
-    </div><!-- Tires Group -->
+    </div><!-- 4. العناية بالإطارات -->
     <div class="service-item has-submenu" data-group="tires"><span class="icon">🛞</span> <span class="label">العناية بالإطارات</span>
     </div>
     <div class="service-submenu" id="tiresSubmenu">
@@ -700,11 +700,11 @@
      <div class="submenu-item" data-service="balance">
       ميزان وتركيب
      </div>
-    </div>
+    </div><!-- 5. خدمة ميكانيكية -->
     <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمة ميكانيكية</span>
-    </div>
+    </div><!-- 6. غسيل السيارات -->
     <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
-    </div>
+    </div><!-- 7. تأمينات -->
     <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span>
     </div>
    </aside><!-- Main Content -->
@@ -742,6 +742,7 @@
     let currentService = '';
     let formData = {};
     let lastIframeState = null;
+    let carWashData = [];
 
     // Initialize Element SDK
     if (window.elementSdk) {
@@ -769,7 +770,7 @@
       });
     }
 
-    // Company mapping
+    // Company mapping for TOW service
     const companyMapping = {
       'بورتراج': 'portarage towtruk',
       'هيرو وركس': 'hero.works',
@@ -783,6 +784,53 @@
     };
     
     const companies = Object.keys(companyMapping);
+
+    // Car Wash Packages Definition
+    const carWashPackages = {
+      excellent: {
+        name: 'غسيل ممتاز',
+        icon: '👑',
+        duration: 60,
+        prices: { sedan: 7, suv: 8 },
+        services: [
+          'غسيل خارجي',
+          'تنظيف داخلي',
+          'تلميع التواير والرنقات',
+          'تنظيف فتحات التكييف',
+          'عطر'
+        ]
+      },
+      special: {
+        name: 'غسيل خصوصي',
+        icon: '💎',
+        duration: 120,
+        prices: { sedan: 15, suv: 17 },
+        services: [
+          'غسيل خارجي',
+          'التنظيف الداخلي',
+          'تلميع ديكورات السيارة الداخلية',
+          'إزالة البقع الخفيفة من داخلية السيارة',
+          'تلميع التواير والرنقات',
+          'تنظيف فتحات التكييف',
+          'عطر'
+        ]
+      },
+      ultra: {
+        name: 'غسيل الترا',
+        icon: '⭐',
+        duration: 180,
+        prices: { sedan: 30, suv: 35 },
+        services: [
+          'غسيل خارجي',
+          'التنظيف الداخلي',
+          'تلميع ديكورات السيارة الداخلية',
+          'غسيل مقاعد السيارة',
+          'تنظيف الأبواب',
+          'غسيل دبة السيارة',
+          'تنظيف لوحة القيادة'
+        ]
+      }
+    };
 
     // Parse CSV
     function parseCSV(csvText) {
@@ -826,22 +874,10 @@
         const sheetId = config.sheet_id;
         
         const sheetNames = [
-          'portarage towtruk',
-          'hero.works',
-          'Ahmed Al-Ghanem',
-          'Peacock Concierge',
-          'ProjX Racing',
-          'Yamaha Motor',
-          'Vault Garage',
-          'Geely',
-          'Auto Capital',
-          'خدمات5',
-          'ميزان وتركيب',
-          'خدمات ميكانيكية',
-          'تركيب بطارية',
-          'تأمين وربه',
-          'تأمين صفينه VIP',
-          'تأمين إيلاف'
+          'portarage towtruk', 'hero.works', 'Ahmed Al-Ghanem', 'Peacock Concierge',
+          'ProjX Racing', 'Yamaha Motor', 'Vault Garage', 'Geely', 'Auto Capital',
+          'خدمات5', 'ميزان وتركيب', 'خدمات ميكانيكية', 'تركيب بطارية',
+          'تأمين وربه', 'تأمين صفينه VIP', 'تأمين إيلاف'
         ];
         
         sheetsData = { currentSheetId: sheetId };
@@ -895,16 +931,10 @@
       const wrapper = document.getElementById('fullscreenIframeWrapper');
       const container = document.getElementById('fullscreenIframeContainer');
       
-      lastIframeState = {
-        url: url,
-        title: title,
-        service: currentService,
-        formData: { ...formData }
-      };
+      lastIframeState = { url, title, service: currentService, formData: { ...formData } };
       
       container.innerHTML = `<iframe src="${url}" title="${title}"></iframe>`;
       wrapper.classList.remove('hidden');
-      
       document.getElementById('dashboardWrapper').style.display = 'none';
     }
 
@@ -914,7 +944,6 @@
       
       wrapper.classList.add('hidden');
       container.innerHTML = '';
-      
       document.getElementById('dashboardWrapper').style.display = 'grid';
       
       showSuccessMessage('✓ تم الرجوع بنجاح');
@@ -924,13 +953,7 @@
         formData = { ...lastIframeState.formData };
         
         setTimeout(() => {
-          document.querySelectorAll('.service-item').forEach(item => {
-            item.classList.remove('active');
-          });
-          
-          document.querySelectorAll('.submenu-item').forEach(item => {
-            item.classList.remove('active');
-          });
+          document.querySelectorAll('.service-item, .submenu-item').forEach(item => item.classList.remove('active'));
           
           const serviceTitles = {
             'newBattery': 'بطارية جديدة',
@@ -954,9 +977,7 @@
     
     function showSuccessMessage(message) {
       const existingMessage = document.getElementById('successMessage');
-      if (existingMessage) {
-        existingMessage.remove();
-      }
+      if (existingMessage) existingMessage.remove();
       
       const messageDiv = document.createElement('div');
       messageDiv.id = 'successMessage';
@@ -981,13 +1002,11 @@
       
       setTimeout(() => {
         messageDiv.style.animation = 'slideUp 0.3s ease-in';
-        setTimeout(() => {
-          messageDiv.remove();
-        }, 300);
+        setTimeout(() => messageDiv.remove(), 300);
       }, 2500);
     }
 
-    // Group toggle handler
+    // Event handlers
     document.addEventListener('click', (e) => {
       const groupItem = e.target.closest('[data-group]');
       if (groupItem) {
@@ -996,15 +1015,8 @@
         
         if (submenu) {
           const isExpanded = submenu.classList.contains('show');
-          
-          // Close all submenus
-          document.querySelectorAll('.service-submenu').forEach(menu => {
-            menu.classList.remove('show');
-          });
-          
-          document.querySelectorAll('.service-item.has-submenu').forEach(item => {
-            item.classList.remove('expanded');
-          });
+          document.querySelectorAll('.service-submenu').forEach(menu => menu.classList.remove('show'));
+          document.querySelectorAll('.service-item.has-submenu').forEach(item => item.classList.remove('expanded'));
           
           if (!isExpanded) {
             submenu.classList.add('show');
@@ -1014,42 +1026,24 @@
         return;
       }
       
-      // Handle submenu item clicks
       const submenuItem = e.target.closest('.submenu-item');
       if (submenuItem && submenuItem.dataset.service) {
-        document.querySelectorAll('.service-item').forEach(item => {
-          item.classList.remove('active');
-        });
-        
-        document.querySelectorAll('.submenu-item').forEach(item => {
-          item.classList.remove('active');
-        });
-        
+        document.querySelectorAll('.service-item, .submenu-item').forEach(item => item.classList.remove('active'));
         submenuItem.classList.add('active');
         
         currentService = submenuItem.dataset.service;
         formData = {};
-        
         handleServiceSelection(currentService);
         return;
       }
       
-      // Handle direct service item clicks
       const serviceItem = e.target.closest('.service-item:not(.has-submenu)');
       if (serviceItem && serviceItem.dataset.service) {
-        document.querySelectorAll('.service-item').forEach(item => {
-          item.classList.remove('active');
-        });
-        
-        document.querySelectorAll('.submenu-item').forEach(item => {
-          item.classList.remove('active');
-        });
-        
+        document.querySelectorAll('.service-item, .submenu-item').forEach(item => item.classList.remove('active'));
         serviceItem.classList.add('active');
         
         currentService = serviceItem.dataset.service;
         formData = {};
-        
         handleServiceSelection(currentService);
       }
     });
@@ -1104,7 +1098,7 @@
           renderMechanicalInterface();
           break;
         case 'carwash':
-          renderCarWashInterface();
+          renderCarWashSystem();
           break;
         case 'insurance':
           renderInsuranceInterface();
@@ -1112,1431 +1106,488 @@
       }
     }
 
-    // [All the render functions remain the same as before - renderTowInterface, renderBatterySubscriptionInterface, etc.]
-    // Due to length, I'm keeping all the implementation functions exactly as they were in your original code
-    
-    // Render Battery Subscription Interface
-    function renderBatterySubscriptionInterface() {
-      renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
-        '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
+    // CAR WASH SYSTEM
+    async function renderCarWashSystem() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.style.display = 'grid';
+      contentArea.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+      contentArea.style.background = '#0a0a0a';
+      
+      // Load car wash data from Google Sheets
+      const carWashSheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+      carWashData = [];
+      
+      try {
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${carWashSheetId}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
+        const response = await fetch(csvUrl);
+        if (response.ok) {
+          const csvText = await response.text();
+          const rows = parseCSV(csvText);
+          if (rows.length > 1) {
+            carWashData = rows.slice(1).map(row => ({
+              date: row[0] || '',
+              time: row[1] || '',
+              qrOrder: row[2] || '',
+              customerName: row[3] || '',
+              customerNumber: row[4] || '',
+              customerLocation: row[5] || '',
+              washType: row[6] || '',
+              payment: row[7] || ''
+            })).filter(item => item.date && item.time);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading car wash data:', error);
+      }
+      
+      contentArea.innerHTML = `
+        <!-- Type Selection -->
+        <div class="form-section full-width">
+          <h3 class="section-title">اختر نوع الغسيل</h3>
+          <div class="btn-grid">
+            <button class="btn-option active" data-wash="all">الكل</button>
+            <button class="btn-option" data-wash="excellent">غسيل ممتاز</button>
+            <button class="btn-option" data-wash="special">غسيل خصوصي</button>
+            <button class="btn-option" data-wash="ultra">غسيل الترا</button>
+          </div>
+        </div>
+
+        <!-- Wash Details Cards -->
+        <div class="form-section" id="excellentCard">
+          <h3 class="section-title" style="color: #F2BC1B; font-size: 16px;">👑 غسيل ممتاز</h3>
+          <div style="margin-bottom: 12px;">
+            <p style="color: #10b981; font-size: 14px; font-weight: 700; margin-bottom: 8px;">⏱️ مدة الغسيل: ساعة واحدة</p>
+            <div style="display: flex; justify-content: space-around; margin-bottom: 10px; padding: 10px; background: #1a1a1a; border-radius: 4px; border: 1px solid #333;">
+              <div style="text-align: center;">
+                <div style="color: #999; font-size: 12px;">صالون</div>
+                <div style="color: #F2BC1B; font-size: 16px; font-weight: 700;">7 ${config.currency}</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: #999; font-size: 12px;">جيب</div>
+                <div style="color: #F2BC1B; font-size: 16px; font-weight: 700;">8 ${config.currency}</div>
+              </div>
+            </div>
+          </div>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              غسيل خارجي
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              تنظيف داخلي
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              تلميع التواير والرنقات
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              تنظيف فتحات التكييف
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              عطر
+            </li>
+          </ul>
+          <button class="btn-primary" style="margin-top: 10px; padding: 10px;" onclick="copyWashInfo('excellent')">📋 نسخ المعلومات</button>
+        </div>
+
+        <div class="form-section" id="specialCard">
+          <h3 class="section-title" style="color: #F2BC1B; font-size: 16px;">💎 غسيل خصوصي</h3>
+          <div style="margin-bottom: 12px;">
+            <p style="color: #10b981; font-size: 14px; font-weight: 700; margin-bottom: 8px;">⏱️ مدة الغسيل: ساعتان</p>
+            <div style="display: flex; justify-content: space-around; margin-bottom: 10px; padding: 10px; background: #1a1a1a; border-radius: 4px; border: 1px solid #333;">
+              <div style="text-align: center;">
+                <div style="color: #999; font-size: 12px;">صالون</div>
+                <div style="color: #F2BC1B; font-size: 16px; font-weight: 700;">15 ${config.currency}</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: #999; font-size: 12px;">جيب</div>
+                <div style="color: #F2BC1B; font-size: 16px; font-weight: 700;">17 ${config.currency}</div>
+              </div>
+            </div>
+          </div>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              غسيل خارجي
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              التنظيف الداخلي
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              تلميع ديكورات السيارة الداخلية
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              إزالة البقع الخفيفة من داخلية السيارة
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              تلميع التواير والرنقات
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              تنظيف فتحات التكييف
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              عطر
+            </li>
+          </ul>
+          <button class="btn-primary" style="margin-top: 10px; padding: 10px;" onclick="copyWashInfo('special')">📋 نسخ المعلومات</button>
+        </div>
+
+        <div class="form-section" id="ultraCard">
+          <h3 class="section-title" style="color: #F2BC1B; font-size: 16px;">⭐ غسيل الترا</h3>
+          <div style="margin-bottom: 12px;">
+            <p style="color: #10b981; font-size: 14px; font-weight: 700; margin-bottom: 8px;">⏱️ مدة الغسيل: 3 ساعات</p>
+            <div style="display: flex; justify-content: space-around; margin-bottom: 10px; padding: 10px; background: #1a1a1a; border-radius: 4px; border: 1px solid #333;">
+              <div style="text-align: center;">
+                <div style="color: #999; font-size: 12px;">صالون</div>
+                <div style="color: #F2BC1B; font-size: 16px; font-weight: 700;">30 ${config.currency}</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="color: #999; font-size: 12px;">جيب</div>
+                <div style="color: #F2BC1B; font-size: 16px; font-weight: 700;">35 ${config.currency}</div>
+              </div>
+            </div>
+          </div>
+          <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              غسيل خارجي
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              التنظيف الداخلي
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              تلميع ديكورات السيارة الداخلية
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              غسيل مقاعد السيارة
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              تنظيف الأبواب
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              غسيل دبة السيارة
+            </li>
+            <li style="color: #ccc; font-size: 13px; margin-bottom: 6px; padding-right: 20px; position: relative;">
+              <span style="position: absolute; right: 0; color: #10b981; font-weight: 700;">✓</span>
+              تنظيف لوحة القيادة
+            </li>
+          </ul>
+          <button class="btn-primary" style="margin-top: 10px; padding: 10px;" onclick="copyWashInfo('ultra')">📋 نسخ المعلومات</button>
+        </div>
+
+        <!-- Copy All Button (shown only when "الكل" is selected) -->
+        <div class="form-section full-width" id="copyAllSection">
+          <button class="btn-primary" style="padding: 14px; font-size: 16px;" onclick="copyAllWashInfo()">📋 نسخ جميع المعلومات</button>
+        </div>
+
+        <!-- Date Filter -->
+        <div class="form-section full-width">
+          <h3 class="section-title">فلترة المواعيد حسب التاريخ</h3>
+          <div class="form-field">
+            <label for="carWashDateFilter">اختر التاريخ</label>
+            <input type="date" id="carWashDateFilter" class="form-control">
+          </div>
+          <div class="info-box" id="nextAvailableTime" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- Bookings Table -->
+        <div class="data-table-container" id="carWashBookingsTable">
+          <div class="table-header">📊 المواعيد المحجوزة</div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>التاريخ</th>
+                  <th>الوقت</th>
+                  <th>QR ORDER</th>
+                  <th>اسم العميل</th>
+                  <th>رقم العميل</th>
+                  <th>الموقع</th>
+                  <th>نوع الغسيل</th>
+                  <th>الدفع</th>
+                </tr>
+              </thead>
+              <tbody id="carWashBookingsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      
+      // Initialize
+      initCarWashSystem();
+      updateCarWashTable();
+      
+      // Setup date filter
+      const dateFilter = document.getElementById('carWashDateFilter');
+      const today = new Date().toISOString().split('T')[0];
+      dateFilter.value = today;
+      dateFilter.min = today;
+      
+      dateFilter.addEventListener('change', () => {
+        updateCarWashTable();
+        calculateNextAvailableTime();
+      });
+      
+      calculateNextAvailableTime();
     }
 
-    // Render Tow Interface
+    function initCarWashSystem() {
+      // Wash type selection
+      document.querySelectorAll('[data-wash]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-wash]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          const washType = btn.dataset.wash;
+          
+          if (washType === 'all') {
+            document.getElementById('excellentCard').style.display = 'block';
+            document.getElementById('specialCard').style.display = 'block';
+            document.getElementById('ultraCard').style.display = 'block';
+            document.getElementById('copyAllSection').style.display = 'block';
+          } else {
+            document.getElementById('excellentCard').style.display = washType === 'excellent' ? 'block' : 'none';
+            document.getElementById('specialCard').style.display = washType === 'special' ? 'block' : 'none';
+            document.getElementById('ultraCard').style.display = washType === 'ultra' ? 'block' : 'none';
+            document.getElementById('copyAllSection').style.display = 'none';
+          }
+        });
+      });
+    }
+
+    function updateCarWashTable() {
+      const dateFilter = document.getElementById('carWashDateFilter').value;
+      const tbody = document.getElementById('carWashBookingsBody');
+      
+      if (!tbody) return;
+      
+      const filteredData = carWashData.filter(item => {
+        if (!dateFilter) return true;
+        return item.date === dateFilter;
+      });
+      
+      if (filteredData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999;">لا توجد مواعيد محجوزة في هذا التاريخ</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = filteredData.map(item => `
+        <tr>
+          <td>${item.date}</td>
+          <td class="highlight">${item.time}</td>
+          <td>${item.qrOrder}</td>
+          <td>${item.customerName}</td>
+          <td>${item.customerNumber}</td>
+          <td>${item.customerLocation}</td>
+          <td class="highlight">${item.washType}</td>
+          <td>${item.payment}</td>
+        </tr>
+      `).join('');
+    }
+
+    function calculateNextAvailableTime() {
+      const dateFilter = document.getElementById('carWashDateFilter').value;
+      const infoBox = document.getElementById('nextAvailableTime');
+      
+      if (!dateFilter || !infoBox) return;
+      
+      const dayBookings = carWashData.filter(b => b.date === dateFilter);
+      
+      if (dayBookings.length === 0) {
+        infoBox.innerHTML = '✓ لا توجد مواعيد محجوزة - جميع الأوقات متاحة من الساعة 10:00 صباحاً';
+        return;
+      }
+      
+      // Sort bookings by time
+      dayBookings.sort((a, b) => {
+        const timeA = a.time.split(':').map(Number);
+        const timeB = b.time.split(':').map(Number);
+        return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
+      });
+      
+      // Get last booking
+      const lastBooking = dayBookings[dayBookings.length - 1];
+      const [hours, minutes] = lastBooking.time.split(':').map(Number);
+      const lastBookingMinutes = hours * 60 + minutes;
+      
+      // Determine wash duration (assume longest if not specified)
+      let washDuration = 60; // default
+      const washType = lastBooking.washType.toLowerCase();
+      
+      if (washType.includes('ممتاز')) washDuration = 60;
+      else if (washType.includes('خصوصي')) washDuration = 120;
+      else if (washType.includes('ترا') || washType.includes('ultra')) washDuration = 180;
+      
+      // Calculate next available time: last booking time + wash duration + 30 min travel
+      const nextAvailableMinutes = lastBookingMinutes + washDuration + 30;
+      const nextHours = Math.floor(nextAvailableMinutes / 60);
+      const nextMins = nextAvailableMinutes % 60;
+      const nextTime = `${String(nextHours).padStart(2, '0')}:${String(nextMins).padStart(2, '0')}`;
+      
+      infoBox.innerHTML = `⏰ آخر موعد محجوز: ${lastBooking.time} (${lastBooking.washType})<br>
+        ✓ أقرب موعد متاح: ${nextTime} (بعد ${washDuration / 60} ساعة غسيل + 30 دقيقة طريق)`;
+    }
+
+    window.copyWashInfo = function(type) {
+      const pkg = carWashPackages[type];
+      
+      let text = `${pkg.icon} ${pkg.name}\n`;
+      text += `⏱️ مدة الغسيل: ${pkg.duration / 60} ساعة\n\n`;
+      text += `الأسعار:\n`;
+      text += `🚗 صالون: ${pkg.prices.sedan} ${config.currency}\n`;
+      text += `🚙 جيب: ${pkg.prices.suv} ${config.currency}\n\n`;
+      text += `الخدمات المتضمنة:\n`;
+      pkg.services.forEach(service => {
+        text += `✓ ${service}\n`;
+      });
+      
+      navigator.clipboard.writeText(text).then(() => {
+        showSuccessMessage('✓ تم نسخ المعلومات بنجاح');
+      });
+    };
+
+    window.copyAllWashInfo = function() {
+      let text = '🚗 خدمات غسيل السيارات - جميع الباقات 🚗\n\n';
+      
+      ['excellent', 'special', 'ultra'].forEach(type => {
+        const pkg = carWashPackages[type];
+        
+        text += `${pkg.icon} ${pkg.name}\n`;
+        text += `⏱️ مدة الغسيل: ${pkg.duration / 60} ساعة\n`;
+        text += `الأسعار: صالون ${pkg.prices.sedan} ${config.currency} | جيب ${pkg.prices.suv} ${config.currency}\n`;
+        text += `الخدمات:\n`;
+        pkg.services.forEach(service => {
+          text += `  ✓ ${service}\n`;
+        });
+        text += '\n';
+      });
+      
+      navigator.clipboard.writeText(text).then(() => {
+        showSuccessMessage('✓ تم نسخ جميع المعلومات بنجاح');
+      });
+    };
+
+    // PLACEHOLDER FUNCTIONS FOR OTHER SERVICES
     function renderTowInterface() {
       const contentArea = document.getElementById('contentArea');
+      contentArea.style.display = 'grid';
+      contentArea.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+      contentArea.style.background = '#0a0a0a';
       contentArea.innerHTML = `
-        <div class="form-section">
-          <h3 class="section-title">اختيار الجهة</h3>
-          <div class="btn-grid" style="grid-template-columns: 1fr;">
-            <button class="btn-option active" data-company="بورتراج">بورتراج</button>
-          </div>
-          <button id="toggleCompanies" class="btn-option" style="width: 100%; margin-top: 8px; background: #353535; border-color: #666;">
-            ⬇️ إظهار الشركات الأخرى
-          </button>
-          <div id="moreCompanies" class="hidden" style="margin-top: 8px;">
-            <div class="btn-grid">
-              ${companies.slice(1, 5).map(company => `
-                <button class="btn-option" data-company="${company}">${company}</button>
-              `).join('')}
-            </div>
-            <div class="btn-grid">
-              ${companies.slice(5, 9).map(company => `
-                <button class="btn-option" data-company="${company}">${company}</button>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-        
-        <div id="towTypeSection" class="form-section hidden">
-          <h3 class="section-title">نوع الونش</h3>
-          <div class="btn-grid" id="towTypeButtons" style="grid-template-columns: repeat(2, 1fr);">
-            <button class="btn-option" data-type="normal">ونش عادي</button>
-            <button class="btn-option" data-type="flatbed">ونش فل داون</button>
-          </div>
-          
-          <div id="lockedOption" class="hidden" style="margin-top: 10px;">
-            <h3 class="section-title">ونش مسكر</h3>
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: #262626; border-radius: 4px; border: 1px solid #404040;">
-              <input type="checkbox" id="lockedCheckbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: #F2BC1B;">
-              <span style="color: #F2BC1B; font-size: 12px; font-weight: 600;">تفعيل ونش مسكر (+5 د.ك)</span>
-            </label>
-            <div id="lockedYesNote" class="warning-box hidden">
-              <strong>⚠️ تنويه:</strong> إذا القير ما يتبوش او السيارة فيها حادث ما نقدر نشيلها بالونش المسكر
-            </div>
-          </div>
-          
-          <div id="flatbedOnlyNote" class="info-box hidden" style="margin-top: 10px;">
-            <strong>ℹ️ تنويه:</strong> السيارة تحتاج ونش فل داون بدون مسكر (+10 د.ك رسوم عربانات)
-          </div>
-          
-          <div id="flatbedExtraChargesSection" class="hidden" style="margin-top: 10px;">
-            <h3 class="section-title">رسوم إضافية</h3>
-            <div class="form-field">
-              <label>هل القير ما يتبوش أو السيارة فيها حادث؟</label>
-              <select id="flatbedExtraChargesSelect" class="form-control">
-                <option value="no">لا</option>
-                <option value="yes">نعم (+10 د.ك رسوم عربانات)</option>
-              </select>
-            </div>
-            <div id="flatbedExtraChargesNote" class="warning-box hidden">
-              <strong>⚠️ ملاحظة:</strong> في حال انتظار المخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
-            </div>
-          </div>
-        </div>
-        
-        <div id="towLocationsSection" class="form-section full-width hidden">
-          <h3 class="section-title">اختيار المواقع</h3>
-          <div class="form-grid">
-            <div class="form-field">
-              <label>من أين</label>
-              <input type="text" list="fromLocations" id="fromSelect" class="form-control" placeholder="اكتب أو اختر الموقع">
-              <datalist id="fromLocations"></datalist>
-            </div>
-            <div class="form-field">
-              <label>إلى أين</label>
-              <input type="text" list="toLocations" id="toSelect" class="form-control" placeholder="اكتب أو اختر الموقع">
-              <datalist id="toLocations"></datalist>
-            </div>
-          </div>
-          <div id="extraChargesSection" class="hidden">
-            <div class="form-field" style="margin-top: 10px;">
-              <label>هل القير ما يتبوش أو السيارة فيها حادث؟</label>
-              <select id="extraChargesSelect" class="form-control">
-                <option value="no">لا</option>
-                <option value="yes">نعم (+10 د.ك رسوم عربانات)</option>
-              </select>
-            </div>
-            <div id="extraChargesNote" class="warning-box hidden">
-              <strong>⚠️ ملاحظة:</strong> في حال انتظار المخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
-            </div>
-          </div>
-          <div id="flatbedPortarageExtraChargesSection" class="hidden">
-            <div class="form-field" style="margin-top: 10px;">
-              <label>هل القير ما يتبوش أو السيارة فيها حادث؟</label>
-              <select id="flatbedPortarageExtraChargesSelect" class="form-control">
-                <option value="no">لا</option>
-                <option value="yes">نعم (+10 د.ك رسوم عربانات)</option>
-              </select>
-            </div>
-            <div id="flatbedPortarageExtraChargesNote" class="warning-box hidden">
-              <strong>⚠️ ملاحظة:</strong> في حال انتظار المخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
-            </div>
-          </div>
-        </div>
-        
-        <div id="towResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>البيان</th>
-                  <th>القيمة</th>
-                </tr>
-              </thead>
-              <tbody id="towResultBody">
-              </tbody>
-            </table>
-          </div>
+        <div class="form-section full-width">
+          <h3 class="section-title">خدمة ونشات</h3>
+          <p style="color: #999; text-align: center; padding: 40px;">سيتم إضافة الوظائف قريباً...</p>
         </div>
       `;
-      
-      const toggleBtn = document.getElementById('toggleCompanies');
-      const moreCompanies = document.getElementById('moreCompanies');
-      let companiesVisible = false;
-      
-      toggleBtn.onclick = () => {
-        companiesVisible = !companiesVisible;
-        if (companiesVisible) {
-          moreCompanies.classList.remove('hidden');
-          toggleBtn.textContent = '⬆️ إخفاء الشركات الأخرى';
-        } else {
-          moreCompanies.classList.add('hidden');
-          toggleBtn.textContent = '⬇️ إظهار الشركات الأخرى';
-          
-          const portarageBtn = document.querySelector('[data-company="بورتراج"]');
-          if (portarageBtn && !portarageBtn.classList.contains('active')) {
-            document.querySelectorAll('[data-company]').forEach(b => b.classList.remove('active'));
-            portarageBtn.classList.add('active');
-            
-            formData.companyArabic = 'بورتراج';
-            formData.company = 'portarage towtruk';
-            formData.isLocked = false;
-            formData.gearWorks = true;
-            updateTowTypeOptions();
-          }
-        }
-      };
-      
-      document.querySelectorAll('[data-company]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('[data-company]').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          
-          formData.companyArabic = btn.dataset.company;
-          formData.company = companyMapping[btn.dataset.company];
-          
-          formData.towType = null;
-          formData.from = null;
-          formData.to = null;
-          formData.isLocked = false;
-          formData.extraCharges = 'no';
-          
-          document.getElementById('towTypeSection').classList.add('hidden');
-          document.getElementById('towLocationsSection').classList.add('hidden');
-          document.getElementById('towResultSection').classList.add('hidden');
-          document.getElementById('lockedOption').classList.add('hidden');
-          document.getElementById('lockedYesNote').classList.add('hidden');
-          document.getElementById('flatbedOnlyNote').classList.add('hidden');
-          
-          updateTowTypeOptions();
-        });
-      });
-      
-      formData.companyArabic = 'بورتراج';
-      formData.company = 'portarage towtruk';
-      formData.isLocked = false;
-      formData.gearWorks = true;
-      updateTowTypeOptions();
     }
 
-    function updateTowTypeOptions() {
-      const towTypeSection = document.getElementById('towTypeSection');
-      const sheetName = formData.company;
-      
-      if (!sheetName || !sheetsData[sheetName]) {
-        towTypeSection.classList.add('hidden');
-        return;
-      }
-      
-      towTypeSection.classList.remove('hidden');
-      
-      const rows = sheetsData[sheetName];
-      let hasNormal = false;
-      let hasFlatbed = false;
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        if (row[4] || row[1]) hasNormal = true;
-        if (row[12] || row[9]) hasFlatbed = true;
-      }
-      
-      const towTypeButtons = document.getElementById('towTypeButtons');
-      const buttons = towTypeButtons.querySelectorAll('.btn-option');
-      
-      buttons.forEach(btn => {
-        const type = btn.dataset.type;
-        if (type === 'normal' && !hasNormal) {
-          btn.style.display = 'none';
-        } else if (type === 'flatbed' && !hasFlatbed) {
-          btn.style.display = 'none';
-        } else {
-          btn.style.display = 'block';
-        }
-      });
-      
-      const visibleButtons = Array.from(buttons).filter(btn => btn.style.display !== 'none');
-      towTypeButtons.style.gridTemplateColumns = `repeat(${visibleButtons.length}, 1fr)`;
-      
-      buttons.forEach(btn => btn.classList.remove('active'));
-      
-      if (!formData.towType) {
-        document.getElementById('towLocationsSection').classList.add('hidden');
-        document.getElementById('towResultSection').classList.add('hidden');
-        document.getElementById('lockedOption').classList.add('hidden');
-      }
-      
-      buttons.forEach(btn => {
-        btn.onclick = () => {
-          buttons.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          
-          formData.towType = btn.dataset.type;
-          
-          document.getElementById('towResultSection').classList.add('hidden');
-          document.getElementById('towLocationsSection').classList.add('hidden');
-          formData.from = null;
-          formData.to = null;
-          
-          const fromSelect = document.getElementById('fromSelect');
-          const toSelect = document.getElementById('toSelect');
-          if (fromSelect) fromSelect.value = '';
-          if (toSelect) toSelect.value = '';
-          
-          const lockedOption = document.getElementById('lockedOption');
-          const flatbedOnlyNote = document.getElementById('flatbedOnlyNote');
-          const lockedCheckbox = document.getElementById('lockedCheckbox');
-          const flatbedExtraChargesSection = document.getElementById('flatbedExtraChargesSection');
-          
-          if (formData.towType === 'flatbed') {
-            if (formData.companyArabic === 'بورتراج') {
-              lockedOption.classList.remove('hidden');
-              flatbedOnlyNote.classList.add('hidden');
-              flatbedExtraChargesSection.classList.add('hidden');
-              
-              if (formData.isLocked === undefined) {
-                formData.isLocked = false;
-              }
-              
-              if (lockedCheckbox) {
-                lockedCheckbox.checked = formData.isLocked;
-              }
-              
-              if (lockedCheckbox) {
-                lockedCheckbox.onchange = () => {
-                  formData.isLocked = lockedCheckbox.checked;
-                  
-                  const lockedYesNote = document.getElementById('lockedYesNote');
-                  
-                  if (formData.isLocked) {
-                    lockedYesNote.classList.remove('hidden');
-                  } else {
-                    lockedYesNote.classList.add('hidden');
-                  }
-                  
-                  if (formData.from && formData.to) {
-                    calculateTowPrice();
-                  }
-                };
-              }
-            } else {
-              lockedOption.classList.add('hidden');
-              flatbedOnlyNote.classList.add('hidden');
-              document.getElementById('lockedYesNote').classList.add('hidden');
-              flatbedExtraChargesSection.classList.add('hidden');
-              formData.isLocked = false;
-              formData.flatbedExtraCharges = 'no';
-            }
-          } else {
-            lockedOption.classList.add('hidden');
-            flatbedOnlyNote.classList.add('hidden');
-            flatbedExtraChargesSection.classList.add('hidden');
-            document.getElementById('lockedYesNote').classList.add('hidden');
-            document.getElementById('flatbedExtraChargesNote').classList.add('hidden');
-            formData.isLocked = false;
-            formData.flatbedExtraCharges = 'no';
-          }
-          
-          updateTowLocations();
-        };
-      });
+    function renderBatterySubscriptionInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.style.display = 'grid';
+      contentArea.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+      contentArea.style.background = '#0a0a0a';
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">اشتراك بطارية</h3>
+          <p style="color: #999; text-align: center; padding: 40px;">سيتم إضافة الوظائف قريباً...</p>
+        </div>
+      `;
     }
 
-    function updateTowLocations() {
-      const towLocationsSection = document.getElementById('towLocationsSection');
-      towLocationsSection.classList.remove('hidden');
-      
-      const routes = getTowRoutes(formData.company, formData.towType);
-      const fromLocations = [...new Set(routes.map(r => r.from))].filter(Boolean);
-      
-      const fromDatalist = document.getElementById('fromLocations');
-      fromDatalist.innerHTML = fromLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-      
-      const fromSelect = document.getElementById('fromSelect');
-      const toSelect = document.getElementById('toSelect');
-      
-      fromSelect.oninput = () => {
-        formData.from = fromSelect.value;
-        
-        const currentTo = toSelect.value;
-        
-        if (formData.from) {
-          const toLocations = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(Boolean);
-          const toDatalist = document.getElementById('toLocations');
-          toDatalist.innerHTML = toLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-          
-          if (currentTo && toLocations.includes(currentTo)) {
-            toSelect.value = currentTo;
-            formData.to = currentTo;
-          } else {
-            toSelect.value = '';
-            formData.to = null;
-            document.getElementById('towResultSection').classList.add('hidden');
-          }
-        } else {
-          document.getElementById('towResultSection').classList.add('hidden');
-        }
-      };
-      
-      toSelect.oninput = () => {
-        formData.to = toSelect.value;
-        
-        if (!formData.to) {
-          document.getElementById('towResultSection').classList.add('hidden');
-          
-          document.getElementById('extraChargesSection').classList.add('hidden');
-          document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
-          return;
-        }
-        
-        if (formData.to) {
-          if (formData.companyArabic === 'بورتراج' && formData.towType === 'flatbed') {
-            document.getElementById('flatbedPortarageExtraChargesSection').classList.remove('hidden');
-            document.getElementById('extraChargesSection').classList.add('hidden');
-            
-            const flatbedPortarageExtraChargesSelect = document.getElementById('flatbedPortarageExtraChargesSelect');
-            if (!formData.flatbedPortarageExtraCharges) {
-              formData.flatbedPortarageExtraCharges = 'no';
-            }
-            flatbedPortarageExtraChargesSelect.value = formData.flatbedPortarageExtraCharges;
-            
-            flatbedPortarageExtraChargesSelect.onchange = () => {
-              formData.flatbedPortarageExtraCharges = flatbedPortarageExtraChargesSelect.value;
-              
-              if (formData.flatbedPortarageExtraCharges === 'yes') {
-                document.getElementById('flatbedPortarageExtraChargesNote').classList.remove('hidden');
-              } else {
-                document.getElementById('flatbedPortarageExtraChargesNote').classList.add('hidden');
-              }
-              
-              calculateTowPrice();
-            };
-          } else if (formData.companyArabic === 'بورتراج' && formData.towType === 'normal') {
-            document.getElementById('extraChargesSection').classList.remove('hidden');
-            document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
-            
-            const extraChargesSelect = document.getElementById('extraChargesSelect');
-            if (!formData.extraCharges) {
-              formData.extraCharges = 'no';
-            }
-            extraChargesSelect.value = formData.extraCharges;
-            
-            extraChargesSelect.onchange = () => {
-              formData.extraCharges = extraChargesSelect.value;
-              
-              if (formData.extraCharges === 'yes') {
-                document.getElementById('extraChargesNote').classList.remove('hidden');
-              } else {
-                document.getElementById('extraChargesNote').classList.add('hidden');
-              }
-              
-              calculateTowPrice();
-            };
-          } else {
-            document.getElementById('extraChargesSection').classList.add('hidden');
-            document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
-          }
-          
-          calculateTowPrice();
-        }
-      };
-    }
-
-    function getTowRoutes(sheetName, towType) {
-      const rows = sheetsData[sheetName];
-      if (!rows || rows.length < 3) return [];
-      
-      const routes = [];
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        
-        if (towType === 'normal') {
-          const from = row[6];
-          const toF = row[5];
-          const toC = row[2];
-          const priceE = row[4];
-          const priceB = row[1];
-          
-          if (from && toF && priceE) {
-            routes.push({ from, to: toF, price: priceE, cancelCol: 3 });
-          }
-          if (from && toC && priceB) {
-            routes.push({ from, to: toC, price: priceB, cancelCol: 0 });
-          }
-        } else if (towType === 'flatbed') {
-          const from = row[14];
-          const toN = row[13];
-          const toK = row[10];
-          const priceM = row[12];
-          const priceJ = row[9];
-          
-          if (from && toN && priceM) {
-            routes.push({ from, to: toN, price: priceM, cancelCol: 11 });
-          }
-          if (from && toK && priceJ) {
-            routes.push({ from, to: toK, price: priceJ, cancelCol: 8 });
-          }
-        }
-      }
-      
-      return routes;
-    }
-
-    function calculateTowPrice() {
-      const routes = getTowRoutes(formData.company, formData.towType);
-      const route = routes.find(r => r.from === formData.from && r.to === formData.to);
-      
-      if (!route) {
-        document.getElementById('towResultSection').classList.add('hidden');
-        return;
-      }
-      
-      let companyPrice = parseFloat(route.price) || 0;
-      
-      let extraCharges = 0;
-      
-      if (formData.towType === 'normal') {
-        extraCharges = (formData.companyArabic === 'بورتراج' && formData.extraCharges === 'yes') ? 10 : 0;
-      } else if (formData.towType === 'flatbed') {
-        if (formData.companyArabic === 'بورتراج') {
-          extraCharges = (formData.flatbedPortarageExtraCharges === 'yes') ? 10 : 0;
-        } else {
-          extraCharges = 0;
-        }
-      }
-      
-      const lockedCharge = (formData.towType === 'flatbed' && formData.isLocked) ? 5 : 0;
-      
-      let portaragePrice = companyPrice;
-      let discount = 0;
-      
-      if (formData.company.toLowerCase() !== 'portarage towtruk') {
-        const portarageRoutes = getTowRoutes('portarage towtruk', formData.towType);
-        const portarageRoute = portarageRoutes.find(r => r.from === formData.from && r.to === formData.to);
-        
-        if (portarageRoute) {
-          portaragePrice = parseFloat(portarageRoute.price) || 0;
-          discount = portaragePrice - companyPrice;
-        }
-      }
-      
-      const tbody = document.getElementById('towResultBody');
-      let rows = '';
-      
-      if (formData.company.toLowerCase() !== 'portarage towtruk') {
-        const finalPrice = companyPrice + extraCharges + lockedCharge;
-        
-        rows = `
-          <tr>
-            <td>سعر ${formData.companyArabic}</td>
-            <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>السعر الأصلي (بورتراج)</td>
-            <td>${portaragePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr style="background: #1a4a2a;">
-            <td><strong>قيمة الخصم</strong></td>
-            <td class="highlight" style="color: #10b981;"><strong>${discount.toFixed(2)} ${config.currency}</strong></td>
-          </tr>
-        `;
-        
-        if (lockedCharge > 0 || extraCharges > 0) {
-          if (lockedCharge > 0) {
-            rows += `
-              <tr>
-                <td>إضافة ونش مسكر</td>
-                <td class="highlight">${lockedCharge.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          if (extraCharges > 0) {
-            rows += `
-              <tr>
-                <td>رسوم عربانات (القير لا يعمل)</td>
-                <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          rows += `
-            <tr style="background: #262626;">
-              <td><strong>الإجمالي النهائي</strong></td>
-              <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong></td>
-            </tr>
-          `;
-        }
-      } else {
-        rows = `
-          <tr>
-            <td>سعر بورتراج الأساسي</td>
-            <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-        `;
-        
-        if (lockedCharge > 0 || extraCharges > 0) {
-          if (lockedCharge > 0) {
-            rows += `
-              <tr>
-                <td>إضافة ونش مسكر</td>
-                <td class="highlight">${lockedCharge.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          if (extraCharges > 0) {
-            rows += `
-              <tr>
-                <td>رسوم عربانات (القير لا يعمل)</td>
-                <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          const total = companyPrice + lockedCharge + extraCharges;
-          rows += `
-            <tr style="background: #262626;">
-              <td><strong>الإجمالي</strong></td>
-              <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
-            </tr>
-          `;
-        }
-        
-        const cancelPrice = getCancellationPrice(formData.from, formData.to, formData.towType);
-        if (cancelPrice) {
-          rows += `
-            <tr>
-              <td>رسوم الإلغاء</td>
-              <td>${cancelPrice}</td>
-            </tr>
-          `;
-        }
-      }
-      
-      tbody.innerHTML = rows;
-      document.getElementById('towResultSection').classList.remove('hidden');
-      
-      setTimeout(() => {
-        const resultSection = document.getElementById('towResultSection');
-        if (resultSection) {
-          resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }, 100);
-    }
-    
-    function getCancellationPrice(from, to, towType) {
-      const rows = sheetsData['portarage towtruk'];
-      if (!rows || rows.length < 3) return null;
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        
-        if (towType === 'normal') {
-          if (row[6] === from && row[5] === to && row[3]) {
-            return `${parseFloat(row[3]).toFixed(2)} ${config.currency}`;
-          }
-          if (row[6] === from && row[2] === to && row[0]) {
-            return `${parseFloat(row[0]).toFixed(2)} ${config.currency}`;
-          }
-        } else if (towType === 'flatbed') {
-          if (row[14] === from && row[13] === to && row[11]) {
-            return `${parseFloat(row[11]).toFixed(2)} ${config.currency}`;
-          }
-          if (row[14] === from && row[10] === to && row[8]) {
-            return `${parseFloat(row[8]).toFixed(2)} ${config.currency}`;
-          }
-        }
-      }
-      
-      return null;
-    }
-
-    // Render Battery Install Interface
     function renderBatteryInstallInterface() {
       const contentArea = document.getElementById('contentArea');
+      contentArea.style.display = 'grid';
+      contentArea.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+      contentArea.style.background = '#0a0a0a';
       contentArea.innerHTML = `
         <div class="form-section full-width">
-          <h3 class="section-title">اختيار المنطقة</h3>
-          <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
-            <datalist id="areaOptions"></datalist>
-          </div>
-          <div class="info-box">بطارية عند العميل - هذا السعر فقط إذا البطارية عند العميل</div>
-        </div>
-        
-        <div id="serviceResultSection" class="data-table-container hidden">
-          <div class="table-header">تركيب بطارية</div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>البيان</th>
-                  <th>القيمة</th>
-                </tr>
-              </thead>
-              <tbody id="serviceResultBody">
-              </tbody>
-            </table>
-          </div>
+          <h3 class="section-title">تركيب بطارية</h3>
+          <p style="color: #999; text-align: center; padding: 40px;">سيتم إضافة الوظائف قريباً...</p>
         </div>
       `;
-      
-      loadBatteryInstallOptions();
-    }
-    
-    function loadBatteryInstallOptions() {
-      const areaSelect = document.getElementById('areaSelect');
-      const areaDatalist = document.getElementById('areaOptions');
-      
-      if (!sheetsData['تركيب بطارية']) {
-        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
-        return;
-      }
-      
-      const rows = sheetsData['تركيب بطارية'];
-      const areas = [];
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        if (row[0]) areas.push(row[0]);
-        if (row[4]) areas.push(row[4]);
-      }
-      
-      const uniqueAreas = [...new Set(areas)].filter(Boolean);
-      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
-      
-      areaSelect.oninput = () => {
-        formData.area = areaSelect.value;
-        if (formData.area) {
-          calculateBatteryInstallPrice();
-        } else {
-          document.getElementById('serviceResultSection').classList.add('hidden');
-        }
-      };
-    }
-    
-    function calculateBatteryInstallPrice() {
-      const rows = sheetsData['تركيب بطارية'];
-      if (!rows || !formData.area) return;
-      
-      let price = null;
-      let cancellation = null;
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        
-        if (row[0] === formData.area) {
-          price = row[1];
-          cancellation = row[2];
-          break;
-        }
-        
-        if (row[4] === formData.area) {
-          price = row[5];
-          cancellation = row[6];
-          break;
-        }
-      }
-      
-      if (!price) {
-        document.getElementById('serviceResultSection').classList.add('hidden');
-        return;
-      }
-      
-      const tbody = document.getElementById('serviceResultBody');
-      tbody.innerHTML = `
-        <tr>
-          <td>سعر الخدمة</td>
-          <td class="highlight">${parseFloat(price).toFixed(2)} ${config.currency}</td>
-        </tr>
-        <tr>
-          <td>رسوم الإلغاء</td>
-          <td>${cancellation ? parseFloat(cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}</td>
-        </tr>
-      `;
-      
-      document.getElementById('serviceResultSection').classList.remove('hidden');
     }
 
-    // Render Fuel Interface
     function renderFuelInterface() {
       const contentArea = document.getElementById('contentArea');
+      contentArea.style.display = 'grid';
+      contentArea.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+      contentArea.style.background = '#0a0a0a';
       contentArea.innerHTML = `
-        <div class="form-section">
-          <h3 class="section-title">اختيار المنطقة</h3>
-          <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
-            <datalist id="areaOptions"></datalist>
-          </div>
-        </div>
-        
-        <div id="fuelTypeSection" class="form-section hidden">
-          <h3 class="section-title">نوع البنزين</h3>
-          <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <button class="btn-option" data-fuel="premium">بنزين ممتاز<br><small>(1.5 د.ك)</small></button>
-            <button class="btn-option" data-fuel="special">بنزين خصوصي<br><small>(1.5 د.ك)</small></button>
-            <button class="btn-option" data-fuel="ultra">بنزين الترا<br><small>(2.5 د.ك)</small></button>
-          </div>
-        </div>
-        
-        <div id="fuelResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>البيان</th>
-                  <th>القيمة</th>
-                </tr>
-              </thead>
-              <tbody id="fuelResultBody">
-              </tbody>
-            </table>
-          </div>
-          <div class="warning-box">
-            <strong>ملاحظة:</strong> لازم تشرحون للعميل انه رسوم الخدمه منفصلة عن سعر البنزين وبالكم يوصله لاقرب محطه فقط
-          </div>
+        <div class="form-section full-width">
+          <h3 class="section-title">خدمة بنزين</h3>
+          <p style="color: #999; text-align: center; padding: 40px;">سيتم إضافة الوظائف قريباً...</p>
         </div>
       `;
-      
-      loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
-        document.getElementById('fuelTypeSection').classList.remove('hidden');
-        
-        document.querySelectorAll('[data-fuel]').forEach(btn => {
-          btn.onclick = () => {
-            document.querySelectorAll('[data-fuel]').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            formData.fuelType = btn.dataset.fuel;
-            calculateFuelPrice();
-          };
-        });
-      });
     }
 
-    function calculateFuelPrice() {
-      const rows = sheetsData['خدمات5'];
-      if (!rows || !formData.area) return;
-      
-      let servicePrice = 0;
-      let cancellation = 'غير محدد';
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        if (row[0] === formData.area) {
-          servicePrice = parseFloat(row[1]) || 0;
-          cancellation = row[2] ? `${parseFloat(row[2]).toFixed(2)} ${config.currency}` : 'غير محدد';
-          break;
-        } else if (row[4] === formData.area) {
-          servicePrice = parseFloat(row[5]) || 0;
-          cancellation = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير محدد';
-          break;
-        }
-      }
-      
-      const fuelPrices = { 'premium': 1.5, 'special': 1.5, 'ultra': 2.5 };
-      const fuelPrice = fuelPrices[formData.fuelType] || 1.5;
-      const total = servicePrice + fuelPrice;
-      
-      const fuelNames = { 'premium': 'بنزين ممتاز', 'special': 'بنزين خصوصي', 'ultra': 'بنزين الترا' };
-      
-      const tbody = document.getElementById('fuelResultBody');
-      tbody.innerHTML = `
-        <tr>
-          <td>رسوم خدمة التوصيل</td>
-          <td class="highlight">${servicePrice.toFixed(2)} ${config.currency}</td>
-        </tr>
-        <tr>
-          <td>نوع البنزين</td>
-          <td>${fuelNames[formData.fuelType]}</td>
-        </tr>
-        <tr>
-          <td>سعر البنزين</td>
-          <td class="highlight">${fuelPrice.toFixed(2)} ${config.currency}</td>
-        </tr>
-        <tr style="background: #262626;">
-          <td><strong>الإجمالي</strong></td>
-          <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
-        </tr>
-        <tr>
-          <td>رسوم الإلغاء</td>
-          <td>${cancellation}</td>
-        </tr>
-      `;
-      
-      document.getElementById('fuelResultSection').classList.remove('hidden');
-    }
-
-    // Render Puncture Service
     function renderPunctureService() {
       const contentArea = document.getElementById('contentArea');
+      contentArea.style.display = 'grid';
+      contentArea.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+      contentArea.style.background = '#0a0a0a';
       contentArea.innerHTML = `
         <div class="form-section full-width">
-          <h3 class="section-title">اختيار المنطقة</h3>
-          <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
-            <datalist id="areaOptions"></datalist>
-          </div>
-          <div class="info-box">
-            <strong>⚠️ تنبيه مهم:</strong><br>
-            • <strong>رقعة خارجية / سبير / تعبئة هواء:</strong> أي فني + باص التواير<br>
-            • <strong>رقعة داخلية:</strong> فقط باص التواير
-          </div>
-        </div>
-        
-        <div id="tireResultSection" class="data-table-container hidden">
-          <div class="table-header">أسعار خدمة البنشر</div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>نوع الخدمة</th>
-                  <th>السعر</th>
-                  <th>رسوم الإلغاء</th>
-                </tr>
-              </thead>
-              <tbody id="tireResultBody">
-              </tbody>
-            </table>
-          </div>
+          <h3 class="section-title">بنشر</h3>
+          <p style="color: #999; text-align: center; padding: 40px;">سيتم إضافة الوظائف قريباً...</p>
         </div>
       `;
-      
-      loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14], () => {
-        calculatePuncturePrice();
-      });
     }
 
-    function calculatePuncturePrice() {
-      const rows = sheetsData['خدمات5'];
-      if (!rows || !formData.area) return;
-      
-      let externalPrice = 'غير متوفر', externalCancel = 'غير محدد';
-      let internalPrice = 'غير متوفر', internalCancel = 'غير محدد';
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        
-        if (row[0] === formData.area) {
-          externalPrice = row[1] ? `${parseFloat(row[1]).toFixed(2)} ${config.currency}` : 'غير متوفر';
-          externalCancel = row[2] ? `${parseFloat(row[2]).toFixed(2)} ${config.currency}` : 'غير محدد';
-        } else if (row[4] === formData.area) {
-          externalPrice = row[5] ? `${parseFloat(row[5]).toFixed(2)} ${config.currency}` : 'غير متوفر';
-          externalCancel = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير محدد';
-        }
-        
-        if (row[8] === formData.area) {
-          internalPrice = row[9] ? `${parseFloat(row[9]).toFixed(2)} ${config.currency}` : 'غير متوفر';
-          internalCancel = row[10] ? `${parseFloat(row[10]).toFixed(2)} ${config.currency}` : 'غير محدد';
-        } else if (row[12] === formData.area) {
-          internalPrice = row[13] ? `${parseFloat(row[13]).toFixed(2)} ${config.currency}` : 'غير متوفر';
-          internalCancel = row[14] ? `${parseFloat(row[14]).toFixed(2)} ${config.currency}` : 'غير محدد';
-        }
-      }
-      
-      const tbody = document.getElementById('tireResultBody');
-      tbody.innerHTML = `
-        <tr>
-          <td>رقعة خارجية / تركيب سبير / تعبئة هواء</td>
-          <td class="highlight">${externalPrice}</td>
-          <td>${externalCancel}</td>
-        </tr>
-        <tr>
-          <td>رقعة داخلية</td>
-          <td class="highlight">${internalPrice}</td>
-          <td>${internalCancel}</td>
-        </tr>
-      `;
-      
-      document.getElementById('tireResultSection').classList.remove('hidden');
-    }
-
-    // Render Balance Service
     function renderBalanceService() {
       const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="form-section">
-          <h3 class="section-title">مصدر التواير</h3>
-          <div class="btn-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <button class="btn-option" data-source="customer">من عند العميل</button>
-            <button class="btn-option" data-source="ours">من عندنا</button>
-          </div>
-        </div>
-        
-        <div id="balanceAreaSection" class="form-section hidden">
-          <h3 class="section-title">اختيار المنطقة</h3>
-          <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
-            <datalist id="areaOptions"></datalist>
-          </div>
-        </div>
-        
-        <div id="tireCountSection" class="form-section hidden">
-          <h3 class="section-title">عدد التواير</h3>
-          <div class="form-field">
-            <input type="number" id="tireCountInput" class="form-control" min="1" max="10" placeholder="أدخل عدد التواير">
-          </div>
-        </div>
-        
-        <div id="balanceResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>البيان</th>
-                  <th>القيمة</th>
-                </tr>
-              </thead>
-              <tbody id="balanceResultBody">
-              </tbody>
-            </table>
-          </div>
-          <div id="balanceNote" class="info-box hidden"></div>
-        </div>
-      `;
-      
-      document.querySelectorAll('[data-source]').forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll('[data-source]').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          
-          formData.tireSource = btn.dataset.source;
-          
-          document.getElementById('balanceResultSection').classList.add('hidden');
-          document.getElementById('balanceAreaSection').classList.add('hidden');
-          document.getElementById('tireCountSection').classList.add('hidden');
-          document.getElementById('areaSelect').value = '';
-          formData.area = null;
-          
-          document.getElementById('balanceAreaSection').classList.remove('hidden');
-          
-          if (formData.tireSource === 'ours') {
-            document.getElementById('tireCountSection').classList.add('hidden');
-            loadAreaOptionsDatalist('ميزان وتركيب', [0, 1, 2, 4, 5, 6], calculateBalancePrice);
-          } else {
-            document.getElementById('tireCountSection').classList.remove('hidden');
-            loadAreaOptionsDatalist('ميزان وتركيب', [8, 9, 10, 12, 13, 14], () => {
-              const tireCountInput = document.getElementById('tireCountInput');
-              tireCountInput.oninput = (e) => {
-                formData.tireCount = parseInt(e.target.value) || 0;
-                if (formData.tireCount > 0 && formData.area) calculateBalancePrice();
-              };
-            });
-          }
-        };
-      });
-    }
-
-    function calculateBalancePrice() {
-      if (!formData.area) return;
-      
-      const rows = sheetsData['ميزان وتركيب'];
-      if (!rows) return;
-      
-      let basePrice = 0;
-      let cancellation = 'غير محدد';
-      
-      if (formData.tireSource === 'ours') {
-        for (let i = 2; i < rows.length; i++) {
-          const row = rows[i];
-          if (row[0] === formData.area) {
-            basePrice = parseFloat(row[1]) || 0;
-            cancellation = row[2] ? `${parseFloat(row[2]).toFixed(2)} ${config.currency}` : 'غير محدد';
-            break;
-          } else if (row[4] === formData.area) {
-            basePrice = parseFloat(row[5]) || 0;
-            cancellation = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير محدد';
-            break;
-          }
-        }
-        
-        const tbody = document.getElementById('balanceResultBody');
-        tbody.innerHTML = `
-          <tr>
-            <td>سعر الخدمة</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-        
-        const noteDiv = document.getElementById('balanceNote');
-        noteDiv.textContent = 'السعر هذا سواء بنركب من تاير الى اربع تواير نفس رسوم الخدمه';
-        noteDiv.classList.remove('hidden');
-        
-      } else {
-        for (let i = 2; i < rows.length; i++) {
-          const row = rows[i];
-          if (row[8] === formData.area) {
-            basePrice = parseFloat(row[9]) || 0;
-            cancellation = row[10] ? `${parseFloat(row[10]).toFixed(2)} ${config.currency}` : 'غير محدد';
-            break;
-          } else if (row[12] === formData.area) {
-            basePrice = parseFloat(row[13]) || 0;
-            cancellation = row[14] ? `${parseFloat(row[14]).toFixed(2)} ${config.currency}` : 'غير محدد';
-            break;
-          }
-        }
-        
-        const tireCount = formData.tireCount || 0;
-        const total = basePrice + (tireCount * 5);
-        
-        const tbody = document.getElementById('balanceResultBody');
-        tbody.innerHTML = `
-          <tr>
-            <td>سعر الخدمة الأساسي</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>عدد التواير</td>
-            <td>${tireCount}</td>
-          </tr>
-          <tr>
-            <td>إضافة التواير (5 د.ك × ${tireCount})</td>
-            <td class="highlight">${(tireCount * 5).toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr style="background: #262626;">
-            <td><strong>الإجمالي</strong></td>
-            <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
-          </tr>
-          <tr>
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-        
-        const noteDiv = document.getElementById('balanceNote');
-        noteDiv.textContent = 'إذا التواير من عند العميل';
-        noteDiv.classList.remove('hidden');
-      }
-      
-      document.getElementById('balanceResultSection').classList.remove('hidden');
-    }
-
-    // Render Mechanical Interface
-    function renderMechanicalInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="form-section">
-          <h3 class="section-title">نوع الخدمة</h3>
-          <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <button class="btn-option" data-mech="inspection">فحص السيارة</button>
-            <button class="btn-option" data-mech="brakes">سفايف وديسكات</button>
-            <button class="btn-option" data-mech="oilfilter">زيت وفلتر</button>
-          </div>
-        </div>
-        
-        <div id="oilFilterSourceSection" class="form-section hidden">
-          <h3 class="section-title">مصدر الزيت</h3>
-          <div class="btn-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <button class="btn-option" data-oil-source="customer">من عند العميل</button>
-            <button class="btn-option" data-oil-source="ours">من عندنا</button>
-          </div>
-        </div>
-        
-        <div id="mechAreaSection" class="form-section hidden">
-          <h3 class="section-title">اختيار المنطقة</h3>
-          <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
-            <datalist id="areaOptions"></datalist>
-          </div>
-        </div>
-        
-        <div id="diskTurningSection" class="form-section hidden">
-          <h3 class="section-title">مخرطة ديسكات</h3>
-          <div class="btn-grid" style="grid-template-columns: 1fr 1fr;">
-            <button class="btn-option active" data-disk="no">لا</button>
-            <button class="btn-option" data-disk="yes">نعم (+5 د.ك)</button>
-          </div>
-        </div>
-        
-        <div id="mechResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>البيان</th>
-                  <th>القيمة</th>
-                </tr>
-              </thead>
-              <tbody id="mechResultBody">
-              </tbody>
-            </table>
-          </div>
-          <div id="mechNote" class="info-box hidden"></div>
-        </div>
-      `;
-      
-      document.querySelectorAll('[data-mech]').forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll('[data-mech]').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          
-          formData.mechanicalService = btn.dataset.mech;
-          
-          document.getElementById('mechResultSection').classList.add('hidden');
-          document.getElementById('areaSelect').value = '';
-          formData.area = null;
-          
-          document.getElementById('oilFilterSourceSection').classList.add('hidden');
-          document.getElementById('mechAreaSection').classList.add('hidden');
-          document.getElementById('diskTurningSection').classList.add('hidden');
-          
-          if (formData.mechanicalService === 'oilfilter') {
-            document.getElementById('oilFilterSourceSection').classList.remove('hidden');
-            
-            document.querySelectorAll('[data-oil-source]').forEach(oilBtn => {
-              oilBtn.onclick = () => {
-                document.querySelectorAll('[data-oil-source]').forEach(b => b.classList.remove('active'));
-                oilBtn.classList.add('active');
-                
-                formData.oilSource = oilBtn.dataset.oilSource;
-                
-                if (formData.oilSource === 'customer') {
-                  document.getElementById('mechAreaSection').classList.remove('hidden');
-                  loadAreaOptionsDatalist('خدمات ميكانيكية', [8, 9, 10, 12, 13, 14], calculateMechanicalPrice);
-                } else if (formData.oilSource === 'ours') {
-                  openFullscreenIframe('https://portarageoils.netlify.app/', 'زيت وفلتر');
-                }
-              };
-            });
-            
-          } else if (formData.mechanicalService === 'inspection') {
-            document.getElementById('diskTurningSection').classList.add('hidden');
-            document.getElementById('mechAreaSection').classList.remove('hidden');
-            loadAreaOptionsDatalist('خدمات ميكانيكية', [0, 1, 2, 4, 5, 6], calculateMechanicalPrice);
-          } else if (formData.mechanicalService === 'brakes') {
-            document.getElementById('diskTurningSection').classList.remove('hidden');
-            document.getElementById('mechAreaSection').classList.remove('hidden');
-            formData.diskTurning = 'no';
-            
-            document.querySelectorAll('[data-disk]').forEach(diskBtn => {
-              diskBtn.onclick = () => {
-                document.querySelectorAll('[data-disk]').forEach(b => b.classList.remove('active'));
-                diskBtn.classList.add('active');
-                
-                formData.diskTurning = diskBtn.dataset.disk;
-                if (formData.area) calculateMechanicalPrice();
-              };
-            });
-            
-            loadAreaOptionsDatalist('خدمات ميكانيكية', [16, 17, 18, 20, 21, 22], calculateMechanicalPrice);
-          }
-        };
-      });
-    }
-
-    function calculateMechanicalPrice() {
-      if (!formData.area) return;
-      
-      const rows = sheetsData['خدمات ميكانيكية'];
-      if (!rows) return;
-      
-      let columns;
-      if (formData.mechanicalService === 'inspection') {
-        columns = [0, 1, 2, 4, 5, 6];
-      } else if (formData.mechanicalService === 'brakes') {
-        columns = [16, 17, 18, 20, 21, 22];
-      } else if (formData.mechanicalService === 'oilfilter' && formData.oilSource === 'customer') {
-        columns = [8, 9, 10, 12, 13, 14];
-      }
-      
-      let basePrice = 0;
-      let cancellation = 'غير محدد';
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        if (row[columns[0]] === formData.area) {
-          basePrice = parseFloat(row[columns[1]]) || 0;
-          cancellation = row[columns[2]] ? `${parseFloat(row[columns[2]]).toFixed(2)} ${config.currency}` : 'غير محدد';
-          break;
-        } else if (row[columns[3]] === formData.area) {
-          basePrice = parseFloat(row[columns[4]]) || 0;
-          cancellation = row[columns[5]] ? `${parseFloat(row[columns[5]]).toFixed(2)} ${config.currency}` : 'غير محدد';
-          break;
-        }
-      }
-      
-      const tbody = document.getElementById('mechResultBody');
-      const noteDiv = document.getElementById('mechNote');
-      
-      if (formData.mechanicalService === 'brakes' && formData.diskTurning === 'yes') {
-        const total = basePrice + 5;
-        
-        tbody.innerHTML = `
-          <tr>
-            <td>سعر الخدمة الأساسي</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>مخرطة ديسكات</td>
-            <td class="highlight">5.00 ${config.currency}</td>
-          </tr>
-          <tr style="background: #262626;">
-            <td><strong>الإجمالي</strong></td>
-            <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
-          </tr>
-          <tr>
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-        noteDiv.textContent = 'إذا القطع من عند العميل';
-        noteDiv.classList.remove('hidden');
-      } else {
-        tbody.innerHTML = `
-          <tr>
-            <td>سعر الخدمة</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-        
-        if (formData.mechanicalService === 'brakes' || formData.mechanicalService === 'oilfilter') {
-          noteDiv.textContent = 'إذا القطع من عند العميل';
-          noteDiv.classList.remove('hidden');
-        } else {
-          noteDiv.classList.add('hidden');
-        }
-      }
-      
-      document.getElementById('mechResultSection').classList.remove('hidden');
-    }
-
-    // Placeholder functions
-    function renderCarWashInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
-          <div style="font-size: 48px; margin-bottom: 16px;">🚧</div>
-          <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">قيد التطوير</h3>
-          <p style="color: #999; font-size: 14px;">خدمة غسيل السيارات ستكون متاحة قريباً</p>
-        </div>
-      `;
-    }
-    
-    function renderInsuranceInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
-          <div style="font-size: 48px; margin-bottom: 16px;">🚧</div>
-          <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">قيد التطوير</h3>
-          <p style="color: #999; font-size: 14px;">خدمة التأمينات ستكون متاحة قريباً</p>
-        </div>
-      `;
-    }
-
-    // Generic Service Interface with Datalist
-    function renderServiceWithDatalist(title, sheetName, columns, note = '') {
-      const contentArea = document.getElementById('contentArea');
+      contentArea.style.display = 'grid';
+      contentArea.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+      contentArea.style.background = '#0a0a0a';
       contentArea.innerHTML = `
         <div class="form-section full-width">
-          <h3 class="section-title">اختيار المنطقة</h3>
-          <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
-            <datalist id="areaOptions"></datalist>
-          </div>
-          ${note}
-        </div>
-        
-        <div id="serviceResultSection" class="data-table-container hidden">
-          <div class="table-header">${title}</div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>البيان</th>
-                  <th>القيمة</th>
-                </tr>
-              </thead>
-              <tbody id="serviceResultBody">
-              </tbody>
-            </table>
-          </div>
+          <h3 class="section-title">ميزان وتركيب</h3>
+          <p style="color: #999; text-align: center; padding: 40px;">سيتم إضافة الوظائف قريباً...</p>
         </div>
       `;
-      
-      loadAreaOptionsDatalist(sheetName, columns, () => {
-        calculateServicePrice(sheetName, columns);
-      });
     }
 
-    function loadAreaOptionsDatalist(sheetName, columns, callback) {
-      const areaSelect = document.getElementById('areaSelect');
-      const areaDatalist = document.getElementById('areaOptions');
-      
-      if (!sheetsData[sheetName]) {
-        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
-        return;
-      }
-      
-      const rows = sheetsData[sheetName];
-      const areas = [];
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        columns.forEach((colIndex, idx) => {
-          if (idx % 3 === 0 && row[colIndex]) {
-            areas.push(row[colIndex]);
-          }
-        });
-      }
-      
-      const uniqueAreas = [...new Set(areas)].filter(Boolean);
-      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
-      
-      areaSelect.oninput = () => {
-        formData.area = areaSelect.value.trim();
-        
-        if (!formData.area) {
-          const resultSection = document.getElementById('serviceResultSection') || 
-                               document.getElementById('tireResultSection') || 
-                               document.getElementById('balanceResultSection') ||
-                               document.getElementById('mechResultSection') ||
-                               document.getElementById('fuelResultSection');
-          
-          if (resultSection) {
-            resultSection.classList.add('hidden');
-          }
-          return;
-        }
-        
-        if (formData.area && callback) {
-          callback();
-        }
-      };
-    }
-
-    function calculateServicePrice(sheetName, columns) {
-      const rows = sheetsData[sheetName];
-      if (!rows || !formData.area) return;
-      
-      let price = null;
-      let cancellation = null;
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        
-        if (row[columns[0]] === formData.area) {
-          price = row[columns[1]];
-          cancellation = row[columns[2]];
-          break;
-        }
-        
-        if (columns.length > 3 && row[columns[3]] === formData.area) {
-          price = row[columns[4]];
-          cancellation = row[columns[5]];
-          break;
-        }
-      }
-      
-      if (!price) {
-        document.getElementById('serviceResultSection').classList.add('hidden');
-        return;
-      }
-      
-      const tbody = document.getElementById('serviceResultBody');
-      tbody.innerHTML = `
-        <tr>
-          <td>سعر الخدمة</td>
-          <td class="highlight">${parseFloat(price).toFixed(2)} ${config.currency}</td>
-        </tr>
-        <tr>
-          <td>رسوم الإلغاء</td>
-          <td>${cancellation ? parseFloat(cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}</td>
-        </tr>
+    function renderMechanicalInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.style.display = 'grid';
+      contentArea.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+      contentArea.style.background = '#0a0a0a';
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">خدمات ميكانيكية</h3>
+          <p style="color: #999; text-align: center; padding: 40px;">سيتم إضافة الوظائف قريباً...</p>
+        </div>
       `;
-      
-      document.getElementById('serviceResultSection').classList.remove('hidden');
+    }
+
+    function renderInsuranceInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.style.display = 'grid';
+      contentArea.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+      contentArea.style.background = '#0a0a0a';
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">تأمينات</h3>
+          <p style="color: #999; text-align: center; padding: 40px;">سيتم إضافة الوظائف قريباً...</p>
+        </div>
+      `;
     }
 
     // Load data on page load
     loadAllSheets();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b59e81fe2315cea',t:'MTc2NzAxNzY5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a32d737c35cea',t:'MTc2NzAyMDc1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
