@@ -850,7 +850,7 @@
           <div id="flatbedExtraChargesSection" class="hidden" style="margin-top: 10px;">
             <h3 class="section-title">رسوم إضافية</h3>
             <div class="form-field">
-              <label>هل القير ما يتبوش أو السيارة فيها حادث��</label>
+              <label>هل القير ما يتبوش أو السيارة فيها حادث؟</label>
               <select id="flatbedExtraChargesSelect" class="form-control">
                 <option value="no">لا</option>
                 <option value="yes">نعم (+10 د.ك رسوم عربانات)</option>
@@ -872,7 +872,7 @@
             </div>
             <div class="form-field">
               <label>إلى أين</label>
-              <input type="text" list="toLocations" id="toSelect" class="form-control" placeholder="اكت�� أو اختر الموقع">
+              <input type="text" list="toLocations" id="toSelect" class="form-control" placeholder="اكتب أو اختر الموقع">
               <datalist id="toLocations"></datalist>
             </div>
           </div>
@@ -885,12 +885,12 @@
               </select>
             </div>
             <div id="extraChargesNote" class="warning-box hidden">
-              <strong>⚠️ ملاحظة:</strong> في حال انت��ار المخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
+              <strong>⚠️ ملاحظة:</strong> في حال انتظار المخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
             </div>
           </div>
           <div id="flatbedPortarageExtraChargesSection" class="hidden">
             <div class="form-field" style="margin-top: 10px;">
-              <label>هل القير ما يتبوش أو السيا����ة فيها حادث؟</label>
+              <label>هل القير ما يتبوش أو السيارة فيها حادث؟</label>
               <select id="flatbedPortarageExtraChargesSelect" class="form-control">
                 <option value="no">لا</option>
                 <option value="yes">نعم (+10 د.ك رسوم عربانات)</option>
@@ -928,10 +928,10 @@
         companiesVisible = !companiesVisible;
         if (companiesVisible) {
           moreCompanies.classList.remove('hidden');
-          toggleBtn.textContent = '⬆️ إخفاء الشركات الأ��رى';
+          toggleBtn.textContent = '⬆️ إخفاء الشركات الأخرى';
         } else {
           moreCompanies.classList.add('hidden');
-          toggleBtn.textContent = '⬇️ إظهار الشركات ال��خرى';
+          toggleBtn.textContent = '⬇️ إظهار الشركات الاخرى';
           
           // Reset to بورتراج when hiding
           const portarageBtn = document.querySelector('[data-company="بورتراج"]');
@@ -939,7 +939,7 @@
             document.querySelectorAll('[data-company]').forEach(b => b.classList.remove('active'));
             portarageBtn.classList.add('active');
             
-            formData.companyArabic = 'بور��راج';
+            formData.companyArabic = 'بورتراج';
             formData.company = 'portarage towtruk';
             formData.isLocked = false;
             formData.gearWorks = true;
@@ -1272,7 +1272,7 @@
       
       if (formData.towType === 'normal') {
         // For normal tow بورتراج
-        extraCharges = (formData.companyArabic === 'بور��راج' && formData.extraCharges === 'yes') ? 10 : 0;
+        extraCharges = (formData.companyArabic === 'بورتراج' && formData.extraCharges === 'yes') ? 10 : 0;
       } else if (formData.towType === 'flatbed') {
         if (formData.companyArabic === 'بورتراج') {
           // For flatbed بورتراج - use flatbedPortarageExtraCharges
@@ -1346,7 +1346,7 @@
       } else {
         rows = `
           <tr>
-            <td>سعر بور��راج الأ��اسي</td>
+            <td>سعر بورتراج الأساسي</td>
             <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
           </tr>
         `;
@@ -1371,7 +1371,7 @@
           const total = companyPrice + lockedCharge + extraCharges;
           rows += `
             <tr style="background: #262626;">
-              <td><strong>الإجم��لي</strong></td>
+              <td><strong>الإجمالي</strong></td>
               <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
             </tr>
           `;
@@ -1464,7 +1464,7 @@
       const areaDatalist = document.getElementById('areaOptions');
       
       if (!sheetsData['تركيب بطارية']) {
-        areaDatalist.innerHTML = '<option value="">��طأ في تحميل البيانات</option>';
+        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
         return;
       }
       
@@ -1525,7 +1525,7 @@
           <td class="highlight">${parseFloat(price).toFixed(2)} ${config.currency}</td>
         </tr>
         <tr>
-          <td>ر��وم الإلغاء</td>
+          <td>رسوم الإلغاء</td>
           <td>${cancellation ? parseFloat(cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}</td>
         </tr>
       `;
