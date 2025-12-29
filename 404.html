@@ -590,12 +590,12 @@
     </div>
     <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمات ميكانيكية</span>
     </div>
-    <div class="service-item" data-service="carwash"><span class="icon">���</span> <span class="label">غسيل السيارات</span>
+    <div class="service-item" data-service="carwash"><span class="icon">💎</span> <span class="label">غسيل السيارات</span>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
     <header class="header-bar">
-     <h2 id="serviceTitle">اختر خدمة من ال��ائمة</h2>
+     <h2 id="serviceTitle">اختر خدمة من الخدمه</h2>
      <div class="status"><span class="status-dot"></span> <span>متصل</span>
      </div>
     </header><!-- Content Area -->
@@ -604,7 +604,7 @@
       <div style="font-size: 48px; margin-bottom: 16px;">
        📊
       </div>
-      <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">مرحباً بك ف�� لوحة ��لتحكم</h3>
+      <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">مرحباً بك في لوحة اللتحكم</h3>
       <p style="color: #999; font-size: 14px;">اختر خدمة من القائمة الجانبية للبدء</p>
      </div>
     </div>
@@ -660,7 +660,7 @@
       'ياماها موتور': 'Yamaha Motor',
       'فولت قاراج': 'Vault Garage',
       'جيلي': 'Geely',
-      'اوتو ك��بيتال': 'Auto Capital'
+      'اوتو كابيتال': 'Auto Capital'
     };
     
     const companies = Object.keys(companyMapping);
@@ -762,7 +762,7 @@
           'battery': 'اشتراك بطارية',
           'batteryInstall': 'تركيب بطارية',
           'fuel': 'خدمة بنزين',
-          'tire': '��دمة بنشر',
+          'tire': 'خدمة بنشر',
           'balance': 'ميزان وتركيب',
           'mechanical': 'خدمات ميكانيكية',
           'carwash': 'غسيل السيارات'
@@ -804,12 +804,12 @@
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="form-section">
-          <h3 class="section-title">اختيار الج��ة</h3>
+          <h3 class="section-title">اختيار الجهة</h3>
           <div class="btn-grid" style="grid-template-columns: 1fr;">
-            <button class="btn-option active" data-company="بورتر����ج">بورتراج</button>
+            <button class="btn-option active" data-company="بورتراج">بورتراج</button>
           </div>
           <button id="toggleCompanies" class="btn-option" style="width: 100%; margin-top: 8px; background: #353535; border-color: #666;">
-            ⬇️ إظهار الشرك��ت الأخر��
+            ⬇️ إظهار الشركات الأخر
           </button>
           <div id="moreCompanies" class="hidden" style="margin-top: 8px;">
             <div class="btn-grid">
@@ -829,11 +829,11 @@
           <h3 class="section-title">نوع الونش</h3>
           <div class="btn-grid" id="towTypeButtons" style="grid-template-columns: repeat(2, 1fr);">
             <button class="btn-option" data-type="normal">ونش عادي</button>
-            <button class="btn-option" data-type="flatbed">ونش فل د��ون</button>
+            <button class="btn-option" data-type="flatbed">ونش فل داون</button>
           </div>
           
           <div id="lockedOption" class="hidden" style="margin-top: 10px;">
-            <h3 class="section-title">ون�� مسكر</h3>
+            <h3 class="section-title">ونش مسكر</h3>
             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: #262626; border-radius: 4px; border: 1px solid #404040;">
               <input type="checkbox" id="lockedCheckbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: #F2BC1B;">
               <span style="color: #F2BC1B; font-size: 12px; font-weight: 600;">تفعيل ونش مسكر (+5 د.ك)</span>
@@ -844,13 +844,13 @@
           </div>
           
           <div id="flatbedOnlyNote" class="info-box hidden" style="margin-top: 10px;">
-            <strong>��️ تنويه:</strong> السيار�� تحتاج و��ش فل داون بدون مسكر (+10 د.ك رسوم عربانات)
+            <strong>️ تنويه:</strong> السياره تحتاج ونش فل داون بدون مسكر (+10 د.ك رسوم عربانات)
           </div>
           
           <div id="flatbedExtraChargesSection" class="hidden" style="margin-top: 10px;">
             <h3 class="section-title">رسوم إضافية</h3>
             <div class="form-field">
-              <label>هل القير ما يتبوش أو السيارة فيها حادث��</label>
+              <label>هل القير ما يتبوش أو السيارة فيها حادث ؟</label>
               <select id="flatbedExtraChargesSelect" class="form-control">
                 <option value="no">لا</option>
                 <option value="yes">نعم (+10 د.ك رسوم عربانات)</option>
@@ -872,7 +872,7 @@
             </div>
             <div class="form-field">
               <label>إلى أين</label>
-              <input type="text" list="toLocations" id="toSelect" class="form-control" placeholder="اكت�� أو اختر الموقع">
+              <input type="text" list="toLocations" id="toSelect" class="form-control" placeholder="اكتب أو اختر الموقع">
               <datalist id="toLocations"></datalist>
             </div>
           </div>
@@ -885,12 +885,12 @@
               </select>
             </div>
             <div id="extraChargesNote" class="warning-box hidden">
-              <strong>⚠️ ملاحظة:</strong> في حال انت��ار المخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
+              <strong>⚠️ ملاحظة:</strong> في حال انتظار بالمخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
             </div>
           </div>
           <div id="flatbedPortarageExtraChargesSection" class="hidden">
             <div class="form-field" style="margin-top: 10px;">
-              <label>هل القير ما يتبوش أو السيا����ة فيها حادث؟</label>
+              <label>هل القير ما يتبوش أو السيارة فيها حادث؟</label>
               <select id="flatbedPortarageExtraChargesSelect" class="form-control">
                 <option value="no">لا</option>
                 <option value="yes">نعم (+10 د.ك رسوم عربانات)</option>
@@ -928,10 +928,10 @@
         companiesVisible = !companiesVisible;
         if (companiesVisible) {
           moreCompanies.classList.remove('hidden');
-          toggleBtn.textContent = '⬆️ إخفاء الشركات الأ��رى';
+          toggleBtn.textContent = '⬆️ إخفاء الشركات الأخرى';
         } else {
           moreCompanies.classList.add('hidden');
-          toggleBtn.textContent = '⬇️ إظهار الشركات ال��خرى';
+          toggleBtn.textContent = '⬇️ إظهار الشركات الاخرى';
           
           // Reset to بورتراج when hiding
           const portarageBtn = document.querySelector('[data-company="بورتراج"]');
@@ -939,7 +939,7 @@
             document.querySelectorAll('[data-company]').forEach(b => b.classList.remove('active'));
             portarageBtn.classList.add('active');
             
-            formData.companyArabic = 'بور��راج';
+            formData.companyArabic = 'بورتراج';
             formData.company = 'portarage towtruk';
             formData.isLocked = false;
             formData.gearWorks = true;
@@ -1272,7 +1272,7 @@
       
       if (formData.towType === 'normal') {
         // For normal tow بورتراج
-        extraCharges = (formData.companyArabic === 'بور��راج' && formData.extraCharges === 'yes') ? 10 : 0;
+        extraCharges = (formData.companyArabic === 'بورتراج' && formData.extraCharges === 'yes') ? 10 : 0;
       } else if (formData.towType === 'flatbed') {
         if (formData.companyArabic === 'بورتراج') {
           // For flatbed بورتراج - use flatbedPortarageExtraCharges
@@ -1346,7 +1346,7 @@
       } else {
         rows = `
           <tr>
-            <td>سعر بور��راج الأ��اسي</td>
+            <td>سعر بورتراج الأساسي</td>
             <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
           </tr>
         `;
@@ -1371,7 +1371,7 @@
           const total = companyPrice + lockedCharge + extraCharges;
           rows += `
             <tr style="background: #262626;">
-              <td><strong>الإجم��لي</strong></td>
+              <td><strong>الإجمالي</strong></td>
               <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
             </tr>
           `;
@@ -1464,7 +1464,7 @@
       const areaDatalist = document.getElementById('areaOptions');
       
       if (!sheetsData['تركيب بطارية']) {
-        areaDatalist.innerHTML = '<option value="">��طأ في تحميل البيانات</option>';
+        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
         return;
       }
       
@@ -1525,7 +1525,7 @@
           <td class="highlight">${parseFloat(price).toFixed(2)} ${config.currency}</td>
         </tr>
         <tr>
-          <td>ر��وم الإلغاء</td>
+          <td>رسوم الإلغاء</td>
           <td>${cancellation ? parseFloat(cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}</td>
         </tr>
       `;
@@ -1546,7 +1546,7 @@
         <div class="form-section">
           <h3 class="section-title">اختيار المنطقة</h3>
           <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="ا��تب أو اختر المنطقة">
+            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
             <datalist id="areaOptions"></datalist>
           </div>
         </div>
@@ -1554,9 +1554,9 @@
         <div id="fuelTypeSection" class="form-section hidden">
           <h3 class="section-title">نوع البنزين</h3>
           <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <button class="btn-option" data-fuel="premium">بنزين مم��ا��<br><small>(1.5 د.ك)</small></button>
+            <button class="btn-option" data-fuel="premium">بنزين ممتاز<br><small>(1.5 د.ك)</small></button>
             <button class="btn-option" data-fuel="special">بنزين خصوصي<br><small>(1.5 د.ك)</small></button>
-            <button class="btn-option" data-fuel="ultra">بنزين ��لترا<br><small>(2.5 د.ك)</small></button>
+            <button class="btn-option" data-fuel="ultra">بنزين الترا<br><small>(2.5 د.ك)</small></button>
           </div>
         </div>
         
@@ -1575,7 +1575,7 @@
             </table>
           </div>
           <div class="warning-box">
-            <strong>ملاحظة:</strong> لاز�� تشرحون للعميل انه رسوم الخدمه منفصلة ع�� سعر البنزين والكم ��وصله لاقرب محطه فقط
+            <strong>ملاحظة:</strong> لازم تشرحون للعميل انه رسوم الخدمه منفصلة عن سعر البنزين ويوصله لاقرب محطه فقط
           </div>
         </div>
       `;
@@ -1610,7 +1610,7 @@
           break;
         } else if (row[4] === formData.area) {
           servicePrice = parseFloat(row[5]) || 0;
-          cancellation = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير م��دد';
+          cancellation = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير محدد';
           break;
         }
       }
@@ -1660,8 +1660,8 @@
           </div>
           <div class="info-box">
             <strong>⚠️ تنبيه مهم:</strong><br>
-            • <strong>رقعة خارجية / سبير / تع��ئة هواء:</strong> أي فني + ب��ص التواير<br>
-            • <strong>رقعة داخلية:</strong> فقط باص التواي��
+            • <strong>رقعة خارجية / سبير / تعبئة هواء:</strong> أي فني + باص التواير<br>
+            • <strong>رقعة داخلية:</strong> فقط باص التواير
           </div>
         </div>
         
@@ -1671,7 +1671,7 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>نوع ا��خدمة</th>
+                  <th>نوع الخدمة</th>
                   <th>السعر</th>
                   <th>رسوم الإلغاء</th>
                 </tr>
@@ -1689,11 +1689,11 @@
     }
 
     function calculateTirePrice() {
-      const rows = sheetsData['��دمات5'];
+      const rows = sheetsData['خدمات5'];
       if (!rows) return;
       
       let externalPrice = 'غير متوفر', externalCancel = 'غير محدد';
-      let internalPrice = 'غير متوفر', internalCancel = 'غير محد��';
+      let internalPrice = 'غير متوفر', internalCancel = 'غير محدد';
       
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
@@ -1737,7 +1737,7 @@
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="form-section">
-          <h3 class="section-title">م��در التواير</h3>
+          <h3 class="section-title">مصدر التواير</h3>
           <div class="btn-grid" style="grid-template-columns: 1fr 1fr;">
             <button class="btn-option" data-source="ours">من عندنا</button>
             <button class="btn-option" data-source="customer">من عند العميل</button>
@@ -1843,7 +1843,7 @@
         `;
         
         const noteDiv = document.getElementById('balanceNote');
-        noteDiv.textContent = 'السعر هذا سواء ب��ركب من تاير الى ا����ع تواير نفس رسوم الخدمه';
+        noteDiv.textContent = 'السعر هذا سواء بيركب من تاير الى اربع تواير نفس رسوم الخدمه';
         noteDiv.classList.remove('hidden');
         
       } else {
@@ -1888,7 +1888,7 @@
         `;
         
         const noteDiv = document.getElementById('balanceNote');
-        noteDiv.textContent = 'إذا التواير ��ن عند العميل';
+        noteDiv.textContent = 'إذا التواير من عند العميل';
         noteDiv.classList.remove('hidden');
       }
       
@@ -1911,7 +1911,7 @@
         <div id="mechAreaSection" class="form-section hidden">
           <h3 class="section-title">اختيار المنطقة</h3>
           <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="ا��تب أو اختر المن��قة">
+            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
             <datalist id="areaOptions"></datalist>
           </div>
         </div>
@@ -2050,7 +2050,7 @@
       }
       
       if (formData.mechanicalService === 'oil') {
-        noteDiv.textContent = 'إذا ال��يت والفلتر من عند العميل فقط';
+        noteDiv.textContent = 'إذا الزيت والفلتر من عند العميل فقط';
         noteDiv.classList.remove('hidden');
       } else if (formData.mechanicalService === 'brakes') {
         noteDiv.textContent = 'إذا القطع من عند العميل';
@@ -2121,21 +2121,21 @@
           duration: '1 ساعة',
           priceSedan: 7,
           priceSUV: 8,
-          services: ['غسيل خارجي', 'تنظيف داخلي', 'تلميع التواير ��الر��قات', 'تنظيف فتحات التكييف', '��طر']
+          services: ['غسيل خارجي', 'تنظيف داخلي', 'تلميع التواير و الرنقات', 'تنظيف فتحات التكييف', عطر']
         },
         special: {
-          name: '��� غسيل خصوصي',
+          name: '💎 غسيل خصوصي',
           duration: 'ساعتين',
           priceSedan: 15,
           priceSUV: 17,
-          services: ['غس��ل خارج����', 'تنظيف الداخلي', 'تلميع ديكورات السيارة الداخلية', 'إزالة البقع الخفيفة', 'تلميع التواير و��لرنقات', 'تنظيف فتحات التكييف', 'عطر']
+          services: ['غسيل خارجي', 'تنظيف الداخلي', 'تلميع ديكورات السيارة الداخلية', 'إزالة البقع الخفيفة', 'تلميع التواير والرنقات', 'تنظيف فتحات التكييف', 'عطر']
         },
         ultra: {
           name: '👑 غسيل ألترا',
           duration: '3 ساعات',
           priceSedan: 30,
           priceSUV: 35,
-          services: ['غسيل خارجي', 'التنظيف الداخلي', 'تلميع ديكورات السيارة الداخلية', 'غسيل مقاعد السيارة', 'تنظيف الأبواب', 'غسيل دبة السيارة', 'تنظيف ��وحة القيادة']
+          services: ['غسيل خارجي', 'التنظيف الداخلي', 'تلميع ديكورات السيارة الداخلية', 'غسيل مقاعد السيارة', 'تنظيف الأبواب', 'غسيل دبة السيارة', 'تنظيف لوحة القيادة']
         }
       };
       
@@ -2184,21 +2184,21 @@
           duration: 'ساعة واحدة',
           priceSedan: 7,
           priceSUV: 8,
-          services: ['غسيل خارجي', 'تنظيف داخلي', 'تلميع التواير والرنقات', '��نظيف فتحات التكييف', 'عطر']
+          services: ['غسيل خارجي', 'تنظيف داخلي', 'تلميع التواير والرنقات', 'تنظيف فتحات التكييف', 'عطر']
         },
         special: {
           name: 'غسيل خصوصي',
           duration: 'ساعتين',
           priceSedan: 15,
           priceSUV: 17,
-          services: ['غسيل خارجي', 'تنظيف الداخلي', 'تلميع ديكورات السيار�� الداخلية', 'إزالة البقع الخفيفة', 'تلميع التواير و��لرنقات', 'تنظيف فتحات التكييف', 'عطر']
+          services: ['غسيل خارجي', 'تنظيف الداخلي', 'تلميع ديكورات السياره الداخلية', 'إزالة البقع الخفيفة', 'تلميع التواير والرنقات', 'تنظيف فتحات التكييف', 'عطر']
         },
         ultra: {
           name: 'غسيل ألترا',
           duration: '3 ساعات',
           priceSedan: 30,
           priceSUV: 35,
-          services: ['غسيل خ��رجي', 'التنظي�� الداخلي', 'تلميع ديكورات السيارة الداخلية', 'غسيل مقاعد السيارة', 'تنظيف الأبواب', 'غسيل دبة السيارة', 'تنظيف لوحة القيادة']
+          services: ['غسيل خارجي', 'التنظيف الداخلي', 'تلميع ديكورات السيارة الداخلية', 'غسيل مقاعد السيارة', 'تنظيف الأبواب', 'غسيل دبة السيارة', 'تنظيف لوحة القيادة']
         }
       };
       
@@ -2211,7 +2211,7 @@ ${wash.name}
 • صالون: ${wash.priceSedan} د.ك
 • جيب: ${wash.priceSUV} د.ك
 
-الخدمات ا��مشمولة:
+الخدمات المشمولة:
 ${wash.services.map(s => `• ${s}`).join('\n')}
       `.trim();
       
@@ -2222,7 +2222,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         buttons.forEach(btn => {
           if (btn.onclick && btn.onclick.toString().includes(type)) {
             btn.classList.add('success');
-            btn.textContent = '✅ ت�� النسخ!';
+            btn.textContent = '✅ تم النسخ!';
             
             setTimeout(() => {
               btn.classList.remove('success');
@@ -2328,7 +2328,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         availableSlots.innerHTML = `
           <div class="error-box">
             <strong>❌ مغلق يوم الجمعة</strong><br>
-            ��قرب موعد متاح: يوم السبت
+            أقرب موعد متاح: يوم السبت
           </div>
         `;
         return;
@@ -2392,7 +2392,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         ultra: 180
       };
       
-      const travelTime = 30; // نصف ساعة طر��ق
+      const travelTime = 30; // نصف ساعة طريق
       
       // Find all available time slots for each wash type
       const availableTimeSlots = {};
@@ -2479,9 +2479,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         
         html += `
           <div class="info-box" style="background: #1a4a2a; border-color: #10b981; margin-top: 10px;">
-            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">��� اقتراح: ${tomorrowDay}</div>
+            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">اقتراحات: ${tomorrowDay}</div>
             <div style="font-size: 11px; color: #10b981; margin: 3px 0;">⭐ غسيل ممتاز: ابتداءً من 10:30 صباحاً</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل ��صوصي: ابتداءً من 10:30 صباحاً</div>
+            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل خصوصي: ابتداءً من 10:30 صباحاً</div>
             <div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ابتداءً من 10:30 صباحاً</div>
           </div>
         `;
@@ -2541,7 +2541,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const unavailableTypes = [];
         if (selectedWashes.includes('premium') && availableTimeSlots.premium.length === 0) unavailableTypes.push('⭐ غسيل ممتاز');
         if (selectedWashes.includes('special') && availableTimeSlots.special.length === 0) unavailableTypes.push('💎 غسيل خصوصي');
-        if (selectedWashes.includes('ultra') && availableTimeSlots.ultra.length === 0) unavailableTypes.push('👑 غ��يل ألترا');
+        if (selectedWashes.includes('ultra') && availableTimeSlots.ultra.length === 0) unavailableTypes.push('👑 غسيل ألترا');
         
         if (unavailableTypes.length > 0) {
           html += `<div class="warning-box">
@@ -2567,7 +2567,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                     <th style="min-width: 80px;">الوقت</th>
                     <th style="min-width: 100px;">الحالة</th>
                     <th style="min-width: 80px;">نوع الغسيل</th>
-                    <th style="min-width: 80px;">ر��م الطلب</th>
+                    <th style="min-width: 80px;">رسوم الطلب</th>
                     <th style="min-width: 120px;">اسم العميل</th>
                     <th style="min-width: 100px;">رقم الهاتف</th>
                     <th style="min-width: 120px;">الموقع</th>
@@ -2616,7 +2616,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               orderStatus = '✅ تم الانتهاء';
               statusColor = '#10b981';
             } else if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
-              orderStatus = '🔄 قيد التنفي����';
+              orderStatus = '🔄 قيد التنفيذ';
               statusColor = '#3b82f6';
             } else if (minutesUntilStart <= 30 && minutesUntilStart > 0) {
               orderStatus = '🚗 بالطريق';
@@ -2625,7 +2625,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               orderStatus = '📅 محجوز';
               statusColor = '#3b82f6';
             } else {
-              orderStatus = '📋 محج��ز';
+              orderStatus = '📋 محجوز';
               statusColor = '#3b82f6';
             }
           } else {
@@ -2676,7 +2676,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         <div class="form-section full-width">
           <h3 class="section-title">اختيار المنطقة</h3>
           <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اك��ب أو اختر المنطقة">
+            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
             <datalist id="areaOptions"></datalist>
           </div>
           ${note}
