@@ -265,6 +265,28 @@
       50% { opacity: 0.5; }
     }
     
+    @keyframes slideDown {
+      from {
+        transform: translateX(-50%) translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideUp {
+      from {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(-50%) translateY(-100%);
+        opacity: 0;
+      }
+    }
+    
     /* Content Area */
     .content-area {
       flex: 1;
@@ -854,7 +876,7 @@
           'Vault Garage',
           'Geely',
           'Auto Capital',
-          'خدمات5',
+          'خدم��ت5',
           'ميزان وتركيب',
           'خدمات ميكانيكية',
           'تركيب بطارية',
@@ -915,9 +937,47 @@
       // Show the main dashboard again
       document.getElementById('dashboardWrapper').style.display = 'grid';
       
+      // Show success message
+      showSuccessMessage('✓ تم الرجوع بنجاح');
+      
       // Don't reset the service - keep the current state
       // The user will see the same service they had before opening the iframe
     };
+    
+    function showSuccessMessage(message) {
+      const existingMessage = document.getElementById('successMessage');
+      if (existingMessage) {
+        existingMessage.remove();
+      }
+      
+      const messageDiv = document.createElement('div');
+      messageDiv.id = 'successMessage';
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        z-index: 10000;
+        animation: slideDown 0.3s ease-out;
+      `;
+      messageDiv.textContent = message;
+      
+      document.body.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.style.animation = 'slideUp 0.3s ease-in';
+        setTimeout(() => {
+          messageDiv.remove();
+        }, 300);
+      }, 2500);
+    }
 
     // Service Selection
     document.addEventListener('click', (e) => {
@@ -979,7 +1039,7 @@
             openFullscreenIframe('https://portiers.netlify.app/', 'شيت التواير');
             break;
           case 'tireIncrease':
-            openFullscreenIframe('https://portaragetiers.netlify.app/', 'زيادات التواير');
+            openFullscreenIframe('https://portaragetiers.netlify.app/', 'زياد��ت التواير');
             break;
           case 'puncture':
             renderPunctureService();
@@ -1092,7 +1152,7 @@
               </select>
             </div>
             <div id="extraChargesNote" class="warning-box hidden">
-              <strong>⚠️ ملاحظة:</strong> في حال انتظار المخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
+              <strong>⚠️ ملاحظة:</strong> في حال انتظار ا��مخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
             </div>
           </div>
           <div id="flatbedPortarageExtraChargesSection" class="hidden">
@@ -1517,7 +1577,7 @@
             <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
           </tr>
           <tr>
-            <td>السعر الأصلي (بورتراج)</td>
+            <td>السعر ال��صلي (بورتراج)</td>
             <td>${portaragePrice.toFixed(2)} ${config.currency}</td>
           </tr>
           <tr style="background: #1a4a2a;">
@@ -1755,7 +1815,7 @@
         <div id="fuelTypeSection" class="form-section hidden">
           <h3 class="section-title">نوع البنزين</h3>
           <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
-            <button class="btn-option" data-fuel="premium">بنز���� ممتا��<br><small>(1.5 د.ك)</small></button>
+            <button class="btn-option" data-fuel="premium">��نز���� ممتا����<br><small>(1.5 د.ك)</small></button>
             <button class="btn-option" data-fuel="special">بنزين خصوصي<br><small>(1.5 د.ك)</small></button>
             <button class="btn-option" data-fuel="ultra">بنزين الترا<br><small>(2.5 د.ك)</small></button>
           </div>
@@ -2071,7 +2131,7 @@
         const tbody = document.getElementById('balanceResultBody');
         tbody.innerHTML = `
           <tr>
-            <td>سعر الخدمة الأساسي</td>
+            <td>سعر الخد��ة الأساسي</td>
             <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
           </tr>
           <tr>
@@ -2133,7 +2193,7 @@
           <h3 class="section-title">مخرطة ديسكات</h3>
           <div class="btn-grid" style="grid-template-columns: 1fr 1fr;">
             <button class="btn-option active" data-disk="no">لا</button>
-            <button class="btn-option" data-disk="yes">نعم (+5 د.ك)</button>
+            <button class="btn-option" data-disk="yes">نعم (+5 ��.ك)</button>
           </div>
         </div>
         
@@ -2234,7 +2294,7 @@
       }
       
       let basePrice = 0;
-      let cancellation = 'غير محدد';
+      let cancellation = 'غير ��حدد';
       
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
@@ -2288,7 +2348,7 @@
         `;
         
         if (formData.mechanicalService === 'brakes' || formData.mechanicalService === 'oilfilter') {
-          noteDiv.textContent = 'إذا القطع من عند العميل';
+          noteDiv.textContent = 'إذا القطع من عند ا��عميل';
           noteDiv.classList.remove('hidden');
         } else {
           noteDiv.classList.add('hidden');
@@ -2806,7 +2866,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                     <th style="min-width: 80px;">��وع الغسيل</th>
                     <th style="min-width: 80px;">رقم الطلب</th>
                     <th style="min-width: 120px;">اسم العميل</th>
-                    <th style="min-width: 100px;">رقم الهاتف</th>
+                    <th style="min-width: 100px;">رقم الهات��</th>
                     <th style="min-width: 120px;">الموقع</th>
                     <th style="min-width: 100px;">المدة</th>
                     <th style="min-width: 90px;">الدفع</th>
@@ -2924,7 +2984,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           <div id="insuranceInfoBox" class="hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); border: 2px solid #60a5fa; border-radius: 8px; padding: 16px; margin-top: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
               <span style="font-size: 24px;">ℹ️</span>
-              <h4 style="color: #fff; font-size: 15px; font-weight: 700; margin: 0;">الخدمات المتاحة لشركات التأمين</h4>
+              <h4 style="color: #fff; font-size: 15px; font-weight: 700; margin: 0;">الخدمات ا��متاحة لشركات التأمين</h4>
             </div>
             <ul style="list-style: none; padding: 0; margin: 0; color: #dbeafe;">
               <li style="padding: 6px 0; padding-right: 20px; position: relative; font-size: 13px; line-height: 1.5;">
@@ -2941,11 +3001,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               </li>
               <li style="padding: 6px 0; padding-right: 20px; position: relative; font-size: 13px; line-height: 1.5;">
                 <span style="position: absolute; right: 0; color: #60a5fa;">✓</span>
-                تعبئة بنزين (يتم دفع رسوم البنزين فقط)
+                تعبئة بنزين (يتم دفع رسوم البنزين ��قط)
               </li>
               <li style="padding: 6px 0; padding-right: 20px; position: relative; font-size: 13px; line-height: 1.5;">
                 <span style="position: absolute; right: 0; color: #60a5fa;">✓</span>
-                ونش عادي (على الطريق فقط، وفي الكراج/المنزل بموافقة الإدارة)
+                ونش عا��ي (على الطريق فقط، وفي الكراج/المنزل بموافقة الإدارة)
               </li>
             </ul>
           </div>
@@ -3131,16 +3191,23 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                   <tr>
         `;
         
-        // Filter headers to show only those with data
+        // Filter headers and data to show only columns with data
         const columnsWithData = [];
         result.headers.forEach((header, idx) => {
-          if (header && result.rowData[idx] && result.rowData[idx].toString().trim() !== '') {
+          // Check if column has data: header must exist AND at least one data value in this row
+          if (header && header.toString().trim() !== '' && 
+              result.rowData[idx] && result.rowData[idx].toString().trim() !== '') {
             columnsWithData.push({ header, idx });
           }
         });
         
+        // If no columns with data, skip this result
+        if (columnsWithData.length === 0) {
+          return;
+        }
+        
         columnsWithData.forEach(col => {
-          html += `<th style="white-space: nowrap; padding: 11px 16px;">${col.header}</th>`;
+          html += `<th style="white-space: nowrap; padding: 14px 20px; font-size: 13px;">${col.header}</th>`;
         });
         
         html += `
@@ -3152,7 +3219,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         
         columnsWithData.forEach(col => {
           const value = result.rowData[col.idx] || '-';
-          html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
+          html += `<td style="white-space: nowrap; padding: 12px 20px; font-size: 13px;">${value}</td>`;
         });
         
         html += `
@@ -3322,5 +3389,5 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     // Load data on page load
     loadAllSheets();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5960d362cd5cea',t:'MTc2NzAxMjE1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5974bea5885cea',t:'MTc2NzAxMjk3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
