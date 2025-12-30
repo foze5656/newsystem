@@ -2569,7 +2569,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       if (dayIndex === 5 && weekNumber % 2 === 1) {
         availableSlots.innerHTML = `
           <div class="error-box">
-            <strong>❌ مغلق ي��م الجمعة</strong><br>
+            <strong>❌ مغلق يوم الجمعة</strong><br>
             أقرب موعد متاح: يوم السبت
           </div>
         `;
@@ -2706,7 +2706,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         html += `
           <div class="warning-box">
             <strong>⚠️ لا يوجد وقت كافٍ لأي نوع غسيل محدد اليوم</strong><br>
-            ساعات العمل تنتهي الساعة 10:00 ��ساءً
+            ساعات العمل تنتهي الساعة 10:00 مساءً
           </div>
         `;
         
@@ -2725,7 +2725,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       } else {
         html += `
           <div class="info-box" style="background: #1a4a2a; border-color: #10b981;">
-            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">✓ المواعيد الم��احة:</div>
+            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">✓ المواعيد المتاحة:</div>
         `;
         
         // Helper function to format time
@@ -2770,7 +2770,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         
         if (availableTimeSlots.ultra && availableTimeSlots.ultra.length > 0) {
           const timeRange = formatTimeRange(availableTimeSlots.ultra, 180);
-          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غس��ل ألترا: ${timeRange}</div>`;
+          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ${timeRange}</div>`;
         }
         
         html += `</div>`;
@@ -2803,7 +2803,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                   <tr>
                     <th style="min-width: 80px;">الوقت</th>
                     <th style="min-width: 100px;">الحالة</th>
-                    <th style="min-width: 80px;">��وع الغسيل</th>
+                    <th style="min-width: 80px;">نوع الغسيل</th>
                     <th style="min-width: 80px;">رقم الطلب</th>
                     <th style="min-width: 120px;">اسم العميل</th>
                     <th style="min-width: 100px;">رقم الهاتف</th>
@@ -3175,7 +3175,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         <div class="form-section full-width">
           <h3 class="section-title">اختيار المنطقة</h3>
           <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اك��ب أو اختر المنطقة">
+            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكنب أو اختر المنطقة">
             <datalist id="areaOptions"></datalist>
           </div>
           ${note}
