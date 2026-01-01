@@ -1154,7 +1154,7 @@
         </div>
         
         <div id="towResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('towResultBody','نتيجة الونش')">📋 نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -1702,7 +1702,7 @@
         </div>
         
         <div id="serviceResultSection" class="data-table-container hidden">
-          <div class="table-header">تركيب بطارية</div>
+          <div class="table-header">تركيب بطارية <button class="copy-btn-small" onclick="copyTableResult('serviceResultBody','تركيب بطارية')">📋 نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -1819,7 +1819,7 @@
         <!-- (تم نقل واجهة فتح القفل إلى خدمة منفصلة 'فتح قفل السيارة') -->
 
         <div id="fuelResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('fuelResultBody','خدمة البنزين')">📋 نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2033,7 +2033,7 @@
         </div>
         
         <div id="tireResultSection" class="data-table-container hidden">
-          <div class="table-header">أسعار خدمة البنشر</div>
+          <div class="table-header">أسعار خدمة البنشر <button class="copy-btn-small" onclick="copyTableResult('tireResultBody','أسعار خدمة البنشر')">📋 نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2076,7 +2076,7 @@
               <datalist id="areaOptions"></datalist>
             </div>
             <div id="lockPortarageResult" class="data-table-container hidden">
-              <div class="table-header">نتيجة فتح القفل - بورتراج</div>
+              <div class="table-header">نتيجة فتح القفل - بورتراج <button class="copy-btn-small" onclick="copyTableResult('lockPortarageBody','فتح القفل - بورتراج')">📋 نسخ</button></div>
               <div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockPortarageBody"></tbody></table></div>
             </div>
             <div class="warning-box" style="margin-top:8px;">يرجى التأكد من فني بورتراج انه يقدر يفتح باب السياره لنه ماعندنا امكانيه نفتح جميع السيارات</div>
@@ -2088,7 +2088,7 @@
               <input type="number" id="lockExternalPrice" class="form-control" placeholder="ضع سعر الفني هنا">
             </div>
             <div id="lockExternalNoteDisplay" class="info-box" style="margin-top:8px;">ملاحظة: للفنين الخارجين — قروب عثمان • Mr.LOCK</div>
-            <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي</div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
+            <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي <button class="copy-btn-small" onclick="copyTableResult('lockExternalBody','فتح القفل - مورد خارجي')">📋 نسخ</button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
           </div>
 
           <div id="lockFinalNotice" class="info-box hidden" style="margin-top:8px;"></div>
@@ -2244,7 +2244,7 @@
         </div>
         
         <div id="balanceResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('balanceResultBody','ميزان وتركيب')">📋 نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2421,7 +2421,7 @@
         </div>
         
         <div id="mechResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('mechResultBody','خدمات ميكانيكية')">📋 نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2783,6 +2783,100 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         });
       } catch (err) {
         console.error('Failed to copy:', err);
+      }
+    };
+
+    // Generic table copy: copies rows from a tbody with id
+    window.copyTableResult = async function(tbodyId, title = '') {
+      try {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) return;
+
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const lines = [];
+        if (title) lines.push(title, '');
+
+        rows.forEach(tr => {
+          const tds = Array.from(tr.querySelectorAll('td'));
+          if (tds.length >= 2) {
+            const label = tds[0].innerText.trim();
+            const value = tds[1].innerText.trim();
+            lines.push(`${label}: ${value}`);
+          } else {
+            const text = tr.innerText.trim();
+            if (text) lines.push(text);
+          }
+        });
+
+        const text = lines.join('\n');
+        await navigator.clipboard.writeText(text);
+
+        // button feedback: find buttons that reference this tbodyId in their onclick
+        const buttons = document.querySelectorAll('.copy-btn-small');
+        buttons.forEach(btn => {
+          try {
+            if (btn.onclick && btn.onclick.toString().includes(tbodyId)) {
+              const prev = btn.textContent;
+              btn.classList.add('success');
+              btn.textContent = '✓ تم النسخ!';
+              setTimeout(() => { btn.classList.remove('success'); btn.textContent = prev; }, 1800);
+            }
+          } catch (e) {}
+        });
+      } catch (e) {
+        console.error('copyTableResult error', e);
+      }
+    };
+
+    // Copy the nearest table (used for dynamic/generated tables). Button element passed as `this`.
+    window.copyNearestTable = async function(btn) {
+      try {
+        const container = btn.closest('.data-table-container') || btn.parentElement;
+        if (!container) return;
+        const headerEl = container.querySelector('.table-header');
+        let title = headerEl ? headerEl.childNodes[0].nodeValue || headerEl.innerText : '';
+        title = (title || '').replace('📋 نسخ', '').trim();
+
+        const table = container.querySelector('table');
+        if (!table) return;
+        const thead = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.trim());
+        const tbody = table.querySelector('tbody');
+        const rows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+
+        const lines = [];
+        if (title) lines.push(title, '');
+
+        if (rows.length === 0) {
+          // If no tbody rows, try to copy the first row under thead (for search results)
+          const firstRow = table.querySelector('tbody tr');
+          if (firstRow) {
+            const cells = Array.from(firstRow.querySelectorAll('td'));
+            if (cells.length === thead.length) {
+              thead.forEach((h, i) => lines.push(`${h}: ${cells[i].innerText.trim()}`));
+            }
+          }
+        } else {
+          rows.forEach(tr => {
+            const cells = Array.from(tr.querySelectorAll('td'));
+            if (cells.length >= 2) {
+              const label = cells[0].innerText.trim();
+              const value = cells[1].innerText.trim();
+              lines.push(`${label}: ${value}`);
+            } else if (cells.length === 1) {
+              lines.push(cells[0].innerText.trim());
+            }
+          });
+        }
+
+        const text = lines.join('\n');
+        await navigator.clipboard.writeText(text);
+
+        const prev = btn.textContent;
+        btn.classList.add('success');
+        btn.textContent = '✓ تم النسخ!';
+        setTimeout(() => { btn.classList.remove('success'); btn.textContent = prev; }, 1800);
+      } catch (e) {
+        console.error('copyNearestTable error', e);
       }
     };
 
@@ -3499,7 +3593,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       foundResults.forEach((result, index) => {
         html += `
           <div class="data-table-container" style="margin-bottom: 15px; grid-column: 1 / -1;">
-            <div class="table-header">${result.sheetName}</div>
+            <div class="table-header">${result.sheetName} <button class="copy-btn-small" onclick="copyNearestTable(this)">📋 نسخ</button></div>
             <div style="overflow-x: auto; width: 100%;">
               <table class="data-table" style="width: 100%; table-layout: auto;">
                 <thead>
@@ -3557,7 +3651,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         </div>
         
         <div id="serviceResultSection" class="data-table-container hidden">
-          <div class="table-header">${title}</div>
+          <div class="table-header">${title} <button class="copy-btn-small" onclick="copyNearestTable(this)">📋 نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
