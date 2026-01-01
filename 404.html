@@ -2382,6 +2382,11 @@
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <input id="bookingCustomerName" placeholder="اسم العميل" class="form-control" style="padding:10px;">
                 <input id="bookingPhone" placeholder="رقم الهاتف" class="form-control" style="padding:10px;">
+                <input id="bookingQROrder" placeholder="QR ORDER" class="form-control" style="padding:10px;">
+                <select id="bookingPayment" class="form-control" style="padding:10px;max-width:200px;background:#070707;color:#FFD700;border:1px solid #FFD700;border-radius:6px;">
+                  <option value="no" selected>Payment: no</option>
+                  <option value="yes">Payment: yes</option>
+                </select>
                 <input id="bookingLocation" placeholder="الموقع" class="form-control" style="padding:10px;grid-column:1/3;">
                 <input id="bookingTime" type="time" class="form-control" style="padding:10px;max-width:200px;">
               </div>
@@ -2428,7 +2433,7 @@
         };
 
         // Update UI immediately (optimistic) and local data store
-        carWashData.push({ date: payload.date, time: payload.time || '', qrOrder: '', customerName: payload.customerName, phone: payload.phone, location: payload.location, washType: payload.washType, payment: '' });
+        carWashData.push({ date: payload.date, time: payload.time || '', qrOrder: payload.qrOrder || '', customerName: payload.customerName, phone: payload.phone, location: payload.location, washType: payload.washType, payment: payload.payment || 'no' });
         calculateAvailableSlots(date);
 
         // send to Google Sheets webhook (configure URL below)
@@ -2611,10 +2616,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         
         carWashData = [];
         
+        // Column mapping: Timestamp(0), Date(1), Time(2), QR ORDER(3), Customer Location(4), Customer Name(5), Customer Number(6), Wash Type(7), Payment yes/no(8)
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
-          if (row[0] && row[1]) {
-            let parsedDate = row[0].trim();
+          if (row[1] && row[2]) { // Check Date and Time columns
+            let parsedDate = row[1].trim(); // Date column
             const dateObj = new Date(parsedDate);
             if (!isNaN(dateObj.getTime())) {
               const year = dateObj.getFullYear();
@@ -2623,7 +2629,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               parsedDate = `${year}-${month}-${day}`;
             }
             
-            let timeStr = row[1].trim();
+            let timeStr = row[2].trim(); // Time column
             let hours = 0;
             let minutes = 0;
             
@@ -2653,12 +2659,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             carWashData.push({
               date: parsedDate,
               time: formattedTime,
-              qrOrder: row[2] || '',
-              customerName: row[3] || '',
-              phone: row[4] || '',
-              location: row[5] || '',
-              washType: row[6] || '',
-              payment: row[7] || ''
+              qrOrder: row[3] || '', // QR ORDER
+              customerName: row[5] || '', // Customer Name
+              phone: row[6] || '', // Customer Number
+              location: row[4] || '', // Customer Location
+              washType: row[7] || '', // Wash Type
+              payment: row[8] || '' // Payment yes/no
             });
           }
         }
@@ -3437,19 +3443,38 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       document.getElementById('serviceResultSection').classList.remove('hidden');
     }
 
-    // Google Sheets webhook URL (set this to your Google Apps Script Web App URL)
-    // Example Apps Script doPost should accept JSON and append a row to your sheet.
-    // Leave empty to disable remote push:
-    const GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycby-nGjDsRe2fjq2ICWtSZIozH2b4n4rB3Hw9F8u9p4chHKxXHHo7VeM078-0MzwHspD/exec';
+    // Option 1: Google Sheets Webhook (Apps Script) — leave empty to disable
+    const GOOGLE_SHEETS_WEBHOOK = '';
+
+    // Google Form submission using pre-filled link
+    const FORM_ID = 'e/1FAIpQLScQh0wzxb2oVHXTtPx-NZdbBX63IhaNuMLNag-rPeMdwQVKNw'; // Form ID from the sharing URL
+    const FORM_ACTION = `https://docs.google.com/forms/d/${FORM_ID}/viewform?usp=pp_url`; // Base URL with pp_url parameter
+
+    // Map payload keys to Google Form entry ids (for pre-filled link parameters)
+    const entryMapping = {
+      date: 'entry.1589254434', // Date field
+      time: 'entry.1405698644', // Time field
+      qrOrder: 'entry.1649370181', // QR ORDER field
+      customerName: 'entry.1226088444', // Customer Name field
+      phone: 'entry.1698262844', // Customer Number field
+      location: 'entry.920891999', // Customer Location field
+      washType: 'entry.897996772', // Wash Type field
+      payment: 'entry.929707556' // Payment yes/no field
+    };
 
     /**
      * Post booking payload to Google Sheets webhook.
      * Expects the webhook to accept JSON and return HTTP 200 on success.
      */
     async function postToGoogleSheet(payload) {
+      if (FORM_ACTION) {
+        // If FORM_ACTION set, submit to Google Form instead of Apps Script
+        return submitToGoogleForm(payload);
+      }
+
       if (!GOOGLE_SHEETS_WEBHOOK) {
-        console.warn('GOOGLE_SHEETS_WEBHOOK not configured. Skipping remote push.');
-        return { ok: false, reason: 'no-webhook' };
+        console.warn('No remote configured (GOOGLE_SHEETS_WEBHOOK or FORM_ACTION). Skipping remote push.');
+        return { ok: false, reason: 'no-remote' };
       }
 
       try {
@@ -3463,6 +3488,25 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         console.error('postToGoogleSheet error', err);
         throw err;
       }
+    }
+
+    // Submit to Google Form by opening a pre-filled link in a new window
+    function submitToGoogleForm(payload) {
+      return new Promise((resolve) => {
+        if (!FORM_ACTION) return resolve({ ok: false, reason: 'no-form' });
+
+        // Build the pre-filled link
+        let url = FORM_ACTION;
+        Object.keys(entryMapping).forEach(key => {
+          const fieldName = entryMapping[key];
+          const value = encodeURIComponent(payload[key] || '');
+          url += `&${fieldName}=${value}`;
+        });
+
+        // Open the form in a new window
+        window.open(url, 'googleFormWindow', 'width=800,height=600');
+        resolve({ ok: true });
+      });
     }
 
     // Load data on page load
