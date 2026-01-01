@@ -1368,8 +1368,7 @@
           return;
         }
         
-        if (formData.to) {
-          // Show gear question ONLY for بورتراج flatbed
+          if (formData.to && [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].includes(formData.to)) {          // Show gear question ONLY for بورتراج flatbed
           if (formData.companyArabic === 'بورتراج' && formData.towType === 'flatbed') {
             document.getElementById('flatbedPortarageExtraChargesSection').classList.remove('hidden');
             document.getElementById('extraChargesSection').classList.add('hidden');
