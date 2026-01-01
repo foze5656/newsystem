@@ -18,60 +18,69 @@
       font-size: 18px;
     }
     
-    /* Datalist and Select Styling */
+    /* Datalist and Select Styling — Black × Gold luxury theme */
     input[list]::-webkit-calendar-picker-indicator {
       filter: invert(1);
       cursor: pointer;
     }
-    
+
     datalist {
-      background: #0a0a0a;
-      color: #F2BC1B;
+      background: #050505; /* very dark */
+      color: #FFD700; /* gold */
+      border: 1px solid #FFD700;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(255,215,0,0.06);
+      padding: 6px;
     }
-    
+
     option {
-      background: #1a1a1a;
-      color: #F2BC1B;
-      padding: 8px 12px;
+      background: #0a0a0a;
+      color: #FFD700;
+      padding: 10px 12px;
       font-size: 13px;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
+      border-radius: 8px;
     }
-    
+
     option:hover {
-      background: #F2BC1B;
+      background: #B8860B; /* dark gold */
       color: #000;
+      box-shadow: 0 8px 20px rgba(255,215,0,0.12), 0 0 12px rgba(255,215,0,0.06) inset;
     }
-    
+
     select {
-      background: #262626;
-      border: 1px solid #404040;
-      color: #F2BC1B;
+      background: #070707;
+      border: 1px solid #FFD700;
+      color: #FFD700;
       padding: 8px 12px;
-      border-radius: 4px;
+      border-radius: 8px;
       font-size: 14px;
+      box-shadow: 0 8px 24px rgba(255,215,0,0.04);
     }
-    
+
     select option {
-      background: #1a1a1a;
-      color: #F2BC1B;
+      background: #0a0a0a;
+      color: #FFD700;
       padding: 8px;
+      border-radius: 6px;
     }
-    
+
     select option:hover,
     select option:checked {
-      background: #F2BC1B;
+      background: #B8860B;
       color: #000;
+      box-shadow: 0 8px 20px rgba(255,215,0,0.12);
     }
-    
+
     /* Firefox specific */
     @-moz-document url-prefix() {
       option {
-        background: #1a1a1a;
-        color: #F2BC1B;
+        background: #0a0a0a;
+        color: #FFD700;
       }
-      
+
       option:hover {
-        background: #F2BC1B;
+        background: #B8860B;
         color: #000;
       }
     }
@@ -302,6 +311,32 @@
     
     .form-section.full-width {
       grid-column: 1 / -1;
+    }
+
+    /* Ensure insurance results span full page width (only results, not the search input) */
+    #insuranceResults {
+      grid-column: 1 / -1;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0;
+      margin-top: 8px;
+    }
+
+    #insuranceResults .data-table-container {
+      grid-column: 1 / -1;
+      width: 100%;
+      margin: 0 0 15px 0;
+    }
+
+    #insuranceResults .table-scroll,
+    #insuranceResults > div > .table-scroll {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    #insuranceResults .data-table {
+      width: 100%;
+      table-layout: auto;
     }
     
     .section-title {
