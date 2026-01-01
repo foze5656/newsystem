@@ -1916,15 +1916,17 @@
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
 
-        if (row[0] === formData.lockArea) {
-          price = parseFloat(row[1]) || 0;
-          cancellation = row[2] ? `${parseFloat(row[2]).toFixed(2)} ${config.currency}` : 'غير محدد';
+        // Read from columns Q (16), R (17), S (18)
+        if (row[16] === formData.lockArea) {
+          price = parseFloat(row[17]) || 0;
+          cancellation = row[18] ? `${parseFloat(row[18]).toFixed(2)} ${config.currency}` : 'غير محدد';
           break;
         }
 
-        if (row[4] === formData.lockArea) {
-          price = parseFloat(row[5]) || 0;
-          cancellation = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير محدد';
+        // Read from columns U (20), V (21), W (22)
+        if (row[20] === formData.lockArea) {
+          price = parseFloat(row[21]) || 0;
+          cancellation = row[22] ? `${parseFloat(row[22]).toFixed(2)} ${config.currency}` : 'غير محدد';
           break;
         }
       }
@@ -2149,8 +2151,9 @@
       const areas = [];
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
-        if (row[0]) areas.push(row[0]);
-        if (row[4]) areas.push(row[4]);
+        // Read from column Q (16) and U (20)
+        if (row[16]) areas.push(row[16]);
+        if (row[20]) areas.push(row[20]);
       }
 
       const uniqueAreas = [...new Set(areas)].filter(Boolean);
@@ -3750,4 +3753,3 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
   </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
