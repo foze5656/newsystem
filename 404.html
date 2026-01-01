@@ -581,12 +581,14 @@
       pointer-events: none;
     }
     
-    .fullscreen-iframe-header .btn-back {
+      fullscreen-iframe-header .btn-back {
       pointer-events: all;
-      background: rgba(242, 188, 27, 0.95);
+      background: rgba(0, 0, 0, 0.8) !important; /* حولنا الخلفية لأسود شفاف فخم */
       backdrop-filter: blur(10px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
+      border: 1px solid #F2BC1B !important;     /* أضفنا برواز ذهبي نحيف */
+      color: #F2BC1B !important;                /* عشان السهم داخل الزر يصير ذهبي */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
     
     .fullscreen-iframe-header .btn-back:hover {
       background: rgba(217, 166, 22, 0.95);
@@ -2932,14 +2934,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           <div class="form-field">
             <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
               <span>البحث برقم اللوحة أو اسم العميل</span>
-              <span id="insuranceInfoIcon" style="cursor: pointer; background: #3b82f6; color: #fff; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);">i</span>
-            </label>
+           <span id="insuranceInfoIcon" style="cursor: pointer; background: #F2BC1B; color: #000; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(242, 188, 27, 0.4);">i</span>            </label>
             <input type="text" list="insuranceSuggestions" id="insuranceSearch" class="form-control" placeholder="أدخل رقم اللوحة أو اسم العميل" style="font-size: 16px; padding: 12px;">
             <datalist id="insuranceSuggestions"></datalist>
           </div>
-          
-          <div id="insuranceInfoBox" class="hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); border: 2px solid #60a5fa; border-radius: 8px; padding: 16px; margin-top: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+
+             <div id="insuranceInfoBox" class="hidden" style="background: #0a0a0a; border: 2px solid #F2BC1B; border-radius: 8px; padding: 16px; margin-top: 12px; box-shadow: 0 4px 12px rgba(242, 188, 27, 0.2);">
               <span style="font-size: 24px;">ℹ️</span>
               <h4 style="color: #fff; font-size: 15px; font-weight: 700; margin: 0;">الخدمات المتاحة لشركات التأمين</h4>
             </div>
