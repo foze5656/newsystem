@@ -3009,7 +3009,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             }
           }
           
-          const paymentStatus = apt.payment === 'yes' ? '✅ تم' : apt.payment === 'no' ? '❌ لم يتم' : 'غير محدد';
+          const paymentVal = (apt.payment || '').toString().toLowerCase();
+          let paymentStatus = 'غير محدد';
+          if (paymentVal.includes('نعم') || paymentVal.includes('yes') || paymentVal === 'y' || paymentVal === 'true') {
+            paymentStatus = '✅ تم';
+          } else if (paymentVal.includes('لا') || paymentVal.includes('no') || paymentVal === 'n' || paymentVal === 'false') {
+            paymentStatus = '❌ لم يتم';
+          }
           
           html += `
             <tr>
