@@ -7,10 +7,11 @@
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      box-sizing: border-box;
-    }
-    
+  body { 
+  box-sizing: border-box; 
+  background-color: #000000; /* خلفية الصفحة سوداء */
+  color: #F2BC1B;           /* النصوص العامة ذهبية */
+}    
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
     
     * {
@@ -19,10 +20,15 @@
     }
     
     /* Datalist and Select Styling */
-    input[list]::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-      cursor: pointer;
-    }
+     input {
+     background-color: #1a1a1a !important; /* هذا يخلي الخلفية سوداء بدلاً من بيضاء */
+     color: #F2BC1B !important;           /* هذا يخلي الكلام اللي تكتبه لونه ذهبي */
+     border: 1px solid #F2BC1B !important; /* هذا يرسم البرواز (الحدود) باللون الذهبي */
+     border-radius: 12px !important;       /* هذا يخلي زوايا المستطيل دائرية وناعمة */
+     padding: 15px !important;             /* هذا يعطي مساحة داخلية عشان الكلام ما يكون لاصق بالطرف */
+      width: 100%;                          /* يخلي المستطيل عريض على كبر الصفحة */
+      outline: none;                        /* يشيل الخط الأزرق المزعج اللي يطلع لما تضغط داخل الصندوق */
+}    }
     
     datalist {
       background: #0a0a0a;
