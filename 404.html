@@ -1353,25 +1353,27 @@
           document.getElementById('towResultSection').classList.add('hidden');
         }
       };
+toSelect.oninput = () => {
+      formData.to = toSelect.value;
+      const currentInput = toSelect.value.toLowerCase();
+      if (formData.from) {
+        const availableToLocations = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(Boolean);
+        const filteredLocations = availableToLocations.filter(loc => loc.toLowerCase().includes(currentInput));
+        toDatalist.innerHTML = filteredLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
+      }
+      if (!formData.to) {
+        document.getElementById('towResultSection').classList.add('hidden');
+        document.getElementById('extraChargesSection').classList.add('hidden');
+        document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
+        return;
+      }
       
-      toSelect.oninput = () => {
-        formData.to = toSelect.value;
-        
-        if (!formData.to) {
-          document.getElementById('towResultSection').classList.add('hidden');
-          
-          // Hide gear question sections
-          document.getElementById('extraChargesSection').classList.add('hidden');
-          document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
-          return;
-        }
-        
-        if (formData.to) {
-          // Show gear question ONLY for بورتراج flatbed
-          if (formData.companyArabic === 'بورتراج' && formData.towType === 'flatbed') {
-            document.getElementById('flatbedPortarageExtraChargesSection').classList.remove('hidden');
-            document.getElementById('extraChargesSection').classList.add('hidden');
-            
+      if (formData.companyArabic === 'بورتراج' && formData.towType === 'flatbed') {
+        document.getElementById('flatbedPortarageExtraChargesSection').classList.remove('hidden');
+      } else if (formData.companyArabic === 'بورتراج' && formData.towType === 'normal') {
+        document.getElementById('extraChargesSection').classList.remove('hidden');
+      }
+ 
             const flatbedPortarageExtraChargesSelect = document.getElementById('flatbedPortarageExtraChargesSelect');
             if (!formData.flatbedPortarageExtraCharges) {
               formData.flatbedPortarageExtraCharges = 'no';
