@@ -19,16 +19,29 @@
       font-size: 18px;
     }
     
-    /* Datalist and Select Styling */
-     input {
-     background-color: #1a1a1a !important; /* هذا يخلي الخلفية سوداء بدلاً من بيضاء */
-     color: #F2BC1B !important;           /* هذا يخلي الكلام اللي تكتبه لونه ذهبي */
-     border: 1px solid #F2BC1B !important; /* هذا يرسم البرواز (الحدود) باللون الذهبي */
-     border-radius: 12px !important;       /* هذا يخلي زوايا المستطيل دائرية وناعمة */
-     padding: 15px !important;             /* هذا يعطي مساحة داخلية عشان الكلام ما يكون لاصق بالطرف */
-      width: 100%;                          /* يخلي المستطيل عريض على كبر الصفحة */
-      outline: none;                        /* يشيل الخط الأزرق المزعج اللي يطلع لما تضغط داخل الصندوق */
-}    }
+/* تحسين شكل مربع البحث والقائمة المنسدلة */
+    input {
+      background-color: #1a1a1a !important; /* خلفية المربع سوداء داكنة */
+      color: #F2BC1B !important;           /* لون النص ذهبي */
+      border: 2px solid #F2BC1B !important; /* برواز ذهبي واضح */
+      border-radius: 12px;                  /* زوايا منحنية */
+      padding: 12px;
+      width: 100%;
+      outline: none;
+      transition: all 0.3s ease;            /* تأثير ناعم عند الضغط */
+    }
+
+    /* تغيير لون أيقونة السهم الصغير في المتصفحات */
+    input::-webkit-calendar-picker-indicator {
+      filter: invert(75%) sepia(80%) saturate(500%) hue-rotate(10deg);
+      cursor: pointer;
+    }
+
+    /* تنسيق التركيز عند النقر على المربع */
+    input:focus {
+      box-shadow: 0 0 10px rgba(242, 188, 27, 0.3); /* توهج ذهبي خفيف */
+      background-color: #000000 !important;
+    }
     
     datalist {
       background: #0a0a0a;
