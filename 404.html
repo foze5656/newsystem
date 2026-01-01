@@ -791,6 +791,9 @@
       currency: 'د.ك'
     };
 
+    // ثابت الزيادة لخدمة فتح القفل (مقدار ثابت يضاف للسعر الأصلي)
+    const LOCK_SURCHARGE = 10; // د.ك
+
     let config = { ...defaultConfig };
     let sheetsData = {};
     let currentService = '';
@@ -1935,9 +1938,8 @@
         return;
       }
 
-      // apply surcharge from sheet first row column I (index 8)
-      const surchargeRaw = (rows[0] && rows[0][8]) ? rows[0][8].toString().trim() : '';
-      const finalPrice = applySurcharge(price, surchargeRaw);
+      // apply fixed surcharge (اضافة ثابتة)
+      const finalPrice = price + LOCK_SURCHARGE;
 
       body.innerHTML = `
         <tr>
@@ -1955,7 +1957,7 @@
       `;
 
       result.classList.remove('hidden');
-      // for portarage do NOT show the final notice box text (user requested no message)
+      // لبورتراج: لا نعرض مربع الملاحظة الأزرق وفق طلب المستخدم
     }
 
     // Calculate price for فتح قفل when performed by مورد خارجي
@@ -1968,29 +1970,27 @@
 
       if (!rows) return;
 
-      const surchargeRaw = (rows[0] && rows[0][8]) ? rows[0][8].toString().trim() : '';
-      const finalPrice = applySurcharge(externalPrice, surchargeRaw);
+      // apply fixed surcharge for external as well
+      const finalPrice = (externalPrice || 0) + LOCK_SURCHARGE;
 
       externalBody.innerHTML = `
         <tr>
           <td>سعر الفني الخارجي</td>
-          <td class="highlight">${externalPrice.toFixed(2)} ${config.currency}</td>
+          <td class="highlight">${(externalPrice||0).toFixed(2)} ${config.currency}</td>
         </tr>
         <tr style="background: #262626;">
-          <td><strong>السعر بعد الزيادة</strong></td>
+          <td><strong>السعر النهائي</strong></td>
           <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong></td>
         </tr>
       `;
 
       externalResult.classList.remove('hidden');
-      if (externalNoteDisplay) {
-        externalNoteDisplay.classList.remove('hidden');
-      }
-      // show explicit final price row (already in table). Also show final notice text below table
+      // show final notice and external note
       if (finalNotice) {
         finalNotice.classList.remove('hidden');
         finalNotice.textContent = `السعر الذي يتم ابلاغ العميل فيه مع الزيادة : ${finalPrice.toFixed(2)} ${config.currency}`;
       }
+      if (externalNoteDisplay) externalNoteDisplay.classList.remove('hidden');
     }
 
     // Apply surcharge string from sheet first row column I.
