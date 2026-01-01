@@ -14,87 +14,57 @@
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
     
     * {
-      font-family: 'Cairo', sans-serif;
-      font-size: 18px;
-    }
-    
-    /* Datalist and Select Styling — Black × Gold luxury theme */
-    input[list]::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-      cursor: pointer;
-    }
+          const templates = {
+            tow_normal: `رسوم ونش (عادي)
+من منطقة ___ إلى منطقة ___
+السعر: ___ د.ك`,
 
-    datalist {
-      background: #050505; /* very dark */
-      color: #FFD700; /* gold */
-      border: 1px solid #FFD700;
-      border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(255,215,0,0.06);
-      padding: 6px;
-    }
+            tow_flatbed: `رسوم ونش (فل داون)
+من منطقة ___ إلى منطقة ___
+السعر: ___ د.ك`,
 
-    option {
-      background: #0a0a0a;
-      color: #FFD700;
-      padding: 10px 12px;
-      font-size: 13px;
-      transition: all 0.18s ease;
-      border-radius: 8px;
-    }
+            tow_flatbed_locked: `رسوم ونش (فل داون - مسكّر)
+من منطقة ___ إلى منطقة ___
+السعر: ___ د.ك`,
 
-    option:hover {
-      background: #B8860B; /* dark gold */
-      color: #000;
-      box-shadow: 0 8px 20px rgba(255,215,0,0.12), 0 0 12px rgba(255,215,0,0.06) inset;
-    }
+            battery_subscription: `رسوم الاشتراك وفحص البطارية: 10 د.ك
+حاب نأكد لك الخدمة؟`,
 
-    select {
-      background: #070707;
-      border: 1px solid #FFD700;
-      color: #FFD700;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      box-shadow: 0 8px 24px rgba(255,215,0,0.04);
-    }
+            battery_check: `رسوم طلعة الفني: 10.00 د.ك
+في حال كانت المشكلة بطارية، يتم خصم 10 د.ك من سعر البطارية وتدفع الفرق فقط`,
 
-    select option {
-      background: #0a0a0a;
-      color: #FFD700;
-      padding: 8px;
-      border-radius: 6px;
-    }
+            puncture_three: `خدمة طريق
+رسوم فحص التأير: ___ د.ك
+تشمل:
+- رقعة خارجية او تركيب سبير او تعبئة هواء`,
 
-    select option:hover,
-    select option:checked {
-      background: #B8860B;
-      color: #000;
-      box-shadow: 0 8px 20px rgba(255,215,0,0.12);
-    }
+            puncture_internal: `رقعة داخلية
+رسوم رقعة داخلية مع الميزان: ___ د.ك`,
 
-    /* Firefox specific */
-    @-moz-document url-prefix() {
-      option {
-        background: #0a0a0a;
-        color: #FFD700;
-      }
+            puncture_check: `فحص تاير
+رسوم فحص التأير: ___ د.ك
+تشمل:
+- رقعة خارجية او تركيب سبير او تعبئة هواء
+في حال احتاج التاير رقعة داخلية تكون الزيادة: ___ د.ك (رسوم الرقعة الداخلية ناقص رسوم الرقعة الخارجية)`,
 
-      option:hover {
-        background: #B8860B;
-        color: #000;
-      }
-    }
-    
-    html, body {
-      height: 100%;
-      overflow: hidden;
-      margin: 0;
-      padding: 0;
-    }
-    
-    .dashboard-wrapper {
-      height: 100%;
-      width: 100%;
+            fuel: `رسوم البنزين 1.5 دك يوصلك لاقرب محطه فقط
+التوصيل: ___ د.ك
+الاجمالى: ___ د.ك
+
+ملاحظة: البنزين الخصوصي والممتاز 1.5 دك
+لكن إذا كان الترا فيكون 2.5 د.ك`,
+
+            lock: `رسوم فتح القفل: ___ د.ك`,
+
+            oilfilter: `رسوم خدمة تبديل الزيت والفلتر (في حال وفرت القطع): ___ د.ك`,
+
+            mechanical: `رسوم فحص السيارة: ___ د.ك
+في حال العطل ميكانيكي ونقدر نصلحه قدام البيت، رسوم خدمة التصليح تنخصم من رسوم الفحص.`,
+
+            brakes: `رسوم تركيب السفايف والديسكات: ___ د.ك
+في حال تفعيل مخرطة ديسكات:
+رسوم تركيب السفايف ومخرطة الديسكات: ___ د.ك`
+          };
       display: grid;
       grid-template-columns: 220px 1fr;
       background: #0a0a0a;
@@ -3083,8 +3053,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             mainPrice = findPriceInTbody('batteryResultBody', ['سعر الخدمة', 'السعر']) || findPriceInTbody('serviceResultBody', ['سعر الخدمة', 'السعر']);
             cancelPrice = findPriceInTbody('batteryResultBody', ['رسوم الإلغاء', 'رسوم الإلغاء']) || findPriceInTbody('serviceResultBody', ['رسوم الإلغاء', 'رسوم الإلغاء']);
           } else if (k === 'fuel') {
-            mainPrice = findPriceInTbody('fuelResultBody', ['الإجمالي', 'الإجمالي النهائي']);
-            cancelPrice = findPriceInTbody('fuelResultBody', ['رسوم الإلغاء']);
+            // For fuel template we want: first placeholder = رسوم التوصيل (service fee)
+            // second placeholder = الاجمالي
+            mainPrice = findPriceInTbody('fuelResultBody', ['رسوم خدمة التوصيل', 'رسوم خدمة التوصيل', 'رسوم التوصيل', 'رسوم خدمة']);
+            cancelPrice = findPriceInTbody('fuelResultBody', ['الإجمالي', 'الإجمالي النهائي']);
           } else if (k === 'puncture') {
             mainPrice = findPriceInTbody('tireResultBody', ['رقعة خارجية', 'رقعة داخلية', 'خدمة الفحص', 'الرسوم']);
             cancelPrice = findPriceInTbody('tireResultBody', ['رسوم الإلغاء']);
