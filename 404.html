@@ -7,11 +7,10 @@
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-  body { 
-  box-sizing: border-box; 
-  background-color: #000000; /* خلفية الصفحة سوداء */
-  color: #F2BC1B;           /* النصوص العامة ذهبية */
-}    
+    body {
+      box-sizing: border-box;
+    }
+    
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
     
     * {
@@ -19,28 +18,10 @@
       font-size: 18px;
     }
     
-/* تحسين شكل مربع البحث والقائمة المنسدلة */
-    input {
-      background-color: #1a1a1a !important; /* خلفية المربع سوداء داكنة */
-      color: #F2BC1B !important;           /* لون النص ذهبي */
-      border: 2px solid #F2BC1B !important; /* برواز ذهبي واضح */
-      border-radius: 12px;                  /* زوايا منحنية */
-      padding: 12px;
-      width: 100%;
-      outline: none;
-      transition: all 0.3s ease;            /* تأثير ناعم عند الضغط */
-    }
-
-    /* تغيير لون أيقونة السهم الصغير في المتصفحات */
-    input::-webkit-calendar-picker-indicator {
-      filter: invert(75%) sepia(80%) saturate(500%) hue-rotate(10deg);
+    /* Datalist and Select Styling */
+    input[list]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
       cursor: pointer;
-    }
-
-    /* تنسيق التركيز عند النقر على المربع */
-    input:focus {
-      box-shadow: 0 0 10px rgba(242, 188, 27, 0.3); /* توهج ذهبي خفيف */
-      background-color: #000000 !important;
     }
     
     datalist {
@@ -594,14 +575,12 @@
       pointer-events: none;
     }
     
-      fullscreen-iframe-header .btn-back {
+    .fullscreen-iframe-header .btn-back {
       pointer-events: all;
-      background: rgba(0, 0, 0, 0.8) !important; /* حولنا الخلفية لأسود شفاف فخم */
+      background: rgba(242, 188, 27, 0.95);
       backdrop-filter: blur(10px);
-      border: 1px solid #F2BC1B !important;     /* أضفنا برواز ذهبي نحيف */
-      color: #F2BC1B !important;                /* عشان السهم داخل الزر يصير ذهبي */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
     
     .fullscreen-iframe-header .btn-back:hover {
       background: rgba(217, 166, 22, 0.95);
@@ -2947,12 +2926,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           <div class="form-field">
             <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
               <span>البحث برقم اللوحة أو اسم العميل</span>
-           <span id="insuranceInfoIcon" style="cursor: pointer; background: #F2BC1B; color: #000; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(242, 188, 27, 0.4);">i</span>            </label>
+              <span id="insuranceInfoIcon" style="cursor: pointer; background: #3b82f6; color: #fff; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);">i</span>
+            </label>
             <input type="text" list="insuranceSuggestions" id="insuranceSearch" class="form-control" placeholder="أدخل رقم اللوحة أو اسم العميل" style="font-size: 16px; padding: 12px;">
             <datalist id="insuranceSuggestions"></datalist>
           </div>
-
-             <div id="insuranceInfoBox" class="hidden" style="background: #0a0a0a; border: 2px solid #F2BC1B; border-radius: 8px; padding: 16px; margin-top: 12px; box-shadow: 0 4px 12px rgba(242, 188, 27, 0.2);">
+          
+          <div id="insuranceInfoBox" class="hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); border: 2px solid #60a5fa; border-radius: 8px; padding: 16px; margin-top: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
               <span style="font-size: 24px;">ℹ️</span>
               <h4 style="color: #fff; font-size: 15px; font-weight: 700; margin: 0;">الخدمات المتاحة لشركات التأمين</h4>
             </div>
