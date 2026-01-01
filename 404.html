@@ -1036,8 +1036,59 @@
 
     // Render Battery Subscription Interface (was old "battery" service)
     function renderBatterySubscriptionInterface() {
-      renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
-        '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">اشتراك بطارية</h3>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button id="batterySubscribeBtn" class="btn-primary">اشتراك وفحص (10 د.ك)</button>
+            <button id="batteryCheckBtn" class="btn-option">فحص بطارية</button>
+          </div>
+          <div style="margin-top:10px;" id="batterySubscribeNote">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>
+        </div>
+        <div id="batteryActionResult" class="data-table-container hidden" style="margin-top:8px;">
+          <div class="table-header">نتيجة</div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr><th>البيان</th><th>القيمة</th></tr>
+              </thead>
+              <tbody id="batteryActionBody"></tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('batterySubscribeBtn').onclick = () => {
+        formData.batterySubscribed = true;
+        const tbody = document.getElementById('batteryActionBody');
+        tbody.innerHTML = `
+          <tr>
+            <td>رسوم الاشتراك وفحص البطارية</td>
+            <td class="highlight">10.00 ${config.currency}</td>
+          </tr>
+          <tr>
+            <td>تأكيد</td>
+            <td>حاب ناكد لك الخدمه؟</td>
+          </tr>
+        `;
+        document.getElementById('batteryActionResult').classList.remove('hidden');
+      };
+
+      document.getElementById('batteryCheckBtn').onclick = () => {
+        const tbody = document.getElementById('batteryActionBody');
+        tbody.innerHTML = `
+          <tr>
+            <td>رسوم طلعة الفني</td>
+            <td class="highlight">10.00 ${config.currency}</td>
+          </tr>
+          <tr>
+            <td>ملاحظة</td>
+            <td>في حال كانت المشكلة بطارية يتم خصم 10.00 ${config.currency} من سعر البطارية وتدفع الفرق فقط</td>
+          </tr>
+        `;
+        document.getElementById('batteryActionResult').classList.remove('hidden');
+      };
     }
 
     // Render Tow Interface
@@ -1642,13 +1693,43 @@
       
       tbody.innerHTML = rows;
       document.getElementById('towResultSection').classList.remove('hidden');
-      
+
+      // add request and copy buttons next to final price cell
+      setTimeout(() => {
+        try {
+          const resultBody = document.getElementById('towResultBody');
+          const lastPriceCell = resultBody.querySelector('td.highlight:last-of-type');
+          if (lastPriceCell) {
+            if (!resultBody.dataset.actionsAdded) {
+              const orderBtn = document.createElement('button');
+              orderBtn.className = 'btn-primary';
+              orderBtn.style.marginLeft = '8px';
+              orderBtn.textContent = 'طلب';
+              orderBtn.onclick = () => requestTowOrder();
+              lastPriceCell.appendChild(orderBtn);
+
+              if (formData.companyArabic === 'بورتراج') {
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn-small';
+                copyBtn.style.display = 'inline-block';
+                copyBtn.style.marginLeft = '8px';
+                copyBtn.textContent = 'نسخ';
+                copyBtn.onclick = () => copyTowMessage();
+                lastPriceCell.appendChild(copyBtn);
+              }
+
+              resultBody.dataset.actionsAdded = '1';
+            }
+          }
+        } catch (e) { console.error(e); }
+      }, 60);
+
       setTimeout(() => {
         const resultSection = document.getElementById('towResultSection');
         if (resultSection) {
           resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-      }, 100);
+      }, 160);
     }
     
     function getCancellationPrice(from, to, towType) {
@@ -1868,18 +1949,15 @@
       const fuelNames = { 'premium': 'بنزين ممتاز', 'special': 'بنزين خصوصي', 'ultra': 'بنزين الترا' };
       
       const tbody = document.getElementById('fuelResultBody');
+      // Format according to requested message
       tbody.innerHTML = `
         <tr>
-          <td>رسوم خدمة التوصيل</td>
+          <td>رسوم البنزين</td>
+          <td class="highlight">${fuelPrice.toFixed(2)} ${config.currency} <small style="color:#999; display:block;">(التوصيل لأقرب محطة فقط)</small></td>
+        </tr>
+        <tr>
+          <td>التوصيل</td>
           <td class="highlight">${servicePrice.toFixed(2)} ${config.currency}</td>
-        </tr>
-        <tr>
-          <td>نوع البنزين</td>
-          <td>${fuelNames[formData.fuelType]}</td>
-        </tr>
-        <tr>
-          <td>سعر البنزين</td>
-          <td class="highlight">${fuelPrice.toFixed(2)} ${config.currency}</td>
         </tr>
         <tr style="background: #262626;">
           <td><strong>الإجمالي</strong></td>
@@ -1890,8 +1968,25 @@
           <td>${cancellation}</td>
         </tr>
       `;
-      
+
       document.getElementById('fuelResultSection').classList.remove('hidden');
+
+      // Append طلب button next to final total
+      setTimeout(() => {
+        try {
+          const resultBody = document.getElementById('fuelResultBody');
+          const totalCell = resultBody.querySelector('tr[style] td.highlight:last-of-type, td.highlight:last-of-type');
+          if (totalCell && !resultBody.dataset.orderAdded) {
+            const orderBtn = document.createElement('button');
+            orderBtn.className = 'btn-primary';
+            orderBtn.style.marginLeft = '8px';
+            orderBtn.textContent = 'طلب';
+            orderBtn.onclick = () => requestFuelOrder();
+            totalCell.appendChild(orderBtn);
+            resultBody.dataset.orderAdded = '1';
+          }
+        } catch (e) { console.error(e); }
+      }, 60);
     }
 
     // Render Puncture Service (بنشر)
@@ -1976,6 +2071,39 @@
       `;
       
       document.getElementById('tireResultSection').classList.remove('hidden');
+
+      // add action buttons for puncture service
+      setTimeout(() => {
+        try {
+          const section = document.getElementById('tireResultSection');
+          if (document.getElementById('tireActions')) return;
+          const actionsDiv = document.createElement('div');
+          actionsDiv.id = 'tireActions';
+          actionsDiv.style.display = 'flex';
+          actionsDiv.style.gap = '8px';
+          actionsDiv.style.margin = '10px 6px';
+
+          const extBtn = document.createElement('button');
+          extBtn.className = 'btn-primary';
+          extBtn.textContent = 'طلب خدمة (خارجية)';
+          extBtn.onclick = () => requestPunctureExternal();
+
+          const intBtn = document.createElement('button');
+          intBtn.className = 'btn-primary';
+          intBtn.textContent = 'طلب رقعة داخلية';
+          intBtn.onclick = () => requestPunctureInternal();
+
+          const inspectBtn = document.createElement('button');
+          inspectBtn.className = 'btn-option';
+          inspectBtn.textContent = 'فحص تاير';
+          inspectBtn.onclick = () => requestTireInspection();
+
+          actionsDiv.appendChild(extBtn);
+          actionsDiv.appendChild(intBtn);
+          actionsDiv.appendChild(inspectBtn);
+          section.appendChild(actionsDiv);
+        } catch (e) { console.error(e); }
+      }, 60);
     }
 
     // Render Balance Service (ميزان وتركيب)
@@ -2143,6 +2271,23 @@
       }
       
       document.getElementById('balanceResultSection').classList.remove('hidden');
+
+      // add طلب button next to final balance total if present
+      setTimeout(() => {
+        try {
+          const tbody = document.getElementById('balanceResultBody');
+          const lastPriceCell = tbody.querySelector('td.highlight:last-of-type');
+          if (lastPriceCell && !tbody.dataset.orderAdded) {
+            const orderBtn = document.createElement('button');
+            orderBtn.className = 'btn-primary';
+            orderBtn.style.marginLeft = '8px';
+            orderBtn.textContent = 'طلب';
+            orderBtn.onclick = () => requestBalanceOrder();
+            lastPriceCell.appendChild(orderBtn);
+            tbody.dataset.orderAdded = '1';
+          }
+        } catch (e) { console.error(e); }
+      }, 60);
     }
 
     // Render Mechanical Interface - UPDATED: زيت وفلتر كخيار
@@ -2341,6 +2486,23 @@
       }
       
       document.getElementById('mechResultSection').classList.remove('hidden');
+
+      // append طلب button to mechanical results
+      setTimeout(() => {
+        try {
+          const tbody = document.getElementById('mechResultBody');
+          const lastPriceCell = tbody.querySelector('td.highlight:last-of-type');
+          if (lastPriceCell && !tbody.dataset.orderAdded) {
+            const orderBtn = document.createElement('button');
+            orderBtn.className = 'btn-primary';
+            orderBtn.style.marginLeft = '8px';
+            orderBtn.textContent = 'طلب';
+            orderBtn.onclick = () => requestMechanicalOrder();
+            lastPriceCell.appendChild(orderBtn);
+            tbody.dataset.orderAdded = '1';
+          }
+        } catch (e) { console.error(e); }
+      }, 60);
     }
 
     // Render Car Wash Interface
@@ -3458,6 +3620,109 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     // Option 1: Google Sheets Webhook (Apps Script) — leave empty to disable
     const GOOGLE_SHEETS_WEBHOOK = '';
+
+    /* Helper actions: copy and request handlers for services */
+    function copyToClipboard(text) {
+      if (!navigator.clipboard) {
+        try { window.prompt('انسخ النص يدوياً:', text); } catch (e) {}
+        return Promise.resolve();
+      }
+      return navigator.clipboard.writeText(text).then(() => {
+        // small visual feedback
+        try { alert('تم نسخ الرسالة'); } catch (e) {}
+      }).catch(() => { try { alert('فشل النسخ'); } catch (e) {} });
+    }
+
+    function requestTowOrder() {
+      // Build tow message
+      const routes = getTowRoutes(formData.company, formData.towType) || [];
+      const route = routes.find(r => r.from === formData.from && r.to === formData.to) || {};
+      const price = parseFloat(route.price) || 0;
+      const towLabel = (formData.towType === 'flatbed') ? 'ونش فل داون' : 'ونش عادي';
+      const msg = `رسوم ${towLabel} من منطقة ${formData.from} إلى منطقة ${formData.to}: ${price.toFixed(2)} ${config.currency}`;
+      copyToClipboard(msg).then(() => {
+        // open pre-filled form with message in washType field
+        const payload = { washType: msg, location: `${formData.from} -> ${formData.to}` };
+        submitToGoogleForm(payload);
+      });
+    }
+
+    function copyTowMessage() {
+      const routes = getTowRoutes(formData.company, formData.towType) || [];
+      const route = routes.find(r => r.from === formData.from && r.to === formData.to) || {};
+      const price = parseFloat(route.price) || 0;
+      const towLabel = (formData.towType === 'flatbed') ? 'ونش فل داون' : 'ونش عادي';
+      const msg = `رسوم ${towLabel} من منطقة ${formData.from} إلى منطقة ${formData.to}: ${price.toFixed(2)} ${config.currency}`;
+      copyToClipboard(msg);
+    }
+
+    function requestFuelOrder() {
+      const fuelPrices = { 'premium': 1.5, 'special': 1.5, 'ultra': 2.5 };
+      const fuelPrice = fuelPrices[formData.fuelType] || 1.5;
+      const rows = sheetsData['خدمات5'] || [];
+      let servicePrice = 0;
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        if (row[0] === formData.area) { servicePrice = parseFloat(row[1]) || 0; break; }
+        if (row[4] === formData.area) { servicePrice = parseFloat(row[5]) || 0; break; }
+      }
+      const total = servicePrice + fuelPrice;
+      const msg = `رسوم البنزين ${fuelPrice.toFixed(2)} ${config.currency} (التوصيل لأقرب محطة فقط)\nالتوصيل ${servicePrice.toFixed(2)} ${config.currency}\nالإجمالي ${total.toFixed(2)} ${config.currency}`;
+      copyToClipboard(msg).then(() => submitToGoogleForm({ washType: msg, location: formData.area || '' }));
+    }
+
+    function requestPunctureExternal() {
+      const tbody = document.getElementById('tireResultBody');
+      const priceEl = tbody.querySelector('td.highlight');
+      const price = priceEl ? priceEl.textContent.trim() : '';
+      const msg = `رسوم فحص التاير ${price} ${config.currency} (تشمل رقعة خارجية أو تركيب سبير أو تعبئة هواء)`;
+      copyToClipboard(msg).then(() => submitToGoogleForm({ washType: msg, location: formData.area || '' }));
+    }
+
+    function requestPunctureInternal() {
+      const rows = document.getElementById('tireResultBody').querySelectorAll('td.highlight');
+      const internal = rows && rows[1] ? rows[1].textContent.trim() : '';
+      const msg = `رسوم رقعة داخلية مع الميزان ${internal} ${config.currency}`;
+      copyToClipboard(msg).then(() => submitToGoogleForm({ washType: msg, location: formData.area || '' }));
+    }
+
+    function requestTireInspection() {
+      const tbody = document.getElementById('tireResultBody');
+      const external = tbody.querySelector('td.highlight') ? tbody.querySelector('td.highlight').textContent.trim() : '';
+      const msg = `رسوم فحص التاير ${external} ${config.currency} (تشمل رقعة خارجية أو تركيب سبير أو تعبئة هواء)`;
+      copyToClipboard(msg).then(() => submitToGoogleForm({ washType: msg, location: formData.area || '' }));
+    }
+
+    function requestBatteryInstall() {
+      const tbody = document.getElementById('serviceResultBody');
+      const priceEl = tbody.querySelector('td.highlight');
+      const priceText = priceEl ? priceEl.textContent.trim() : '';
+      const raw = parseFloat((priceText || '').replace(/[^0-9\.]/g, '')) || 0;
+      const subscribed = !!formData.batterySubscribed;
+      let final = raw;
+      if (subscribed) final = Math.max(0, raw - 10);
+      const msg = subscribed ? `سعر البطارية بعد خصم اشتراك 10.00 ${config.currency}: ${final.toFixed(2)} ${config.currency}` : `سعر البطارية: ${final.toFixed(2)} ${config.currency}`;
+      copyToClipboard(msg).then(() => submitToGoogleForm({ washType: msg, location: formData.area || '' }));
+    }
+
+    function requestMechanicalOrder() {
+      const tbody = document.getElementById('mechResultBody');
+      const priceEl = tbody ? tbody.querySelector('td.highlight:last-of-type') : null;
+      const priceText = priceEl ? priceEl.textContent.trim() : '';
+      const raw = parseFloat((priceText || '').replace(/[^0-9\.]/g, '')) || 0;
+      const service = formData.mechanicalService || 'خدمة ميكانيكية';
+      const msg = `رسوم ${service} ${raw.toFixed(2)} ${config.currency}`;
+      copyToClipboard(msg).then(() => submitToGoogleForm({ washType: msg, location: formData.area || '' }));
+    }
+
+    function requestBalanceOrder() {
+      const tbody = document.getElementById('balanceResultBody');
+      const priceEl = tbody ? tbody.querySelector('td.highlight:last-of-type') : null;
+      const priceText = priceEl ? priceEl.textContent.trim() : '';
+      const raw = parseFloat((priceText || '').replace(/[^0-9\.]/g, '')) || 0;
+      const msg = `رسوم خدمة ميزان وتركيب ${raw.toFixed(2)} ${config.currency}`;
+      copyToClipboard(msg).then(() => submitToGoogleForm({ washType: msg, location: formData.area || '' }));
+    }
 
     // Google Form submission using pre-filled link
     const FORM_ID = 'e/1FAIpQLScQh0wzxb2oVHXTtPx-NZdbBX63IhaNuMLNag-rPeMdwQVKNw'; // Form ID from the sharing URL
