@@ -1154,7 +1154,7 @@
         </div>
         
         <div id="towResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('towResultBody','نتيجة الونش')">📋 نسخ</button></div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('towResultBody','نتيجة الونش')">📋 نسخ</button> <button class="copy-btn-small" onclick="copyServiceMessage('tow', this)">نسخ رسالة</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -1702,7 +1702,7 @@
         </div>
         
         <div id="serviceResultSection" class="data-table-container hidden">
-          <div class="table-header">تركيب بطارية <button class="copy-btn-small" onclick="copyTableResult('serviceResultBody','تركيب بطارية')">📋 نسخ</button></div>
+          <div class="table-header">تركيب بطارية <button class="copy-btn-small" onclick="copyTableResult('serviceResultBody','تركيب بطارية')">📋 نسخ</button> <button class="copy-btn-small" onclick="copyServiceMessage('battery_install', this)">نسخ رسالة</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -1819,7 +1819,7 @@
         <!-- (تم نقل واجهة فتح القفل إلى خدمة منفصلة 'فتح قفل السيارة') -->
 
         <div id="fuelResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('fuelResultBody','خدمة البنزين')">📋 نسخ</button></div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('fuelResultBody','خدمة البنزين')">📋 نسخ</button> <button class="copy-btn-small" onclick="copyServiceMessage('fuel', this)">نسخ رسالة</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2033,7 +2033,7 @@
         </div>
         
         <div id="tireResultSection" class="data-table-container hidden">
-          <div class="table-header">أسعار خدمة البنشر <button class="copy-btn-small" onclick="copyTableResult('tireResultBody','أسعار خدمة البنشر')">📋 نسخ</button></div>
+          <div class="table-header">أسعار خدمة البنشر <button class="copy-btn-small" onclick="copyTableResult('tireResultBody','أسعار خدمة البنشر')">📋 نسخ</button> <button class="copy-btn-small" onclick="copyServiceMessage('puncture', this)">نسخ رسالة</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2076,7 +2076,7 @@
               <datalist id="areaOptions"></datalist>
             </div>
             <div id="lockPortarageResult" class="data-table-container hidden">
-              <div class="table-header">نتيجة فتح القفل - بورتراج <button class="copy-btn-small" onclick="copyTableResult('lockPortarageBody','فتح القفل - بورتراج')">📋 نسخ</button></div>
+              <div class="table-header">نتيجة فتح القفل - بورتراج <button class="copy-btn-small" onclick="copyTableResult('lockPortarageBody','فتح القفل - بورتراج')">📋 نسخ</button> <button class="copy-btn-small" onclick="copyServiceMessage('lock', this)">نسخ رسالة</button></div>
               <div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockPortarageBody"></tbody></table></div>
             </div>
             <div class="warning-box" style="margin-top:8px;">يرجى التأكد من فني بورتراج انه يقدر يفتح باب السياره لنه ماعندنا امكانيه نفتح جميع السيارات</div>
@@ -2088,7 +2088,7 @@
               <input type="number" id="lockExternalPrice" class="form-control" placeholder="ضع سعر الفني هنا">
             </div>
             <div id="lockExternalNoteDisplay" class="info-box" style="margin-top:8px;">ملاحظة: للفنين الخارجين — قروب عثمان • Mr.LOCK</div>
-            <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي <button class="copy-btn-small" onclick="copyTableResult('lockExternalBody','فتح القفل - مورد خارجي')">📋 نسخ</button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
+            <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي <button class="copy-btn-small" onclick="copyTableResult('lockExternalBody','فتح القفل - مورد خارجي')">📋 نسخ</button> <button class="copy-btn-small" onclick="copyServiceMessage('lock', this)">نسخ رسالة</button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
           </div>
 
           <div id="lockFinalNotice" class="info-box hidden" style="margin-top:8px;"></div>
@@ -2244,7 +2244,7 @@
         </div>
         
         <div id="balanceResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('balanceResultBody','ميزان وتركيب')">📋 نسخ</button></div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('balanceResultBody','ميزان وتركيب')">📋 نسخ</button> <button class="copy-btn-small" onclick="copyServiceMessage('balance', this)">نسخ رسالة</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2421,7 +2421,7 @@
         </div>
         
         <div id="mechResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('mechResultBody','خدمات ميكانيكية')">📋 نسخ</button></div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn-small" onclick="copyTableResult('mechResultBody','خدمات ميكانيكية')">📋 نسخ</button> <button class="copy-btn-small" onclick="copyServiceMessage('mechanical', this)">نسخ رسالة</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2879,6 +2879,111 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         console.error('copyNearestTable error', e);
       }
     };
+
+      // Copy predefined service message templates (Arabic) — copies exact style requested
+      window.copyServiceMessage = async function(key, btn) {
+        try {
+          const templates = {
+            tow_normal: `🚛 خدمة الونش
+  🔹 ونش عادي
+  رسوم الونش العادي
+  من منطقة من إلى منطقة إلى
+  السعر: ___ د.ك
+  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
+  في حال إلغاء الطلب والفني بالطريق، أو القير ما يتبوش، أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
+
+            tow_flatbed: `🚛 خدمة الونش
+  🔹 ونش فل داون
+  رسوم الونش الفل داون
+  من منطقة من إلى منطقة إلى
+  السعر: ___ د.ك
+  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
+  في حال إلغاء الطلب والفني بالطريق، أو القير ما يتبوش، أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
+
+            tow_flatbed_locked: `🚛 خدمة الونش
+  🔹 ونش فل داون مسكّر
+  رسوم الونش الفل داون مسكّر
+  من منطقة من إلى منطقة إلى
+  السعر: ___ د.ك
+  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
+  في حال إلغاء الطلب والفني بالطريق، أو القير ما يتبوش، أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
+
+            battery_subscription: `🔋 خدمة البطارية
+  🔹 اشتراك بطارية
+  رسوم اشتراك البطارية: ___ د.ك
+  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
+  في حال إلغاء الطلب والفني بالطريق، أو في حال كانت المشكلة ليست بطارية، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
+
+            battery_check: `🔋 خدمة البطارية
+  🔹 فحص بطارية
+  رسوم طلعة الفني: ___ د.ك
+  في حال كانت المشكلة بطارية، يتم خصم ___ د.ك من سعر البطارية وتدفع الفرق فقط.
+  في حال كانت المشكلة من السلف أو الدينمو أو أي سبب آخر، أو تم إلغاء الطلب والفني بالطريق، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
+
+            puncture: `🛞 خدمة البنشر
+  رسوم خدمة الفحص: 10 د.ك
+  تشمل رقعة خارجية أو تعبئة هواء أو تركيب سبير.
+  في حال احتاج التاير رقعة داخلية تكون الرسوم 15 د.ك ويتم دفع فرق السعر فقط.
+  حاب نأكد لك على الخدمة؟
+  ❗ رسوم إلغاء الطلب
+  في حال إلغاء الطلب والفني متوجه لكم، أو التاير ما ينرقع، أو السيارة بدون سبير، أو لأي سبب آخر، يتم خصم رسوم الإلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
+
+            fuel: `⛽ خدمة البنزين
+  رسوم خدمة توصيل وتعبئة البنزين: ___ د.ك
+  رسوم البنزين (حسب النوع): ___ د.ك بدون الخدمة.
+  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
+  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
+
+            lock: `🔐 خدمة فتح القفل
+  رسوم فتح القفل: ___ د.ك
+  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
+  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
+
+            oilfilter: `🛢️ خدمة تغيير الزيت والفلتر (من عند العميل)
+  رسوم خدمة تغيير الزيت والفلتر: ___ د.ك
+  الزيت والفلتر من عند العميل.
+  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
+  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
+
+            brakes: `🛑 خدمة تركيب السفايف والديسكات (من عند العميل)
+  🔹 تركيب سفايف وديسكات
+  رسوم التركيب: ___ د.ك
+  السفايف والديسكات من عند العميل.
+  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
+  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.
+  🔹 تركيب سفايف مع مخرطة ديسكات
+  رسوم التركيب مع المخرطة: ___ د.ك
+  السفايف من عند العميل، مع تنفيذ مخرطة الديسكات عند الموقع.
+  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
+  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`
+          };
+
+          let text = '';
+          if (key === 'tow') {
+            const type = (formData.towType || '').toLowerCase();
+            const locked = !!formData.isLocked;
+            if (type === 'flatbed' && locked) text = templates.tow_flatbed_locked;
+            else if (type === 'flatbed') text = templates.tow_flatbed;
+            else text = templates.tow_normal;
+          } else if (templates[key]) {
+            text = templates[key];
+          } else {
+            // fallback: generic service message
+            text = templates.fuel;
+          }
+
+          await navigator.clipboard.writeText(text);
+
+          if (btn) {
+            const prev = btn.textContent;
+            btn.classList.add('success');
+            btn.textContent = '✓ تم النسخ!';
+            setTimeout(() => { btn.classList.remove('success'); btn.textContent = prev; }, 1800);
+          }
+        } catch (e) {
+          console.error('copyServiceMessage error', e);
+        }
+      };
 
     async function loadCarWashAppointments(selectedDate) {
       try {
