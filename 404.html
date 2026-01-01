@@ -1938,8 +1938,8 @@
         return;
       }
 
-      // apply fixed surcharge (اضافة ثابتة)
-      const finalPrice = price + LOCK_SURCHARGE;
+      // لبورتراج: لا نضيف أي زيادة، السعر كما هو من الشيت
+      const finalPrice = price;
 
       body.innerHTML = `
         <tr>
