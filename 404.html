@@ -1907,7 +1907,7 @@
 
     // Calculate price for فتح قفل when performed by بورتراج
     function calculateLockPortaragePrice() {
-      const rows = sheetsData['خدمات5'];
+      const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
       if (!rows || !formData.lockArea) return;
 
       let price = null;
@@ -1962,7 +1962,7 @@
 
     // Calculate price for فتح قفل when performed by مورد خارجي
     function calculateLockExternalPrice(externalPrice) {
-      const rows = sheetsData['خدمات5'];
+      const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
       const externalBody = document.getElementById('lockExternalBody');
       const externalResult = document.getElementById('lockExternalResult');
       const finalNotice = document.getElementById('lockFinalNotice');
@@ -2122,12 +2122,17 @@
 
       // external price
       const lockExternalPrice = document.getElementById('lockExternalPrice');
-      lockExternalPrice.oninput = () => {
-        const val = parseFloat(lockExternalPrice.value) || 0;
-        calculateLockExternalPrice(val);
-        const note = document.getElementById('lockExternalNoteDisplay');
-        if (note) note.style.display = 'block';
-      };
+      // update immediately on input/change/keyup
+      if (lockExternalPrice) {
+        ['input', 'change', 'keyup'].forEach(evt => {
+          lockExternalPrice.addEventListener(evt, () => {
+            const val = parseFloat(lockExternalPrice.value);
+            calculateLockExternalPrice(isNaN(val) ? 0 : val);
+            const note = document.getElementById('lockExternalNoteDisplay');
+            if (note) note.style.display = 'block';
+          });
+        });
+      }
     }
 
     function calculatePuncturePrice() {
