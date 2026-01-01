@@ -1354,11 +1354,17 @@
         }
       };
       
-toSelect.oninput = () => {
+       toSelect.oninput = () => {
         formData.to = toSelect.value;
-        // سطر التصفية الجديد:
-        toDatalist.innerHTML = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(loc => loc && loc.toLowerCase().includes(toSelect.value.toLowerCase())).map(loc => `<option value="${loc}">${loc}</option>`).join('');
         
+        // 1. كود الفلترة (يخلي القائمة تتقلص وأنت تكتب)
+        const currentInput = toSelect.value.toLowerCase();
+        const availableTo = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(Boolean);
+        toDatalist.innerHTML = availableTo
+          .filter(loc => loc.toLowerCase().includes(currentInput))
+          .map(loc => `<option value="${loc}">${loc}</option>`).join('');
+        
+        // إذا المسار فارغ، أخفِ كل شيء
         if (!formData.to) {
           document.getElementById('towResultSection').classList.add('hidden');
           document.getElementById('extraChargesSection').classList.add('hidden');
@@ -1366,24 +1372,19 @@ toSelect.oninput = () => {
           return;
         }
         
-        if (formData.to && [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].includes(formData.to)) {
+        // 2. كود إظهار النتيجة (يظهر السعر بمجرد كتابة المنطقة صح)
+        if (formData.to && availableTo.includes(formData.to)) {
           if (formData.companyArabic === 'بورتراج' && formData.towType === 'flatbed') {
             document.getElementById('flatbedPortarageExtraChargesSection').classList.remove('hidden');
             document.getElementById('extraChargesSection').classList.add('hidden');
             
             const flatbedPortarageExtraChargesSelect = document.getElementById('flatbedPortarageExtraChargesSelect');
-            if (!formData.flatbedPortarageExtraCharges) {
-              formData.flatbedPortarageExtraCharges = 'no';
-            }
+            if (!formData.flatbedPortarageExtraCharges) formData.flatbedPortarageExtraCharges = 'no';
             flatbedPortarageExtraChargesSelect.value = formData.flatbedPortarageExtraCharges;
             
             flatbedPortarageExtraChargesSelect.onchange = () => {
               formData.flatbedPortarageExtraCharges = flatbedPortarageExtraChargesSelect.value;
-              if (formData.flatbedPortarageExtraCharges === 'yes') {
-                document.getElementById('flatbedPortarageExtraChargesNote').classList.remove('hidden');
-              } else {
-                document.getElementById('flatbedPortarageExtraChargesNote').classList.add('hidden');
-              }
+              document.getElementById('flatbedPortarageExtraChargesNote').classList.toggle('hidden', formData.flatbedPortarageExtraCharges !== 'yes');
               calculateTowPrice();
             };
           } else if (formData.companyArabic === 'بورتراج' && formData.towType === 'normal') {
@@ -1391,18 +1392,12 @@ toSelect.oninput = () => {
             document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
             
             const extraChargesSelect = document.getElementById('extraChargesSelect');
-            if (!formData.extraCharges) {
-              formData.extraCharges = 'no';
-            }
+            if (!formData.extraCharges) formData.extraCharges = 'no';
             extraChargesSelect.value = formData.extraCharges;
             
             extraChargesSelect.onchange = () => {
               formData.extraCharges = extraChargesSelect.value;
-              if (formData.extraCharges === 'yes') {
-                document.getElementById('extraChargesNote').classList.remove('hidden');
-              } else {
-                document.getElementById('extraChargesNote').classList.add('hidden');
-              }
+              document.getElementById('extraChargesNote').classList.toggle('hidden', formData.extraCharges !== 'yes');
               calculateTowPrice();
             };
           } else {
@@ -1410,7 +1405,11 @@ toSelect.oninput = () => {
             document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
           }
           
+          // تشغيل حساب السعر النهائي
           calculateTowPrice();
+        } else {
+          // إذا الاسم لسه ما اكتمل، أخفِ النتيجة
+          document.getElementById('towResultSection').classList.add('hidden');
         }
       };
     }
