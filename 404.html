@@ -820,114 +820,6 @@
           ['currency', cfg.currency || defaultConfig.currency]
         ])
       });
-
-      // === Unlock Car Service (فتح قفل السيارة) - new section below fuel ===
-      const unlockHtml = `
-        <div class="form-section" style="margin-top:10px;">
-          <h3 class="section-title">فتح قفل السيارة 🔓</h3>
-          <div style="display:flex;gap:8px;margin-bottom:8px;">
-            <button id="unlockPortarageBtn" class="btn-option">بورتراج</button>
-            <button id="unlockExternalBtn" class="btn-option">مورد خارجي</button>
-          </div>
-
-          <div id="unlockPortarageSection" class="hidden">
-            <div class="form-field">
-              <label>المنطقة</label>
-              <input type="text" list="unlockAreaOptions" id="unlockAreaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
-              <datalist id="unlockAreaOptions"></datalist>
-            </div>
-            <div id="unlockPortarageResult" class="data-table-container hidden" style="margin-top:8px;">
-              <div class="table-header">نتيجة الفتح - بورتراج</div>
-              <div class="table-scroll">
-                <table class="data-table">
-                  <thead>
-                    <tr><th>البيان</th><th>القيمة</th></tr>
-                  </thead>
-                  <tbody id="unlockPortarageBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div id="unlockExternalSection" class="hidden">
-            <div class="form-field">
-              <label>اسم الفني الخارجي / ملاحظة</label>
-              <input type="text" id="unlockExternalName" class="form-control" placeholder="اسم الفني أو الجروب (مثال: قروب عثمان)">
-            </div>
-            <div class="form-field">
-              <label>السعر المعلن من الفني الخارجي (د.ك)</label>
-              <input type="number" id="unlockExternalPrice" class="form-control" placeholder="ادخل السعر">
-            </div>
-            <div class="info-box" style="margin-top:8px;">
-              ملاحظة: الفنين الخارجين: قروب عثمان ، قروب MR.LOCK
-            </div>
-            <div id="unlockExternalResult" class="data-table-container hidden" style="margin-top:8px;">
-              <div class="table-header">نتيجة الفتح - مورد خارجي</div>
-              <div class="table-scroll">
-                <table class="data-table">
-                  <thead>
-                    <tr><th>البيان</th><th>القيمة</th></tr>
-                  </thead>
-                  <tbody id="unlockExternalBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      // Append unlock section after fuel area
-      const fuelSection = document.getElementById('fuelResultSection');
-      if (fuelSection) {
-        fuelSection.insertAdjacentHTML('afterend', unlockHtml);
-
-        // Wire up buttons
-        const portarageBtn = document.getElementById('unlockPortarageBtn');
-        const externalBtn = document.getElementById('unlockExternalBtn');
-        const portarageSection = document.getElementById('unlockPortarageSection');
-        const externalSection = document.getElementById('unlockExternalSection');
-
-        portarageBtn.onclick = () => {
-          portarageBtn.classList.add('active');
-          externalBtn.classList.remove('active');
-          portarageSection.classList.remove('hidden');
-          externalSection.classList.add('hidden');
-        };
-
-        externalBtn.onclick = () => {
-          externalBtn.classList.add('active');
-          portarageBtn.classList.remove('active');
-          externalSection.classList.remove('hidden');
-          portarageSection.classList.add('hidden');
-        };
-
-        // Load area options from sheet 'فتح قفل السيارة' using same column layout A/B/C and E/F/G => indices [0,1,2,4,5,6]
-        loadAreaOptionsDatalist('فتح قفل السيارة', [0,1,2,4,5,6], () => {
-          const unlockArea = document.getElementById('unlockAreaSelect');
-          unlockArea.oninput = () => {
-            formData.unlockArea = unlockArea.value.trim();
-            if (!formData.unlockArea) {
-              document.getElementById('unlockPortarageResult').classList.add('hidden');
-              return;
-            }
-            calculateUnlockPrice();
-          };
-        });
-
-        // External vendor handlers
-        const extPriceInput = document.getElementById('unlockExternalPrice');
-        const extNameInput = document.getElementById('unlockExternalName');
-        [extPriceInput, extNameInput].forEach(el => {
-          el.oninput = () => {
-            const v = parseFloat(extPriceInput.value) || 0;
-            if (!v) {
-              document.getElementById('unlockExternalResult').classList.add('hidden');
-              return;
-            }
-            calculateUnlockPrice(true);
-          };
-        });
-      }
     }
 
     // Company mapping
@@ -997,7 +889,6 @@
           'Geely',
           'Auto Capital',
           'خدمات5',
-          'فتح قفل السيارة',
           'ميزان وتركيب',
           'خدمات ميكانيكية',
           'تركيب بطارية',
@@ -1914,7 +1805,54 @@
             <button class="btn-option" data-fuel="ultra">بنزين الترا<br><small>(2.5 د.ك)</small></button>
           </div>
         </div>
-        
+
+        <!-- فتح قفل السيارة (داخل واجهة البنزين، أسفلها) -->
+        <div class="form-section" style="margin-top:8px;">
+          <h3 class="section-title">فتح قفل السيارة 🔓</h3>
+          <div class="btn-grid" style="grid-template-columns: 1fr;">
+            <button id="openLockBtn" class="btn-option">فتح قفل السيارة 🔓</button>
+          </div>
+
+          <div id="lockServicePanel" class="hidden" style="margin-top:8px;">
+            <div class="form-field">
+              <label>من سيقوم بالخدمة؟</label>
+              <div class="btn-grid" style="grid-template-columns: repeat(2,1fr);">
+                <button class="btn-option" data-lock-provider="بورتراج">بورتراج</button>
+                <button class="btn-option" data-lock-provider="مورد خارجي">مورد خارجي</button>
+              </div>
+            </div>
+
+            <div id="lockPortaragePanel" class="hidden" style="margin-top:8px;">
+              <div class="form-field">
+                <label>المنطقة</label>
+                <input type="text" list="areaOptions" id="lockAreaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
+              </div>
+
+              <div id="lockPortarageResult" class="data-table-container hidden">
+                <div class="table-header">نتيجة فتح القفل - بورتراج</div>
+                <div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockPortarageBody"></tbody></table></div>
+              </div>
+
+              <div class="warning-box" style="margin-top:8px;">يرجى التأكد من فني بورتراج انه يقدر يفتح باب السياره لنه ماعندنا امكانيه نفتح جميع السيارات</div>
+            </div>
+
+            <div id="lockExternalPanel" class="hidden" style="margin-top:8px;">
+              <div class="form-field">
+                <label>سعر الفني الخارجي</label>
+                <input type="number" id="lockExternalPrice" class="form-control" placeholder="ضع سعر الفني هنا">
+              </div>
+              <div class="form-field" style="margin-top:6px;">
+                <label>ملاحظة للفني الخارجي</label>
+                <textarea id="lockExternalNote" class="form-control" rows="3">الفنين الخارجين: قروب عثمان • قروب MR.LOCK</textarea>
+              </div>
+
+              <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي</div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
+            </div>
+
+            <div id="lockFinalNotice" class="info-box hidden" style="margin-top:8px;"></div>
+          </div>
+        </div>
+
         <div id="fuelResultSection" class="data-table-container hidden">
           <div class="table-header">نتيجة الحساب</div>
           <div class="table-scroll">
@@ -1937,16 +1875,69 @@
       
       loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
         document.getElementById('fuelTypeSection').classList.remove('hidden');
-        
+
         document.querySelectorAll('[data-fuel]').forEach(btn => {
           btn.onclick = () => {
             document.querySelectorAll('[data-fuel]').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
+
             formData.fuelType = btn.dataset.fuel;
             calculateFuelPrice();
           };
         });
+
+        // Lock open service initialisation
+        const openLockBtn = document.getElementById('openLockBtn');
+        const lockServicePanel = document.getElementById('lockServicePanel');
+        const lockProviderButtons = document.querySelectorAll('[data-lock-provider]');
+        const lockPortaragePanel = document.getElementById('lockPortaragePanel');
+        const lockExternalPanel = document.getElementById('lockExternalPanel');
+        const lockAreaSelect = document.getElementById('lockAreaSelect');
+        const lockPortarageBody = document.getElementById('lockPortarageBody');
+        const lockPortarageResult = document.getElementById('lockPortarageResult');
+        const lockExternalPrice = document.getElementById('lockExternalPrice');
+        const lockExternalBody = document.getElementById('lockExternalBody');
+        const lockExternalResult = document.getElementById('lockExternalResult');
+        const lockFinalNotice = document.getElementById('lockFinalNotice');
+
+        openLockBtn.onclick = () => {
+          lockServicePanel.classList.toggle('hidden');
+        };
+
+        lockProviderButtons.forEach(btn => {
+          btn.onclick = () => {
+            lockProviderButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const provider = btn.dataset.lockProvider;
+            if (provider === 'بورتراج') {
+              lockPortaragePanel.classList.remove('hidden');
+              lockExternalPanel.classList.add('hidden');
+            } else {
+              lockPortaragePanel.classList.add('hidden');
+              lockExternalPanel.classList.remove('hidden');
+            }
+            lockPortarageResult.classList.add('hidden');
+            lockExternalResult.classList.add('hidden');
+            lockFinalNotice.classList.add('hidden');
+          };
+        });
+
+        // When user selects area for portarage lock
+        lockAreaSelect.oninput = () => {
+          formData.lockArea = lockAreaSelect.value.trim();
+          if (!formData.lockArea) {
+            lockPortarageResult.classList.add('hidden');
+            return;
+          }
+          calculateLockPortaragePrice();
+        };
+
+        // External price input handler
+        lockExternalPrice.oninput = () => {
+          const val = parseFloat(lockExternalPrice.value) || 0;
+          calculateLockExternalPrice(val);
+        };
       });
     }
 
@@ -2001,6 +1992,105 @@
       `;
       
       document.getElementById('fuelResultSection').classList.remove('hidden');
+    }
+
+    // Calculate price for فتح قفل when performed by بورتراج
+    function calculateLockPortaragePrice() {
+      const rows = sheetsData['خدمات5'];
+      if (!rows || !formData.lockArea) return;
+
+      let price = null;
+      let cancellation = null;
+
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+
+        if (row[0] === formData.lockArea) {
+          price = parseFloat(row[1]) || 0;
+          cancellation = row[2] ? `${parseFloat(row[2]).toFixed(2)} ${config.currency}` : 'غير محدد';
+          break;
+        }
+
+        if (row[4] === formData.lockArea) {
+          price = parseFloat(row[5]) || 0;
+          cancellation = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير محدد';
+          break;
+        }
+      }
+
+      const body = document.getElementById('lockPortarageBody');
+      const result = document.getElementById('lockPortarageResult');
+      const finalNotice = document.getElementById('lockFinalNotice');
+
+      if (price === null) {
+        result.classList.add('hidden');
+        return;
+      }
+
+      // apply surcharge from sheet first row column I (index 8)
+      const surchargeRaw = (rows[0] && rows[0][8]) ? rows[0][8].toString().trim() : '';
+      const finalPrice = applySurcharge(price, surchargeRaw);
+
+      body.innerHTML = `
+        <tr>
+          <td>سعر فتح القفل (بورتراج)</td>
+          <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
+        </tr>
+        <tr>
+          <td>رسوم الإلغاء</td>
+          <td>${cancellation}</td>
+        </tr>
+        <tr style="background: #262626;">
+          <td><strong>السعر بعد الزيادة</strong></td>
+          <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong></td>
+        </tr>
+      `;
+
+      result.classList.remove('hidden');
+      finalNotice.classList.remove('hidden');
+      finalNotice.textContent = `السعر الذي يتم ابلاغ العميل فيه مع الزيادة : ${finalPrice.toFixed(2)} ${config.currency}`;
+    }
+
+    // Calculate price for فتح قفل when performed by مورد خارجي
+    function calculateLockExternalPrice(externalPrice) {
+      const rows = sheetsData['خدمات5'];
+      const externalBody = document.getElementById('lockExternalBody');
+      const externalResult = document.getElementById('lockExternalResult');
+      const finalNotice = document.getElementById('lockFinalNotice');
+
+      if (!rows) return;
+
+      const surchargeRaw = (rows[0] && rows[0][8]) ? rows[0][8].toString().trim() : '';
+      const finalPrice = applySurcharge(externalPrice, surchargeRaw);
+
+      externalBody.innerHTML = `
+        <tr>
+          <td>سعر الفني الخارجي</td>
+          <td class="highlight">${externalPrice.toFixed(2)} ${config.currency}</td>
+        </tr>
+        <tr style="background: #262626;">
+          <td><strong>السعر بعد الزيادة</strong></td>
+          <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong></td>
+        </tr>
+      `;
+
+      externalResult.classList.remove('hidden');
+      finalNotice.classList.remove('hidden');
+      finalNotice.textContent = `السعر الذي يتم ابلاغ العميل فيه مع الزيادة : ${finalPrice.toFixed(2)} ${config.currency}`;
+    }
+
+    // Apply surcharge string from sheet first row column I.
+    // surchargeRaw can be '10%' or '2.5' (absolute). Returns numeric final price.
+    function applySurcharge(basePrice, surchargeRaw) {
+      if (!surchargeRaw) return basePrice;
+      const s = surchargeRaw.toString().trim();
+      if (s.endsWith('%')) {
+        const p = parseFloat(s.replace('%', '')) || 0;
+        return basePrice + (basePrice * p / 100);
+      }
+      const absolute = parseFloat(s);
+      if (!isNaN(absolute)) return basePrice + absolute;
+      return basePrice;
     }
 
     // Render Puncture Service (بنشر)
@@ -3563,74 +3653,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       `;
       
       document.getElementById('serviceResultSection').classList.remove('hidden');
-    }
-
-    // Calculate price for Unlock Car service (فتح قفل السيارة)
-    function calculateUnlockPrice(isExternal = false) {
-      const sheetName = 'فتح قفل السيارة';
-      const rows = sheetsData[sheetName];
-      if (!rows || rows.length < 3) return;
-
-      // Increase value from first row column I (index 8)
-      const increaseRaw = (rows[0] && rows[0][8]) ? rows[0][8].toString().trim() : '';
-      const increaseVal = parseFloat(increaseRaw) || 0;
-
-      if (isExternal) {
-        const priceInput = parseFloat(document.getElementById('unlockExternalPrice').value) || 0;
-        const name = document.getElementById('unlockExternalName').value || '';
-        const final = priceInput + increaseVal;
-
-        const body = document.getElementById('unlockExternalBody');
-        body.innerHTML = `
-          <tr><td>فني خارجي</td><td>${name || '-'} </td></tr>
-          <tr><td>السعر المعلن</td><td class="highlight">${priceInput.toFixed(2)} ${config.currency}</td></tr>
-          <tr><td>زيادة من النظام (عمولة/رسوم)</td><td>${increaseVal ? increaseVal.toFixed(2) + ' ' + config.currency : '0.00 ' + config.currency}</td></tr>
-          <tr style="background:#262626;"><td><strong>السعر النهائي للعميل</strong></td><td class="highlight"><strong>${final.toFixed(2)} ${config.currency}</strong></td></tr>
-        `;
-
-        document.getElementById('unlockExternalResult').classList.remove('hidden');
-        return;
-      }
-
-      // Portarage: find region price
-      const area = formData.unlockArea || '';
-      if (!area) return;
-
-      let foundPrice = null;
-      let foundCancel = null;
-
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        if (!row) continue;
-        if (row[0] === area) {
-          foundPrice = parseFloat(row[1]) || 0;
-          foundCancel = row[2] ? `${parseFloat(row[2]).toFixed(2)} ${config.currency}` : 'غير محدد';
-          break;
-        }
-        if (row[4] === area) {
-          foundPrice = parseFloat(row[5]) || 0;
-          foundCancel = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير محدد';
-          break;
-        }
-      }
-
-      if (foundPrice === null) {
-        document.getElementById('unlockPortarageBody').innerHTML = `<tr><td colspan="2">المنطقة غير متوفرة في الشيت</td></tr>`;
-        document.getElementById('unlockPortarageResult').classList.remove('hidden');
-        return;
-      }
-
-      const finalPrice = foundPrice + increaseVal;
-
-      const body = document.getElementById('unlockPortarageBody');
-      body.innerHTML = `
-        <tr><td>سعر الخدمة</td><td class="highlight">${foundPrice.toFixed(2)} ${config.currency}</td></tr>
-        <tr><td>رسوم الإلغاء</td><td>${foundCancel}</td></tr>
-        <tr><td>زيادة من النظام (من صف أول عمود I)</td><td>${increaseVal ? increaseVal.toFixed(2) + ' ' + config.currency : '0.00 ' + config.currency}</td></tr>
-        <tr style="background:#262626;"><td><strong>السعر النهائي للعميل</strong></td><td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong></td></tr>
-      `;
-
-      document.getElementById('unlockPortarageResult').classList.remove('hidden');
     }
 
     // Option 1: Google Sheets Webhook (Apps Script) — leave empty to disable
