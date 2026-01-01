@@ -2563,12 +2563,39 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const rows = parseCSV(csvText);
         
         carWashData = [];
-        
-        // Column mapping: Timestamp(0), Date(1), Time(2), QR ORDER(3), Customer Location(4), Customer Name(5), Customer Number(6), Wash Type(7), Payment yes/no(8)
+
+        // Detect header indices so renamed columns (Arabic/English) still map correctly.
+        const headerRow = rows[0] || [];
+        const headers = headerRow.map(h => (h || '').toString().toLowerCase());
+
+        const idx = {
+          timestamp: headers.findIndex(h => /timestamp|time stamp|timestamp/i.test(h) || h.includes('timestamp')),
+          date: headers.findIndex(h => h.includes('date') || h.includes('تاريخ') || h.includes('التاريخ')),
+          time: headers.findIndex(h => h.includes('time') || h.includes('الوقت')),
+          qrOrder: headers.findIndex(h => h.includes('qr') || h.includes('qr order') || h.includes('رقم الطلب') || h.includes('رقم')),
+          location: headers.findIndex(h => h.includes('location') || h.includes('موقع')),
+          customerName: headers.findIndex(h => h.includes('customer name') || h.includes('اسم العميل') || h.includes('customer')),
+          customerNumber: headers.findIndex(h => h.includes('customer number') || h.includes('phone') || h.includes('رقم')),
+          washType: headers.findIndex(h => h.includes('wash type') || h.includes('نوع الغسيل') || h.includes('wash')),
+          payment: headers.findIndex(h => h.includes('payment') || h.includes('حاله الدفع') || h.includes('yes/no') || h.includes('نعم') || h.includes('لا'))
+        };
+
+        // Fallback to legacy indices if detection failed
+        const col = {
+          date: idx.date >= 0 ? idx.date : 1,
+          time: idx.time >= 0 ? idx.time : 2,
+          qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 3,
+          location: idx.location >= 0 ? idx.location : 4,
+          customerName: idx.customerName >= 0 ? idx.customerName : 5,
+          customerNumber: idx.customerNumber >= 0 ? idx.customerNumber : 6,
+          washType: idx.washType >= 0 ? idx.washType : 7,
+          payment: idx.payment >= 0 ? idx.payment : 8
+        };
+
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
-          if (row[1] && row[2]) { // Check Date and Time columns
-            let parsedDate = row[1].trim(); // Date column
+          if (row[col.date] && row[col.time]) {
+            let parsedDate = (row[col.date] || '').toString().trim();
             const dateObj = new Date(parsedDate);
             if (!isNaN(dateObj.getTime())) {
               const year = dateObj.getFullYear();
@@ -2576,43 +2603,37 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               const day = String(dateObj.getDate()).padStart(2, '0');
               parsedDate = `${year}-${month}-${day}`;
             }
-            
-            let timeStr = row[2].trim(); // Time column
+
+            let timeStr = (row[col.time] || '').toString().trim();
             let hours = 0;
             let minutes = 0;
-            
+
             const hasAMPM = /am|pm/i.test(timeStr);
-            
             if (hasAMPM) {
               const isPM = /pm/i.test(timeStr);
               timeStr = timeStr.replace(/am|pm/gi, '').trim();
-              
               const timeParts = timeStr.split(':');
               hours = parseInt(timeParts[0]) || 0;
               minutes = parseInt(timeParts[1]) || 0;
-              
-              if (isPM && hours !== 12) {
-                hours += 12;
-              } else if (!isPM && hours === 12) {
-                hours = 0;
-              }
+              if (isPM && hours !== 12) hours += 12;
+              else if (!isPM && hours === 12) hours = 0;
             } else {
               const timeParts = timeStr.split(':');
               hours = parseInt(timeParts[0]) || 0;
               minutes = parseInt(timeParts[1]) || 0;
             }
-            
+
             const formattedTime = `${hours}:${String(minutes).padStart(2, '0')}`;
-            
+
             carWashData.push({
               date: parsedDate,
               time: formattedTime,
-              qrOrder: row[3] || '', // QR ORDER
-              customerName: row[5] || '', // Customer Name
-              phone: row[6] || '', // Customer Number
-              location: row[4] || '', // Customer Location
-              washType: row[7] || '', // Wash Type
-              payment: row[8] || '' // Payment yes/no
+              qrOrder: row[col.qrOrder] || '',
+              customerName: row[col.customerName] || '',
+              phone: row[col.customerNumber] || '',
+              location: row[col.location] || '',
+              washType: row[col.washType] || '',
+              payment: row[col.payment] || ''
             });
           }
         }
