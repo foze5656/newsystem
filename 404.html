@@ -2568,16 +2568,35 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const headerRow = rows[0] || [];
         const headers = headerRow.map(h => (h || '').toString().toLowerCase());
 
+        // Prefer exact column headers (Arabic) if provided by user A..I, otherwise fallback to keyword search
+        const headerMap = {};
+        headers.forEach((h, i) => headerMap[h.trim()] = i);
+
+        function findHeader(...candidates) {
+          for (const c of candidates) {
+            const key = c.toString().toLowerCase().trim();
+            // exact match
+            for (const hh in headerMap) {
+              if (hh.toLowerCase().trim() === key) return headerMap[hh];
+            }
+            // substring match
+            for (const hh in headerMap) {
+              if (hh.toLowerCase().includes(key)) return headerMap[hh];
+            }
+          }
+          return -1;
+        }
+
         const idx = {
-          timestamp: headers.findIndex(h => /timestamp|time stamp|timestamp/i.test(h) || h.includes('timestamp')),
-          date: headers.findIndex(h => h.includes('date') || h.includes('تاريخ') || h.includes('التاريخ')),
-          time: headers.findIndex(h => h.includes('time') || h.includes('الوقت')),
-          qrOrder: headers.findIndex(h => h.includes('qr') || h.includes('qr order') || h.includes('رقم الطلب') || h.includes('رقم')),
-          location: headers.findIndex(h => h.includes('location') || h.includes('موقع')),
-          customerName: headers.findIndex(h => h.includes('customer name') || h.includes('اسم العميل') || h.includes('customer')),
-          customerNumber: headers.findIndex(h => h.includes('customer number') || h.includes('phone') || h.includes('رقم')),
-          washType: headers.findIndex(h => h.includes('wash type') || h.includes('نوع الغسيل') || h.includes('wash')),
-          payment: headers.findIndex(h => h.includes('payment') || h.includes('حاله الدفع') || h.includes('yes/no') || h.includes('نعم') || h.includes('لا'))
+          timestamp: findHeader('timestamp', 'time stamp', 'timestamp', 'توقيت'),
+          date: findHeader('تاريخ تسجيل الطلب', 'تاريخ الطلب', 'date', 'تاريخ', 'التاريخ'),
+          time: findHeader('الوقت', 'time'),
+          qrOrder: findHeader('رقم الطلب', 'qr order', 'qr'),
+          location: findHeader('موقع العميل', 'location', 'موقع'),
+          customerName: findHeader('اسم العميل', 'customer name', 'customer'),
+          customerNumber: findHeader('رقم العميل', 'customer number', 'phone', 'رقم'),
+          washType: findHeader('نوع الغسيل', 'wash type', 'نوع'),
+          payment: findHeader('حاله الدفع', 'حالة الدفع', 'payment', 'نعم', 'لا')
         };
 
         // Fallback to legacy indices if detection failed
