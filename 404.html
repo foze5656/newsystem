@@ -1354,24 +1354,19 @@
         }
       };
       
-toSelect.oninput = () => {
-      formData.to = toSelect.value;
-
-      // --- الجزء الجديد الذي ستضيفه هنا ---
-      const currentInput = toSelect.value.toLowerCase();
-      if (formData.from) {
-        const availableToLocations = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(Boolean);
-        const filteredLocations = availableToLocations.filter(loc => loc.toLowerCase().includes(currentInput));
-        toDatalist.innerHTML = filteredLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-      }
-      // --- نهاية الجزء الجديد ---      
-      // >>> ابدأ إضافة الكود الجديد من هنا <<<
-      const currentInput = toSelect.value.toLowerCase();
-      if (formData.from) {
-        const availableToLocations = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(Boolean);
-        const filteredLocations = availableToLocations.filter(loc => loc.toLowerCase().includes(currentInput));
-        toDatalist.innerHTML = filteredLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-      }}
+      toSelect.oninput = () => {
+        formData.to = toSelect.value;
+      // سطر التصفية الجديد:
+      toDatalist.innerHTML = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(loc => loc && loc.toLowerCase().includes(toSelect.value.toLowerCase())).map(loc => `<option value="${loc}">${loc}</option>`).join('');
+        
+        if (!formData.to) {
+          document.getElementById('towResultSection').classList.add('hidden');
+          
+          // Hide gear question sections
+          document.getElementById('extraChargesSection').classList.add('hidden');
+          document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
+          return;
+        }
         
         if (formData.to) {
           // Show gear question ONLY for بورتراج flatbed
