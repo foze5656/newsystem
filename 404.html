@@ -894,6 +894,7 @@
           'Geely',
           'Auto Capital',
           'خدمات5',
+          'فتح قفل',
           'ميزان وتركيب',
           'خدمات ميكانيكية',
           'تركيب بطارية',
@@ -2142,22 +2143,33 @@
     // Load datalist options specifically for فتح قفل sheet
     function loadLockAreaOptionsDatalist() {
       const areaDatalist = document.getElementById('areaOptions');
-      const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
-      if (!rows) {
-        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
-        return;
-      }
+      
+      // Wait up to 5 seconds for data to load if not ready yet
+      let waitCount = 0;
+      const checkAndLoad = () => {
+        const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
+        if (!rows) {
+          if (waitCount < 50) {
+            waitCount++;
+            setTimeout(checkAndLoad, 100);
+            return;
+          }
+          areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+          return;
+        }
 
-      const areas = [];
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        // Read from column Q (16) and U (20)
-        if (row[16]) areas.push(row[16]);
-        if (row[20]) areas.push(row[20]);
-      }
+        const areas = [];
+        for (let i = 2; i < rows.length; i++) {
+          const row = rows[i];
+          // Read from column Q (16) and U (20)
+          if (row[16]) areas.push(row[16]);
+          if (row[20]) areas.push(row[20]);
+        }
 
-      const uniqueAreas = [...new Set(areas)].filter(Boolean);
-      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
+        const uniqueAreas = [...new Set(areas)].filter(Boolean);
+        areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
+      };
+      checkAndLoad();
     }
 
     function calculatePuncturePrice() {
@@ -3570,73 +3582,83 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const areaSelect = document.getElementById('areaSelect');
       const areaDatalist = document.getElementById('areaOptions');
       
-      if (!sheetsData[sheetName]) {
-        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
-        return;
-      }
-      
-      const rows = sheetsData[sheetName];
-      const areas = [];
-      
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        columns.forEach((colIndex, idx) => {
-          if (idx % 3 === 0 && row[colIndex]) {
-            areas.push(row[colIndex]);
+      // Wait for data to load if not ready
+      let waitCount = 0;
+      const checkAndLoad = () => {
+        if (!sheetsData[sheetName]) {
+          if (waitCount < 50) {
+            waitCount++;
+            setTimeout(checkAndLoad, 100);
+            return;
           }
-        });
-      }
-      
-      const uniqueAreas = [...new Set(areas)].filter(Boolean);
-      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
-      
-      const newAreaSelect = areaSelect.cloneNode(true);
-      areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
-      
-      newAreaSelect.oninput = () => {
-        formData.area = newAreaSelect.value.trim();
-        
-        const resultSection = document.getElementById('serviceResultSection') || 
-                             document.getElementById('tireResultSection') || 
-                             document.getElementById('balanceResultSection') ||
-                             document.getElementById('mechResultSection') ||
-                             document.getElementById('fuelResultSection');
-        
-        if (!formData.area) {
-          if (resultSection) {
-            resultSection.classList.add('hidden');
-          }
-          
-          if (currentService === 'fuel') {
-            document.querySelectorAll('[data-fuel]').forEach(btn => btn.classList.remove('active'));
-            formData.fuelType = null;
-          }
-          
-          if (currentService === 'balance' && formData.tireSource === 'customer') {
-            const tireCountInput = document.getElementById('tireCountInput');
-            if (tireCountInput) {
-              tireCountInput.value = '';
-              formData.tireCount = 0;
-            }
-          }
-          
-          if (currentService === 'mechanical' && formData.mechanicalService === 'brakes') {
-            document.querySelectorAll('[data-disk]').forEach(btn => {
-              btn.classList.remove('active');
-              if (btn.dataset.disk === 'no') {
-                btn.classList.add('active');
-              }
-            });
-            formData.diskTurning = 'no';
-          }
-          
+          areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
           return;
         }
         
-        if (formData.area && callback) {
-          callback();
+        const rows = sheetsData[sheetName];
+        const areas = [];
+        
+        for (let i = 2; i < rows.length; i++) {
+          const row = rows[i];
+          columns.forEach((colIndex, idx) => {
+            if (idx % 3 === 0 && row[colIndex]) {
+              areas.push(row[colIndex]);
+            }
+          });
         }
+        
+        const uniqueAreas = [...new Set(areas)].filter(Boolean);
+        areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
+        
+        const newAreaSelect = areaSelect.cloneNode(true);
+        areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
+        
+        newAreaSelect.oninput = () => {
+          formData.area = newAreaSelect.value.trim();
+          
+          const resultSection = document.getElementById('serviceResultSection') || 
+                               document.getElementById('tireResultSection') || 
+                               document.getElementById('balanceResultSection') ||
+                               document.getElementById('mechResultSection') ||
+                               document.getElementById('fuelResultSection');
+          
+          if (!formData.area) {
+            if (resultSection) {
+              resultSection.classList.add('hidden');
+            }
+            
+            if (currentService === 'fuel') {
+              document.querySelectorAll('[data-fuel]').forEach(btn => btn.classList.remove('active'));
+              formData.fuelType = null;
+            }
+            
+            if (currentService === 'balance' && formData.tireSource === 'customer') {
+              const tireCountInput = document.getElementById('tireCountInput');
+              if (tireCountInput) {
+                tireCountInput.value = '';
+                formData.tireCount = 0;
+              }
+            }
+            
+            if (currentService === 'mechanical' && formData.mechanicalService === 'brakes') {
+              document.querySelectorAll('[data-disk]').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.disk === 'no') {
+                  btn.classList.add('active');
+                }
+              });
+              formData.diskTurning = 'no';
+            }
+            
+            return;
+          }
+          
+          if (formData.area && callback) {
+            callback();
+          }
+        };
       };
+      checkAndLoad();
     }
 
     function calculateServicePrice(sheetName, columns) {
