@@ -1354,9 +1354,17 @@
         }
       };
       
-      toSelect.oninput = () => {
+toSelect.oninput = () => {
       formData.to = toSelect.value;
-      
+
+      // --- الجزء الجديد الذي ستضيفه هنا ---
+      const currentInput = toSelect.value.toLowerCase();
+      if (formData.from) {
+        const availableToLocations = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(Boolean);
+        const filteredLocations = availableToLocations.filter(loc => loc.toLowerCase().includes(currentInput));
+        toDatalist.innerHTML = filteredLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
+      }
+      // --- نهاية الجزء الجديد ---      
       // >>> ابدأ إضافة الكود الجديد من هنا <<<
       const currentInput = toSelect.value.toLowerCase();
       if (formData.from) {
