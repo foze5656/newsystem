@@ -2551,7 +2551,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     async function loadCarWashAppointments(selectedDate) {
       try {
         const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=WASH%20Sheet`;
         
         const response = await fetch(csvUrl, {
           mode: 'cors',
