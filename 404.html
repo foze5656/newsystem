@@ -14,57 +14,87 @@
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
     
     * {
-          const templates = {
-            tow_normal: `رسوم ونش (عادي)
-من منطقة ___ إلى منطقة ___
-السعر: ___ د.ك`,
+      font-family: 'Cairo', sans-serif;
+      font-size: 18px;
+    }
+    
+    /* Datalist and Select Styling — Black × Gold luxury theme */
+    input[list]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
 
-            tow_flatbed: `رسوم ونش (فل داون)
-من منطقة ___ إلى منطقة ___
-السعر: ___ د.ك`,
+    datalist {
+      background: #050505; /* very dark */
+      color: #FFD700; /* gold */
+      border: 1px solid #FFD700;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(255,215,0,0.06);
+      padding: 6px;
+    }
 
-            tow_flatbed_locked: `رسوم ونش (فل داون - مسكّر)
-من منطقة ___ إلى منطقة ___
-السعر: ___ د.ك`,
+    option {
+      background: #0a0a0a;
+      color: #FFD700;
+      padding: 10px 12px;
+      font-size: 13px;
+      transition: all 0.18s ease;
+      border-radius: 8px;
+    }
 
-            battery_subscription: `رسوم الاشتراك وفحص البطارية: 10 د.ك
-حاب نأكد لك الخدمة؟`,
+    option:hover {
+      background: #B8860B; /* dark gold */
+      color: #000;
+      box-shadow: 0 8px 20px rgba(255,215,0,0.12), 0 0 12px rgba(255,215,0,0.06) inset;
+    }
 
-            battery_check: `رسوم طلعة الفني: 10.00 د.ك
-في حال كانت المشكلة بطارية، يتم خصم 10 د.ك من سعر البطارية وتدفع الفرق فقط`,
+    select {
+      background: #070707;
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(255,215,0,0.04);
+    }
 
-            puncture_three: `خدمة طريق
-رسوم فحص التأير: ___ د.ك
-تشمل:
-- رقعة خارجية او تركيب سبير او تعبئة هواء`,
+    select option {
+      background: #0a0a0a;
+      color: #FFD700;
+      padding: 8px;
+      border-radius: 6px;
+    }
 
-            puncture_internal: `رقعة داخلية
-رسوم رقعة داخلية مع الميزان: ___ د.ك`,
+    select option:hover,
+    select option:checked {
+      background: #B8860B;
+      color: #000;
+      box-shadow: 0 8px 20px rgba(255,215,0,0.12);
+    }
 
-            puncture_check: `فحص تاير
-رسوم فحص التأير: ___ د.ك
-تشمل:
-- رقعة خارجية او تركيب سبير او تعبئة هواء
-في حال احتاج التاير رقعة داخلية تكون الزيادة: ___ د.ك (رسوم الرقعة الداخلية ناقص رسوم الرقعة الخارجية)`,
+    /* Firefox specific */
+    @-moz-document url-prefix() {
+      option {
+        background: #0a0a0a;
+        color: #FFD700;
+      }
 
-            fuel: `رسوم البنزين 1.5 دك يوصلك لاقرب محطه فقط
-التوصيل: ___ د.ك
-الاجمالى: ___ د.ك
-
-ملاحظة: البنزين الخصوصي والممتاز 1.5 دك
-لكن إذا كان الترا فيكون 2.5 د.ك`,
-
-            lock: `رسوم فتح القفل: ___ د.ك`,
-
-            oilfilter: `رسوم خدمة تبديل الزيت والفلتر (في حال وفرت القطع): ___ د.ك`,
-
-            mechanical: `رسوم فحص السيارة: ___ د.ك
-في حال العطل ميكانيكي ونقدر نصلحه قدام البيت، رسوم خدمة التصليح تنخصم من رسوم الفحص.`,
-
-            brakes: `رسوم تركيب السفايف والديسكات: ___ د.ك
-في حال تفعيل مخرطة ديسكات:
-رسوم تركيب السفايف ومخرطة الديسكات: ___ د.ك`
-          };
+      option:hover {
+        background: #B8860B;
+        color: #000;
+      }
+    }
+    
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .dashboard-wrapper {
+      height: 100%;
+      width: 100%;
       display: grid;
       grid-template-columns: 220px 1fr;
       background: #0a0a0a;
@@ -664,29 +694,26 @@
     
     /* Copy Button */
     .copy-btn-small {
-      background: #000;
-      color: #fff;
+      background: #F2BC1B;
+      color: #000;
       border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
+      border-radius: 3px;
+      padding: 6px 8px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      margin-left: 8px;
-      transition: transform 0.12s ease, background 0.12s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      width: 100%;
+      margin-top: 5px;
+      transition: all 0.2s ease;
     }
-
-    .copy-btn-small:hover { transform: translateY(-2px); }
-
+    
+    .copy-btn-small:hover {
+      background: #d9a616;
+    }
+    
     .copy-btn-small.success {
       background: #10b981;
       color: #fff;
-      transform: none;
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -711,8 +738,6 @@
      </div>
     </div>
     <div class="service-item" data-service="fuel"><span class="icon">⛽</span> <span class="label">خدمة بنزين</span>
-    </div>
-    <div class="service-item" data-service="unlock"><span class="icon">🔓</span> <span class="label">فتح قفل السيارة</span>
     </div>
     <div class="service-item has-submenu" data-service="tire"><span class="icon">📀</span> <span class="label">العناية بالإطارات</span> <span class="arrow">▼</span>
     </div>
@@ -763,9 +788,6 @@
       sheet_id: '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk',
       currency: 'د.ك'
     };
-
-    // ثابت الزيادة لخدمة فتح القفل (مقدار ثابت يضاف للسعر الأصلي)
-    const LOCK_SURCHARGE = 10; // د.ك
 
     let config = { ...defaultConfig };
     let sheetsData = {};
@@ -867,7 +889,6 @@
           'Geely',
           'Auto Capital',
           'خدمات5',
-          'فتح قفل',
           'ميزان وتركيب',
           'خدمات ميكانيكية',
           'تركيب بطارية',
@@ -961,7 +982,6 @@
           'newBattery': 'بطارية جديدة',
           'batteryInstall': 'تركيب بطارية',
           'fuel': 'خدمة بنزين',
-          'unlock': 'فتح قفل السيارة',
           'tireSheet': 'شيت التواير',
           'tireIncrease': 'زيادات التواير',
           'puncture': 'بنشر',
@@ -988,9 +1008,6 @@
             break;
           case 'fuel':
             renderFuelInterface();
-            break;
-          case 'unlock':
-            renderLockInterface();
             break;
           case 'tireSheet':
             openFullscreenIframe('https://portiers.netlify.app/', 'شيت التواير');
@@ -1019,38 +1036,8 @@
 
     // Render Battery Subscription Interface (was old "battery" service)
     function renderBatterySubscriptionInterface() {
-      const contentArea = document.getElementById('contentArea');
-      formData.currentService = 'battery_subscription';
-      contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <h3 class="section-title">اختيار المنطقة</h3>
-          <div class="form-field">
-            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
-            <datalist id="areaOptions"></datalist>
-          </div>
-          <div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>
-        </div>
-
-        <div id="serviceResultSection" class="data-table-container hidden">
-          <div class="table-header">اشتراك / فحص بطارية</div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>البيان</th>
-                  <th>القيمة</th>
-                </tr>
-              </thead>
-              <tbody id="serviceResultBody">
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-
-      loadAreaOptionsDatalist('خدمات5', [0,1,2,4,5,6], () => {
-        calculateServicePrice('خدمات5', [0,1,2,4,5,6]);
-      });
+      renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
+        '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
     }
 
     // Render Tow Interface
@@ -1603,9 +1590,9 @@
           }
           rows += `
             <tr style="background: #262626;">
-                <td><strong>الإجمالي النهائي</strong></td>
-                <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong> <button class="copy-btn-small" title="نسخ رسالة" onclick="copyServiceMessage('tow', this)">📋</button></td>
-              </tr>
+              <td><strong>الإجمالي النهائي</strong></td>
+              <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong></td>
+            </tr>
           `;
         }
       } else {
@@ -1787,7 +1774,7 @@
       tbody.innerHTML = `
         <tr>
           <td>سعر الخدمة</td>
-          <td class="highlight">${parseFloat(price).toFixed(2)} ${config.currency} <button class="copy-btn-small" title="نسخ رسالة" onclick="copyServiceMessage('battery_install', this)">📋</button></td>
+          <td class="highlight">${parseFloat(price).toFixed(2)} ${config.currency}</td>
         </tr>
         <tr>
           <td>رسوم الإلغاء</td>
@@ -1818,9 +1805,7 @@
             <button class="btn-option" data-fuel="ultra">بنزين الترا<br><small>(2.5 د.ك)</small></button>
           </div>
         </div>
-
-        <!-- (تم نقل واجهة فتح القفل إلى خدمة منفصلة 'فتح قفل السيارة') -->
-
+        
         <div id="fuelResultSection" class="data-table-container hidden">
           <div class="table-header">نتيجة الحساب</div>
           <div class="table-scroll">
@@ -1843,12 +1828,12 @@
       
       loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
         document.getElementById('fuelTypeSection').classList.remove('hidden');
-
+        
         document.querySelectorAll('[data-fuel]').forEach(btn => {
           btn.onclick = () => {
             document.querySelectorAll('[data-fuel]').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
+            
             formData.fuelType = btn.dataset.fuel;
             calculateFuelPrice();
           };
@@ -1898,7 +1883,7 @@
         </tr>
         <tr style="background: #262626;">
           <td><strong>الإجمالي</strong></td>
-          <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong> <button class="copy-btn-small" title="نسخ رسالة" onclick="copyServiceMessage('fuel', this)">📋</button></td>
+          <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
         </tr>
         <tr>
           <td>رسوم الإلغاء</td>
@@ -1907,115 +1892,6 @@
       `;
       
       document.getElementById('fuelResultSection').classList.remove('hidden');
-    }
-
-    // Calculate price for فتح قفل when performed by بورتراج
-    function calculateLockPortaragePrice() {
-      const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
-      if (!rows || !formData.lockArea) return;
-
-      let price = null;
-      let cancellation = null;
-
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-
-        // Read from columns Q (16), R (17), S (18)
-        if (row[16] === formData.lockArea) {
-          price = parseFloat(row[17]) || 0;
-          cancellation = row[18] ? `${parseFloat(row[18]).toFixed(2)} ${config.currency}` : 'غير محدد';
-          break;
-        }
-
-        // Read from columns U (20), V (21), W (22)
-        if (row[20] === formData.lockArea) {
-          price = parseFloat(row[21]) || 0;
-          cancellation = row[22] ? `${parseFloat(row[22]).toFixed(2)} ${config.currency}` : 'غير محدد';
-          break;
-        }
-      }
-
-      const body = document.getElementById('lockPortarageBody');
-      const result = document.getElementById('lockPortarageResult');
-      const finalNotice = document.getElementById('lockFinalNotice');
-
-      if (price === null) {
-        result.classList.add('hidden');
-        return;
-      }
-
-      // لبورتراج: لا نضيف أي زيادة، السعر كما هو من الشيت
-      const finalPrice = price;
-
-      body.innerHTML = `
-        <tr>
-          <td>سعر فتح القفل (بورتراج)</td>
-          <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
-        </tr>
-        <tr>
-          <td>رسوم الإلغاء</td>
-          <td>${cancellation}</td>
-        </tr>
-        <tr style="background: #262626;">
-          <td><strong>السعر النهائي</strong></td>
-          <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong> <button class="copy-btn-small" title="نسخ رسالة" onclick="copyServiceMessage('lock', this)">📋</button></td>
-        </tr>
-      `;
-
-      result.classList.remove('hidden');
-      // لبورتراج: لا نعرض مربع الملاحظة الأزرق وفق طلب المستخدم
-    }
-
-    // Calculate price for فتح قفل when performed by مورد خارجي
-    function calculateLockExternalPrice(externalPrice) {
-      const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
-      const externalBody = document.getElementById('lockExternalBody');
-      const externalResult = document.getElementById('lockExternalResult');
-      const finalNotice = document.getElementById('lockFinalNotice');
-      const externalNoteDisplay = document.getElementById('lockExternalNoteDisplay');
-
-      if (!rows) return;
-
-      // apply fixed surcharge for external as well
-      const finalPrice = (externalPrice || 0) + LOCK_SURCHARGE;
-
-      externalBody.innerHTML = `
-        <tr>
-          <td>سعر الفني الخارجي</td>
-          <td class="highlight">${(externalPrice||0).toFixed(2)} ${config.currency}</td>
-        </tr>
-        <tr style="background: #262626;">
-          <td><strong>السعر النهائي</strong></td>
-          <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong> <button class="copy-btn-small" title="نسخ رسالة" onclick="copyServiceMessage('lock', this)">📋</button></td>
-        </tr>
-      `;
-
-      externalResult.classList.remove('hidden');
-      // show final notice and external note
-      if (finalNotice) {
-        finalNotice.classList.remove('hidden');
-        finalNotice.textContent = `السعر الذي يتم ابلاغ العميل فيه مع الزيادة : ${finalPrice.toFixed(2)} ${config.currency}`;
-      }
-      if (externalNoteDisplay) externalNoteDisplay.classList.remove('hidden');
-    }
-
-    // Apply surcharge string from sheet first row column I.
-    // surchargeRaw can be '10%' or '2.5' (absolute). Returns numeric final price.
-    function applySurcharge(basePrice, surchargeRaw) {
-      if (!surchargeRaw) return basePrice;
-      const s = surchargeRaw.toString().trim();
-      if (s.endsWith('%')) {
-        const p = parseFloat(s.replace('%', '')) || 0;
-        return basePrice + (basePrice * p / 100);
-      }
-      const absolute = parseFloat(s);
-      if (isNaN(absolute)) return basePrice;
-      // If value looks like a percentage number (e.g. 10) treat as percent (10 -> 10%)
-      if (absolute >= 1 && absolute <= 100) {
-        return basePrice + (basePrice * absolute / 100);
-      }
-      // otherwise treat as absolute amount
-      return basePrice + absolute;
     }
 
     // Render Puncture Service (بنشر)
@@ -2035,12 +1911,6 @@
           </div>
         </div>
         
-        <div style="margin-top:8px; display:flex; gap:8px;">
-          <button class="btn-option" onclick="copyServiceMessage('puncture_three', this)">٣ خدمات</button>
-          <button class="btn-option" onclick="copyServiceMessage('puncture_internal', this)">رقعة داخلية</button>
-          <button class="btn-option" onclick="copyServiceMessage('puncture_check', this)">فحص</button>
-        </div>
-
         <div id="tireResultSection" class="data-table-container hidden">
           <div class="table-header">أسعار خدمة البنشر</div>
           <div class="table-scroll">
@@ -2062,123 +1932,6 @@
       loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14], () => {
         calculatePuncturePrice();
       });
-    }
-
-    // Render Unlock (فتح قفل السيارة) as a separate service
-    function renderLockInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="form-section">
-          <h3 class="section-title">فتح قفل السيارة 🔓</h3>
-          <div class="form-field">
-            <label>من سيقوم بالخدمة؟</label>
-            <div class="btn-grid" style="grid-template-columns: repeat(2,1fr);">
-              <button class="btn-option" id="lockProviderPortarage" data-lock-provider="بورتراج">بورتراج</button>
-              <button class="btn-option" id="lockProviderExternal" data-lock-provider="مورد خارجي">مورد خارجي</button>
-            </div>
-          </div>
-
-          <div id="lockPortaragePanel" class="form-section hidden" style="margin-top:8px;">
-            <div class="form-field">
-              <label>المنطقة</label>
-              <input type="text" list="areaOptions" id="lockAreaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
-              <datalist id="areaOptions"></datalist>
-            </div>
-            <div id="lockPortarageResult" class="data-table-container hidden">
-              <div class="table-header">نتيجة فتح القفل - بورتراج</div>
-              <div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockPortarageBody"></tbody></table></div>
-            </div>
-            <div class="warning-box" style="margin-top:8px;">يرجى التأكد من فني بورتراج انه يقدر يفتح باب السياره لنه ماعندنا امكانيه نفتح جميع السيارات</div>
-          </div>
-
-          <div id="lockExternalPanel" class="form-section hidden" style="margin-top:8px;">
-            <div class="form-field">
-              <label>سعر الفني الخارجي</label>
-              <input type="number" id="lockExternalPrice" class="form-control" placeholder="ضع سعر الفني هنا">
-            </div>
-            <div id="lockExternalNoteDisplay" class="info-box" style="margin-top:8px;">ملاحظة: للفنين الخارجين — قروب عثمان • Mr.LOCK</div>
-            <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي</div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
-          </div>
-
-          <div id="lockFinalNotice" class="info-box hidden" style="margin-top:8px;"></div>
-        </div>
-      `;
-      // populate area options for this service from sheet 'فتح قفل'
-      loadLockAreaOptionsDatalist();
-
-      // wire up buttons
-      document.getElementById('lockProviderPortarage').onclick = () => {
-        document.getElementById('lockProviderPortarage').classList.add('active');
-        document.getElementById('lockProviderExternal').classList.remove('active');
-        document.getElementById('lockPortaragePanel').classList.remove('hidden');
-        document.getElementById('lockExternalPanel').classList.add('hidden');
-        document.getElementById('lockFinalNotice').classList.add('hidden');
-      };
-
-      document.getElementById('lockProviderExternal').onclick = () => {
-        document.getElementById('lockProviderExternal').classList.add('active');
-        document.getElementById('lockProviderPortarage').classList.remove('active');
-        document.getElementById('lockExternalPanel').classList.remove('hidden');
-        document.getElementById('lockPortaragePanel').classList.add('hidden');
-        document.getElementById('lockFinalNotice').classList.add('hidden');
-      };
-
-      // when area selected
-      const lockAreaSelect = document.getElementById('lockAreaSelect');
-      lockAreaSelect.oninput = () => {
-        formData.lockArea = lockAreaSelect.value.trim();
-        if (!formData.lockArea) {
-          document.getElementById('lockPortarageResult').classList.add('hidden');
-          return;
-        }
-        calculateLockPortaragePrice();
-      };
-
-      // external price
-      const lockExternalPrice = document.getElementById('lockExternalPrice');
-      // update immediately on input/change/keyup
-      if (lockExternalPrice) {
-        ['input', 'change', 'keyup'].forEach(evt => {
-          lockExternalPrice.addEventListener(evt, () => {
-            const val = parseFloat(lockExternalPrice.value);
-            calculateLockExternalPrice(isNaN(val) ? 0 : val);
-            const note = document.getElementById('lockExternalNoteDisplay');
-            if (note) note.style.display = 'block';
-          });
-        });
-      }
-    }
-
-    // Load datalist options specifically for فتح قفل sheet
-    function loadLockAreaOptionsDatalist() {
-      const areaDatalist = document.getElementById('areaOptions');
-      
-      // Wait up to 5 seconds for data to load if not ready yet
-      let waitCount = 0;
-      const checkAndLoad = () => {
-        const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
-        if (!rows) {
-          if (waitCount < 50) {
-            waitCount++;
-            setTimeout(checkAndLoad, 100);
-            return;
-          }
-          areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
-          return;
-        }
-
-        const areas = [];
-        for (let i = 2; i < rows.length; i++) {
-          const row = rows[i];
-          // Read from column Q (16) and U (20)
-          if (row[16]) areas.push(row[16]);
-          if (row[20]) areas.push(row[20]);
-        }
-
-        const uniqueAreas = [...new Set(areas)].filter(Boolean);
-        areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
-      };
-      checkAndLoad();
     }
 
     function calculatePuncturePrice() {
@@ -2212,12 +1965,12 @@
       tbody.innerHTML = `
         <tr>
           <td>رقعة خارجية / تركيب سبير / تعبئة هواء</td>
-          <td class="highlight">${externalPrice} <button class="copy-btn-small" title="نسخ رسالة - ٣ خدمات" onclick="copyServiceMessage('puncture_three', this)">📋</button></td>
+          <td class="highlight">${externalPrice}</td>
           <td>${externalCancel}</td>
         </tr>
         <tr>
           <td>رقعة داخلية</td>
-          <td class="highlight">${internalPrice} <button class="copy-btn-small" title="نسخ رسالة - رقعة داخلية" onclick="copyServiceMessage('puncture_internal', this)">📋</button></td>
+          <td class="highlight">${internalPrice}</td>
           <td>${internalCancel}</td>
         </tr>
       `;
@@ -2331,7 +2084,7 @@
         tbody.innerHTML = `
           <tr>
             <td>سعر الخدمة</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency} <button class="copy-btn-small" title="نسخ رسالة" onclick="copyServiceMessage('balance', this)">📋</button></td>
+            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
           </tr>
           <tr>
             <td>رسوم الإلغاء</td>
@@ -2376,7 +2129,7 @@
           </tr>
           <tr style="background: #262626;">
             <td><strong>الإجمالي</strong></td>
-            <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong> <button class="copy-btn-small" title="نسخ رسالة" onclick="copyServiceMessage('balance', this)">📋</button></td>
+            <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
           </tr>
           <tr>
             <td>رسوم الإلغاء</td>
@@ -2558,7 +2311,7 @@
           </tr>
           <tr style="background: #262626;">
             <td><strong>الإجمالي</strong></td>
-            <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong> <button class="copy-btn-small" title="نسخ رسالة" onclick="copyServiceMessage('brakes', this)">📋</button></td>
+            <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
           </tr>
           <tr>
             <td>رسوم الإلغاء</td>
@@ -2571,7 +2324,7 @@
         tbody.innerHTML = `
           <tr>
             <td>سعر الخدمة</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency} <button class="copy-btn-small" title="نسخ رسالة" onclick="copyServiceMessage('${formData.mechanicalService === 'inspection' ? 'mechanical' : formData.mechanicalService}', this)">📋</button></td>
+            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
           </tr>
           <tr>
             <td>رسوم الإلغاء</td>
@@ -2711,7 +2464,7 @@
             <ul>
               ${wash.services.map(s => `<li>${s}</li>`).join('')}
             </ul>
-            <button class="copy-btn-small" onclick="copyWashDetails('${type}')">📋</button>
+            <button class="copy-btn-small" onclick="copyWashDetails('${type}')">📋 نسخ</button>
           </div>
         `;
       });
@@ -2786,7 +2539,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             
             setTimeout(() => {
               btn.classList.remove('success');
-              btn.textContent = '📋';
+              btn.textContent = '📋 نسخ';
             }, 2000);
           }
         });
@@ -2794,333 +2547,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         console.error('Failed to copy:', err);
       }
     };
-
-    // Generic table copy: copies rows from a tbody with id
-    window.copyTableResult = async function(tbodyId, title = '') {
-      try {
-        const tbody = document.getElementById(tbodyId);
-        if (!tbody) return;
-
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        const lines = [];
-        if (title) lines.push(title, '');
-
-        rows.forEach(tr => {
-          const tds = Array.from(tr.querySelectorAll('td'));
-          if (tds.length >= 2) {
-            const label = tds[0].innerText.trim();
-            const value = tds[1].innerText.trim();
-            lines.push(`${label}: ${value}`);
-          } else {
-            const text = tr.innerText.trim();
-            if (text) lines.push(text);
-          }
-        });
-
-        const text = lines.join('\n');
-        await navigator.clipboard.writeText(text);
-
-        // button feedback: find buttons that reference this tbodyId in their onclick
-        const buttons = document.querySelectorAll('.copy-btn-small');
-        buttons.forEach(btn => {
-          try {
-            if (btn.onclick && btn.onclick.toString().includes(tbodyId)) {
-              const prev = btn.textContent;
-              btn.classList.add('success');
-              btn.textContent = '✓ تم النسخ!';
-              setTimeout(() => { btn.classList.remove('success'); btn.textContent = prev; }, 1800);
-            }
-          } catch (e) {}
-        });
-      } catch (e) {
-        console.error('copyTableResult error', e);
-      }
-    };
-
-    // Copy the nearest table (used for dynamic/generated tables). Button element passed as `this`.
-    window.copyNearestTable = async function(btn) {
-      try {
-        const container = btn.closest('.data-table-container') || btn.parentElement;
-        if (!container) return;
-        const headerEl = container.querySelector('.table-header');
-        let title = headerEl ? headerEl.childNodes[0].nodeValue || headerEl.innerText : '';
-        title = (title || '').replace('📋 نسخ رسالة', '').replace('📋 نسخ', '').trim();
-
-        const table = container.querySelector('table');
-        if (!table) return;
-        const thead = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.trim());
-        const tbody = table.querySelector('tbody');
-        const rows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
-
-        const lines = [];
-        if (title) lines.push(title, '');
-
-        if (rows.length === 0) {
-          // If no tbody rows, try to copy the first row under thead (for search results)
-          const firstRow = table.querySelector('tbody tr');
-          if (firstRow) {
-            const cells = Array.from(firstRow.querySelectorAll('td'));
-            if (cells.length === thead.length) {
-              thead.forEach((h, i) => lines.push(`${h}: ${cells[i].innerText.trim()}`));
-            }
-          }
-        } else {
-          rows.forEach(tr => {
-            const cells = Array.from(tr.querySelectorAll('td'));
-            if (cells.length >= 2) {
-              const label = cells[0].innerText.trim();
-              const value = cells[1].innerText.trim();
-              lines.push(`${label}: ${value}`);
-            } else if (cells.length === 1) {
-              lines.push(cells[0].innerText.trim());
-            }
-          });
-        }
-
-        const text = lines.join('\n');
-        await navigator.clipboard.writeText(text);
-
-        const prev = btn.textContent;
-        btn.classList.add('success');
-        btn.textContent = '✓ تم النسخ!';
-        setTimeout(() => { btn.classList.remove('success'); btn.textContent = prev; }, 1800);
-      } catch (e) {
-        console.error('copyNearestTable error', e);
-      }
-    };
-
-      // Copy predefined service message templates (Arabic) — copies exact style requested
-      window.copyServiceMessage = async function(key, btn) {
-        try {
-          const templates = {
-            tow_normal: `رسوم الونش العادي
-  من منطقة من إلى منطقة إلى
-  السعر: ___ د.ك
-  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
-  في حال إلغاء الطلب والفني بالطريق، أو القير ما يتبوش، أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
-
-            tow_flatbed: `رسوم الونش الفل داون
-  من منطقة من إلى منطقة إلى
-  السعر: ___ د.ك
-  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
-  في حال إلغاء الطلب والفني بالطريق، أو القير ما يتبوش، أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
-
-            tow_flatbed_locked: `رسوم الونش الفل داون مسكّر
-  من منطقة من إلى منطقة إلى
-  السعر: ___ د.ك
-  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
-  في حال إلغاء الطلب والفني بالطريق، أو القير ما يتبوش، أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
-
-            battery_subscription: `رسوم اشتراك البطارية: ___ د.ك
-  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
-  في حال إلغاء الطلب والفني بالطريق، أو في حال كانت المشكلة ليست بطارية، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
-
-            battery_check: `رسوم طلعة الفني: ___ د.ك
-  في حال كانت المشكلة بطارية، يتم خصم ___ د.ك من سعر البطارية وتدفع الفرق فقط.
-  في حال كانت المشكلة من السلف أو الدينمو أو أي سبب آخر، أو تم إلغاء الطلب والفني بالطريق، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
-
-            puncture: `رسوم خدمة الفحص: 10 د.ك
-  تشمل رقعة خارجية أو تعبئة هواء أو تركيب سبير.
-  في حال احتاج التاير رقعة داخلية تكون الرسوم 15 د.ك ويتم دفع فرق السعر فقط.
-  حاب نأكد لك على الخدمة؟
-  ❗ رسوم إلغاء الطلب
-  في حال إلغاء الطلب والفني متوجه لكم، أو التاير ما ينرقع، أو السيارة بدون سبير، أو لأي سبب آخر، يتم خصم رسوم الإلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
-
-            // specific puncture templates
-            puncture_three: `رسوم خدمة الفحص: 10 د.ك
-  تشمل رقعة خارجية أو تعبئة هواء أو تركيب سبير و في حال إلغاء الطلب والفني متوجه لكم، أو التاير ما ينرقع، أو السيارة بدون سبير، أو لأي سبب آخر، يتم خصم رسوم الإلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.
-
-حاب نأكد لك على الخدمة؟`,
-
-            puncture_internal: `رقعه داخلية
-  رسوم رقعه داخليه : 15 د.ك
-  و في حال إلغاء الطلب والفني متوجه لكم، أو التاير ما ينرقع، او السيارة بدون سبير، أو لأي سبب اخر، يتم خصم رسوم الإلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.
-
-حاب نأكد لك على الخدمة؟`,
-
-            puncture_check: `رسوم خدمة الفحص: 10 د.ك
-  تشمل رقعة خارجية أو تعبئة هواء أو تركيب سبير.
-  في حال احتاج التاير رقعة داخلية تكون الرسوم 15 د.ك ويتم دفع فرق السعر فقط و في حال إلغاء الطلب والفني متوجه لكم، أو التاير ما ينرقع، أو السيارة بدون سبير، أو لأي سبب آخر، يتم خصم رسوم الإلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.
-
-حاب نأكد لك على الخدمة؟`,
-
-            fuel: `⛽ خدمة البنزين
-  رسوم خدمة توصيل وتعبئة البنزين: ___ د.ك
-  رسوم البنزين (حسب النوع): ___ د.ك بدون الخدمة.
-  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
-  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
-
-            lock: `🔐 خدمة فتح القفل
-  رسوم فتح القفل: ___ د.ك
-  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
-  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
-
-            oilfilter: `🛢️ خدمة تغيير الزيت والفلتر (من عند العميل)
-  رسوم خدمة تغيير الزيت والفلتر: ___ د.ك
-  الزيت والفلتر من عند العميل.
-  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
-  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`,
-
-            brakes: `🛑 خدمة تركيب السفايف والديسكات (من عند العميل)
-  🔹 تركيب سفايف وديسكات
-  رسوم التركيب: ___ د.ك
-  السفايف والديسكات من عند العميل.
-  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
-  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.
-  🔹 تركيب سفايف مع مخرطة ديسكات
-  رسوم التركيب مع المخرطة: ___ د.ك
-  السفايف من عند العميل، مع تنفيذ مخرطة الديسكات عند الموقع.
-  يوصلك رابط الدفع عند تأكيد الطلب لتوجيه الفني.
-  في حال إلغاء الطلب والفني بالطريق أو لأي سبب آخر، يتم خصم رسوم إلغاء ___ د.ك والباقي يرجع إلى حسابك خلال 3 أيام عمل بنكية.`
-          };
-
-          let text = '';
-          if (key === 'tow') {
-            const type = (formData.towType || '').toLowerCase();
-            const locked = !!formData.isLocked;
-            if (type === 'flatbed' && locked) text = templates.tow_flatbed_locked;
-            else if (type === 'flatbed') text = templates.tow_flatbed;
-            else text = templates.tow_normal;
-          } else if (templates[key]) {
-            text = templates[key];
-          } else {
-            // fallback: generic service message
-            text = templates.fuel;
-          }
-
-          // Try to fill ___ د.ك placeholders from the computed result tables
-          function extractNumberFromString(s) {
-            if (!s) return null;
-            const m = s.toString().match(/-?\d+[\.,]?\d*/);
-            if (!m) return null;
-            const n = parseFloat(m[0].replace(',', '.'));
-            if (isNaN(n)) return null;
-            return n.toFixed(2);
-          }
-
-          function findPriceInTbody(tbodyId, labelCandidates = []) {
-            try {
-              const tbody = document.getElementById(tbodyId);
-              if (!tbody) return null;
-              const rows = Array.from(tbody.querySelectorAll('tr'));
-              // first look for matching labels
-              for (const r of rows) {
-                const tds = Array.from(r.querySelectorAll('td'));
-                if (tds.length >= 2) {
-                  const label = (tds[0].innerText || '').trim();
-                  const value = (tds[1].innerText || '').trim();
-                  for (const cand of labelCandidates) {
-                    if (label.includes(cand)) {
-                      const num = extractNumberFromString(value);
-                      if (num) return num;
-                    }
-                  }
-                }
-              }
-              // fallback: look for totals or any numeric cell
-              for (const r of rows) {
-                const tds = Array.from(r.querySelectorAll('td'));
-                if (tds.length >= 2) {
-                  const label = (tds[0].innerText || '').trim();
-                  const value = (tds[1].innerText || '').trim();
-                  if (/الإجمالي|الإجمالي النهائي|السعر النهائي|السعر|الإجمالي/gi.test(label)) {
-                    const num = extractNumberFromString(value);
-                    if (num) return num;
-                  }
-                }
-              }
-              // final fallback: first numeric value in tbody
-              for (const r of rows) {
-                const tds = Array.from(r.querySelectorAll('td'));
-                for (const td of tds) {
-                  const num = extractNumberFromString(td.innerText);
-                  if (num) return num;
-                }
-              }
-            } catch (e) { }
-            return null;
-          }
-
-          // determine which table to read depending on service
-          let mainPrice = null;
-          let cancelPrice = null;
-          const k = key;
-          if (k === 'tow') {
-            mainPrice = findPriceInTbody('towResultBody', ['الإجمالي', 'الإجمالي النهائي', 'الإجمالي النهائي', 'الإجمالي']);
-            cancelPrice = findPriceInTbody('towResultBody', ['رسوم الإلغاء', 'رسوم الإلغاء']);
-          } else if (k === 'battery_install' || k === 'battery_subscription' || k === 'battery_check') {
-            // battery may use batteryResultBody (subscription/install) or generic serviceResultBody
-            mainPrice = findPriceInTbody('batteryResultBody', ['سعر الخدمة', 'السعر']) || findPriceInTbody('serviceResultBody', ['سعر الخدمة', 'السعر']);
-            cancelPrice = findPriceInTbody('batteryResultBody', ['رسوم الإلغاء', 'رسوم الإلغاء']) || findPriceInTbody('serviceResultBody', ['رسوم الإلغاء', 'رسوم الإلغاء']);
-          } else if (k === 'fuel') {
-            // For fuel template we want: first placeholder = رسوم التوصيل (service fee)
-            // second placeholder = الاجمالي
-            mainPrice = findPriceInTbody('fuelResultBody', ['رسوم خدمة التوصيل', 'رسوم خدمة التوصيل', 'رسوم التوصيل', 'رسوم خدمة']);
-            cancelPrice = findPriceInTbody('fuelResultBody', ['الإجمالي', 'الإجمالي النهائي']);
-          } else if (k === 'puncture') {
-            mainPrice = findPriceInTbody('tireResultBody', ['رقعة خارجية', 'رقعة داخلية', 'خدمة الفحص', 'الرسوم']);
-            cancelPrice = findPriceInTbody('tireResultBody', ['رسوم الإلغاء']);
-          } else if (k === 'puncture_three') {
-            mainPrice = findPriceInTbody('tireResultBody', ['خدمة الفحص', 'رسوم خدمة الفحص']) || null;
-            cancelPrice = findPriceInTbody('tireResultBody', ['رسوم الإلغاء']) || null;
-          } else if (k === 'puncture_internal') {
-            mainPrice = findPriceInTbody('tireResultBody', ['رقعه داخليه', 'رقعة داخلية', 'رقعه داخلية']) || null;
-            cancelPrice = findPriceInTbody('tireResultBody', ['رسوم الإلغاء']) || null;
-          } else if (k === 'puncture_check') {
-            mainPrice = findPriceInTbody('tireResultBody', ['رسوم خدمة الفحص', 'خدمة الفحص']) || null;
-            cancelPrice = findPriceInTbody('tireResultBody', ['رسوم الإلغاء']) || null;
-          } else if (k === 'lock') {
-            const portarageVisible = document.getElementById('lockPortarageResult') && !document.getElementById('lockPortarageResult').classList.contains('hidden');
-            const tbodyId = portarageVisible ? 'lockPortarageBody' : 'lockExternalBody';
-            mainPrice = findPriceInTbody(tbodyId, ['السعر النهائي', 'سعر فتح القفل', 'سعر']);
-            // cancellation for lock should be half of final amount if available
-            cancelPrice = null;
-            if (mainPrice) {
-              const n = parseFloat(mainPrice);
-              if (!isNaN(n)) cancelPrice = (n / 2).toFixed(2);
-            }
-          } else if (k === 'balance') {
-            mainPrice = findPriceInTbody('balanceResultBody', ['الإجمالي', 'الإجمالي النهائي']);
-            cancelPrice = findPriceInTbody('balanceResultBody', ['رسوم الإلغاء']);
-          } else if (k === 'mechanical' || k === 'oilfilter' || k === 'brakes') {
-            mainPrice = findPriceInTbody('mechResultBody', ['الإجمالي', 'السعر', 'الإجمالي النهائي']);
-            cancelPrice = findPriceInTbody('mechResultBody', ['رسوم الإلغاء']);
-          }
-
-          // insert locations if available: replace pattern like 'من منطقة من إلى منطقة إلى' with real from/to
-          try {
-            const fromVal = formData.from || (document.getElementById('fromSelect') ? document.getElementById('fromSelect').value : '') || '';
-            const toVal = formData.to || (document.getElementById('toSelect') ? document.getElementById('toSelect').value : '') || '';
-            if (fromVal && toVal) {
-              text = text.replace(/من\s*منطقة[\s\S]*?إلى\s*منطقة[\s\S]*?(\n|$)/, `من منطقة ${fromVal} إلى منطقة ${toVal}\n`);
-            } else if (fromVal && !toVal) {
-              text = text.replace(/من\s*منطقة[\s\S]*?إلى\s*منطقة[\s\S]*?(\n|$)/, `من منطقة ${fromVal} إلى منطقة ___\n`);
-            } else if (!fromVal && toVal) {
-              text = text.replace(/من\s*منطقة[\s\S]*?إلى\s*منطقة[\s\S]*?(\n|$)/, `من منطقة ___ إلى منطقة ${toVal}\n`);
-            }
-
-          } catch (e) {}
-
-          // replace placeholders: first occurrence -> mainPrice, second -> cancelPrice
-          const mainStr = mainPrice ? `${mainPrice} د.ك` : '___ د.ك';
-          const cancelStr = cancelPrice ? `${cancelPrice} د.ك` : '___ د.ك';
-          // replace first ___ د.ك
-          text = text.replace(/___\s*د\.ك/, mainStr);
-          // replace next ___ د.ك (cancellation)
-          text = text.replace(/___\s*د\.ك/, cancelStr);
-
-          await navigator.clipboard.writeText(text);
-
-          if (btn) {
-            const prev = btn.textContent;
-            btn.classList.add('success');
-            btn.textContent = '✓ تم النسخ!';
-            setTimeout(() => { btn.classList.remove('success'); btn.textContent = prev; }, 1800);
-          }
-        } catch (e) {
-          console.error('copyServiceMessage error', e);
-        }
-      };
 
     async function loadCarWashAppointments(selectedDate) {
       try {
@@ -3835,7 +3261,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       foundResults.forEach((result, index) => {
         html += `
           <div class="data-table-container" style="margin-bottom: 15px; grid-column: 1 / -1;">
-            <div class="table-header">${result.sheetName} <button class="copy-btn-small" title="نسخ" onclick="copyNearestTable(this)">📋</button></div>
+            <div class="table-header">${result.sheetName}</div>
             <div style="overflow-x: auto; width: 100%;">
               <table class="data-table" style="width: 100%; table-layout: auto;">
                 <thead>
@@ -3893,7 +3319,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         </div>
         
         <div id="serviceResultSection" class="data-table-container hidden">
-          <div class="table-header">${title} <button class="copy-btn-small" title="نسخ" onclick="copyNearestTable(this)">📋</button></div>
+          <div class="table-header">${title}</div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -3918,83 +3344,73 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const areaSelect = document.getElementById('areaSelect');
       const areaDatalist = document.getElementById('areaOptions');
       
-      // Wait for data to load if not ready
-      let waitCount = 0;
-      const checkAndLoad = () => {
-        if (!sheetsData[sheetName]) {
-          if (waitCount < 50) {
-            waitCount++;
-            setTimeout(checkAndLoad, 100);
-            return;
+      if (!sheetsData[sheetName]) {
+        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+        return;
+      }
+      
+      const rows = sheetsData[sheetName];
+      const areas = [];
+      
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        columns.forEach((colIndex, idx) => {
+          if (idx % 3 === 0 && row[colIndex]) {
+            areas.push(row[colIndex]);
           }
-          areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+        });
+      }
+      
+      const uniqueAreas = [...new Set(areas)].filter(Boolean);
+      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
+      
+      const newAreaSelect = areaSelect.cloneNode(true);
+      areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
+      
+      newAreaSelect.oninput = () => {
+        formData.area = newAreaSelect.value.trim();
+        
+        const resultSection = document.getElementById('serviceResultSection') || 
+                             document.getElementById('tireResultSection') || 
+                             document.getElementById('balanceResultSection') ||
+                             document.getElementById('mechResultSection') ||
+                             document.getElementById('fuelResultSection');
+        
+        if (!formData.area) {
+          if (resultSection) {
+            resultSection.classList.add('hidden');
+          }
+          
+          if (currentService === 'fuel') {
+            document.querySelectorAll('[data-fuel]').forEach(btn => btn.classList.remove('active'));
+            formData.fuelType = null;
+          }
+          
+          if (currentService === 'balance' && formData.tireSource === 'customer') {
+            const tireCountInput = document.getElementById('tireCountInput');
+            if (tireCountInput) {
+              tireCountInput.value = '';
+              formData.tireCount = 0;
+            }
+          }
+          
+          if (currentService === 'mechanical' && formData.mechanicalService === 'brakes') {
+            document.querySelectorAll('[data-disk]').forEach(btn => {
+              btn.classList.remove('active');
+              if (btn.dataset.disk === 'no') {
+                btn.classList.add('active');
+              }
+            });
+            formData.diskTurning = 'no';
+          }
+          
           return;
         }
         
-        const rows = sheetsData[sheetName];
-        const areas = [];
-        
-        for (let i = 2; i < rows.length; i++) {
-          const row = rows[i];
-          columns.forEach((colIndex, idx) => {
-            if (idx % 3 === 0 && row[colIndex]) {
-              areas.push(row[colIndex]);
-            }
-          });
+        if (formData.area && callback) {
+          callback();
         }
-        
-        const uniqueAreas = [...new Set(areas)].filter(Boolean);
-        areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
-        
-        const newAreaSelect = areaSelect.cloneNode(true);
-        areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
-        
-        newAreaSelect.oninput = () => {
-          formData.area = newAreaSelect.value.trim();
-          
-          const resultSection = document.getElementById('serviceResultSection') || 
-                               document.getElementById('tireResultSection') || 
-                               document.getElementById('balanceResultSection') ||
-                               document.getElementById('mechResultSection') ||
-                               document.getElementById('fuelResultSection');
-          
-          if (!formData.area) {
-            if (resultSection) {
-              resultSection.classList.add('hidden');
-            }
-            
-            if (currentService === 'fuel') {
-              document.querySelectorAll('[data-fuel]').forEach(btn => btn.classList.remove('active'));
-              formData.fuelType = null;
-            }
-            
-            if (currentService === 'balance' && formData.tireSource === 'customer') {
-              const tireCountInput = document.getElementById('tireCountInput');
-              if (tireCountInput) {
-                tireCountInput.value = '';
-                formData.tireCount = 0;
-              }
-            }
-            
-            if (currentService === 'mechanical' && formData.mechanicalService === 'brakes') {
-              document.querySelectorAll('[data-disk]').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.disk === 'no') {
-                  btn.classList.add('active');
-                }
-              });
-              formData.diskTurning = 'no';
-            }
-            
-            return;
-          }
-          
-          if (formData.area && callback) {
-            callback();
-          }
-        };
       };
-      checkAndLoad();
     }
 
     function calculateServicePrice(sheetName, columns) {
@@ -4026,14 +3442,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
       
       const tbody = document.getElementById('serviceResultBody');
-      let buttonsHtml = '';
-      if (formData.currentService === 'battery_subscription') {
-        buttonsHtml = ` <button class="copy-btn-small" title="نسخ اشتراك" onclick="copyServiceMessage('battery_subscription', this)">📋</button> <button class="copy-btn-small" title="نسخ فحص" onclick="copyServiceMessage('battery_check', this)">📋</button>`;
-      }
       tbody.innerHTML = `
         <tr>
           <td>سعر الخدمة</td>
-          <td class="highlight">${parseFloat(price).toFixed(2)} ${config.currency}${buttonsHtml}</td>
+          <td class="highlight">${parseFloat(price).toFixed(2)} ${config.currency}</td>
         </tr>
         <tr>
           <td>رسوم الإلغاء</td>
