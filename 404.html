@@ -408,20 +408,22 @@
       color: #ccc;
       font-weight: 600;
     }
-    .copy-btn {
-      background: transparent;
-      border: 1px solid #F2BC1B;
-      color: #F2BC1B;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      margin-left: 8px;
     
     .btn-option:hover {
       background: #353535;
       border-color: #F2BC1B;
     }
+    .copy-btn, .order-btn {
+      background: transparent;
+      border: 1px solid #F2BC1B;
+      color: #F2BC1B;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-left: 8px;
+    }
+    .order-btn { background: #F2BC1B; color: #000; border-color: #F2BC1B; }
     
     .btn-option.active {
       background: #F2BC1B;
@@ -776,15 +778,6 @@
      </div>
     </header><!-- Content Area -->
     <div id="contentArea" class="content-area">
-     <div style="grid-column: 1 / -1; padding: 12px; text-align: center;">
-      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px">
-       <button class="btn" onclick="openService('tow')">الونشات</button>
-       <button class="btn" onclick="openService('fuel')">البنزين</button>
-       <button class="btn" onclick="openService('puncture')">بنشر</button>
-       <button class="btn" onclick="openService('battery')">البطارية</button>
-       <button class="btn" onclick="openService('mechanical')">الميكانيك</button>
-      </div>
-     </div>
      <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
       <div style="font-size: 48px; margin-bottom: 16px;">
        📊
@@ -975,17 +968,6 @@
       // Don't reset the service - keep the current state
       // The user will see the same service they had before opening the iframe
     };
-
-    // Open service helper for top buttons
-    function openService(key){
-      const item = document.querySelector(`.service-item[data-service="${key}"]`);
-      if(item){
-        item.click();
-        try{ item.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
-      } else {
-        alert('الخدمة غير متوفرة حالياً');
-      }
-    }
 
     // Service Selection
     document.addEventListener('click', (e) => {
@@ -1182,7 +1164,7 @@
         </div>
         
         <div id="towResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب <button class="copy-btn" onclick="copyResultText('towResultSection')">نسخ</button></div>
+          <div class="table-header">نتيجة الحساب</div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -1680,6 +1662,8 @@
       
       tbody.innerHTML = rows;
       document.getElementById('towResultSection').classList.remove('hidden');
+      // attach order button for tow
+      attachOrderButton('towResultSection','tow');
       
       setTimeout(() => {
         const resultSection = document.getElementById('towResultSection');
@@ -1821,6 +1805,8 @@
       `;
       
       document.getElementById('serviceResultSection').classList.remove('hidden');
+      attachOrderButton('serviceResultSection', currentService || 'service');
+      attachOrderButton('serviceResultSection', currentService || 'service');
     }
 
     // Render Fuel Interface
@@ -1847,7 +1833,7 @@
         <!-- (تم نقل واجهة فتح القفل إلى خدمة منفصلة 'فتح قفل السيارة') -->
 
         <div id="fuelResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب <button class="copy-btn" onclick="copyResultText('fuelResultSection')">نسخ</button></div>
+          <div class="table-header">نتيجة الحساب</div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -1932,6 +1918,7 @@
       `;
       
       document.getElementById('fuelResultSection').classList.remove('hidden');
+      attachOrderButton('fuelResultSection','fuel');
     }
 
     // Calculate price for فتح قفل when performed by بورتراج
@@ -1975,7 +1962,7 @@
       body.innerHTML = `
         <tr>
           <td>سعر فتح القفل (بورتراج)</td>
-          <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
+          <td class="highlight">${price.toFixed(2)} ${config.currency} <button class="copy-btn" onclick="requestFromSection('tow','lockPortarage')">طلب</button></td>
         </tr>
         <tr>
           <td>رسوم الإلغاء</td>
@@ -1988,6 +1975,7 @@
       `;
 
       result.classList.remove('hidden');
+      attachOrderButton('lockPortarageResult','tow');
       // لبورتراج: لا نعرض مربع الملاحظة الأزرق وفق طلب المستخدم
     }
 
@@ -2016,6 +2004,7 @@
       `;
 
       externalResult.classList.remove('hidden');
+      attachOrderButton('lockExternalResult','tow');
       // show final notice and external note
       if (finalNotice) {
         finalNotice.classList.remove('hidden');
@@ -2061,7 +2050,7 @@
         </div>
         
         <div id="tireResultSection" class="data-table-container hidden">
-          <div class="table-header">أسعار خدمة البنشر <button class="copy-btn" onclick="copyResultText('tireResultSection')">نسخ</button></div>
+          <div class="table-header">أسعار خدمة البنشر</div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2104,7 +2093,7 @@
               <datalist id="areaOptions"></datalist>
             </div>
             <div id="lockPortarageResult" class="data-table-container hidden">
-              <div class="table-header">نتيجة فتح القفل - بورتراج <button class="copy-btn" onclick="copyResultText('lockPortarageResult')">نسخ</button></div>
+              <div class="table-header">نتيجة فتح القفل - بورتراج</div>
               <div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockPortarageBody"></tbody></table></div>
             </div>
             <div class="warning-box" style="margin-top:8px;">يرجى التأكد من فني بورتراج انه يقدر يفتح باب السياره لنه ماعندنا امكانيه نفتح جميع السيارات</div>
@@ -2116,7 +2105,7 @@
               <input type="number" id="lockExternalPrice" class="form-control" placeholder="ضع سعر الفني هنا">
             </div>
             <div id="lockExternalNoteDisplay" class="info-box" style="margin-top:8px;">ملاحظة: للفنين الخارجين — قروب عثمان • Mr.LOCK</div>
-            <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي <button class="copy-btn" onclick="copyResultText('lockExternalResult')">نسخ</button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
+            <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي</div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
           </div>
 
           <div id="lockFinalNotice" class="info-box hidden" style="margin-top:8px;"></div>
@@ -2220,17 +2209,18 @@
       tbody.innerHTML = `
         <tr>
           <td>رقعة خارجية / تركيب سبير / تعبئة هواء</td>
-          <td class="highlight">${externalPrice}</td>
+          <td class="highlight">${externalPrice} <button class="order-btn" onclick="requestFromSection('puncture','external')">طلب</button></td>
           <td>${externalCancel}</td>
         </tr>
         <tr>
           <td>رقعة داخلية</td>
-          <td class="highlight">${internalPrice}</td>
+          <td class="highlight">${internalPrice} <button class="order-btn" onclick="requestFromSection('puncture','internal')">طلب</button></td>
           <td>${internalCancel}</td>
         </tr>
       `;
       
       document.getElementById('tireResultSection').classList.remove('hidden');
+      attachOrderButton('tireResultSection','puncture');
     }
 
     // Render Balance Service (ميزان وتركيب)
@@ -2261,7 +2251,7 @@
         </div>
         
         <div id="balanceResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب <button class="copy-btn" onclick="copyResultText('balanceResultSection')">نسخ</button></div>
+          <div class="table-header">نتيجة الحساب</div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2398,6 +2388,7 @@
       }
       
       document.getElementById('balanceResultSection').classList.remove('hidden');
+      attachOrderButton('balanceResultSection','balance');
     }
 
     // Render Mechanical Interface - UPDATED: زيت وفلتر كخيار
@@ -2596,6 +2587,7 @@
       }
       
       document.getElementById('mechResultSection').classList.remove('hidden');
+      attachOrderButton('mechResultSection','mechanical');
     }
 
     // Render Car Wash Interface
@@ -3573,8 +3565,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           ${note}
         </div>
         
-        <div id="mechResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب <button class="copy-btn" onclick="copyResultText('mechResultSection')">نسخ</button></div>
+        <div id="serviceResultSection" class="data-table-container hidden">
+          <div class="table-header">${title}</div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -3711,27 +3703,120 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       document.getElementById('serviceResultSection').classList.remove('hidden');
     }
 
-    // Copy visible result table/text to clipboard
-    function copyResultText(sectionId) {
+    // Attach an order button to the final/total cell of a result section
+    function attachOrderButton(sectionId, serviceKey, subtype) {
       try {
         const section = document.getElementById(sectionId);
-        if (!section) return alert('لا توجد نتيجة للنسخ');
-        const tableScroll = section.querySelector('.table-scroll');
-        let text = '';
-        if (tableScroll) {
-          text = tableScroll.innerText.trim();
+        if (!section) return;
+        const tbody = section.querySelector('tbody');
+        if (!tbody) return;
+        // find a row that contains a likely price label (الإجمالي، السعر النهائي، سعر الخدمة، السعر)
+        let targetRow = Array.from(tbody.querySelectorAll('tr')).reverse().find(r => /الإجمالي|السعر النهائي|سعر الخدمة|السعر|الإجمالي النهائي|قيمة الخصم/.test(r.innerText));
+        if (!targetRow) targetRow = tbody.querySelector('tr:last-child');
+        if (!targetRow) return;
+        const cells = targetRow.querySelectorAll('td');
+        if (cells.length < 2) return;
+        // For tow: only add order/copy when selected company is بورتراج
+        if (serviceKey === 'tow' && formData && formData.companyArabic !== 'بورتراج') return;
+        // Avoid adding multiple buttons
+        if (cells[1].querySelector('.order-btn')) return;
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.style.marginLeft = '8px';
+        btn.textContent = 'طلب';
+        btn.onclick = () => requestFromSection(serviceKey, subtype);
+        cells[1].appendChild(btn);
+      } catch (e) {
+        console.error('attachOrderButton', e);
+      }
+    }
+
+    // Build the message text per service and perform requested action (copy)
+    function requestFromSection(serviceKey, subtype) {
+      let msg = '';
+      try {
+        if (serviceKey === 'tow' || currentService === 'tow') {
+          // build tow message
+          const type = formData.towType === 'flatbed' ? 'ونش فل داون' : (formData.towType === 'normal' ? 'ونش عادي' : (formData.towType||'ونش'));
+          const from = formData.from || document.getElementById('fromSelect')?.value || '';
+          const to = formData.to || document.getElementById('toSelect')?.value || '';
+          // find total price from towResultBody
+          const tbody = document.getElementById('towResultBody');
+          const totalCell = tbody?.querySelector('tr:last-child td.highlight') || tbody?.querySelector('tr:last-child td');
+          const priceText = totalCell ? totalCell.innerText.replace(/[^0-9.]/g,'') : '';
+          msg = `رسوم (${type}) من منطقة (${from}) إلى منطقة (${to}): (${priceText}) د.ك`;
+          // copy only if company is بورتراج
+          if (formData.companyArabic !== 'بورتراج') {
+            return alert('نسخ رسالة الونش ممكن فقط عندما الجهة بورتراج');
+          }
+        } else if (serviceKey === 'fuel' || currentService === 'fuel') {
+          // fuel message
+          const fuelNames = { 'premium': 'ممتاز', 'special': 'خصوصي', 'ultra': 'الترا' };
+          const fuelType = formData.fuelType || '';
+          const pricePer = (fuelType === 'ultra' || fuelType === 'ultra') ? 2.5 : 1.5;
+          const servicePrice = (() => {
+            const el = document.querySelector('#fuelResultBody .highlight');
+            if (!el) return '';
+            return el.innerText.replace(config.currency,'').trim();
+          })();
+          const deliveryRow = Array.from(document.querySelectorAll('#fuelResultBody tr')).find(r=>/رسوم خدمة التوصيل|رسوم التوصيل|رسوم خدمة التوصيل/.test(r.innerText));
+          const delivery = deliveryRow ? deliveryRow.querySelector('td:last-child').innerText.replace(/[^0-9.]/g,'') : '';
+          const totalRow = Array.from(document.querySelectorAll('#fuelResultBody tr')).find(r=>/الإجمالي/.test(r.innerText));
+          const total = totalRow ? totalRow.querySelector('td:last-child').innerText.replace(/[^0-9.]/g,'') : '';
+          msg = `رسوم البنزين ${pricePer} د.ك (التوصيل لأقرب محطة فقط)\nالتوصيل (${delivery}) د.ك\nالإجمالي (${total}) د.ك`;
+        } else if (serviceKey === 'puncture' || currentService === 'puncture') {
+          // puncture / tire
+          if (subtype === 'internal') {
+            const intRow = document.querySelector('#tireResultBody tr:nth-child(2) td.highlight');
+            const extRow = document.querySelector('#tireResultBody tr:nth-child(1) td.highlight');
+            const intPrice = intRow ? parseFloat(intRow.innerText.replace(/[^0-9.]/g,'')) : 0;
+            const extPrice = extRow ? parseFloat(extRow.innerText.replace(/[^0-9.]/g,'')) : 0;
+            const diff = (intPrice - extPrice).toFixed(2);
+            msg = `رسوم رقعة داخلية مع الميزان (${intPrice.toFixed(2)}) د.ك\n\nفي حال احتاج التاير رقعة داخلية يتم إضافة فرق السعر فقط: ${diff} د.ك`;
+          } else if (subtype === 'external') {
+            const row = document.querySelector('#tireResultBody tr:nth-child(1) td.highlight');
+            const price = row ? row.innerText.replace(/[^0-9.]/g,'') : '';
+            msg = `رسوم فحص التاير (${price}) د.ك\n(تشمل رقعة خارجية أو تركيب سبير أو تعبئة هواء)`;
+          } else {
+            // default: use external
+            const row = document.querySelector('#tireResultBody tr:nth-child(1) td.highlight');
+            const price = row ? row.innerText.replace(/[^0-9.]/g,'') : '';
+            msg = `رسوم فحص التاير (${price}) د.ك\n(تشمل رقعة خارجية أو تركيب سبير أو تعبئة هواء)`;
+          }
+        } else if (serviceKey === 'battery' || currentService === 'battery' || serviceKey === 'batterySubscription') {
+          if (subtype === 'subscribe' || currentService === 'batterySubscription') {
+            msg = `رسوم الاشتراك وفحص البطارية 10 د.ك\nحاب ناكد لك الخدمه؟`;
+          } else {
+            // battery check or install
+            const final = (()=>{
+              const el = document.querySelector('#lockPortarageBody td.highlight') || document.querySelector('#serviceResultBody td.highlight');
+              return el ? el.innerText.replace(/[^0-9.]/g,'') : '';
+            })();
+            msg = `رسوم طلعة الفني (${10}) د.ك\nفي حال كانت المشكلة بطارية يتم خصم (${10}) د.ك من سعر البطارية وتدفع الفرق فقط`;
+          }
+        } else if (serviceKey === 'mechanical' || currentService === 'mechanical' || serviceKey === 'balance' ) {
+          if (currentService === 'balance' || serviceKey === 'balance') {
+            const el = document.querySelector('#balanceResultBody td.highlight');
+            const price = el ? el.innerText.replace(/[^0-9.]/g,'') : '';
+            msg = `رسوم رقعة داخلية مع الميزان (${price}) د.ك`;
+          } else {
+            const el = document.querySelector('#mechResultBody td.highlight') || document.querySelector('#serviceResultBody td.highlight');
+            const price = el ? el.innerText.replace(/[^0-9.]/g,'') : '';
+            msg = `رسوم فحص السيارة (${price}) د.ك\nفي حال كان العطل ميكانيكي ونقدر نصلحه جدام البيت يتم خصم رسوم التصليح من رسوم الفحص`;
+          }
         } else {
-          text = section.innerText.trim();
+          msg = 'لا توجد بيانات كافية لإنشاء الطلب.';
         }
-        if (!text) return alert('لا توجد بيانات للنسخ');
-        navigator.clipboard.writeText(text).then(() => {
-          alert('تم نسخ المحتوى');
-        }).catch(() => {
+
+        // copy to clipboard and notify
+        navigator.clipboard.writeText(msg).then(()=>{
+          alert('تم نسخ رسالة الطلب:\n' + msg);
+        }).catch(()=>{
           alert('فشل النسخ — تأكد من صلاحيات المتصفح');
         });
       } catch (err) {
         console.error(err);
-        alert('حدث خطأ أثناء النسخ');
+        alert('خطأ أثناء إنشاء الطلب');
       }
     }
 
