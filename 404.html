@@ -72,6 +72,53 @@
       box-shadow: 0 8px 20px rgba(255,215,0,0.12);
     }
 
+    /* iframe overlay for embedded forms */
+    .iframe-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .iframe-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      height: 100%;
+      background: #0b0b0b;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+
+    .iframe-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .iframe-close-box {
+      position: absolute;
+      right: -60px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #111;
+      color: #fff;
+      border: 2px solid #F2BC1B;
+      padding: 12px 14px;
+      border-radius: 8px 0 0 8px;
+      cursor: pointer;
+      z-index: 2100;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      font-weight: 700;
+    }
+
     /* Firefox specific */
     @-moz-document url-prefix() {
       option {
@@ -3303,10 +3350,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         </div>
       `;
       
-      // Register Refund Button
+      // Register Refund Button — افتح الفورم داخل الصفحة بدل نافذة جديدة
       document.getElementById('registerRefundBtn').onclick = () => {
         const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdrJLZVsDsC1sVC4uIIsFMrhjhT_1xCPbPiBBKqEM_b5B0v6w/viewform?usp=dialog';
-        window.open(formUrl, 'refundForm', 'width=800,height=600');
+        openRefundFormInPage(formUrl);
       };
       
       // Search functionality - بحث دقيق فقط بدون تصفية أثناء الكتابة
@@ -3470,6 +3517,50 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           `;
           resultsContainer.classList.remove('hidden');
         });
+    }
+    }
+
+    // Open refund Google Form inside the page (iframe overlay)
+    function openRefundFormInPage(url) {
+      // close any existing
+      closeRefundFormInPage();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'refundFormOverlay';
+      overlay.className = 'iframe-overlay';
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'iframe-wrapper';
+
+      const iframe = document.createElement('iframe');
+      iframe.src = url;
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.setAttribute('loading', 'lazy');
+      wrapper.appendChild(iframe);
+
+      const closeBox = document.createElement('div');
+      closeBox.id = 'refundFormClose';
+      closeBox.className = 'iframe-close-box';
+      closeBox.textContent = 'رجوع';
+      closeBox.onclick = closeRefundFormInPage;
+      wrapper.appendChild(closeBox);
+
+      overlay.appendChild(wrapper);
+      document.body.appendChild(overlay);
+      document.body.style.overflow = 'hidden';
+
+      // close on Escape
+      overlay._escHandler = function(e) { if (e.key === 'Escape') closeRefundFormInPage(); };
+      document.addEventListener('keydown', overlay._escHandler);
+    }
+
+    function closeRefundFormInPage() {
+      const overlay = document.getElementById('refundFormOverlay');
+      if (!overlay) return;
+      // remove key handler
+      if (overlay._escHandler) document.removeEventListener('keydown', overlay._escHandler);
+      overlay.remove();
+      document.body.style.overflow = '';
     }
 
     // Render Insurance Interface
