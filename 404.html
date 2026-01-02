@@ -1451,12 +1451,16 @@
       
       areaSelect.oninput = () => {
         formData.area = areaSelect.value.trim();
+        formData.batteryService = null;
         
         if (!formData.area) {
           batteryServiceSection.classList.add('hidden');
           batteryResultSection.classList.add('hidden');
+          document.querySelectorAll('[data-battery-service]').forEach(b => b.classList.remove('active'));
         } else {
           batteryServiceSection.classList.remove('hidden');
+          batteryResultSection.classList.add('hidden');
+          document.querySelectorAll('[data-battery-service]').forEach(b => b.classList.remove('active'));
         }
       };
       
@@ -2680,12 +2684,16 @@
       
       areaSelect.oninput = () => {
         formData.area = areaSelect.value.trim();
+        formData.tireService = null;
         
         if (!formData.area) {
           tireServicesSection.classList.add('hidden');
           tireResultSection.classList.add('hidden');
+          document.querySelectorAll('[data-tire-service]').forEach(b => b.classList.remove('active'));
         } else {
           tireServicesSection.classList.remove('hidden');
+          tireResultSection.classList.add('hidden');
+          document.querySelectorAll('[data-tire-service]').forEach(b => b.classList.remove('active'));
         }
       };
       
