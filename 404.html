@@ -1,147 +1,4 @@
 <!doctype html>
-<html lang="ar">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>المبالغ المسترجعة</title>
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;direction:rtl;padding:18px;background:#f7f7f9}
-    h1{margin:0 0 12px}
-    .controls{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-    input[type=text]{padding:8px;width:260px}
-    button{padding:8px 12px;cursor:pointer}
-    table{width:100%;border-collapse:collapse;margin-top:12px;background:#fff}
-    th,td{border:1px solid #ddd;padding:8px;text-align:center}
-    th{background:#f0f0f0}
-    .status-returned{color:green;font-weight:600}
-    .status-pending{color:#d97706;font-weight:600}
-    .small{font-size:0.9em;color:#555}
-    #pendingBox{margin-top:12px}
-  </style>
-</head>
-<body>
-  <h1>المبالغ المسترجعة</h1>
-
-  <div class="controls">
-    <button id="registerBtn">تسجيل الاسترجاع</button>
-    <div style="flex:1"></div>
-    <label class="small">بحث برقم العميل / الطلب:</label>
-    <input id="searchInput" type="text" placeholder="أدخل رقم العميل أو الطلب" />
-    <button id="searchBtn">بحث</button>
-    <button id="clearBtn">مسح</button>
-  </div>
-
-  <div id="pendingBox">
-    <h3>الطلبات قيد التنفيذ</h3>
-    <table id="pendingTable"><thead><tr><th>تاريخ الطلب</th><th>رقم الطلب</th><th>المبلغ</th><th>الموظف</th><th>الحالة</th></tr></thead><tbody></tbody></table>
-  </div>
-
-  <h3>النتائج</h3>
-  <table id="resultsTable"><thead><tr><th>تاريخ الطلب (A)</th><th>رقم الطلب (B)</th><th>المبلغ المسترجع (D)</th><th>الموظف (E)</th><th>الحالة (F)</th><th>تاريخ الاسترجاع (G)</th></tr></thead><tbody></tbody></table>
-
-  <script>
-    const SHEET_ID = '1HmRWypUMbHChUUSVvogJ2jdCZeHf8aCo3DLRkeL7DLw';
-    const GID = 0; // عدّل هذا إذا كان ال sheet يستخدم gid آخر
-    const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdrJLZVsDsC1sVC4uIIsFMrhjhT_1xCPbPiBBKqEM_b5B0v6w/viewform?usp=dialog';
-
-    const registerBtn = document.getElementById('registerBtn');
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const resultsTable = document.getElementById('resultsTable').querySelector('tbody');
-    const pendingTable = document.getElementById('pendingTable').querySelector('tbody');
-
-    registerBtn.addEventListener('click', ()=> window.open(FORM_URL, '_blank'));
-    searchBtn.addEventListener('click', doSearch);
-    clearBtn.addEventListener('click', ()=>{searchInput.value=''; renderAll(rows);});
-
-    let rows = [];
-
-    function fetchSheet(){
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
-      fetch(url).then(r=>r.text()).then(text=>{
-        const jsonText = text.replace(/^.*setResponse\(|\);\s*$/g, '');
-        const data = JSON.parse(jsonText);
-        parseData(data.table.rows);
-      }).catch(err=>{
-        resultsTable.innerHTML = `<tr><td colspan=6 style="color:red">خطأ في جلب البيانات: ${err.message}</td></tr>`;
-      });
-    }
-
-    function parseData(gvizRows){
-      rows = gvizRows.map(r=>{
-        // columns: A=0, B=1, C=2, D=3, E=4, F=5, G=6
-        const v = i => (r.c[i] && r.c[i].v) ? r.c[i].v : '';
-        const dateReq = v(0);
-        const orderNum = v(1);
-        const amount = v(3);
-        let employee = v(4);
-        const op = v(5);
-        const refundDate = v(6);
-
-        if(employee === 'Fawzipor@gmail.com') employee = 'فوزي دامس';
-
-        const returned = ((''+op).toString().trim() !== '') && ((''+op).includes('نعم') || (''+op).toLowerCase().includes('yes'));
-
-        return {dateReq, orderNum, amount, employee, op, refundDate, returned};
-      });
-
-      // remove header row if it's the first row (user said row 1 is headers)
-      if(rows.length && (rows[0].dateReq==='' && rows[0].orderNum==='')){
-        rows.shift();
-      }
-
-      renderAll(rows);
-    }
-
-    function renderAll(data){
-      // full results
-      resultsTable.innerHTML = '';
-      data.forEach(r=>{
-        const tr = document.createElement('tr');
-        const statusCell = r.returned ? `<span class="status-returned">تم الاسترجاع ✅</span>` : `<span class="status-pending">قيد التنفيذ ⏳</span>`;
-        const refundDate = (r.returned ? (r.refundDate || '- - -') : '- - -');
-        tr.innerHTML = `<td>${r.dateReq||''}</td><td>${r.orderNum||''}</td><td>${r.amount||''}</td><td>${r.employee||''}</td><td>${statusCell}</td><td>${refundDate}</td>`;
-        resultsTable.appendChild(tr);
-      });
-
-      // pending table (always visible) — only those not returned
-      const pending = data.filter(r=>!r.returned);
-      pendingTable.innerHTML = '';
-      if(pending.length===0){
-        pendingTable.innerHTML = '<tr><td colspan=5 class="small">لا توجد طلبات قيد التنفيذ</td></tr>';
-      } else {
-        pending.forEach(r=>{
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${r.dateReq||''}</td><td>${r.orderNum||''}</td><td>${r.amount||''}</td><td>${r.employee||''}</td><td><span class="status-pending">قيد التنفيذ ⏳</span></td>`;
-          pendingTable.appendChild(tr);
-        });
-      }
-    }
-
-    function doSearch(){
-      const q = searchInput.value.trim();
-      if(!q){ renderAll(rows); return; }
-      // search by order number (B) first, else any cell contains
-      const byOrder = rows.filter(r=>(''+r.orderNum).toLowerCase() === q.toLowerCase() || (''+r.orderNum).includes(q));
-      const results = byOrder.length ? byOrder : rows.filter(r=> Object.values(r).some(val=> (''+val).toLowerCase().includes(q.toLowerCase())) );
-      if(results.length===0){
-        resultsTable.innerHTML = `<tr><td colspan=6 class="small">لا توجد نتائج للمدخل ${q}</td></tr>`;
-        pendingTable.innerHTML = '<tr><td colspan=5 class="small">لا توجد طلبات قيد التنفيذ</td></tr>';
-      } else {
-        renderAll(results);
-      }
-    }
-
-    // initial fetch
-    fetchSheet();
-
-    // optional: refresh every 2 minutes
-    setInterval(fetchSheet, 2*60*1000);
-  </script>
-</body>
-</html>
-<!doctype html>
 <html lang="ar" dir="rtl" class="h-full">
  <head>
   <meta charset="UTF-8">
@@ -900,7 +757,13 @@
     </div>
     <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
     </div>
-    <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span>
+    <div class="service-item has-submenu" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span> <span class="arrow">▼</span>
+    </div>
+    <div class="service-submenu" id="insuranceSubmenu">
+     <div class="service-item submenu-item" data-service="insurance"><span class="label">تأمينات</span>
+     </div>
+     <div class="service-item submenu-item" data-service="refunds"><span class="label">المبالغ المسترجعة</span>
+     </div>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
@@ -1042,7 +905,8 @@
           'تركيب بطارية',
           'تأمين وربه',
           'تأمين صفينه VIP',
-          'تأمين إيلاف'
+          'تأمين إيلاف',
+          'فتح قفل'
         ];
         
         sheetsData = { currentSheetId: sheetId };
@@ -1105,10 +969,10 @@
     document.addEventListener('click', (e) => {
       const serviceItem = e.target.closest('.service-item');
       if (serviceItem) {
-        // Handle submenu toggle for battery and tire
-        if ((serviceItem.dataset.service === 'battery' || serviceItem.dataset.service === 'tire') && serviceItem.classList.contains('has-submenu')) {
+        // Handle submenu toggle for battery, tire, and insurance
+        if ((serviceItem.dataset.service === 'battery' || serviceItem.dataset.service === 'tire' || serviceItem.dataset.service === 'insurance') && serviceItem.classList.contains('has-submenu')) {
           serviceItem.classList.toggle('expanded');
-          const submenuId = serviceItem.dataset.service === 'battery' ? 'batterySubmenu' : 'tireSubmenu';
+          const submenuId = serviceItem.dataset.service === 'battery' ? 'batterySubmenu' : (serviceItem.dataset.service === 'tire' ? 'tireSubmenu' : 'insuranceSubmenu');
           const submenu = document.getElementById(submenuId);
           submenu.classList.toggle('show');
           return;
@@ -1137,7 +1001,8 @@
           'balance': 'ميزان وتركيب',
           'mechanical': 'خدمات ميكانيكية',
           'carwash': 'غسيل السيارات',
-          'insurance': 'تأمينات'
+          'insurance': 'تأمينات',
+          'refunds': 'المبالغ المسترجعة'
         };
         
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
@@ -1181,6 +1046,9 @@
             break;
           case 'insurance':
             renderInsuranceInterface();
+            break;
+          case 'refunds':
+            renderRefundsInterface();
             break;
         }
       }
@@ -3410,6 +3278,276 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
       
       availableSlots.innerHTML = html;
+    }
+
+    // Render Refunds Interface
+    function renderRefundsInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+            <button id="registerRefundBtn" class="btn-primary" style="flex: 1; background: #10b981; margin-top: 0;">✏️ تسجيل الاسترجاع</button>
+          </div>
+          <h3 class="section-title">البحث برقم العميل</h3>
+          <div class="form-field">
+            <input type="text" id="customerNumberSearch" class="form-control" placeholder="أدخل رقم العميل" style="font-size: 16px; padding: 12px;">
+          </div>
+        </div>
+        
+        <div id="refundsResults" class="hidden">
+        </div>
+        
+        <div id="pendingRefundsTable" class="data-table-container hidden" style="margin-top: 15px;">
+          <div class="table-header">الطلبات قيد التنفيذ</div>
+          <div class="table-scroll">
+            <table class="data-table" style="width: 100%; table-layout: auto;">
+              <thead>
+                <tr>
+                  <th>تاريخ الطلب</th>
+                  <th>رقم الطلب</th>
+                  <th>المبلغ المسترجع</th>
+                  <th>الموظف</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody id="pendingRefundsBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      
+      // Register Refund Button
+      document.getElementById('registerRefundBtn').onclick = () => {
+        const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdrJLZVsDsC1sVC4uIIsFMrhjhT_1xCPbPiBBKqEM_b5B0v6w/viewform?usp=dialog';
+        window.open(formUrl, 'refundForm', 'width=800,height=600');
+      };
+      
+      // Load pending refunds table initially
+      loadPendingRefunds();
+      
+      // Search functionality
+      const searchInput = document.getElementById('customerNumberSearch');
+      let searchTimeout;
+      
+      searchInput.oninput = () => {
+        clearTimeout(searchTimeout);
+        
+        const query = searchInput.value.trim();
+        
+        if (!query) {
+          document.getElementById('refundsResults').classList.add('hidden');
+          document.getElementById('refundsResults').innerHTML = '';
+          loadPendingRefunds();
+          return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+          if (query.length >= 1) {
+            searchRefunds(query);
+          }
+        }, 300);
+      };
+    }
+    
+    function loadPendingRefunds() {
+      const refundsSheet = '1HmRWypUMbHChUUSVvogJ2jdCZeHf8aCo3DLRkeL7DLw';
+      const tbody = document.getElementById('pendingRefundsBody');
+      const table = document.getElementById('pendingRefundsTable');
+      
+      fetch(`https://docs.google.com/spreadsheets/d/${refundsSheet}/gviz/tq?tqx=out:csv`)
+        .then(response => response.text())
+        .then(csvText => {
+          const rows = parseCSV(csvText);
+          
+          if (rows.length < 2) {
+            table.classList.add('hidden');
+            return;
+          }
+          
+          // Skip header row (row 0) and start from row 1
+          const pendingRows = [];
+          
+          for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (row.length === 0 || !row.some(cell => cell && cell.trim())) continue;
+            
+            // Column F (index 5) contains status - if it's "نعم" then it's done, skip it
+            const status = (row[5] || '').trim();
+            if (status === 'نعم') continue; // Skip completed refunds
+            
+            pendingRows.push(row);
+          }
+          
+          if (pendingRows.length === 0) {
+            table.classList.add('hidden');
+            tbody.innerHTML = '';
+            return;
+          }
+          
+          let html = '';
+          pendingRows.forEach(row => {
+            // A: تاريخ طلب الاسترجاع
+            // B: رقم الطلب
+            // D: المبلغ المسترجع
+            // E: اسم الموظف
+            // F: هل تم الاسترجاع (نعم/فارغ)
+            
+            const requestDate = row[0] || '-';
+            const orderNumber = row[1] || '-';
+            const refundAmount = row[3] || '-';
+            let employeeName = row[4] || '-';
+            
+            // Map email to employee name
+            if (employeeName === 'Fawzipor@gmail.com') {
+              employeeName = 'فوزي دامس';
+            }
+            
+            const status = (row[5] || '').trim();
+            const statusDisplay = status === 'نعم' ? '✅ تم الاسترجاع' : '⏳ قيد التنفيذ';
+            
+            html += `
+              <tr>
+                <td>${requestDate}</td>
+                <td class="highlight">${orderNumber}</td>
+                <td>${refundAmount}</td>
+                <td>${employeeName}</td>
+                <td style="color: ${status === 'نعم' ? '#10b981' : '#f59e0b'}; font-weight: 600;">${statusDisplay}</td>
+              </tr>
+            `;
+          });
+          
+          tbody.innerHTML = html;
+          table.classList.remove('hidden');
+        })
+        .catch(error => {
+          console.error('Error loading refunds:', error);
+          table.classList.add('hidden');
+        });
+    }
+    
+    function searchRefunds(customerNumber) {
+      const refundsSheet = '1HmRWypUMbHChUUSVvogJ2jdCZeHf8aCo3DLRkeL7DLw';
+      const resultsContainer = document.getElementById('refundsResults');
+      const table = document.getElementById('pendingRefundsTable');
+      
+      fetch(`https://docs.google.com/spreadsheets/d/${refundsSheet}/gviz/tq?tqx=out:csv`)
+        .then(response => response.text())
+        .then(csvText => {
+          const rows = parseCSV(csvText);
+          
+          if (rows.length < 2) {
+            resultsContainer.innerHTML = `
+              <div class="form-section full-width">
+                <div class="warning-box">❌ لا توجد بيانات متاحة</div>
+              </div>
+            `;
+            resultsContainer.classList.remove('hidden');
+            table.classList.add('hidden');
+            return;
+          }
+          
+          // Skip header row (row 0) and search from row 1
+          const foundResults = [];
+          
+          for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (row.length === 0 || !row.some(cell => cell && cell.trim())) continue;
+            
+            // Column C (index 2) contains customer number - search there, but also check B (index 1)
+            const orderNumber = (row[1] || '').toString().toLowerCase();
+            const customerNum = (row[2] || '').toString().toLowerCase();
+            
+            if (orderNumber.includes(customerNumber.toLowerCase()) || customerNum.includes(customerNumber.toLowerCase())) {
+              foundResults.push(row);
+            }
+          }
+          
+          if (foundResults.length === 0) {
+            resultsContainer.innerHTML = `
+              <div class="form-section full-width">
+                <div class="warning-box">⚠️ لم يتم العثور على نتائج للبحث: "${customerNumber}"</div>
+              </div>
+            `;
+            resultsContainer.classList.remove('hidden');
+            table.classList.add('hidden');
+            return;
+          }
+          
+          let html = '';
+          
+          foundResults.forEach(row => {
+            const requestDate = row[0] || '-';
+            const orderNumber = row[1] || '-';
+            const customerNum = row[2] || '-';
+            const refundAmount = row[3] || '-';
+            let employeeName = row[4] || '-';
+            const status = (row[5] || '').trim();
+            const refundDate = row[6] || '---';
+            
+            // Map email to employee name
+            if (employeeName === 'Fawzipor@gmail.com') {
+              employeeName = 'فوزي دامس';
+            }
+            
+            const statusDisplay = status === 'نعم' ? '✅ تم الاسترجاع' : '⏳ قيد التنفيذ';
+            const refundDateDisplay = status === 'نعم' ? refundDate : '---';
+            
+            html += `
+              <div class="data-table-container" style="margin-bottom: 15px; grid-column: 1 / -1;">
+                <div class="table-header">طلب الاسترجاع</div>
+                <div style="overflow-x: auto; width: 100%;">
+                  <table class="data-table" style="width: 100%; table-layout: auto;">
+                    <tbody>
+                      <tr>
+                        <td style="font-weight: 600; color: #F2BC1B; text-align: right;">تاريخ الطلب</td>
+                        <td style="text-align: left;">${requestDate}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight: 600; color: #F2BC1B; text-align: right;">رقم الطلب</td>
+                        <td style="text-align: left; color: #10b981; font-weight: 600;">${orderNumber}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight: 600; color: #F2BC1B; text-align: right;">رقم العميل</td>
+                        <td style="text-align: left;">${customerNum}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight: 600; color: #F2BC1B; text-align: right;">المبلغ المسترجع</td>
+                        <td style="text-align: left; color: #10b981; font-weight: 600;">${refundAmount} د.ك</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight: 600; color: #F2BC1B; text-align: right;">الموظف</td>
+                        <td style="text-align: left;">${employeeName}</td>
+                      </tr>
+                      <tr style="background: #262626;">
+                        <td style="font-weight: 600; color: #F2BC1B; text-align: right;">الحالة</td>
+                        <td style="text-align: left; color: ${status === 'نعم' ? '#10b981' : '#f59e0b'}; font-weight: 600;">${statusDisplay}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-weight: 600; color: #F2BC1B; text-align: right;">تاريخ الاسترجاع</td>
+                        <td style="text-align: left;">${refundDateDisplay}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            `;
+          });
+          
+          resultsContainer.innerHTML = html;
+          resultsContainer.classList.remove('hidden');
+          table.classList.add('hidden');
+        })
+        .catch(error => {
+          console.error('Error searching refunds:', error);
+          resultsContainer.innerHTML = `
+            <div class="form-section full-width">
+              <div class="error-box">❌ خطأ في تحميل البيانات</div>
+            </div>
+          `;
+          resultsContainer.classList.remove('hidden');
+          table.classList.add('hidden');
+        });
     }
 
     // Render Insurance Interface
