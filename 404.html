@@ -927,6 +927,7 @@
           'تأمين صفينه VIP',
           'تأمين إيلاف',
           'استرجاع المبالغ',
+          'المبالغ المسترجعه',
           'Sheet1',  // Try default name
           'Sheet2'
         ];
@@ -3926,7 +3927,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     }
 
     function loadRefundsData() {
-      const sheetName = 'استرجاع المبالغ';
+      const sheetCandidates = ['المبالغ المسترجعه', 'استرجاع المبالغ'];
       const containerId = 'pendingRefundsContainer';
       const container = document.getElementById(containerId);
       
@@ -3934,14 +3935,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       console.log('Available sheets:', Object.keys(sheetsData));
       
       let targetSheet = null;
-      
-      // First try exact match
-      if (sheetsData[sheetName]) {
-        targetSheet = sheetName;
-      } else {
-        // Try to find any sheet with "استرجاع" in the name
+
+      // Try candidate exact names first
+      for (const name of sheetCandidates) {
+        if (sheetsData[name]) { targetSheet = name; break; }
+      }
+
+      // Fallback: try to find any sheet containing relevant keywords
+      if (!targetSheet) {
         const matchingSheet = Object.keys(sheetsData).find(key => 
-          key.includes('استرجاع') || key.includes('refund') || key.includes('Refund')
+          key.includes('استرجاع') || key.toLowerCase().includes('refund') || key.includes('المبالغ') || key.includes('مبالغ')
         );
         if (matchingSheet) {
           targetSheet = matchingSheet;
