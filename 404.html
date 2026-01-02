@@ -759,6 +759,8 @@
     </div>
     <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span>
     </div>
+    <div class="service-item" data-service="refunds"><span class="icon">💰</span> <span class="label">المبالغ المسترجعة</span>
+    </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
     <header class="header-bar">
@@ -899,7 +901,8 @@
           'تركيب بطارية',
           'تأمين وربه',
           'تأمين صفينه VIP',
-          'تأمين إيلاف'
+          'تأمين إيلاف',
+          'المبالغ المسترجعه'
         ];
         
         sheetsData = { currentSheetId: sheetId };
@@ -994,7 +997,8 @@
           'balance': 'ميزان وتركيب',
           'mechanical': 'خدمات ميكانيكية',
           'carwash': 'غسيل السيارات',
-          'insurance': 'تأمينات'
+          'insurance': 'تأمينات',
+          'refunds': 'المبالغ المسترجعة'
         };
         
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
@@ -1038,6 +1042,9 @@
             break;
           case 'insurance':
             renderInsuranceInterface();
+            break;
+          case 'refunds':
+            renderRefundsInterface();
             break;
         }
       }
@@ -3750,6 +3757,222 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     // Load data on page load
     loadAllSheets();
+  </script>
+  <script>
+    // Refunds Service Interface
+    function renderRefundsInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+            <button id="refundSubmitBtn" class="btn-main" style="flex: 1; padding: 14px; font-size: 16px; font-weight: 700;">
+              ✏️ تسجيل الاسترجاع
+            </button>
+          </div>
+          
+          <h3 class="section-title">البحث عن طلب</h3>
+          <div class="form-field">
+            <label style="display: block; margin-bottom: 6px; color: #F2BC1B; font-weight: 600;">رقم العميل</label>
+            <input type="text" id="refundCustomerNumber" class="form-control" placeholder="أدخل رقم العميل" style="font-size: 16px; padding: 12px;">
+          </div>
+        </div>
+        
+        <div id="refundPendingTable" class="form-section full-width">
+          <h3 class="section-title">الطلبات قيد التنفيذ</h3>
+          <div id="pendingRefundsContainer">
+            <div style="padding: 20px; text-align: center; color: #999;">جاري التحميل...</div>
+          </div>
+        </div>
+        
+        <div id="refundSearchResults" class="hidden form-section full-width">
+          <h3 class="section-title">نتائج البحث</h3>
+          <div id="refundResultsContainer">
+          </div>
+        </div>
+      `;
+
+      // Load refunds data from Google Sheet
+      loadRefundsData();
+      
+      // Handle submit button
+      document.getElementById('refundSubmitBtn').onclick = () => {
+        window.open('https://docs.google.com/forms/d/e/1FAIpQLSdrJLZVsDsC1sVC4uIIsFMrhjhT_1xCPbPiBBKqEM_b5B0v6w/viewform?usp=dialog', '_blank');
+      };
+      
+      // Handle customer number search
+      const searchInput = document.getElementById('refundCustomerNumber');
+      let searchTimeout;
+      
+      searchInput.oninput = () => {
+        clearTimeout(searchTimeout);
+        const query = searchInput.value.trim();
+        
+        searchTimeout = setTimeout(() => {
+          if (query.length >= 1) {
+            searchRefunds(query);
+          } else {
+            document.getElementById('refundSearchResults').classList.add('hidden');
+          }
+        }, 300);
+      };
+    }
+
+    function loadRefundsData() {
+      const sheetName = 'المبالغ المسترجعه';
+      const containerId = 'pendingRefundsContainer';
+      
+      if (!sheetsData[sheetName]) {
+        document.getElementById(containerId).innerHTML = '<div style="padding: 20px; text-align: center; color: #f87171;">خطأ في تحميل البيانات</div>';
+        return;
+      }
+      
+      const rows = sheetsData[sheetName];
+      const pendingRefunds = [];
+      
+      // Skip header (row 0) and start from row 1
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row || row.length < 7) continue;
+        
+        // Column F (index 5) contains status
+        const status = (row[5] || '').toString().trim();
+        
+        // If status is not 'نعم', it's pending
+        if (status !== 'نعم') {
+          pendingRefunds.push({
+            requestDate: row[0] || '-',
+            orderNumber: row[1] || '-',
+            refundAmount: row[3] || '-',
+            employeeName: row[4] || '-',
+            status: status || 'قيد التنفيذ',
+            refundDate: row[6] || '-',
+            rowIndex: i,
+            fullRow: row
+          });
+        }
+      }
+      
+      if (pendingRefunds.length === 0) {
+        document.getElementById(containerId).innerHTML = '<div style="padding: 20px; text-align: center; color: #10b981;">✓ لا توجد طلبات قيد التنفيذ</div>';
+        return;
+      }
+      
+      let html = '<div style="overflow-x: auto;">';
+      html += '<table class="data-table" style="width: 100%;">';
+      html += `
+        <thead>
+          <tr>
+            <th>تاريخ الطلب</th>
+            <th>رقم الطلب</th>
+            <th>المبلغ المسترجع</th>
+            <th>اسم الموظف</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+      
+      pendingRefunds.forEach(refund => {
+        html += `
+          <tr>
+            <td>${refund.requestDate}</td>
+            <td>${refund.orderNumber}</td>
+            <td>${refund.refundAmount}</td>
+            <td>${refund.employeeName}</td>
+            <td>
+              <span style="background: #f59e0b; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">
+                ⏳ ${refund.status}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table></div>';
+      document.getElementById(containerId).innerHTML = html;
+    }
+
+    function searchRefunds(customerNumber) {
+      const sheetName = 'المبالغ المسترجعه';
+      
+      if (!sheetsData[sheetName]) {
+        return;
+      }
+      
+      const rows = sheetsData[sheetName];
+      const results = [];
+      
+      // Skip header (row 0) and start from row 1
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row || row.length < 2) continue;
+        
+        // Column B (index 1) contains order number
+        const orderNumber = (row[1] || '').toString();
+        
+        if (orderNumber.includes(customerNumber)) {
+          results.push({
+            requestDate: row[0] || '-',
+            orderNumber: row[1] || '-',
+            refundAmount: row[3] || '-',
+            employeeName: row[4] || '-',
+            status: row[5] || 'قيد التنفيذ',
+            refundDate: row[6] || '-',
+            rowIndex: i
+          });
+        }
+      }
+      
+      const resultsContainer = document.getElementById('refundSearchResults');
+      const container = document.getElementById('refundResultsContainer');
+      
+      if (results.length === 0) {
+        container.innerHTML = `<div class="warning-box">⚠️ لم يتم العثور على نتائج</div>`;
+        resultsContainer.classList.remove('hidden');
+        return;
+      }
+      
+      let html = '<div style="overflow-x: auto;">';
+      html += '<table class="data-table" style="width: 100%;">';
+      html += `
+        <thead>
+          <tr>
+            <th>تاريخ الطلب</th>
+            <th>رقم الطلب</th>
+            <th>المبلغ المسترجع</th>
+            <th>اسم الموظف</th>
+            <th>الحالة</th>
+            <th>تاريخ الاسترجاع</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+      
+      results.forEach(result => {
+        let statusBadge = '<span style="background: #f59e0b; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">⏳ قيد التنفيذ</span>';
+        let refundDateDisplay = '---';
+        
+        if (result.status === 'نعم') {
+          statusBadge = '<span style="background: #10b981; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">✓ تم الاسترجاع</span>';
+          refundDateDisplay = result.refundDate;
+        }
+        
+        html += `
+          <tr>
+            <td>${result.requestDate}</td>
+            <td>${result.orderNumber}</td>
+            <td>${result.refundAmount}</td>
+            <td>${result.employeeName}</td>
+            <td>${statusBadge}</td>
+            <td>${refundDateDisplay}</td>
+          </tr>
+        `;
+      });
+      
+      html += '</tbody></table></div>';
+      container.innerHTML = html;
+      resultsContainer.classList.remove('hidden');
+    }
   </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
