@@ -902,7 +902,7 @@
           'تأمين وربه',
           'تأمين صفينه VIP',
           'تأمين إيلاف',
-          'المبالغ المسترجعه'
+          'استرجاع المبالغ'
         ];
         
         sheetsData = { currentSheetId: sheetId };
@@ -3763,29 +3763,39 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     function renderRefundsInterface() {
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <div style="display: flex; gap: 12px; margin-bottom: 20px;">
-            <button id="refundSubmitBtn" class="btn-main" style="flex: 1; padding: 14px; font-size: 16px; font-weight: 700;">
-              ✏️ تسجيل الاسترجاع
-            </button>
+        <div class="form-section full-width" style="background: linear-gradient(135deg, #1a1a1a 0%, #262626 100%); border: 2px solid #F2BC1B; padding: 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(242, 188, 27, 0.15);">
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
+            <div style="font-size: 40px; display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; background: #2a2a2a; border-radius: 8px; border: 2px solid #F2BC1B;">📝</div>
+            <div>
+              <h4 style="margin: 0; color: #F2BC1B; font-size: 18px; font-weight: 700;">تسجيل استرجاع جديد</h4>
+              <p style="margin: 6px 0 0 0; color: #ccc; font-size: 14px;">استخدم النموذج لإضافة طلب استرجاع مبلغ جديد للنظام</p>
+            </div>
           </div>
-          
-          <h3 class="section-title">البحث عن طلب</h3>
+          <button id="refundSubmitBtn" class="btn-main" style="width: 100%; padding: 16px 24px; font-size: 16px; font-weight: 700; background: #F2BC1B; color: #000; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(242, 188, 27, 0.3);">
+            ✏️ فتح نموذج التسجيل
+          </button>
+        </div>
+        
+        <div class="form-section full-width">
+          <h3 class="section-title" style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span style="font-size: 20px;">🔍</span> البحث عن طلب</h3>
           <div class="form-field">
-            <label style="display: block; margin-bottom: 6px; color: #F2BC1B; font-weight: 600;">رقم العميل</label>
-            <input type="text" id="refundCustomerNumber" class="form-control" placeholder="أدخل رقم العميل" style="font-size: 16px; padding: 12px;">
+            <label style="display: block; margin-bottom: 8px; color: #F2BC1B; font-weight: 600; font-size: 14px;">رقم الطلب</label>
+            <input type="text" id="refundCustomerNumber" class="form-control" placeholder="أدخل رقم الطلب..." style="font-size: 16px; padding: 12px 14px; border-radius: 6px; border: 1px solid #404040; background: #1a1a1a; color: #ccc; transition: all 0.2s ease;">
           </div>
         </div>
         
         <div id="refundPendingTable" class="form-section full-width">
-          <h3 class="section-title">الطلبات قيد التنفيذ</h3>
+          <h3 class="section-title" style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span style="font-size: 20px;">⏳</span> الطلبات قيد التنفيذ</h3>
           <div id="pendingRefundsContainer">
-            <div style="padding: 20px; text-align: center; color: #999;">جاري التحميل...</div>
+            <div style="padding: 40px 20px; text-align: center;">
+              <div style="font-size: 28px; margin-bottom: 12px;">⏳</div>
+              <p style="color: #999; margin: 0; font-size: 15px;">جاري تحميل البيانات...</p>
+            </div>
           </div>
         </div>
         
         <div id="refundSearchResults" class="hidden form-section full-width">
-          <h3 class="section-title">نتائج البحث</h3>
+          <h3 class="section-title" style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"><span style="font-size: 20px;">📊</span> نتائج البحث</h3>
           <div id="refundResultsContainer">
           </div>
         </div>
@@ -3794,13 +3804,37 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       // Load refunds data from Google Sheet
       loadRefundsData();
       
-      // Handle submit button
-      document.getElementById('refundSubmitBtn').onclick = () => {
+      // Handle submit button with hover effect
+      const submitBtn = document.getElementById('refundSubmitBtn');
+      submitBtn.onclick = () => {
         window.open('https://docs.google.com/forms/d/e/1FAIpQLSdrJLZVsDsC1sVC4uIIsFMrhjhT_1xCPbPiBBKqEM_b5B0v6w/viewform?usp=dialog', '_blank');
       };
       
-      // Handle customer number search
+      submitBtn.onmouseover = () => {
+        submitBtn.style.background = '#FFD700';
+        submitBtn.style.boxShadow = '0 8px 24px rgba(255, 215, 0, 0.4)';
+        submitBtn.style.transform = 'translateY(-3px)';
+      };
+      
+      submitBtn.onmouseout = () => {
+        submitBtn.style.background = '#F2BC1B';
+        submitBtn.style.boxShadow = '0 4px 12px rgba(242, 188, 27, 0.3)';
+        submitBtn.style.transform = 'translateY(0)';
+      };
+      
+      // Add focus effect to search input
       const searchInput = document.getElementById('refundCustomerNumber');
+      searchInput.onfocus = () => {
+        searchInput.style.borderColor = '#F2BC1B';
+        searchInput.style.boxShadow = '0 0 12px rgba(242, 188, 27, 0.3)';
+      };
+      
+      searchInput.onblur = () => {
+        searchInput.style.borderColor = '#404040';
+        searchInput.style.boxShadow = 'none';
+      };
+      
+      // Handle customer number search
       let searchTimeout;
       
       searchInput.oninput = () => {
@@ -3818,11 +3852,19 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     }
 
     function loadRefundsData() {
-      const sheetName = 'المبالغ المسترجعه';
+      const sheetName = 'استرجاع المبالغ';
       const containerId = 'pendingRefundsContainer';
+      const container = document.getElementById(containerId);
       
       if (!sheetsData[sheetName]) {
-        document.getElementById(containerId).innerHTML = '<div style="padding: 20px; text-align: center; color: #f87171;">خطأ في تحميل البيانات</div>';
+        container.innerHTML = `
+          <div style="padding: 40px 20px; text-align: center; background: #1a1a1a; border-radius: 8px; border: 2px solid #f59e0b;">
+            <div style="font-size: 48px; margin-bottom: 12px;">⚠️</div>
+            <p style="color: #f59e0b; font-weight: 600; margin: 0 0 6px 0; font-size: 15px;">لم يتم العثور على ورقة البيانات</p>
+            <p style="color: #999; font-size: 13px; margin: 0; line-height: 1.6;">تأكد من أن اسم الملف هو "استرجاع المبالغ"<br>وإعادة تحميل الصفحة</p>
+            <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: #f59e0b; color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px;">🔄 إعادة تحميل</button>
+          </div>
+        `;
         return;
       }
       
@@ -3851,13 +3893,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           });
         }
       }
-      
       if (pendingRefunds.length === 0) {
-        document.getElementById(containerId).innerHTML = '<div style="padding: 20px; text-align: center; color: #10b981;">✓ لا توجد طلبات قيد التنفيذ</div>';
+        document.getElementById(containerId).innerHTML = '<div style="padding: 40px 20px; text-align: center; background: #1a1a1a; border-radius: 8px;"><div style="font-size: 40px; margin-bottom: 12px;">✓</div><p style="color: #10b981; font-weight: 600; margin: 0; font-size: 15px;">لا توجد طلبات قيد التنفيذ</p><p style="color: #999; font-size: 13px; margin: 8px 0 0 0;">جميع الطلبات تمت معالجتها</p></div>';
         return;
       }
       
-      let html = '<div style="overflow-x: auto;">';
+      let html = '<div style="overflow-x: auto; border-radius: 8px; border: 1px solid #333;">';
       html += '<table class="data-table" style="width: 100%;">';
       html += `
         <thead>
@@ -3874,13 +3915,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       
       pendingRefunds.forEach(refund => {
         html += `
-          <tr>
+          <tr style="transition: background 0.2s ease;">
             <td>${refund.requestDate}</td>
-            <td>${refund.orderNumber}</td>
+            <td style="font-weight: 600; color: #F2BC1B;">${refund.orderNumber}</td>
             <td>${refund.refundAmount}</td>
             <td>${refund.employeeName}</td>
             <td>
-              <span style="background: #f59e0b; color: #000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">
+              <span style="background: #f59e0b; color: #000; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
                 ⏳ ${refund.status}
               </span>
             </td>
@@ -3893,7 +3934,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     }
 
     function searchRefunds(customerNumber) {
-      const sheetName = 'المبالغ المسترجعه';
+      const sheetName = 'استرجاع المبالغ';
       
       if (!sheetsData[sheetName]) {
         return;
