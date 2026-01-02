@@ -2148,31 +2148,32 @@
 
     // Load datalist options specifically for فتح قفل sheet
     function loadLockAreaOptionsDatalist() {
+      const areaSelect = document.getElementById('lockAreaSelect');
       const areaDatalist = document.getElementById('areaOptions');
+      const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
+      if (!rows) {
+        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+        return;
+      }
+
+      const areas = [];
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        // Read from column Q (16) and U (20)
+        if (row[16]) areas.push(row[16]);
+        if (row[20]) areas.push(row[20]);
+      }
+
+      const uniqueAreas = [...new Set(areas)].filter(Boolean);
+      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
       
-      // Wait for sheets data to load if not ready
-      const checkData = () => {
-        const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
-        
-        if (!rows) {
-          // Retry after a short delay
-          setTimeout(checkData, 100);
-          return;
+      // إضافة حدث onfocus لعرض القائمة المنسدلة مباشرة
+      areaSelect.onfocus = function() {
+        if (this.value === '') {
+          this.dispatchEvent(new Event('input', { bubbles: true }));
+          this.click();
         }
-
-        const areas = [];
-        for (let i = 2; i < rows.length; i++) {
-          const row = rows[i];
-          // Read from column Q (16) and U (20)
-          if (row[16]) areas.push(row[16]);
-          if (row[20]) areas.push(row[20]);
-        }
-
-        const uniqueAreas = [...new Set(areas)].filter(Boolean);
-        areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
       };
-      
-      checkData();
     }
 
     function calculatePuncturePrice() {
@@ -3308,26 +3309,29 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         window.open(formUrl, 'refundForm', 'width=800,height=600');
       };
       
-      // Search functionality
+      // Search functionality - بحث دقيق فقط بدون تصفية أثناء الكتابة
       const searchInput = document.getElementById('customerNumberSearch');
-      let searchTimeout;
       
+      searchInput.onkeypress = (event) => {
+        if (event.key === 'Enter') {
+          const query = searchInput.value.trim();
+          
+          if (!query) {
+            document.getElementById('refundsResults').classList.add('hidden');
+            document.getElementById('refundsResults').innerHTML = '';
+            return;
+          }
+          
+          searchRefunds(query);
+        }
+      };
+      
+      // إخفاء النتائج عند مسح المدخل
       searchInput.oninput = () => {
-        clearTimeout(searchTimeout);
-        
-        const query = searchInput.value.trim();
-        
-        if (!query) {
+        if (!searchInput.value.trim()) {
           document.getElementById('refundsResults').classList.add('hidden');
           document.getElementById('refundsResults').innerHTML = '';
-          return;
         }
-        
-        searchTimeout = setTimeout(() => {
-          if (query.length >= 1) {
-            searchRefunds(query);
-          }
-        }, 300);
       };
     }
     
@@ -3352,15 +3356,17 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
           const headerRow = rows[0] || [];
           const foundResults = [];
+          const searchLower = customerNumber.toLowerCase().trim();
 
           for (let i = 1; i < rows.length; i++) {
             const row = rows[i];
             if (!row || row.length === 0 || !row.some(cell => cell && cell.toString().trim())) continue;
 
-            const orderNumber = (row[1] || '').toString().toLowerCase();
-            const customerNum = (row[2] || '').toString().toLowerCase();
+            const orderNumber = (row[1] || '').toString().toLowerCase().trim();
+            const customerNum = (row[2] || '').toString().toLowerCase().trim();
 
-            if (orderNumber.includes(customerNumber.toLowerCase()) || customerNum.includes(customerNumber.toLowerCase())) {
+            // بحث دقيق - مطابقة تامة فقط
+            if (orderNumber === searchLower || customerNum === searchLower) {
               foundResults.push({ headers: headerRow, rowData: row });
             }
           }
@@ -3414,6 +3420,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           columnsWithData.forEach(col => {
             html += `<th style="white-space: nowrap; padding: 11px 16px;">${col.header}</th>`;
           });
+          
+          // إضافة عمود الحالة في رأس الجدول
+          html += `<th style="white-space: nowrap; padding: 11px 16px;">حالة الاسترجاع</th>`;
 
           html += `
                     </tr>
@@ -3425,29 +3434,37 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             html += `<tr>`;
             columnsWithData.forEach(col => {
               let value = row[col.idx] || '-';
-              const headerName = col.header.toString().toLowerCase();
-              
-              // Check if this is the "العمليه" (Operation/Status) column
-              if (headerName.includes('عملي') || headerName.includes('status') || headerName.includes('operation')) {
-                const originalValue = value.toString().trim();
-                
-                if (originalValue.toLowerCase() === 'نعم' || originalValue.toLowerCase() === 'yes') {
-                  // Green checkmark
-                  html += `<td style="white-space: nowrap; padding: 10px 16px; text-align: center;">✅ تم الاسترجاع</td>`;
-                } else if (originalValue === '' || originalValue === '-') {
-                  // Red X mark
-                  html += `<td style="white-space: nowrap; padding: 10px 16px; text-align: center; color: #ef4444;">❌ لم يتم الاسترجاع</td>`;
-                } else {
-                  // Other values - display as is
-                  html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
-                }
-              } else {
-                // Regular columns
-                value = value.toString();
-                if (value.toLowerCase() === 'fawzipor@gmail.com') value = 'فوزي دامس';
-                html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
-              }
+              value = value.toString();
+              if (value.toLowerCase() === 'fawzipor@gmail.com') value = 'فوزي دامس';
+              html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
             });
+            
+            // إضافة عمود الحالة - التحقق من أول عمود فارغ يحتوي على حالة الاسترجاع
+            let refundStatus = '-';
+            let refundIcon = '❓';
+            
+            // البحث عن عمود الحالة (قد يكون بعنوان "الحالة" أو "Status" أو "نعم/لا")
+            let refundStatusIdx = -1;
+            for (let i = 0; i < headers.length; i++) {
+              const headerLower = (headers[i] || '').toString().toLowerCase();
+              if (headerLower.includes('حالة') || headerLower.includes('status') || headerLower.includes('استرجاع')) {
+                refundStatusIdx = i;
+                break;
+              }
+            }
+            
+            if (refundStatusIdx !== -1) {
+              const statusValue = (row[refundStatusIdx] || '').toString().trim().toLowerCase();
+              if (statusValue === 'نعم' || statusValue === 'yes' || statusValue === 'تم') {
+                refundStatus = 'تم الاسترجاع';
+                refundIcon = '✅';
+              } else if (statusValue === '' || statusValue === 'لا' || statusValue === 'no') {
+                refundStatus = 'لم يتم الاسترجاع';
+                refundIcon = '❌';
+              }
+            }
+            
+            html += `<td style="white-space: nowrap; padding: 10px 16px;">${refundIcon} ${refundStatus}</td>`;
             html += `</tr>`;
           });
 
@@ -3774,63 +3791,67 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const areaSelect = document.getElementById('areaSelect');
       const areaDatalist = document.getElementById('areaOptions');
       
-      // Wait for sheets data to load if not ready
-      const checkData = () => {
-        if (!sheetsData[sheetName]) {
-          // Retry after a short delay
-          setTimeout(checkData, 100);
-          return;
+      if (!sheetsData[sheetName]) {
+        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+        return;
+      }
+      
+      const rows = sheetsData[sheetName];
+      const areas = [];
+      
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        columns.forEach((colIndex, idx) => {
+          if (idx % 3 === 0 && row[colIndex]) {
+            areas.push(row[colIndex]);
+          }
+        });
+      }
+      
+      const uniqueAreas = [...new Set(areas)].filter(Boolean);
+      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
+      
+      const newAreaSelect = areaSelect.cloneNode(true);
+      areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
+      
+      // إضافة حدث onfocus لعرض القائمة المنسدلة مباشرة
+      newAreaSelect.onfocus = function() {
+        if (this.value === '') {
+          this.dispatchEvent(new Event('input', { bubbles: true }));
+          // محاكاة فتح القائمة المنسدلة
+          this.click();
         }
+      };
+      
+      newAreaSelect.oninput = () => {
+        formData.area = newAreaSelect.value.trim();
         
-        const rows = sheetsData[sheetName];
-        const areas = [];
+        const resultSection = document.getElementById('serviceResultSection') || 
+                             document.getElementById('tireResultSection') || 
+                             document.getElementById('balanceResultSection') ||
+                             document.getElementById('mechResultSection') ||
+                             document.getElementById('fuelResultSection');
         
-        for (let i = 2; i < rows.length; i++) {
-          const row = rows[i];
-          columns.forEach((colIndex, idx) => {
-            if (idx % 3 === 0 && row[colIndex]) {
-              areas.push(row[colIndex]);
-            }
-          });
-        }
-        
-        const uniqueAreas = [...new Set(areas)].filter(Boolean);
-        areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
-        
-        if (!areaSelect) return;
-        
-        const newAreaSelect = areaSelect.cloneNode(true);
-        areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
-        
-        newAreaSelect.oninput = () => {
-          formData.area = newAreaSelect.value.trim();
+        if (!formData.area) {
+          if (resultSection) {
+            resultSection.classList.add('hidden');
+          }
           
-          const resultSection = document.getElementById('serviceResultSection') || 
-                               document.getElementById('tireResultSection') || 
-                               document.getElementById('balanceResultSection') ||
-                               document.getElementById('mechResultSection') ||
-                               document.getElementById('fuelResultSection');
+          if (currentService === 'fuel') {
+            document.querySelectorAll('[data-fuel]').forEach(btn => btn.classList.remove('active'));
+            formData.fuelType = null;
+          }
           
-          if (!formData.area) {
-            if (resultSection) {
-              resultSection.classList.add('hidden');
+          if (currentService === 'balance' && formData.tireSource === 'customer') {
+            const tireCountInput = document.getElementById('tireCountInput');
+            if (tireCountInput) {
+              tireCountInput.value = '';
+              formData.tireCount = 0;
             }
-            
-            if (currentService === 'fuel') {
-              document.querySelectorAll('[data-fuel]').forEach(btn => btn.classList.remove('active'));
-              formData.fuelType = null;
-            }
-            
-            if (currentService === 'balance' && formData.tireSource === 'customer') {
-              const tireCountInput = document.getElementById('tireCountInput');
-              if (tireCountInput) {
-                tireCountInput.value = '';
-                formData.tireCount = 0;
-              }
-            }
-            
-            if (currentService === 'mechanical' && formData.mechanicalService === 'brakes') {
-              document.querySelectorAll('[data-disk]').forEach(btn => {
+          }
+          
+          if (currentService === 'mechanical' && formData.mechanicalService === 'brakes') {
+            document.querySelectorAll('[data-disk]').forEach(btn => {
               btn.classList.remove('active');
               if (btn.dataset.disk === 'no') {
                 btn.classList.add('active');
