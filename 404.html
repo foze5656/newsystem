@@ -3420,9 +3420,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           columnsWithData.forEach(col => {
             html += `<th style="white-space: nowrap; padding: 11px 16px;">${col.header}</th>`;
           });
-          
-          // إضافة عمود الحالة في رأس الجدول
-          html += `<th style="white-space: nowrap; padding: 11px 16px;">حالة الاسترجاع</th>`;
 
           html += `
                     </tr>
@@ -3436,35 +3433,19 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               let value = row[col.idx] || '-';
               value = value.toString();
               if (value.toLowerCase() === 'fawzipor@gmail.com') value = 'فوزي دامس';
+              
+              // البحث عن عمود الحالة وتحويل قيمته
+              let headerLower = (headers[col.idx] || '').toString().toLowerCase();
+              if (headerLower.includes('حالة') || headerLower.includes('status') || headerLower.includes('عملية') || headerLower.includes('استرجاع')) {
+                if (value === 'نعم' || value === 'yes' || value === 'تم') {
+                  value = '✅ تم الاسترجاع';
+                } else if (value === '' || value === '-' || value === 'لا' || value === 'no') {
+                  value = '❌ لم يتم الاسترجاع';
+                }
+              }
+              
               html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
             });
-            
-            // إضافة عمود الحالة - التحقق من أول عمود فارغ يحتوي على حالة الاسترجاع
-            let refundStatus = '-';
-            let refundIcon = '❓';
-            
-            // البحث عن عمود الحالة (قد يكون بعنوان "الحالة" أو "Status" أو "نعم/لا")
-            let refundStatusIdx = -1;
-            for (let i = 0; i < headers.length; i++) {
-              const headerLower = (headers[i] || '').toString().toLowerCase();
-              if (headerLower.includes('حالة') || headerLower.includes('status') || headerLower.includes('استرجاع')) {
-                refundStatusIdx = i;
-                break;
-              }
-            }
-            
-            if (refundStatusIdx !== -1) {
-              const statusValue = (row[refundStatusIdx] || '').toString().trim().toLowerCase();
-              if (statusValue === 'نعم' || statusValue === 'yes' || statusValue === 'تم') {
-                refundStatus = 'تم الاسترجاع';
-                refundIcon = '✅';
-              } else if (statusValue === '' || statusValue === 'لا' || statusValue === 'no') {
-                refundStatus = 'لم يتم الاسترجاع';
-                refundIcon = '❌';
-              }
-            }
-            
-            html += `<td style="white-space: nowrap; padding: 10px 16px;">${refundIcon} ${refundStatus}</td>`;
             html += `</tr>`;
           });
 
@@ -3818,7 +3799,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       newAreaSelect.onfocus = function() {
         if (this.value === '') {
           this.dispatchEvent(new Event('input', { bubbles: true }));
-          // محاكاة فتح القائمة المنسدلة
           this.click();
         }
       };
