@@ -3431,15 +3431,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             html += `<tr>`;
             columnsWithData.forEach(col => {
               let value = row[col.idx] || '-';
-              value = value.toString();
+              value = value.toString().trim();
               if (value.toLowerCase() === 'fawzipor@gmail.com') value = 'فوزي دامس';
               
               // البحث عن عمود الحالة وتحويل قيمته
               let headerLower = (headers[col.idx] || '').toString().toLowerCase();
               if (headerLower.includes('حالة') || headerLower.includes('status') || headerLower.includes('عملية') || headerLower.includes('استرجاع')) {
-                if (value === 'نعم' || value === 'yes' || value === 'تم') {
+                let valueLower = value.toLowerCase();
+                if (valueLower === 'نعم' || valueLower === 'yes' || valueLower === 'تم') {
                   value = '✅ تم الاسترجاع';
-                } else if (value === '' || value === '-' || value === 'لا' || value === 'no') {
+                } else if (valueLower === '' || valueLower === '-' || valueLower === 'لا' || valueLower === 'no') {
                   value = '❌ لم يتم الاسترجاع';
                 }
               }
