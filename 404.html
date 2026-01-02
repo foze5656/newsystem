@@ -767,6 +767,15 @@
      </div>
     </header><!-- Content Area -->
     <div id="contentArea" class="content-area">
+     <div style="grid-column: 1 / -1; padding: 12px; text-align: center;">
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px">
+       <button class="btn" onclick="openService('tow')">الونشات</button>
+       <button class="btn" onclick="openService('fuel')">البنزين</button>
+       <button class="btn" onclick="openService('puncture')">بنشر</button>
+       <button class="btn" onclick="openService('battery')">البطارية</button>
+       <button class="btn" onclick="openService('mechanical')">الميكانيك</button>
+      </div>
+     </div>
      <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
       <div style="font-size: 48px; margin-bottom: 16px;">
        📊
@@ -957,6 +966,17 @@
       // Don't reset the service - keep the current state
       // The user will see the same service they had before opening the iframe
     };
+
+    // Open service helper for top buttons
+    function openService(key){
+      const item = document.querySelector(`.service-item[data-service="${key}"]`);
+      if(item){
+        item.click();
+        try{ item.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+      } else {
+        alert('الخدمة غير متوفرة حالياً');
+      }
+    }
 
     // Service Selection
     document.addEventListener('click', (e) => {
