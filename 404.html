@@ -3290,7 +3290,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           </div>
         </div>
         
-        <div id="refundsResults" class="hidden">
+        <div id="refundsResults" class="hidden" style="grid-column: 1 / -1; width: 100%; box-sizing: border-box; padding: 0; display: grid; grid-template-columns: 1fr; gap: 0;">
         </div>
       `;
       
@@ -3369,7 +3369,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
           let html = '';
 
-          foundResults.forEach(result => {
+          foundResults.forEach((result, index) => {
             const headers = result.headers || [];
             const row = result.rowData || [];
 
@@ -3418,6 +3418,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
           resultsContainer.innerHTML = html;
           resultsContainer.classList.remove('hidden');
+          resultsContainer.style.gridColumn = '1 / -1';
         })
         .catch(error => {
           console.error('Error searching refunds:', error);
