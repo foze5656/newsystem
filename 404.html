@@ -768,6 +768,48 @@
       color: #fff;
     }
 
+    /* Circular Buttons */
+    .circular-btn {
+      border-radius: 12px !important;
+      padding: 14px 16px !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 13px;
+      min-height: 80px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .circular-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(242, 188, 27, 0.2);
+    }
+
+    .circular-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .circular-btn:hover::before {
+      opacity: 1;
+    }
+
+    .circular-btn.active {
+      transform: scale(1.05) translateY(-4px);
+      box-shadow: 0 12px 24px rgba(242, 188, 27, 0.3);
+    }
+
     .results-table-wrapper {
       overflow-x: auto;
       width: 100%;
@@ -987,7 +1029,13 @@
         price += 10;
       }
 
-      const towType = towTypeNames[formData.towType] || formData.towType;
+      let towType = towTypeNames[formData.towType] || formData.towType;
+      
+      // Add (مسكر) suffix if locked
+      if (formData.towType === 'flatbed' && formData.isLocked) {
+        towType = 'ونش فل داون (مسكر)';
+      }
+      
       return `رسوم ${towType} من منطقة ${formData.from} إلى منطقة ${formData.to} : ${price.toFixed(2)} د.ك`;
     }
 
@@ -1340,8 +1388,181 @@
 
     // Render Battery Subscription Interface (was old "battery" service)
     function renderBatterySubscriptionInterface() {
-      renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
-        '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">اختيار المنطقة</h3>
+          <div class="form-field">
+            <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
+            <datalist id="areaOptions"></datalist>
+          </div>
+        </div>
+        
+        <div id="batteryServiceSection" class="form-section hidden">
+          <h3 class="section-title">اختر الخدمة</h3>
+          <div class="btn-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <button class="btn-option circular-btn" data-battery-service="subscription">💳 اشتراك</button>
+            <button class="btn-option circular-btn" data-battery-service="check">🔋 فحص البطارية</button>
+          </div>
+        </div>
+        
+        <div id="batteryResultSection" class="data-table-container hidden">
+          <div class="table-header">التفاصيل</div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>البيان</th>
+                  <th>القيمة</th>
+                </tr>
+              </thead>
+              <tbody id="batteryResultBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      
+      loadAreaOptionsForBatteryServices();
+    }
+
+    function loadAreaOptionsForBatteryServices() {
+      const areaSelect = document.getElementById('areaSelect');
+      const areaDatalist = document.getElementById('areaOptions');
+      const batteryServiceSection = document.getElementById('batteryServiceSection');
+      const batteryResultSection = document.getElementById('batteryResultSection');
+      
+      if (!sheetsData['خدمات5']) {
+        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+        return;
+      }
+      
+      const rows = sheetsData['خدمات5'];
+      const areas = [];
+      
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        if (row[0]) areas.push(row[0]);
+        if (row[4]) areas.push(row[4]);
+      }
+      
+      const uniqueAreas = [...new Set(areas)].filter(Boolean);
+      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
+      
+      areaSelect.oninput = () => {
+        formData.area = areaSelect.value.trim();
+        
+        if (!formData.area) {
+          batteryServiceSection.classList.add('hidden');
+          batteryResultSection.classList.add('hidden');
+        } else {
+          batteryServiceSection.classList.remove('hidden');
+        }
+      };
+      
+      // Add battery service buttons
+      document.querySelectorAll('[data-battery-service]').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('[data-battery-service]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          formData.batteryService = btn.dataset.batteryService;
+          calculateBatteryServicePrice();
+        };
+      });
+    }
+
+    function calculateBatteryServicePrice() {
+      const rows = sheetsData['خدمات5'];
+      if (!rows || !formData.area) return;
+      
+      const service = formData.batteryService;
+      let subscriptionPrice = 0;
+      
+      // Find subscription price
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        
+        if (row[0] === formData.area) {
+          subscriptionPrice = parseFloat(row[1]) || 0;
+          break;
+        } else if (row[4] === formData.area) {
+          subscriptionPrice = parseFloat(row[5]) || 0;
+          break;
+        }
+      }
+      
+      const tbody = document.getElementById('batteryResultBody');
+      let html = '';
+      
+      if (service === 'subscription') {
+        html = `
+          <tr>
+            <td>رسوم الاشتراك في منطقة ${formData.area}</td>
+            <td class="highlight">${subscriptionPrice.toFixed(2)} د.ك</td>
+          </tr>
+          <tr>
+            <td>رسوم فحص البطاريه</td>
+            <td class="highlight">10 د.ك</td>
+          </tr>
+          <tr style="background: #262626;">
+            <td><strong>الإجمالي</strong></td>
+            <td class="highlight"><strong>${(subscriptionPrice + 10).toFixed(2)} د.ك</strong></td>
+          </tr>
+        `;
+      } else if (service === 'check') {
+        html = `
+          <tr>
+            <td>رسوم طلعة الفني</td>
+            <td class="highlight">${subscriptionPrice.toFixed(2)} د.ك</td>
+          </tr>
+          <tr>
+            <td>ملاحظة</td>
+            <td style="font-size: 12px; color: #999;">
+              في حال كانت المشكلة بطارية، يتم خصم ${subscriptionPrice.toFixed(2)} د.ك من سعر البطارية وتدفع الفرق فقط
+            </td>
+          </tr>
+        `;
+      }
+      
+      tbody.innerHTML = html;
+      
+      // Add copy button
+      const resultSection = document.getElementById('batteryResultSection');
+      let copyBtn = resultSection.querySelector('.btn-copy');
+      
+      if (!copyBtn) {
+        const header = resultSection.querySelector('.table-header');
+        if (header) {
+          copyBtn = document.createElement('button');
+          copyBtn.className = 'btn-copy';
+          copyBtn.innerHTML = '📋 نسخ';
+          
+          copyBtn.onclick = () => {
+            let message = '';
+            
+            if (service === 'subscription') {
+              message = `رسوم الاشتراك في منطقة ${formData.area} : ${subscriptionPrice.toFixed(2)} د.ك (مع فحص البطاريه 10 دك)`;
+            } else if (service === 'check') {
+              message = `رسوم طلعة الفني: ${subscriptionPrice.toFixed(2)} د.ك\nفي حال كانت المشكلة بطارية، يتم خصم ${subscriptionPrice.toFixed(2)} د.ك من سعر البطارية وتدفع الفرق فقط`;
+            }
+            
+            if (message) {
+              copyToClipboard(message);
+              copyBtn.classList.add('copied');
+              copyBtn.textContent = '✓ تم النسخ';
+              setTimeout(() => {
+                copyBtn.classList.remove('copied');
+                copyBtn.innerHTML = '📋 نسخ';
+              }, 2000);
+            }
+          };
+          
+          header.parentNode.insertBefore(copyBtn, header.nextSibling);
+        }
+      }
+      
+      document.getElementById('batteryResultSection').classList.remove('hidden');
     }
 
     // Render Tow Interface
@@ -2401,22 +2622,25 @@
             <input type="text" list="areaOptions" id="areaSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
             <datalist id="areaOptions"></datalist>
           </div>
-          <div class="info-box">
-            <strong>⚠️ تنبيه مهم:</strong><br>
-            • <strong>رقعة خارجية / سبير / تعبئة هواء:</strong> أي فني + باص التواير<br>
-            • <strong>رقعة داخلية:</strong> فقط باص التواير
+        </div>
+        
+        <div id="tireServicesSection" class="form-section hidden">
+          <h3 class="section-title">نوع الخدمة</h3>
+          <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <button class="btn-option circular-btn" data-tire-service="roadService">🛣️ خدمة طريق</button>
+            <button class="btn-option circular-btn" data-tire-service="internalPatch">🔧 رقعة داخلية</button>
+            <button class="btn-option circular-btn" data-tire-service="tireCheck">🔍 فحص تاير</button>
           </div>
         </div>
         
         <div id="tireResultSection" class="data-table-container hidden">
-          <div class="table-header">أسعار خدمة البنشر</div>
+          <div class="table-header">التفاصيل</div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>نوع الخدمة</th>
-                  <th>السعر</th>
-                  <th>رسوم الإلغاء</th>
+                  <th>البيان</th>
+                  <th>القيمة</th>
                 </tr>
               </thead>
               <tbody id="tireResultBody">
@@ -2426,9 +2650,169 @@
         </div>
       `;
       
-      loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14], () => {
-        calculatePuncturePrice();
+      loadAreaOptionsForTireServices();
+    }
+
+    function loadAreaOptionsForTireServices() {
+      const areaSelect = document.getElementById('areaSelect');
+      const areaDatalist = document.getElementById('areaOptions');
+      const tireServicesSection = document.getElementById('tireServicesSection');
+      const tireResultSection = document.getElementById('tireResultSection');
+      
+      if (!sheetsData['خدمات5']) {
+        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+        return;
+      }
+      
+      const rows = sheetsData['خدمات5'];
+      const areas = [];
+      
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        if (row[0]) areas.push(row[0]);
+        if (row[4]) areas.push(row[4]);
+        if (row[8]) areas.push(row[8]);
+        if (row[12]) areas.push(row[12]);
+      }
+      
+      const uniqueAreas = [...new Set(areas)].filter(Boolean);
+      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
+      
+      areaSelect.oninput = () => {
+        formData.area = areaSelect.value.trim();
+        
+        if (!formData.area) {
+          tireServicesSection.classList.add('hidden');
+          tireResultSection.classList.add('hidden');
+        } else {
+          tireServicesSection.classList.remove('hidden');
+        }
+      };
+      
+      // Add tire service buttons
+      document.querySelectorAll('[data-tire-service]').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('[data-tire-service]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          formData.tireService = btn.dataset.tireService;
+          calculateTireServicePrice();
+        };
       });
+    }
+
+    function calculateTireServicePrice() {
+      const rows = sheetsData['خدمات5'];
+      if (!rows || !formData.area) return;
+      
+      const service = formData.tireService;
+      let externalPrice = 0, internalPrice = 0;
+      
+      // Find prices
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        
+        if (row[0] === formData.area) {
+          externalPrice = parseFloat(row[1]) || 0;
+        } else if (row[4] === formData.area) {
+          externalPrice = parseFloat(row[5]) || 0;
+        }
+        
+        if (row[8] === formData.area) {
+          internalPrice = parseFloat(row[9]) || 0;
+        } else if (row[12] === formData.area) {
+          internalPrice = parseFloat(row[13]) || 0;
+        }
+      }
+      
+      const tbody = document.getElementById('tireResultBody');
+      let html = '';
+      
+      if (service === 'roadService') {
+        html = `
+          <tr>
+            <td>رسوم فحص التأير</td>
+            <td class="highlight">${externalPrice.toFixed(2)} د.ك</td>
+          </tr>
+          <tr>
+            <td>تشمل:</td>
+            <td>
+              • رقعة خارجية<br>
+              • تركيب سبير<br>
+              • تعبئة هواء
+            </td>
+          </tr>
+        `;
+      } else if (service === 'internalPatch') {
+        html = `
+          <tr>
+            <td>رسوم رقعة داخلية مع الميزان</td>
+            <td class="highlight">${internalPrice.toFixed(2)} د.ك</td>
+          </tr>
+        `;
+      } else if (service === 'tireCheck') {
+        const difference = (internalPrice - externalPrice).toFixed(2);
+        html = `
+          <tr>
+            <td>رسوم فحص التأير</td>
+            <td class="highlight">${externalPrice.toFixed(2)} د.ك</td>
+          </tr>
+          <tr>
+            <td>تشمل:</td>
+            <td>
+              • رقعة خارجية<br>
+              • تركيب سبير<br>
+              • تعبئة هواء
+            </td>
+          </tr>
+          <tr style="background: #1a4a2a; border-top: 2px solid #10b981;">
+            <td><strong>إذا احتاج رقعة داخلية</strong></td>
+            <td><strong style="color: #10b981;">إضافة ${difference} د.ك</strong></td>
+          </tr>
+        `;
+      }
+      
+      tbody.innerHTML = html;
+      
+      // Add copy button
+      const resultSection = document.getElementById('tireResultSection');
+      let copyBtn = resultSection.querySelector('.btn-copy');
+      
+      if (!copyBtn) {
+        const header = resultSection.querySelector('.table-header');
+        if (header) {
+          copyBtn = document.createElement('button');
+          copyBtn.className = 'btn-copy';
+          copyBtn.innerHTML = '📋 نسخ';
+          
+          copyBtn.onclick = () => {
+            let message = '';
+            
+            if (service === 'roadService') {
+              message = `رسوم فحص التأير ${externalPrice.toFixed(2)} دك تشمل: رقعة خارجية او تركيب سبير او تعبئه هواء`;
+            } else if (service === 'internalPatch') {
+              message = `رسوم رقعه داخليه مع الميزان : ${internalPrice.toFixed(2)} د.ك`;
+            } else if (service === 'tireCheck') {
+              const diff = (internalPrice - externalPrice).toFixed(2);
+              message = `رسوم فحص التأير ${externalPrice.toFixed(2)} دك تشمل: رقعة خارجية او تركيب سبير او تعبئه هواء (في حال التأير يحتاج رقعه داخليه راح تكون زياده "${diff}" دك)`;
+            }
+            
+            if (message) {
+              copyToClipboard(message);
+              copyBtn.classList.add('copied');
+              copyBtn.textContent = '✓ تم النسخ';
+              setTimeout(() => {
+                copyBtn.classList.remove('copied');
+                copyBtn.innerHTML = '📋 نسخ';
+              }, 2000);
+            }
+          };
+          
+          header.parentNode.insertBefore(copyBtn, header.nextSibling);
+        }
+      }
+      
+      document.getElementById('tireResultSection').classList.remove('hidden');
     }
 
     // Render Unlock (فتح قفل السيارة) as a separate service
