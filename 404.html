@@ -3731,6 +3731,19 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
     }
 
+    // Helper: extract last numeric value from a tbody element (used to get final price)
+    function getLastNumberFromTbody(tbody) {
+      try {
+        if (!tbody) return '';
+        const text = tbody.innerText || '';
+        const matches = text.match(/\d+(?:\.\d+)?/g);
+        if (!matches || matches.length === 0) return '';
+        return matches[matches.length - 1];
+      } catch (e) {
+        return '';
+      }
+    }
+
     // Build the message text per service and perform requested action (copy)
     function requestFromSection(serviceKey, subtype) {
       let msg = '';
@@ -3742,8 +3755,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           const to = formData.to || document.getElementById('toSelect')?.value || '';
           // find total price from towResultBody
           const tbody = document.getElementById('towResultBody');
-          const totalCell = tbody?.querySelector('tr:last-child td.highlight') || tbody?.querySelector('tr:last-child td');
-          const priceText = totalCell ? totalCell.innerText.replace(/[^0-9.]/g,'') : '';
+          const priceText = getLastNumberFromTbody(tbody) || '';
           msg = `رسوم (${type}) من منطقة (${from}) إلى منطقة (${to}): (${priceText}) د.ك`;
           // copy only if company is بورتراج
           if (formData.companyArabic !== 'بورتراج') {
@@ -3753,26 +3765,38 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           // fuel message
           const fuelNames = { 'premium': 'ممتاز', 'special': 'خصوصي', 'ultra': 'الترا' };
           const fuelType = formData.fuelType || '';
-          const pricePer = (fuelType === 'ultra' || fuelType === 'ultra') ? 2.5 : 1.5;
-          const servicePrice = (() => {
-            const el = document.querySelector('#fuelResultBody .highlight');
-            if (!el) return '';
-            return el.innerText.replace(config.currency,'').trim();
+          const pricePer = (fuelType === 'ultra') ? 2.5 : 1.5;
+          const delivery = (()=>{
+            const tbody = document.getElementById('fuelResultBody');
+            if(!tbody) return '';
+            // assume first numeric after 'رسوم خدمة التوصيل' or take second numeric as delivery
+            const txt = tbody.innerText || '';
+            const nums = txt.match(/\d+(?:\.\d+)?/g) || [];
+            // nums might be [servicePrice, fuelPrice, total] or [servicePrice, fuelPrice, total, ...]
+            // try to pick the servicePrice (first) as delivery for message per user's desired format
+            return nums.length>=1 ? nums[0] : '';
           })();
-          const deliveryRow = Array.from(document.querySelectorAll('#fuelResultBody tr')).find(r=>/رسوم خدمة التوصيل|رسوم التوصيل|رسوم خدمة التوصيل/.test(r.innerText));
-          const delivery = deliveryRow ? deliveryRow.querySelector('td:last-child').innerText.replace(/[^0-9.]/g,'') : '';
-          const totalRow = Array.from(document.querySelectorAll('#fuelResultBody tr')).find(r=>/الإجمالي/.test(r.innerText));
-          const total = totalRow ? totalRow.querySelector('td:last-child').innerText.replace(/[^0-9.]/g,'') : '';
-          msg = `رسوم البنزين ${pricePer} د.ك (التوصيل لأقرب محطة فقط)\nالتوصيل (${delivery}) د.ك\nالإجمالي (${total}) د.ك`;
+          const total = (()=>{
+            const tbody = document.getElementById('fuelResultBody');
+            return getLastNumberFromTbody(tbody) || '';
+          })();
+          msg = `رسوم البنزين ${pricePer} د.ك (يوصلك لأقرب محطة فقط)\nرسوم التوصيل (${delivery}) د.ك\nالإجمالي (${total}) د.ك`;
         } else if (serviceKey === 'puncture' || currentService === 'puncture') {
           // puncture / tire
           if (subtype === 'internal') {
             const intRow = document.querySelector('#tireResultBody tr:nth-child(2) td.highlight');
-            const extRow = document.querySelector('#tireResultBody tr:nth-child(1) td.highlight');
             const intPrice = intRow ? parseFloat(intRow.innerText.replace(/[^0-9.]/g,'')) : 0;
-            const extPrice = extRow ? parseFloat(extRow.innerText.replace(/[^0-9.]/g,'')) : 0;
-            const diff = (intPrice - extPrice).toFixed(2);
-            msg = `رسوم رقعة داخلية مع الميزان (${intPrice.toFixed(2)}) د.ك\n\nفي حال احتاج التاير رقعة داخلية يتم إضافة فرق السعر فقط: ${diff} د.ك`;
+            msg = `رسوم الرقعة الداخلية مع الميزان (${intPrice.toFixed(2)}) د.ك`;
+          } else if (subtype === 'external') {
+            const row = document.querySelector('#tireResultBody tr:nth-child(1) td.highlight');
+            const price = row ? row.innerText.replace(/[^0-9.]/g,'') : '';
+            msg = `رسوم فحص التاير (${price}) د.ك\n(تشمل رقعة خارجية أو تركيب سبير أو تعبئة هواء)`;
+          } else {
+            // default: use external
+            const row = document.querySelector('#tireResultBody tr:nth-child(1) td.highlight');
+            const price = row ? row.innerText.replace(/[^0-9.]/g,'') : '';
+            msg = `رسوم فحص التاير (${price}) د.ك\n(تشمل رقعة خارجية أو تركيب سبير أو تعبئة هواء)`;
+          }
           } else if (subtype === 'external') {
             const row = document.querySelector('#tireResultBody tr:nth-child(1) td.highlight');
             const price = row ? row.innerText.replace(/[^0-9.]/g,'') : '';
@@ -3785,14 +3809,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         } else if (serviceKey === 'battery' || currentService === 'battery' || serviceKey === 'batterySubscription') {
           if (subtype === 'subscribe' || currentService === 'batterySubscription') {
-            msg = `رسوم الاشتراك وفحص البطارية 10 د.ك\nحاب ناكد لك الخدمه؟`;
+            // Attach subscribe message exactly as requested
+            const fee = 10;
+            msg = `رسوم الاشتراك (${fee}) د.ك\nحاب ناكد لك الخدمه؟`;
           } else {
             // battery check or install
-            const final = (()=>{
-              const el = document.querySelector('#lockPortarageBody td.highlight') || document.querySelector('#serviceResultBody td.highlight');
-              return el ? el.innerText.replace(/[^0-9.]/g,'') : '';
-            })();
-            msg = `رسوم طلعة الفني (${10}) د.ك\nفي حال كانت المشكلة بطارية يتم خصم (${10}) د.ك من سعر البطارية وتدفع الفرق فقط`;
+            const fee = 10;
+            msg = `رسوم طلعة الفني و الاشتراك : (${fee}) د.ك\nفي حال كانت المشكلة بطارية، يتم خصم (${fee}) د.ك من سعر البطارية وتدفع الفرق فقط`;
           }
         } else if (serviceKey === 'mechanical' || currentService === 'mechanical' || serviceKey === 'balance' ) {
           if (currentService === 'balance' || serviceKey === 'balance') {
@@ -3800,9 +3823,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             const price = el ? el.innerText.replace(/[^0-9.]/g,'') : '';
             msg = `رسوم رقعة داخلية مع الميزان (${price}) د.ك`;
           } else {
-            const el = document.querySelector('#mechResultBody td.highlight') || document.querySelector('#serviceResultBody td.highlight');
-            const price = el ? el.innerText.replace(/[^0-9.]/g,'') : '';
-            msg = `رسوم فحص السيارة (${price}) د.ك\nفي حال كان العطل ميكانيكي ونقدر نصلحه جدام البيت يتم خصم رسوم التصليح من رسوم الفحص`;
+              const el = document.querySelector('#mechResultBody td.highlight') || document.querySelector('#serviceResultBody td.highlight');
+              const price = el ? el.innerText.replace(/[^0-9.]/g,'') : '';
+              msg = `رسوم فحص السيارة (${price}) د.ك\nفي حال كان العطل ميكانيكي ونقدر نصلحه جدام البيت يتم خصم رسوم التصليح من رسوم الفحص`;
           }
         } else {
           msg = 'لا توجد بيانات كافية لإنشاء الطلب.';
