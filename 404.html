@@ -789,7 +789,7 @@
     // Configuration
     const defaultConfig = {
       site_title: 'خدمات بورتراج',
-      sheet_id: '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk',
+      sheet_id: '1HmRWypUMbHChUUSVvogJ2jdCZeHf8aCo3DLRkeL7DLw',
       currency: 'د.ك'
     };
 
@@ -803,14 +803,27 @@
     let carWashData = [];
     let lastIframeState = null; // Store last iframe state
 
-    // Initialize Element SDK
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig,
-        onConfigChange: async (newConfig) => {
-          config = { ...defaultConfig, ...newConfig };
-          document.getElementById('siteTitle').textContent = config.site_title;
-          
+    // Employee name mapping by email
+    const employeeEmailMapping = {
+      'Fawzipor@gmail.com': 'فوزي دامس'
+    };
+
+    // Function to convert employee name based on email
+    function getEmployeeDisplayName(row) {
+      // Check if there's an email column (usually column H or I)
+      if (!row || row.length < 9) return row[4] || '-';
+      
+      const email = (row[8] || '').toString().trim().toLowerCase();
+      
+      // Check if email matches any known mapping
+      for (const [emailKey, displayName] of Object.entries(employeeEmailMapping)) {
+        if (email === emailKey.toLowerCase()) {
+          return displayName;
+        }
+      }
+      
+      return row[4] || '-';
+    }
           if (newConfig.sheet_id && newConfig.sheet_id !== sheetsData.currentSheetId) {
             await loadAllSheets();
           }
@@ -3885,7 +3898,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             requestDate: row[0] || '-',
             orderNumber: row[1] || '-',
             refundAmount: row[3] || '-',
-            employeeName: row[4] || '-',
+            employeeName: getEmployeeDisplayName(row),
             status: status || 'قيد التنفيذ',
             refundDate: row[6] || '-',
             rowIndex: i,
@@ -3956,7 +3969,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             requestDate: row[0] || '-',
             orderNumber: row[1] || '-',
             refundAmount: row[3] || '-',
-            employeeName: row[4] || '-',
+            employeeName: getEmployeeDisplayName(row),
             status: row[5] || 'قيد التنفيذ',
             refundDate: row[6] || '-',
             rowIndex: i
