@@ -408,6 +408,15 @@
       color: #ccc;
       font-weight: 600;
     }
+    .copy-btn {
+      background: transparent;
+      border: 1px solid #F2BC1B;
+      color: #F2BC1B;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-left: 8px;
     
     .btn-option:hover {
       background: #353535;
@@ -1173,7 +1182,7 @@
         </div>
         
         <div id="towResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn" onclick="copyResultText('towResultSection')">نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -1838,7 +1847,7 @@
         <!-- (تم نقل واجهة فتح القفل إلى خدمة منفصلة 'فتح قفل السيارة') -->
 
         <div id="fuelResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn" onclick="copyResultText('fuelResultSection')">نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2052,7 +2061,7 @@
         </div>
         
         <div id="tireResultSection" class="data-table-container hidden">
-          <div class="table-header">أسعار خدمة البنشر</div>
+          <div class="table-header">أسعار خدمة البنشر <button class="copy-btn" onclick="copyResultText('tireResultSection')">نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -2095,7 +2104,7 @@
               <datalist id="areaOptions"></datalist>
             </div>
             <div id="lockPortarageResult" class="data-table-container hidden">
-              <div class="table-header">نتيجة فتح القفل - بورتراج</div>
+              <div class="table-header">نتيجة فتح القفل - بورتراج <button class="copy-btn" onclick="copyResultText('lockPortarageResult')">نسخ</button></div>
               <div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockPortarageBody"></tbody></table></div>
             </div>
             <div class="warning-box" style="margin-top:8px;">يرجى التأكد من فني بورتراج انه يقدر يفتح باب السياره لنه ماعندنا امكانيه نفتح جميع السيارات</div>
@@ -2107,7 +2116,7 @@
               <input type="number" id="lockExternalPrice" class="form-control" placeholder="ضع سعر الفني هنا">
             </div>
             <div id="lockExternalNoteDisplay" class="info-box" style="margin-top:8px;">ملاحظة: للفنين الخارجين — قروب عثمان • Mr.LOCK</div>
-            <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي</div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
+            <div id="lockExternalResult" class="data-table-container hidden"><div class="table-header">نتيجة فتح القفل - مورد خارجي <button class="copy-btn" onclick="copyResultText('lockExternalResult')">نسخ</button></div><div class="table-scroll"><table class="data-table"><thead><tr><th>البيان</th><th>القيمة</th></tr></thead><tbody id="lockExternalBody"></tbody></table></div></div>
           </div>
 
           <div id="lockFinalNotice" class="info-box hidden" style="margin-top:8px;"></div>
@@ -2252,7 +2261,7 @@
         </div>
         
         <div id="balanceResultSection" class="data-table-container hidden">
-          <div class="table-header">نتيجة الحساب</div>
+          <div class="table-header">نتيجة الحساب <button class="copy-btn" onclick="copyResultText('balanceResultSection')">نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -3564,8 +3573,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           ${note}
         </div>
         
-        <div id="serviceResultSection" class="data-table-container hidden">
-          <div class="table-header">${title}</div>
+        <div id="mechResultSection" class="data-table-container hidden">
+          <div class="table-header">نتيجة الحساب <button class="copy-btn" onclick="copyResultText('mechResultSection')">نسخ</button></div>
           <div class="table-scroll">
             <table class="data-table">
               <thead>
@@ -3700,6 +3709,30 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       `;
       
       document.getElementById('serviceResultSection').classList.remove('hidden');
+    }
+
+    // Copy visible result table/text to clipboard
+    function copyResultText(sectionId) {
+      try {
+        const section = document.getElementById(sectionId);
+        if (!section) return alert('لا توجد نتيجة للنسخ');
+        const tableScroll = section.querySelector('.table-scroll');
+        let text = '';
+        if (tableScroll) {
+          text = tableScroll.innerText.trim();
+        } else {
+          text = section.innerText.trim();
+        }
+        if (!text) return alert('لا توجد بيانات للنسخ');
+        navigator.clipboard.writeText(text).then(() => {
+          alert('تم نسخ المحتوى');
+        }).catch(() => {
+          alert('فشل النسخ — تأكد من صلاحيات المتصفح');
+        });
+      } catch (err) {
+        console.error(err);
+        alert('حدث خطأ أثناء النسخ');
+      }
     }
 
     // Option 1: Google Sheets Webhook (Apps Script) — leave empty to disable
