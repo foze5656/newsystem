@@ -3368,53 +3368,68 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
 
           let html = '';
+          let headers = [];
+          let allRows = [];
 
-          foundResults.forEach((result, index) => {
-            const headers = result.headers || [];
-            const row = result.rowData || [];
+          foundResults.forEach(result => {
+            if (headers.length === 0) {
+              headers = result.headers || [];
+            }
+            allRows.push(result.rowData);
+          });
 
-            html += `
-              <div class="data-table-container" style="margin-bottom: 15px; grid-column: 1 / -1;">
-                <div class="table-header">المبالغ المسترجعة</div>
-                <div style="overflow-x: auto; width: 100%;">
-                  <table class="data-table" style="width: 100%; table-layout: auto;">
-                    <thead>
-                      <tr>
-            `;
+          html += `
+            <div class="data-table-container" style="margin-bottom: 15px; grid-column: 1 / -1;">
+              <div class="table-header">المبالغ المسترجعة</div>
+              <div style="overflow-x: auto; width: 100%;">
+                <table class="data-table" style="width: 100%; table-layout: auto;">
+                  <thead>
+                    <tr>
+          `;
 
-            const columnsWithData = [];
+          const columnsWithData = [];
+          if (allRows.length > 0) {
             headers.forEach((header, idx) => {
-              if (header && row[idx] && row[idx].toString().trim() !== '') {
+              let hasData = false;
+              for (let row of allRows) {
+                if (row[idx] && row[idx].toString().trim() !== '') {
+                  hasData = true;
+                  break;
+                }
+              }
+              if (header && hasData) {
                 columnsWithData.push({ header: header.toString(), idx });
               }
             });
+          }
 
-            columnsWithData.forEach(col => {
-              html += `<th style="white-space: nowrap; padding: 11px 16px;">${col.header}</th>`;
-            });
+          columnsWithData.forEach(col => {
+            html += `<th style="white-space: nowrap; padding: 11px 16px;">${col.header}</th>`;
+          });
 
-            html += `
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-            `;
+          html += `
+                    </tr>
+                  </thead>
+                  <tbody>
+          `;
 
+          allRows.forEach(row => {
+            html += `<tr>`;
             columnsWithData.forEach(col => {
               let value = row[col.idx] || '-';
               value = value.toString();
               if (value.toLowerCase() === 'fawzipor@gmail.com') value = 'فوزي دامس';
               html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
             });
-
-            html += `
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            `;
+            html += `</tr>`;
           });
+
+          html += `
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
 
           resultsContainer.innerHTML = html;
           resultsContainer.classList.remove('hidden');
