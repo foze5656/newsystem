@@ -10,6 +10,32 @@
     body {
       box-sizing: border-box;
     }
+
+    // Global error catcher to help debug runtime issues in the browser
+    (function(){
+      function showErrorOverlay(msg){
+        try{
+          let el = document.getElementById('errorOverlay');
+          if(!el){
+            el = document.createElement('div');
+            el.id = 'errorOverlay';
+            el.style = 'position:fixed;bottom:12px;left:12px;right:12px;z-index:99999;background:#fff0f0;color:#000;border:2px solid #ff4444;padding:12px;border-radius:6px;font-size:14px;max-height:40vh;overflow:auto;box-shadow:0 6px 30px rgba(0,0,0,0.2)';
+            document.body.appendChild(el);
+          }
+          el.textContent = 'JS Error: ' + (msg || '(no message)');
+        }catch(e){console.error('Could not show overlay', e);} 
+      }
+
+      window.addEventListener('error', function(ev){
+        console.error('Captured error:', ev.error || ev.message);
+        showErrorOverlay((ev.error && ev.error.message) || ev.message || String(ev));
+      });
+
+      window.addEventListener('unhandledrejection', function(ev){
+        console.error('Unhandled rejection:', ev.reason);
+        showErrorOverlay((ev.reason && ev.reason.message) || String(ev.reason));
+      });
+    })();
     
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
     
@@ -824,23 +850,7 @@
       
       return row[4] || '-';
     }
-          if (newConfig.sheet_id && newConfig.sheet_id !== sheetsData.currentSheetId) {
-            await loadAllSheets();
-          }
-        },
-        mapToCapabilities: () => ({
-          recolorables: [],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined
-        }),
-        mapToEditPanelValues: (cfg) => new Map([
-          ['site_title', cfg.site_title || defaultConfig.site_title],
-          ['sheet_id', cfg.sheet_id || defaultConfig.sheet_id],
-          ['currency', cfg.currency || defaultConfig.currency]
-        ])
-      });
-    }
+    
 
     // Company mapping
     const companyMapping = {
@@ -897,6 +907,7 @@
     async function loadAllSheets() {
       try {
         const sheetId = config.sheet_id;
+        console.log('Loading sheets from:', sheetId);
         
         const sheetNames = [
           'portarage towtruk',
@@ -915,7 +926,9 @@
           'تأمين وربه',
           'تأمين صفينه VIP',
           'تأمين إيلاف',
-          'استرجاع المبالغ'
+          'استرجاع المبالغ',
+          'Sheet1',  // Try default name
+          'Sheet2'
         ];
         
         sheetsData = { currentSheetId: sheetId };
@@ -927,14 +940,21 @@
             
             if (response.ok) {
               const csvText = await response.text();
-              const rows = parseCSV(csvText);
-              sheetsData[sheetName] = rows;
+              // Check if response has actual data
+              if (csvText.trim().length > 0 && csvText.trim() !== 'null') {
+                const rows = parseCSV(csvText);
+                if (rows.length > 0) {
+                  sheetsData[sheetName] = rows;
+                  console.log(`✓ Loaded sheet: ${sheetName} (${rows.length} rows)`);
+                }
+              }
             }
           } catch (err) {
-            console.log(`Could not load sheet: ${sheetName}`);
+            console.log(`✗ Could not load sheet: ${sheetName}`, err.message);
           }
         }
         
+        console.log('All sheets loaded:', Object.keys(sheetsData));
       } catch (error) {
         console.error('Error loading sheets:', error);
       }
@@ -978,12 +998,16 @@
     document.addEventListener('click', (e) => {
       const serviceItem = e.target.closest('.service-item');
       if (serviceItem) {
+        console.log('Service clicked:', serviceItem.dataset.service);
+        
         // Handle submenu toggle for battery and tire
         if ((serviceItem.dataset.service === 'battery' || serviceItem.dataset.service === 'tire') && serviceItem.classList.contains('has-submenu')) {
           serviceItem.classList.toggle('expanded');
           const submenuId = serviceItem.dataset.service === 'battery' ? 'batterySubmenu' : 'tireSubmenu';
           const submenu = document.getElementById(submenuId);
-          submenu.classList.toggle('show');
+          if (submenu) {
+            submenu.classList.toggle('show');
+          }
           return;
         }
         
@@ -3769,12 +3793,30 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     }
 
     // Load data on page load
-    loadAllSheets();
+    console.log('Initializing application...');
+    
+    // Verify service items exist
+    const serviceItems = document.querySelectorAll('.service-item');
+    console.log(`Found ${serviceItems.length} service items`);
+    
+    loadAllSheets().then(() => {
+      console.log('Sheets loaded successfully');
+      console.log('Available services:', currentService || 'None selected yet');
+    }).catch(err => {
+      console.error('Error loading sheets:', err);
+    });
   </script>
   <script>
     // Refunds Service Interface
     function renderRefundsInterface() {
       const contentArea = document.getElementById('contentArea');
+      
+      if (!contentArea) {
+        console.error('Content area not found!');
+        return;
+      }
+      
+      console.log('Rendering refunds interface');
       contentArea.innerHTML = `
         <div class="form-section full-width" style="background: linear-gradient(135deg, #1a1a1a 0%, #262626 100%); border: 2px solid #F2BC1B; padding: 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(242, 188, 27, 0.15);">
           <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
@@ -3812,10 +3854,29 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           <div id="refundResultsContainer">
           </div>
         </div>
+        
+        <div class="form-section full-width" style="background: #1a1a1a; border: 1px solid #333; padding: 16px; border-radius: 8px;">
+          <button id="debugSheetsBtn" style="width: 100%; padding: 10px; background: #404040; color: #ccc; border: 1px solid #555; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+            🔍 عرض ملفات البيانات المتاحة
+          </button>
+        </div>
       `;
 
       // Load refunds data from Google Sheet
       loadRefundsData();
+      
+      // Debug button
+      document.getElementById('debugSheetsBtn').onclick = () => {
+        const availableSheets = Object.keys(sheetsData).filter(k => k !== 'currentSheetId');
+        let debugInfo = '📋 الملفات المتاحة:\n\n';
+        availableSheets.forEach(sheet => {
+          const rowCount = sheetsData[sheet]?.length || 0;
+          debugInfo += `✓ ${sheet} (${rowCount} صف)\n`;
+        });
+        
+        console.log(debugInfo);
+        alert(debugInfo);
+      };
       
       // Handle submit button with hover effect
       const submitBtn = document.getElementById('refundSubmitBtn');
@@ -3869,19 +3930,51 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const containerId = 'pendingRefundsContainer';
       const container = document.getElementById(containerId);
       
-      if (!sheetsData[sheetName]) {
+      console.log('Looking for sheet:', sheetName);
+      console.log('Available sheets:', Object.keys(sheetsData));
+      
+      let targetSheet = null;
+      
+      // First try exact match
+      if (sheetsData[sheetName]) {
+        targetSheet = sheetName;
+      } else {
+        // Try to find any sheet with "استرجاع" in the name
+        const matchingSheet = Object.keys(sheetsData).find(key => 
+          key.includes('استرجاع') || key.includes('refund') || key.includes('Refund')
+        );
+        if (matchingSheet) {
+          targetSheet = matchingSheet;
+          console.log('Found matching sheet:', matchingSheet);
+        }
+      }
+      
+      // Retry mechanism - if data not loaded yet, wait a bit
+      if (!targetSheet) {
+        // Check if it's still loading
+        if (Object.keys(sheetsData).length <= 1) {
+          // Still loading, wait and retry
+          setTimeout(() => loadRefundsData(), 500);
+          return;
+        }
+        
+        const availableSheets = Object.keys(sheetsData)
+          .filter(k => k !== 'currentSheetId')
+          .map(k => `${k} (${sheetsData[k].length} rows)`)
+          .join('\n');
+        
         container.innerHTML = `
           <div style="padding: 40px 20px; text-align: center; background: #1a1a1a; border-radius: 8px; border: 2px solid #f59e0b;">
             <div style="font-size: 48px; margin-bottom: 12px;">⚠️</div>
             <p style="color: #f59e0b; font-weight: 600; margin: 0 0 6px 0; font-size: 15px;">لم يتم العثور على ورقة البيانات</p>
-            <p style="color: #999; font-size: 13px; margin: 0; line-height: 1.6;">تأكد من أن اسم الملف هو "استرجاع المبالغ"<br>وإعادة تحميل الصفحة</p>
+            <p style="color: #999; font-size: 13px; margin: 0; line-height: 1.6;">اسم الملف المطلوب: "استرجاع المبالغ"<br><br>الملفات المتاحة:<br><code style="background: #262626; padding: 12px; display: block; margin-top: 8px; border-radius: 4px; font-size: 11px; color: #F2BC1B; text-align: left; overflow-x: auto; max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word;">${availableSheets || 'لا توجد ملفات'}</code></p>
             <button onclick="location.reload()" style="margin-top: 12px; padding: 8px 16px; background: #f59e0b; color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px;">🔄 إعادة تحميل</button>
           </div>
         `;
         return;
       }
       
-      const rows = sheetsData[sheetName];
+      const rows = sheetsData[targetSheet];
       const pendingRefunds = [];
       
       // Skip header (row 0) and start from row 1
@@ -3950,7 +4043,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const sheetName = 'استرجاع المبالغ';
       
       if (!sheetsData[sheetName]) {
-        return;
+        // Try to find matching sheet
+        const matchingSheet = Object.keys(sheetsData).find(key => 
+          key.includes('استرجاع') || key.includes('refund') || key.includes('Refund')
+        );
+        
+        if (!matchingSheet) {
+          return;
+        }
+        
+        sheetsData[sheetName] = sheetsData[matchingSheet];
       }
       
       const rows = sheetsData[sheetName];
