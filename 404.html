@@ -3416,9 +3416,23 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           allRows.forEach(row => {
             html += `<tr>`;
             columnsWithData.forEach(col => {
-              let value = row[col.idx] || '-';
-              value = value.toString();
-              if (value.toLowerCase() === 'fawzipor@gmail.com') value = 'فوزي دامس';
+              const rawVal = (row[col.idx] || '').toString().trim();
+              let value = rawVal || '-';
+
+              // Replace specific email with friendly name
+              if ((rawVal || '').toLowerCase() === 'fawzipor@gmail.com') value = 'فوزي دامس';
+
+              // If the column header indicates a refund/استرجاع column, map values to ✅/❌ labels
+              const headerText = (col.header || '').toString().toLowerCase();
+              if (headerText.includes('استرجاع') || headerText.includes('refund')) {
+                const lv = rawVal.toLowerCase();
+                if (lv === 'نعم' || lv === 'yes' || lv === 'y' || lv === 'true') {
+                  value = '✅ تم الاسترجاع';
+                } else if (!rawVal || lv === 'لا' || lv === 'no' || lv === 'n' || lv === 'false') {
+                  value = '❌ لم يتم الاسترجاع';
+                }
+              }
+
               html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
             });
             html += `</tr>`;
