@@ -3345,15 +3345,26 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           const headerRow = rows[0] || [];
           const foundResults = [];
 
-          for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            if (!row || row.length === 0 || !row.some(cell => cell && cell.toString().trim())) continue;
+          // normalize helper: remove non-digits and trim for strict comparison
+          function normalizeNumber(s) {
+            return (s || '').toString().replace(/\D+/g, '').trim();
+          }
 
-            const orderNumber = (row[1] || '').toString().toLowerCase();
-            const customerNum = (row[2] || '').toString().toLowerCase();
+          const queryNorm = normalizeNumber(customerNumber);
+          if (!queryNorm) {
+            // if user input doesn't contain digits (or is empty) treat as no-search
+          } else {
+            for (let i = 1; i < rows.length; i++) {
+              const row = rows[i];
+              if (!row || row.length === 0 || !row.some(cell => cell && cell.toString().trim())) continue;
 
-            if (orderNumber.includes(customerNumber.toLowerCase()) || customerNum.includes(customerNumber.toLowerCase())) {
-              foundResults.push({ headers: headerRow, rowData: row });
+              const customerNumRaw = (row[2] || '').toString();
+              const custNorm = normalizeNumber(customerNumRaw);
+
+              // Only exact match on the normalized customer number — no partial matches, no orderNumber match
+              if (custNorm && custNorm === queryNorm) {
+                foundResults.push({ headers: headerRow, rowData: row });
+              }
             }
           }
 
