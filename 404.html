@@ -750,8 +750,10 @@
      </div>
      <div class="service-item submenu-item" data-service="tireSheet"><span class="label">شيت التواير</span>
      </div>
-     <div class="service-item submenu-item" data-service="balance"><span class="label">ميزان وتركيب</span>
+    <div class="service-item submenu-item" data-service="balance"><span class="label">ميزان وتركيب</span>
      </div>
+    <div class="service-item submenu-item" data-service="rimRepair"><span class="label">تصليح الرنقات</span>
+    </div>
     </div>
     <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمات ميكانيكية</span>
     </div>
@@ -990,6 +992,7 @@
           'unlock': 'فتح قفل السيارة',
           'tireSheet': 'شيت التواير',
           'tireIncrease': 'زيادات التواير',
+          'rimRepair': 'تصليح الرنقات',
           'puncture': 'بنشر',
           'balance': 'ميزان وتركيب',
           'mechanical': 'خدمات ميكانيكية',
@@ -1026,6 +1029,9 @@
             break;
           case 'puncture':
             renderPunctureService();
+            break;
+          case 'rimRepair':
+            renderRimRepairInterface();
             break;
           case 'balance':
             renderBalanceService();
@@ -2137,6 +2143,89 @@
           });
         });
       }
+    }
+
+    // Render Rim Repair Interface (تصليح الرنقات)
+    function renderRimRepairInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">خدمة: تصليح الرنقات</h3>
+
+          <div class="form-field">
+            <label>المنطقة</label>
+            <input type="text" id="rimRegion" class="form-control" placeholder="مثال: حولي">
+          </div>
+
+          <div style="margin-top:8px;">
+            <label style="display:block;">
+              <input type="checkbox" id="rimIsNew"> طوق جديد (بدل تصليح الرنق)
+            </label>
+            <label style="display:block;margin-top:6px;">
+              <input type="checkbox" id="rimApplySurcharge" checked> إضافة زيادتنا على سعر الكراج (+15 دك ثابت)
+            </label>
+          </div>
+
+          <div style="margin-top:10px;">
+            <button id="rimCalcBtn" class="btn-primary">عرض الأسعار</button>
+          </div>
+
+          <div id="rimResult" class="data-table-container hidden" style="margin-top:12px;">
+            <div class="table-header">تفاصيل الرسوم - تصليح الرنقات</div>
+            <div class="table-scroll" style="padding:12px;">
+              <div id="rimDetails" style="color:#ccc; font-size:14px;"></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const WINCH_FEE = 12; // رسوم الونش العادي لكل اتجاه
+      const OUR_SURCHARGE = 15; // زيادتنا الثابتة
+
+      const rimCalcBtn = document.getElementById('rimCalcBtn');
+      const rimResult = document.getElementById('rimResult');
+      const rimDetails = document.getElementById('rimDetails');
+
+      rimCalcBtn.onclick = () => {
+        const region = document.getElementById('rimRegion').value.trim() || '—';
+        const isNew = document.getElementById('rimIsNew').checked;
+        const applySurcharge = document.getElementById('rimApplySurcharge').checked;
+
+        const towOneWay = WINCH_FEE;
+        const towRound = WINCH_FEE * 2;
+
+        // service ranges
+        let serviceLabel = '';
+        let minService = 0, maxService = 0;
+        if (isNew) {
+          serviceLabel = 'طوق جديد';
+          minService = 50; maxService = 70;
+        } else {
+          serviceLabel = 'رسوم تصليح (مخرطة) الرنق';
+          minService = 20; maxService = 35;
+        }
+
+        const surcharge = applySurcharge ? OUR_SURCHARGE : 0;
+
+        const minTotal = towRound + minService + surcharge;
+        const maxTotal = towRound + maxService + surcharge;
+
+        rimDetails.innerHTML = `
+          <div>المنطقة: <strong>${region}</strong></div>
+          <div style="margin-top:8px;">رسوم الروحه والرده: <strong>${towRound} دك</strong></div>
+          <ul style="margin:6px 0 0 18px;color:#ccc;">
+            <li>الروحه: ${towOneWay} دك</li>
+            <li>الرده: ${towOneWay} دك</li>
+          </ul>
+          <div style="margin-top:8px;">${serviceLabel} — يتراوح السعر بين ${minService} دك إلى ${maxService} دك</div>
+          <div style="margin-top:8px;">${applySurcharge ? 'زيادتنا على سعر الكراج: ' + OUR_SURCHARGE + ' دك' : 'بدون زيادتنا الإضافية'}</div>
+          <div style="margin-top:10px;font-weight:700;">المجموع التقريبي: من ${minTotal} دك إلى ${maxTotal} دك</div>
+          <div style="margin-top:8px;color:#f59e0b;">ملاحظة: سعر التصليح النهائي يتحدد في الكراج.</div>
+          <div style="margin-top:10px;">الكراج الذي نصلح فيه الرنقات: <a href="https://maps.app.goo.gl/Na1gJnT1Tzkoa5jw7" target="_blank" rel="noopener noreferrer">المتوكل — الموقع</a></div>
+        `;
+
+        rimResult.classList.remove('hidden');
+      };
     }
 
     // Load datalist options specifically for فتح قفل sheet
@@ -3743,7 +3832,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         });
 
         // Open the form in a new window
-        window.open(url, 'googleFormWindow', 'width=800,height=600');
+        window.open(url, 'googleFormWمindow', 'width=800,height=600');
         resolve({ ok: true });
       });
     }
