@@ -2162,9 +2162,6 @@
             <label style="display:block;">
               <input type="checkbox" id="rimIsNew"> طوق جديد (بدل تصليح الرنق)
             </label>
-            <label style="display:block;margin-top:6px;">
-              <input type="checkbox" id="rimApplySurcharge" checked> إضافة زيادتنا على سعر الكراج (+15 دك ثابت)
-            </label>
           </div>
 
           <div style="margin-top:10px;">
@@ -2188,47 +2185,39 @@
         </div>
       `;
 
-      const WINCH_FEE = 12; // رسوم الونش العادي لكل اتجاه
-      const OUR_SURCHARGE = 15; // زيادتنا الثابتة
+      const WINCH_FEE = 12; // رسوم الونش العادي لكل اتجاه (fallback)
+      const OUR_SURCHARGE = 15; // زيادتنا الثابتة (تطبق دائماً على سعر الكراج)
 
       const rimCalcBtn = document.getElementById('rimCalcBtn');
       const rimResult = document.getElementById('rimResult');
       const rimResultBody = document.getElementById('rimResultBody');
       const rimNotes = document.getElementById('rimNotes');
 
-      // سنحدد ما إذا كانت المنطقة تحتاج ضرب الرسوم بالاطلاع على جدول 'خدمات5'
+      // سنحدد سعر الروحه من جدول الونش (بورتراج) ونعرف ما إذا كانت هناك وجهة شويخ في نفس السطر
       rimCalcBtn.onclick = () => {
         const region = (formData.area && formData.area.trim()) || document.getElementById('areaSelect').value.trim() || '—';
         const isNew = document.getElementById('rimIsNew').checked;
         const applySurcharge = document.getElementById('rimApplySurcharge').checked;
 
         const towOneWay = WINCH_FEE;
-        // افتراضي: لا ضِعف
+        // ابحث أولاً عن سعر الونش لبورتراج لنفس المنطقة
+        let towOneWay = WINCH_FEE;
         let regionMultiplier = 1;
-        // نبحث في sheet 'خدمات5' إذا كانت نفس السطر يحتوي على وجهة 'شويخ' (فإذا وُجد نضرب الرسوم)
         try {
-          const rows = sheetsData['خدمات5'] || [];
-          const areaCols = [0,4,8,12];
-          for (let i = 2; i < rows.length; i++) {
-            const row = rows[i];
-            for (const c of areaCols) {
-              if (row[c] && row[c].toString().trim() === region) {
-                // إذا نفس السطر يحتوي على أي عمود يحتوي على كلمة 'شويخ' نعتبرها مضاعفة
-                const hasShuwaikh = areaCols.some(ac => {
-                  const v = row[ac];
-                  return v && v.toString().toLowerCase().includes('شويخ');
-                });
-                if (hasShuwaikh) regionMultiplier = 2;
-                break;
-              }
-            }
-            if (regionMultiplier === 2) break;
+          const portarageRoutes = getTowRoutes('portarage towtruk', 'normal');
+          const matching = portarageRoutes.filter(r => r.from === region);
+          if (matching && matching.length > 0) {
+            // استخدم أول سعر موجود كسعر الروحه
+            towOneWay = parseFloat(matching[0].price) || WINCH_FEE;
+            // إذا أي من الوجهات يحتوي اسم 'شويخ' اعتبر الوجهة الثانية ويوجد ضرب
+            const hasShuwaikh = matching.some(r => r.to && r.to.toString().toLowerCase().includes('شويخ'));
+            if (hasShuwaikh) regionMultiplier = 2;
           }
         } catch (err) {
-          console.log('خطأ في فحص مناطق الخدمات:', err);
+          console.log('خطأ في جلب أسعار الونش:', err);
         }
 
-        const towRound = WINCH_FEE * 2 * regionMultiplier;
+        const towRound = towOneWay * 2 * regionMultiplier;
 
         // service ranges
         let serviceLabel = '';
@@ -2248,21 +2237,22 @@
 
         rimResultBody.innerHTML = `
           <tr><td>المنطقة</td><td>${region}</td></tr>
-          <tr><td>سعر الروحه</td><td>${towOneWay} دك</td></tr>
-          <tr><td>سعر الردة</td><td>${towOneWay} دك</td></tr>
-          <tr><td>الإجمالي (روحه ورده فقط)</td><td>${towOneWay * 2 * regionMultiplier} دك</td></tr>
+          <tr><td>سعر الروحه</td><td>${towOneWay.toFixed(2)} دك</td></tr>
+          <tr><td>سعر الردة</td><td>${towOneWay.toFixed(2)} دك</td></tr>
+          <tr><td>الإجمالي (روحه ورده فقط)</td><td>${(towOneWay * 2 * regionMultiplier).toFixed(2)} دك</td></tr>
           ${regionMultiplier === 2 ? `<tr><td>الوجهة الثانية</td><td>شويخ الصناعية (مضافة تلقائياً)</td></tr>` : ''}
           <tr><td>الخدمة</td><td>${serviceLabel} — من ${minService} دك إلى ${maxService} دك</td></tr>
-          <tr><td>زيادتنا</td><td>${surcharge ? surcharge + ' دك' : 'بدون'}</td></tr>
-          <tr><td><strong>المجموع التقريبي</strong></td><td><strong>من ${minTotal} دك إلى ${maxTotal} دك</strong></td></tr>
+          <tr><td><strong>المجموع التقريبي</strong></td><td><strong>من ${minTotal.toFixed(2)} دك إلى ${maxTotal.toFixed(2)} دك</strong></td></tr>
         `;
 
-        // ملاحظة موحدة داخل صندوق معلومات أزرق
+        // ملاحظة موحدة داخل صندوق معلومات أزرق مع رابط الكراج باللون المميز
         rimNotes.innerHTML = `
           <div class="info-box">
-            <div>سوم تصليح (مخرطة) الرنق: يتم ابلاغ العميل — يتراوح السعر بين ٢٠ دك إلى ٣٥ دك</div>
+            <div>رسوم تصليح (مخرطة) الرنق: يتراوح السعر بين ٢٠ دك إلى ٣٥ دك</div>
             <div style="margin-top:6px;">في حال كان طوق جديد: يتراوح السعر بين ٥٠ دك إلى ٧٠ دك</div>
-            <div style="margin-top:6px;color:#f59e0b;">يتحدد سعر التصليح بالكراج</div>
+            <div style="margin-top:6px;">يتحدد سعر التصليح بالكراج</div>
+            <div style="margin-top:8px;">السعر الذي يعطيكم إياه الكراج تزيدون فوقه: <strong>١٥ دك</strong> سواء تصليح رنق أو طوق جديد</div>
+            <div style="margin-top:8px;color:#F2BC1B;font-weight:700;">الكراج: <a href="https://maps.app.goo.gl/Na1gJnT1Tzkoa5jw7" target="_blank" rel="noopener noreferrer">المتوكل</a></div>
           </div>
         `;
 
