@@ -2154,7 +2154,8 @@
 
           <div class="form-field">
             <label>المنطقة</label>
-            <input type="text" id="rimRegion" class="form-control" placeholder="مثال: حولي">
+            <input type="text" id="areaSelect" list="areaOptions" class="form-control" placeholder="اكتب أو اختر المنطقة">
+            <datalist id="areaOptions"></datalist>
           </div>
 
           <div style="margin-top:8px;">
@@ -2172,8 +2173,16 @@
 
           <div id="rimResult" class="data-table-container hidden" style="margin-top:12px;">
             <div class="table-header">تفاصيل الرسوم - تصليح الرنقات</div>
-            <div class="table-scroll" style="padding:12px;">
-              <div id="rimDetails" style="color:#ccc; font-size:14px;"></div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr><th>البيان</th><th>القيمة</th></tr>
+                </thead>
+                <tbody id="rimResultBody"></tbody>
+              </table>
+            </div>
+            <div style="padding:12px;color:#ccc;">
+              <div id="rimNotes" style="margin-top:8px;font-size:13px;color:#f3e5b0;"></div>
             </div>
           </div>
         </div>
@@ -2184,15 +2193,20 @@
 
       const rimCalcBtn = document.getElementById('rimCalcBtn');
       const rimResult = document.getElementById('rimResult');
-      const rimDetails = document.getElementById('rimDetails');
+      const rimResultBody = document.getElementById('rimResultBody');
+      const rimNotes = document.getElementById('rimNotes');
+
+      // مناطق تحتاج ضرب الرسوم (تتضاعف الروحه والرده)
+      const specialRegions = ['المنطقه الاخري','المنطقة الأخرى','شويخ الصناعية','شويخ الصناعيه','الشويخ الصناعية','الشويخ الصناعيه'];
 
       rimCalcBtn.onclick = () => {
-        const region = document.getElementById('rimRegion').value.trim() || '—';
+        const region = (formData.area && formData.area.trim()) || document.getElementById('areaSelect').value.trim() || '—';
         const isNew = document.getElementById('rimIsNew').checked;
         const applySurcharge = document.getElementById('rimApplySurcharge').checked;
 
         const towOneWay = WINCH_FEE;
-        const towRound = WINCH_FEE * 2;
+        const regionMultiplier = specialRegions.includes(region) ? 2 : 1;
+        const towRound = WINCH_FEE * 2 * regionMultiplier;
 
         // service ranges
         let serviceLabel = '';
@@ -2210,22 +2224,32 @@
         const minTotal = towRound + minService + surcharge;
         const maxTotal = towRound + maxService + surcharge;
 
-        rimDetails.innerHTML = `
-          <div>المنطقة: <strong>${region}</strong></div>
-          <div style="margin-top:8px;">رسوم الروحه والرده: <strong>${towRound} دك</strong></div>
-          <ul style="margin:6px 0 0 18px;color:#ccc;">
-            <li>الروحه: ${towOneWay} دك</li>
-            <li>الرده: ${towOneWay} دك</li>
-          </ul>
-          <div style="margin-top:8px;">${serviceLabel} — يتراوح السعر بين ${minService} دك إلى ${maxService} دك</div>
-          <div style="margin-top:8px;">${applySurcharge ? 'زيادتنا على سعر الكراج: ' + OUR_SURCHARGE + ' دك' : 'بدون زيادتنا الإضافية'}</div>
-          <div style="margin-top:10px;font-weight:700;">المجموع التقريبي: من ${minTotal} دك إلى ${maxTotal} دك</div>
-          <div style="margin-top:8px;color:#f59e0b;">ملاحظة: سعر التصليح النهائي يتحدد في الكراج.</div>
-          <div style="margin-top:10px;">الكراج الذي نصلح فيه الرنقات: <a href="https://maps.app.goo.gl/Na1gJnT1Tzkoa5jw7" target="_blank" rel="noopener noreferrer">المتوكل — الموقع</a></div>
+        rimResultBody.innerHTML = `
+          <tr><td>المنطقة</td><td>${region}</td></tr>
+          <tr><td>سعر الروحه</td><td>${towOneWay} دك</td></tr>
+          <tr><td>سعر الردة</td><td>${towOneWay} دك</td></tr>
+          <tr><td>الإجمالي (روحه ورده فقط)</td><td>${towRound} دك</td></tr>
+          <tr><td>الخدمة</td><td>${serviceLabel} — من ${minService} دك إلى ${maxService} دك</td></tr>
+          <tr><td>زيادتنا</td><td>${surcharge ? surcharge + ' دك' : 'بدون'}</td></tr>
+          <tr><td><strong>المجموع التقريبي</strong></td><td><strong>من ${minTotal} دك إلى ${maxTotal} دك</strong></td></tr>
+        `;
+
+        // Notes (مكررة كما طلب)
+        rimNotes.innerHTML = `
+          <div>سوم تصليح (مخرطه) الرنق يتم ابلاغ العميل يتراوح السعر بين ٢٠ دك إلى ٣٥ دك</div>
+          <div style="margin-top:6px;">في حال كان طوق جديد يتراوح السعر بين ٥٠ ل ٧٠ دك</div>
+          <div style="margin-top:6px;color:#f59e0b;">يتحدد سعر التصليح بالكراج</div>
+          <hr style="margin:8px 0;border-color:#333;">
+          <div>سوم تصليح (مخرطه) الرنق يتم ابلاغ العميل يتراوح السعر بين ٢٠ دك إلى ٣٥ دك</div>
+          <div style="margin-top:6px;">في حال كان طوق جديد يتراوح السعر بين ٥٠ ل ٧٠ دك</div>
+          <div style="margin-top:6px;color:#f59e0b;">يتحدد سعر التصليح بالكراج</div>
         `;
 
         rimResult.classList.remove('hidden');
       };
+
+      // load area options using existing helper so datalist is populated
+      loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14], () => {});
     }
 
     // Load datalist options specifically for فتح قفل sheet
