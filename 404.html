@@ -759,8 +759,6 @@
     </div>
     <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span>
     </div>
-    <div class="service-item" data-service="refunds"><span class="icon">💰</span> <span class="label">المبالغ المسترجعة</span>
-    </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
     <header class="header-bar">
@@ -901,8 +899,7 @@
           'تركيب بطارية',
           'تأمين وربه',
           'تأمين صفينه VIP',
-          'تأمين إيلاف',
-          'فتح قفل'
+          'تأمين إيلاف'
         ];
         
         sheetsData = { currentSheetId: sheetId };
@@ -997,8 +994,7 @@
           'balance': 'ميزان وتركيب',
           'mechanical': 'خدمات ميكانيكية',
           'carwash': 'غسيل السيارات',
-          'insurance': 'تأمينات',
-          'refunds': 'المبالغ المسترجعة'
+          'insurance': 'تأمينات'
         };
         
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
@@ -1042,9 +1038,6 @@
             break;
           case 'insurance':
             renderInsuranceInterface();
-            break;
-          case 'refunds':
-            renderRefundsInterface();
             break;
         }
       }
@@ -3274,203 +3267,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
       
       availableSlots.innerHTML = html;
-    }
-
-    // Render Refunds Interface
-    function renderRefundsInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-            <button id="registerRefundBtn" class="btn-primary" style="flex: 1; background: #10b981; margin-top: 0;">✏️ تسجيل الاسترجاع</button>
-          </div>
-          <h3 class="section-title">البحث برقم العميل</h3>
-          <div class="form-field">
-            <input type="text" id="customerNumberSearch" class="form-control" placeholder="أدخل رقم العميل" style="font-size: 16px; padding: 12px;">
-          </div>
-        </div>
-        
-        <div id="refundsResults" class="hidden" style="grid-column: 1 / -1; width: 100%; box-sizing: border-box; padding: 0; display: grid; grid-template-columns: 1fr; gap: 0;">
-        </div>
-      `;
-      
-      // Register Refund Button
-      document.getElementById('registerRefundBtn').onclick = () => {
-        const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdrJLZVsDsC1sVC4uIIsFMrhjhT_1xCPbPiBBKqEM_b5B0v6w/viewform?usp=dialog';
-        window.open(formUrl, 'refundForm', 'width=800,height=600');
-      };
-      
-      // Search functionality
-      const searchInput = document.getElementById('customerNumberSearch');
-      let searchTimeout;
-      
-      searchInput.oninput = () => {
-        clearTimeout(searchTimeout);
-        
-        const query = searchInput.value.trim();
-        
-        if (!query) {
-          document.getElementById('refundsResults').classList.add('hidden');
-          document.getElementById('refundsResults').innerHTML = '';
-          return;
-        }
-        
-        searchTimeout = setTimeout(() => {
-          if (query.length >= 1) {
-            searchRefunds(query);
-          }
-        }, 300);
-      };
-    }
-    
-    function searchRefunds(customerNumber) {
-      const refundsSheet = '1HmRWypUMbHChUUSVvogJ2jdCZeHf8aCo3DLRkeL7DLw';
-      const resultsContainer = document.getElementById('refundsResults');
-
-      fetch(`https://docs.google.com/spreadsheets/d/${refundsSheet}/gviz/tq?tqx=out:csv`)
-        .then(response => response.text())
-        .then(csvText => {
-          const rows = parseCSV(csvText);
-
-          if (rows.length < 2) {
-            resultsContainer.innerHTML = `
-              <div class="form-section full-width">
-                <div class="warning-box">❌ لا توجد بيانات متاحة</div>
-              </div>
-            `;
-            resultsContainer.classList.remove('hidden');
-            return;
-          }
-
-          const headerRow = rows[0] || [];
-          const foundResults = [];
-
-          // normalize helper: remove non-digits and trim for strict comparison
-          function normalizeNumber(s) {
-            return (s || '').toString().replace(/\D+/g, '').trim();
-          }
-
-          const queryNorm = normalizeNumber(customerNumber);
-          if (!queryNorm) {
-            // if user input doesn't contain digits (or is empty) treat as no-search
-          } else {
-            for (let i = 1; i < rows.length; i++) {
-              const row = rows[i];
-              if (!row || row.length === 0 || !row.some(cell => cell && cell.toString().trim())) continue;
-
-              const customerNumRaw = (row[2] || '').toString();
-              const custNorm = normalizeNumber(customerNumRaw);
-
-              // Only exact match on the normalized customer number — no partial matches, no orderNumber match
-              if (custNorm && custNorm === queryNorm) {
-                foundResults.push({ headers: headerRow, rowData: row });
-              }
-            }
-          }
-
-          if (foundResults.length === 0) {
-            resultsContainer.innerHTML = `
-              <div class="form-section full-width">
-                <div class="warning-box">⚠️ لم يتم العثور على نتائج للبحث: "${customerNumber}"</div>
-              </div>
-            `;
-            resultsContainer.classList.remove('hidden');
-            return;
-          }
-
-          let html = '';
-          let headers = [];
-          let allRows = [];
-
-          foundResults.forEach(result => {
-            if (headers.length === 0) {
-              headers = result.headers || [];
-            }
-            allRows.push(result.rowData);
-          });
-
-          html += `
-            <div class="data-table-container" style="margin-bottom: 15px; grid-column: 1 / -1;">
-              <div class="table-header">المبالغ المسترجعة</div>
-              <div style="overflow-x: auto; width: 100%;">
-                <table class="data-table" style="width: 100%; table-layout: auto;">
-                  <thead>
-                    <tr>
-          `;
-
-          const columnsWithData = [];
-          if (allRows.length > 0) {
-            headers.forEach((header, idx) => {
-              let hasData = false;
-              for (let row of allRows) {
-                if (row[idx] && row[idx].toString().trim() !== '') {
-                  hasData = true;
-                  break;
-                }
-              }
-              if (header && hasData) {
-                columnsWithData.push({ header: header.toString(), idx });
-              }
-            });
-          }
-
-          columnsWithData.forEach(col => {
-            html += `<th style="white-space: nowrap; padding: 11px 16px;">${col.header}</th>`;
-          });
-
-          html += `
-                    </tr>
-                  </thead>
-                  <tbody>
-          `;
-
-          allRows.forEach(row => {
-            // Read refund value specifically from column F (index 5)
-            const refundRaw = (row[5] || '').toString().trim();
-            const refundLv = refundRaw.toLowerCase();
-            let refundLabel = '❌ لم يتم الاسترجاع';
-            if (refundLv === 'نعم' || refundLv === 'yes' || refundLv === 'y' || refundLv === 'true') {
-              refundLabel = '✅ تم الاسترجاع';
-            }
-
-            html += `<tr>`;
-            columnsWithData.forEach(col => {
-              const rawVal = (row[col.idx] || '').toString().trim();
-              let value = rawVal || '-';
-
-              // Replace specific email with friendly name
-              if ((rawVal || '').toLowerCase() === 'fawzipor@gmail.com') value = 'فوزي دامس';
-
-              // If this column is column F (index 5), override with the mapped refund label
-              if (col.idx === 5) {
-                value = refundLabel;
-              }
-
-              html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
-            });
-            html += `</tr>`;
-          });
-
-          html += `
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          `;
-
-          resultsContainer.innerHTML = html;
-          resultsContainer.classList.remove('hidden');
-          resultsContainer.style.gridColumn = '1 / -1';
-        })
-        .catch(error => {
-          console.error('Error searching refunds:', error);
-          resultsContainer.innerHTML = `
-            <div class="form-section full-width">
-              <div class="error-box">❌ خطأ في تحميل البيانات</div>
-            </div>
-          `;
-          resultsContainer.classList.remove('hidden');
-        });
     }
 
     // Render Insurance Interface
