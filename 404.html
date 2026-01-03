@@ -72,53 +72,6 @@
       box-shadow: 0 8px 20px rgba(255,215,0,0.12);
     }
 
-    /* iframe overlay for embedded forms */
-    .iframe-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      z-index: 2000;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .iframe-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 1200px;
-      height: 100%;
-      background: #0b0b0b;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-    }
-
-    .iframe-wrapper iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
-
-    .iframe-close-box {
-      position: absolute;
-      right: -60px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #111;
-      color: #fff;
-      border: 2px solid #F2BC1B;
-      padding: 12px 14px;
-      border-radius: 8px 0 0 8px;
-      cursor: pointer;
-      z-index: 2100;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-      font-weight: 700;
-    }
-
     /* Firefox specific */
     @-moz-document url-prefix() {
       option {
@@ -2195,7 +2148,6 @@
 
     // Load datalist options specifically for فتح قفل sheet
     function loadLockAreaOptionsDatalist() {
-      const areaSelect = document.getElementById('lockAreaSelect');
       const areaDatalist = document.getElementById('areaOptions');
       const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
       if (!rows) {
@@ -2213,14 +2165,6 @@
 
       const uniqueAreas = [...new Set(areas)].filter(Boolean);
       areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
-      
-      // إضافة حدث onfocus لعرض القائمة المنسدلة مباشرة
-      areaSelect.onfocus = function() {
-        if (this.value === '') {
-          this.dispatchEvent(new Event('input', { bubbles: true }));
-          this.click();
-        }
-      };
     }
 
     function calculatePuncturePrice() {
@@ -3350,35 +3294,32 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         </div>
       `;
       
-      // Register Refund Button — افتح الفورم داخل الصفحة بدل نافذة جديدة
+      // Register Refund Button
       document.getElementById('registerRefundBtn').onclick = () => {
         const formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdrJLZVsDsC1sVC4uIIsFMrhjhT_1xCPbPiBBKqEM_b5B0v6w/viewform?usp=dialog';
-        openRefundFormInPage(formUrl);
+        window.open(formUrl, 'refundForm', 'width=800,height=600');
       };
       
-      // Search functionality - بحث دقيق فقط بدون تصفية أثناء الكتابة
+      // Search functionality
       const searchInput = document.getElementById('customerNumberSearch');
+      let searchTimeout;
       
-      searchInput.onkeypress = (event) => {
-        if (event.key === 'Enter') {
-          const query = searchInput.value.trim();
-          
-          if (!query) {
-            document.getElementById('refundsResults').classList.add('hidden');
-            document.getElementById('refundsResults').innerHTML = '';
-            return;
-          }
-          
-          searchRefunds(query);
-        }
-      };
-      
-      // إخفاء النتائج عند مسح المدخل
       searchInput.oninput = () => {
-        if (!searchInput.value.trim()) {
+        clearTimeout(searchTimeout);
+        
+        const query = searchInput.value.trim();
+        
+        if (!query) {
           document.getElementById('refundsResults').classList.add('hidden');
           document.getElementById('refundsResults').innerHTML = '';
+          return;
         }
+        
+        searchTimeout = setTimeout(() => {
+          if (query.length >= 1) {
+            searchRefunds(query);
+          }
+        }, 300);
       };
     }
     
@@ -3403,17 +3344,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
           const headerRow = rows[0] || [];
           const foundResults = [];
-          const searchLower = customerNumber.toLowerCase().trim();
 
           for (let i = 1; i < rows.length; i++) {
             const row = rows[i];
             if (!row || row.length === 0 || !row.some(cell => cell && cell.toString().trim())) continue;
 
-            const orderNumber = (row[1] || '').toString().toLowerCase().trim();
-            const customerNum = (row[2] || '').toString().toLowerCase().trim();
+            const orderNumber = (row[1] || '').toString().toLowerCase();
+            const customerNum = (row[2] || '').toString().toLowerCase();
 
-            // بحث دقيق - مطابقة تامة فقط
-            if (orderNumber === searchLower || customerNum === searchLower) {
+            if (orderNumber.includes(customerNumber.toLowerCase()) || customerNum.includes(customerNumber.toLowerCase())) {
               foundResults.push({ headers: headerRow, rowData: row });
             }
           }
@@ -3478,20 +3417,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             html += `<tr>`;
             columnsWithData.forEach(col => {
               let value = row[col.idx] || '-';
-              value = value.toString().trim();
+              value = value.toString();
               if (value.toLowerCase() === 'fawzipor@gmail.com') value = 'فوزي دامس';
-              
-              // البحث عن عمود الحالة وتحويل قيمته
-              let headerLower = (headers[col.idx] || '').toString().toLowerCase();
-              if (headerLower.includes('حالة') || headerLower.includes('status') || headerLower.includes('عملية') || headerLower.includes('استرجاع')) {
-                let valueLower = value.toLowerCase();
-                if (valueLower === 'نعم' || valueLower === 'yes' || valueLower === 'تم') {
-                  value = '✅ تم الاسترجاع';
-                } else if (valueLower === '' || valueLower === '-' || valueLower === 'لا' || valueLower === 'no') {
-                  value = '❌ لم يتم الاسترجاع';
-                }
-              }
-              
               html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
             });
             html += `</tr>`;
@@ -3517,50 +3444,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           `;
           resultsContainer.classList.remove('hidden');
         });
-    }
-    }
-
-    // Open refund Google Form inside the page (iframe overlay)
-    function openRefundFormInPage(url) {
-      // close any existing
-      closeRefundFormInPage();
-
-      const overlay = document.createElement('div');
-      overlay.id = 'refundFormOverlay';
-      overlay.className = 'iframe-overlay';
-
-      const wrapper = document.createElement('div');
-      wrapper.className = 'iframe-wrapper';
-
-      const iframe = document.createElement('iframe');
-      iframe.src = url;
-      iframe.setAttribute('allowfullscreen', '');
-      iframe.setAttribute('loading', 'lazy');
-      wrapper.appendChild(iframe);
-
-      const closeBox = document.createElement('div');
-      closeBox.id = 'refundFormClose';
-      closeBox.className = 'iframe-close-box';
-      closeBox.textContent = 'رجوع';
-      closeBox.onclick = closeRefundFormInPage;
-      wrapper.appendChild(closeBox);
-
-      overlay.appendChild(wrapper);
-      document.body.appendChild(overlay);
-      document.body.style.overflow = 'hidden';
-
-      // close on Escape
-      overlay._escHandler = function(e) { if (e.key === 'Escape') closeRefundFormInPage(); };
-      document.addEventListener('keydown', overlay._escHandler);
-    }
-
-    function closeRefundFormInPage() {
-      const overlay = document.getElementById('refundFormOverlay');
-      if (!overlay) return;
-      // remove key handler
-      if (overlay._escHandler) document.removeEventListener('keydown', overlay._escHandler);
-      overlay.remove();
-      document.body.style.overflow = '';
     }
 
     // Render Insurance Interface
@@ -3886,14 +3769,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       
       const newAreaSelect = areaSelect.cloneNode(true);
       areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
-      
-      // إضافة حدث onfocus لعرض القائمة المنسدلة مباشرة
-      newAreaSelect.onfocus = function() {
-        if (this.value === '') {
-          this.dispatchEvent(new Event('input', { bubbles: true }));
-          this.click();
-        }
-      };
       
       newAreaSelect.oninput = () => {
         formData.area = newAreaSelect.value.trim();
