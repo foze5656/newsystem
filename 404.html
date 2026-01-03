@@ -2185,39 +2185,44 @@
         </div>
       `;
 
-      const WINCH_FEE = 12; // رسوم الونش العادي لكل اتجاه (fallback)
-      const OUR_SURCHARGE = 15; // زيادتنا الثابتة (تطبق دائماً على سعر الكراج)
+      const WINCH_FEE = 12; // رسوم الونش العادي افتراضي لكل اتجاه إذا لم تُقرأ من الشيت
+      const OUR_SURCHARGE = 15; // زيادتنا الثابتة تُطبق دائماً على سعر الكراج
 
       const rimCalcBtn = document.getElementById('rimCalcBtn');
       const rimResult = document.getElementById('rimResult');
       const rimResultBody = document.getElementById('rimResultBody');
       const rimNotes = document.getElementById('rimNotes');
 
-      // سنحدد سعر الروحه من جدول الونش (بورتراج) ونعرف ما إذا كانت هناك وجهة شويخ في نفس السطر
+      // سنقرأ سعر الونش من جدول البورتراج بنفس نظام خدمة الونشات.
+      // كما نطبق +15 دك دائماً على سعر الكراج (سواء تصليح رنق أو طوق جديد)
       rimCalcBtn.onclick = () => {
         const region = (formData.area && formData.area.trim()) || document.getElementById('areaSelect').value.trim() || '—';
         const isNew = document.getElementById('rimIsNew').checked;
         const applySurcharge = document.getElementById('rimApplySurcharge').checked;
 
         const towOneWay = WINCH_FEE;
-        // ابحث أولاً عن سعر الونش لبورتراج لنفس المنطقة
+        // نحاول قراءة سعر الرحلة من جداول البورتراج لنوع الونش العادي
         let towOneWay = WINCH_FEE;
-        let regionMultiplier = 1;
+        let foundShuwaikh = false;
         try {
           const portarageRoutes = getTowRoutes('portarage towtruk', 'normal');
-          const matching = portarageRoutes.filter(r => r.from === region);
-          if (matching && matching.length > 0) {
-            // استخدم أول سعر موجود كسعر الروحه
-            towOneWay = parseFloat(matching[0].price) || WINCH_FEE;
-            // إذا أي من الوجهات يحتوي اسم 'شويخ' اعتبر الوجهة الثانية ويوجد ضرب
-            const hasShuwaikh = matching.some(r => r.to && r.to.toString().toLowerCase().includes('شويخ'));
-            if (hasShuwaikh) regionMultiplier = 2;
+          // نبحث أولاً عن مسار من المنطقة إلى أي وجهة تحتوي 'شويخ'
+          let route = portarageRoutes.find(r => r.from === region && r.to && r.to.toLowerCase().includes('شويخ'));
+          if (!route) {
+            // إذا لم نجد، نبحث عن أي مسار يبدأ من هذه المنطقة
+            route = portarageRoutes.find(r => r.from === region);
+          }
+          if (route && route.price) {
+            towOneWay = parseFloat(route.price) || WINCH_FEE;
+            // اعتبرنا وجود 'شويخ' في اسم الوجهة دلالة على إضافة الوجهة الثانية تلقائياً
+            if (route.to && route.to.toLowerCase().includes('شويخ')) foundShuwaikh = true;
           }
         } catch (err) {
-          console.log('خطأ في جلب أسعار الونش:', err);
+          console.log('خطأ في قراءة مسارات البورتراج:', err);
         }
 
-        const towRound = towOneWay * 2 * regionMultiplier;
+        // الإجمالي: روحه ورده = سعر الرحلة * 2
+        const towRound = towOneWay * 2;
 
         // service ranges
         let serviceLabel = '';
@@ -2235,14 +2240,15 @@
         const minTotal = towRound + minService + surcharge;
         const maxTotal = towRound + maxService + surcharge;
 
+        // نعرض جدول مبسط: نُظهر سعر الروحه، الردة، والإجمالي لروحه+رده
         rimResultBody.innerHTML = `
           <tr><td>المنطقة</td><td>${region}</td></tr>
-          <tr><td>سعر الروحه</td><td>${towOneWay.toFixed(2)} دك</td></tr>
-          <tr><td>سعر الردة</td><td>${towOneWay.toFixed(2)} دك</td></tr>
-          <tr><td>الإجمالي (روحه ورده فقط)</td><td>${(towOneWay * 2 * regionMultiplier).toFixed(2)} دك</td></tr>
-          ${regionMultiplier === 2 ? `<tr><td>الوجهة الثانية</td><td>شويخ الصناعية (مضافة تلقائياً)</td></tr>` : ''}
+          <tr><td>سعر الروحه</td><td>${towOneWay} دك</td></tr>
+          <tr><td>سعر الردة</td><td>${towOneWay} دك</td></tr>
+          <tr><td>الإجمالي (روحه ورده فقط)</td><td>${towRound} دك</td></tr>
+          ${foundShuwaikh ? `<tr><td>الوجهة الثانية</td><td style="color:#F2BC1B;">شويخ الصناعية (مضافة تلقائياً)</td></tr>` : ''}
           <tr><td>الخدمة</td><td>${serviceLabel} — من ${minService} دك إلى ${maxService} دك</td></tr>
-          <tr><td><strong>المجموع التقريبي</strong></td><td><strong>من ${minTotal.toFixed(2)} دك إلى ${maxTotal.toFixed(2)} دك</strong></td></tr>
+          <tr><td><strong>المجموع التقريبي (شامل +15 دك فوق سعر الكراج)</strong></td><td><strong>من ${minTotal} دك إلى ${maxTotal} دك</strong></td></tr>
         `;
 
         // ملاحظة موحدة داخل صندوق معلومات أزرق مع رابط الكراج باللون المميز
@@ -2250,9 +2256,9 @@
           <div class="info-box">
             <div>رسوم تصليح (مخرطة) الرنق: يتراوح السعر بين ٢٠ دك إلى ٣٥ دك</div>
             <div style="margin-top:6px;">في حال كان طوق جديد: يتراوح السعر بين ٥٠ دك إلى ٧٠ دك</div>
-            <div style="margin-top:6px;">يتحدد سعر التصليح بالكراج</div>
-            <div style="margin-top:8px;">السعر الذي يعطيكم إياه الكراج تزيدون فوقه: <strong>١٥ دك</strong> سواء تصليح رنق أو طوق جديد</div>
-            <div style="margin-top:8px;color:#F2BC1B;font-weight:700;">الكراج: <a href="https://maps.app.goo.gl/Na1gJnT1Tzkoa5jw7" target="_blank" rel="noopener noreferrer">المتوكل</a></div>
+            <div style="margin-top:6px;margin-top:8px;">يتحدد سعر التصليح بالكراج</div>
+            <div style="margin-top:8px;">السعر الذي يعطيه الكراج نضيف فوقه ثابت: <strong>15 دك</strong> سواء تصليح رنق أو طوق جديد.</div>
+            <div style="margin-top:8px;color:#F2BC1B;">الكراج: <a href="https://maps.app.goo.gl/Na1gJnT1Tzkoa5jw7" target="_blank" rel="noopener noreferrer" style="color:#F2BC1B; font-weight:700;">المتوكل</a></div>
           </div>
         `;
 
