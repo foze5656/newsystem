@@ -750,10 +750,8 @@
      </div>
      <div class="service-item submenu-item" data-service="tireSheet"><span class="label">شيت التواير</span>
      </div>
-    <div class="service-item submenu-item" data-service="balance"><span class="label">ميزان وتركيب</span>
+     <div class="service-item submenu-item" data-service="balance"><span class="label">ميزان وتركيب</span>
      </div>
-    <div class="service-item submenu-item" data-service="rimRepair"><span class="label">تصليح الرنقات</span>
-    </div>
     </div>
     <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمات ميكانيكية</span>
     </div>
@@ -992,7 +990,6 @@
           'unlock': 'فتح قفل السيارة',
           'tireSheet': 'شيت التواير',
           'tireIncrease': 'زيادات التواير',
-          'rimRepair': 'تصليح الرنقات',
           'puncture': 'بنشر',
           'balance': 'ميزان وتركيب',
           'mechanical': 'خدمات ميكانيكية',
@@ -1029,9 +1026,6 @@
             break;
           case 'puncture':
             renderPunctureService();
-            break;
-          case 'rimRepair':
-            renderRimRepairInterface();
             break;
           case 'balance':
             renderBalanceService();
@@ -2145,130 +2139,6 @@
       }
     }
 
-    // Render Rim Repair Interface (تصليح الرنقات)
-    function renderRimRepairInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <h3 class="section-title">خدمة: تصليح الرنقات</h3>
-
-          <div class="form-field">
-            <label>المنطقة</label>
-            <input type="text" id="areaSelect" list="areaOptions" class="form-control" placeholder="اكتب أو اختر المنطقة">
-            <datalist id="areaOptions"></datalist>
-          </div>
-
-          <div style="margin-top:8px;">
-            <label style="display:block;">
-              <input type="checkbox" id="rimIsNew"> طوق جديد (بدل تصليح الرنق)
-            </label>
-          </div>
-
-          <div style="margin-top:10px;">
-            <button id="rimCalcBtn" class="btn-primary">عرض الأسعار</button>
-          </div>
-
-          <div id="rimResult" class="data-table-container hidden" style="margin-top:12px;">
-            <div class="table-header">تفاصيل الرسوم - تصليح الرنقات</div>
-            <div class="table-scroll">
-              <table class="data-table">
-                <thead>
-                  <tr><th>البيان</th><th>القيمة</th></tr>
-                </thead>
-                <tbody id="rimResultBody"></tbody>
-              </table>
-            </div>
-            <div style="padding:12px;color:#ccc;">
-              <div id="rimNotes" style="margin-top:8px;font-size:13px;color:#f3e5b0;"></div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      const WINCH_FEE = 12; // رسوم الونش العادي افتراضي لكل اتجاه إذا لم تُقرأ من الشيت
-      const OUR_SURCHARGE = 15; // زيادتنا الثابتة تُطبق دائماً على سعر الكراج
-
-      const rimCalcBtn = document.getElementById('rimCalcBtn');
-      const rimResult = document.getElementById('rimResult');
-      const rimResultBody = document.getElementById('rimResultBody');
-      const rimNotes = document.getElementById('rimNotes');
-
-      // سنقرأ سعر الونش من جدول البورتراج بنفس نظام خدمة الونشات.
-      // كما نطبق +15 دك دائماً على سعر الكراج (سواء تصليح رنق أو طوق جديد)
-      rimCalcBtn.onclick = () => {
-        const region = (formData.area && formData.area.trim()) || document.getElementById('areaSelect').value.trim() || '—';
-        const isNew = document.getElementById('rimIsNew').checked;
-        const applySurcharge = document.getElementById('rimApplySurcharge').checked;
-
-        const towOneWay = WINCH_FEE;
-        // نحاول قراءة سعر الرحلة من جداول البورتراج لنوع الونش العادي
-        let towOneWay = WINCH_FEE;
-        let foundShuwaikh = false;
-        try {
-          const portarageRoutes = getTowRoutes('portarage towtruk', 'normal');
-          // نبحث أولاً عن مسار من المنطقة إلى أي وجهة تحتوي 'شويخ'
-          let route = portarageRoutes.find(r => r.from === region && r.to && r.to.toLowerCase().includes('شويخ'));
-          if (!route) {
-            // إذا لم نجد، نبحث عن أي مسار يبدأ من هذه المنطقة
-            route = portarageRoutes.find(r => r.from === region);
-          }
-          if (route && route.price) {
-            towOneWay = parseFloat(route.price) || WINCH_FEE;
-            // اعتبرنا وجود 'شويخ' في اسم الوجهة دلالة على إضافة الوجهة الثانية تلقائياً
-            if (route.to && route.to.toLowerCase().includes('شويخ')) foundShuwaikh = true;
-          }
-        } catch (err) {
-          console.log('خطأ في قراءة مسارات البورتراج:', err);
-        }
-
-        // الإجمالي: روحه ورده = سعر الرحلة * 2
-        const towRound = towOneWay * 2;
-
-        // service ranges
-        let serviceLabel = '';
-        let minService = 0, maxService = 0;
-        if (isNew) {
-          serviceLabel = 'طوق جديد';
-          minService = 50; maxService = 70;
-        } else {
-          serviceLabel = 'رسوم تصليح (مخرطة) الرنق';
-          minService = 20; maxService = 35;
-        }
-
-        const surcharge = applySurcharge ? OUR_SURCHARGE : 0;
-
-        const minTotal = towRound + minService + surcharge;
-        const maxTotal = towRound + maxService + surcharge;
-
-        // نعرض جدول مبسط: نُظهر سعر الروحه، الردة، والإجمالي لروحه+رده
-        rimResultBody.innerHTML = `
-          <tr><td>المنطقة</td><td>${region}</td></tr>
-          <tr><td>سعر الروحه</td><td>${towOneWay} دك</td></tr>
-          <tr><td>سعر الردة</td><td>${towOneWay} دك</td></tr>
-          <tr><td>الإجمالي (روحه ورده فقط)</td><td>${towRound} دك</td></tr>
-          ${foundShuwaikh ? `<tr><td>الوجهة الثانية</td><td style="color:#F2BC1B;">شويخ الصناعية (مضافة تلقائياً)</td></tr>` : ''}
-          <tr><td>الخدمة</td><td>${serviceLabel} — من ${minService} دك إلى ${maxService} دك</td></tr>
-          <tr><td><strong>المجموع التقريبي (شامل +15 دك فوق سعر الكراج)</strong></td><td><strong>من ${minTotal} دك إلى ${maxTotal} دك</strong></td></tr>
-        `;
-
-        // ملاحظة موحدة داخل صندوق معلومات أزرق مع رابط الكراج باللون المميز
-        rimNotes.innerHTML = `
-          <div class="info-box">
-            <div>رسوم تصليح (مخرطة) الرنق: يتراوح السعر بين ٢٠ دك إلى ٣٥ دك</div>
-            <div style="margin-top:6px;">في حال كان طوق جديد: يتراوح السعر بين ٥٠ دك إلى ٧٠ دك</div>
-            <div style="margin-top:6px;margin-top:8px;">يتحدد سعر التصليح بالكراج</div>
-            <div style="margin-top:8px;">السعر الذي يعطيه الكراج نضيف فوقه ثابت: <strong>15 دك</strong> سواء تصليح رنق أو طوق جديد.</div>
-            <div style="margin-top:8px;color:#F2BC1B;">الكراج: <a href="https://maps.app.goo.gl/Na1gJnT1Tzkoa5jw7" target="_blank" rel="noopener noreferrer" style="color:#F2BC1B; font-weight:700;">المتوكل</a></div>
-          </div>
-        `;
-
-        rimResult.classList.remove('hidden');
-      };
-
-      // load area options using existing helper so datalist is populated
-      loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14], () => {});
-    }
-
     // Load datalist options specifically for فتح قفل sheet
     function loadLockAreaOptionsDatalist() {
       const areaDatalist = document.getElementById('areaOptions');
@@ -2957,7 +2827,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         // Fallback to legacy indices if detection failed
         const col = {
-          date: idx.date >= 0 ? idx.date : 1,
+          // Use column A as the default date column (index 0)
+          date: idx.date >= 0 ? idx.date : 0,
           time: idx.time >= 0 ? idx.time : 2,
           qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 3,
           location: idx.location >= 0 ? idx.location : 4,
@@ -3873,7 +3744,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         });
 
         // Open the form in a new window
-        window.open(url, 'googleFormWمindow', 'width=800,height=600');
+        window.open(url, 'googleFormWindow', 'width=800,height=600');
         resolve({ ok: true });
       });
     }
