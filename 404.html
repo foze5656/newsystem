@@ -2825,6 +2825,20 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           payment: findHeader('حاله الدفع', 'حالة الدفع', 'payment', 'نعم', 'لا')
         };
 
+        // If the detected date header is actually the "order timestamp" (تاريخ تسجيل الطلب) or timestamp, prefer an appointment-date header if present,
+        // otherwise fall back to column B (index 1).
+        if (idx.date >= 0) {
+          const detectedHeader = (headerRow[idx.date] || '').toString().toLowerCase();
+          if (detectedHeader.includes('تاريخ تسجيل') || detectedHeader.includes('timestamp') || detectedHeader.includes('توقيت')) {
+            const alt = findHeader('تاريخ الموعد', 'appointment date', 'appointment', 'موعد');
+            if (alt >= 0) {
+              idx.date = alt;
+            } else {
+              idx.date = -1; // force fallback to default below (column B)
+            }
+          }
+        }
+
         // Fallback to legacy indices if detection failed
         const col = {
           // Use column B as the default date column (index 1)
