@@ -2827,8 +2827,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         // Fallback to legacy indices if detection failed
         const col = {
-          // Use column A as the default date column (index 0)
-          date: idx.date >= 0 ? idx.date : 0,
+          // Use column B as the default date column (index 1)
+          date: idx.date >= 0 ? idx.date : 1,
           time: idx.time >= 0 ? idx.time : 2,
           qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 3,
           location: idx.location >= 0 ? idx.location : 4,
