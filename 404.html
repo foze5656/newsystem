@@ -2827,8 +2827,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         // Fallback to legacy indices if detection failed
         const col = {
-          // Use column B as the default date column (index 1)
-          date: idx.date >= 0 ? idx.date : 1,
+          // Use column A as the default date column (index 0)
+          date: idx.date >= 0 ? idx.date : 0,
           time: idx.time >= 0 ? idx.time : 2,
           qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 3,
           location: idx.location >= 0 ? idx.location : 4,
@@ -3175,15 +3175,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                     <th style="min-width: 100px;">رقم الهاتف</th>
                     <th style="min-width: 120px;">الموقع</th>
                     <th style="min-width: 100px;">المدة</th>
-                    <th style="min-width: 120px;">أقرب سابق</th>
-                    <th style="min-width: 120px;">أقرب لاحق</th>
                     <th style="min-width: 90px;">الدفع</th>
                   </tr>
                 </thead>
                 <tbody>
         `;
         
-          todayAppointments.forEach((apt) => {
+        todayAppointments.forEach((apt) => {
           const timeParts = apt.time.split(':').map(Number);
           const hours = timeParts[0];
           const minutes = timeParts[1];
@@ -3254,20 +3252,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             paymentStatus = '❌ لم يتم';
           }
           
-          // compute nearest previous and next possible start times around this appointment
-          const totalBuffer = washDuration + travelTime; // minutes
-          const prevStart = startMinutes - totalBuffer;
-          const prevDisplay = (prevStart >= workStartMinutes) ? formatTimeSimple(prevStart) : '-';
-
-          // determine wash key for last-arrival limits
-          let washKey = 'premium';
-          if (washType.includes('خصوصي')) washKey = 'special';
-          else if (washType.includes('الترا')) washKey = 'ultra';
-
-          const nextStart = startMinutes + totalBuffer;
-          const nextLimit = (typeof washLastArrival !== 'undefined') ? (washLastArrival[washKey] || workEndMinutes) : workEndMinutes;
-          const nextDisplay = (nextStart <= nextLimit) ? formatTimeSimple(nextStart) : '-';
-
           html += `
             <tr>
               <td style="font-weight: 600; color: #F2BC1B;">${displayTime}</td>
@@ -3278,8 +3262,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               <td style="direction: ltr; text-align: center;">${apt.phone || '-'}</td>
               <td>${apt.location || 'غير محدد'}</td>
               <td style="font-size: 10px; color: #999;">${displayTime} - ${endDisplayTime}<br>(${washDuration} دقيقة)</td>
-              <td style="font-weight:600; color:#10b981;">${prevDisplay}</td>
-              <td style="font-weight:600; color:#10b981;">${nextDisplay}</td>
               <td>${paymentStatus}</td>
             </tr>
           `;
