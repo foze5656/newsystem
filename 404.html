@@ -2906,8 +2906,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         calculateAvailableSlots(selectedDate);
         
       } catch (error) {
+        console.error('loadCarWashAppointments error', error);
+        const sheetIdDebug = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+        const csvUrlDebug = `https://docs.google.com/spreadsheets/d/${sheetIdDebug}/gviz/tq?tqx=out:csv&sheet=WASH%20Sheet`;
         document.getElementById('availableSlots').innerHTML = `
-          <div class="error-box">خطأ في تحميل المواعيد. تأكد من صلاحيات الوصول للشيت</div>
+          <div class="error-box">
+            <strong>خطأ في تحميل المواعيد.</strong><br>
+            تأكد من صلاحيات الوصول للشيت أو أن اسم الورقة هو 'WASH Sheet'.<br>
+            <a href="${csvUrlDebug}" target="_blank" style="color:#fff;text-decoration:underline;">فتح رابط CSV</a>
+            <div style="margin-top:6px; color:#fca5a5;">${(error && error.message) ? error.message : error}</div>
+          </div>
         `;
       }
     }
