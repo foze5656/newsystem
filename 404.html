@@ -1732,7 +1732,8 @@
       const rows = sheetsData['تركيب بطارية'];
       const areas = [];
       
-      for (let i = 2; i < rows.length; i++) {
+      // Skip first 3 rows (headers)
+      for (let i = 3; i < rows.length; i++) {
         const row = rows[i];
         if (row[0]) areas.push(row[0]);
         if (row[4]) areas.push(row[4]);
@@ -1758,7 +1759,8 @@
       let price = null;
       let cancellation = null;
       
-      for (let i = 2; i < rows.length; i++) {
+      // Skip first 3 rows (headers)
+      for (let i = 3; i < rows.length; i++) {
         const row = rows[i];
         
         if (row[0] === formData.area) {
