@@ -2827,8 +2827,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         // Fallback to legacy indices if detection failed
         const col = {
-          // Use column B as the default date column (index 1)
-          date: idx.date >= 0 ? idx.date : 1,
+          // Use column A as the default date column (index 0)
+          date: idx.date >= 0 ? idx.date : 0,
           time: idx.time >= 0 ? idx.time : 2,
           qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 3,
           location: idx.location >= 0 ? idx.location : 4,
@@ -2949,13 +2949,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       `;
       
       const workStartMinutes = 630; // 10:30 AM
-      // Last allowed START time (آخر وصول) per wash type
-      const washLastArrival = {
-        premium: 20 * 60 + 30, // 20:30
-        special: 19 * 60 + 30, // 19:30
-        ultra: 18 * 60 + 30    // 18:30
-      };
-      const workEndMinutes = 1320;  // 10:00 PM (fallback, not used for per-wash limits)
+      const workEndMinutes = 1320;  // 10:00 PM
       
       const today = new Date();
       const isToday = dateObj.getDate() === today.getDate() && 
@@ -3000,7 +2994,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       
       const travelTime = 30;
       
-        // Find all available time slots for each wash type
+      // Find all available time slots for each wash type
       const availableTimeSlots = {};
       
       selectedWashes.forEach(washType => {
@@ -3008,9 +3002,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const totalDuration = duration + travelTime;
         availableTimeSlots[washType] = [];
         
-        // Calculate end limit for this wash type (latest allowed START time)
-        const endLimit = washLastArrival[washType] || workEndMinutes;
-
         // Check before first appointment
         if (appointments.length > 0) {
           const firstAppointmentStart = appointments[0].start;
@@ -3042,25 +3033,25 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         }
         
-        // Check after last appointment (ensure start is <= endLimit)
+        // Check after last appointment
         if (appointments.length > 0) {
           const lastAppointmentEnd = appointments[appointments.length - 1].end;
           const earliestStartAfterLast = Math.max(lastAppointmentEnd, earliestAvailableTime);
-
-          if (earliestStartAfterLast <= endLimit) {
+          
+          if (earliestStartAfterLast + totalDuration <= workEndMinutes) {
             availableTimeSlots[washType].push({
               start: earliestStartAfterLast,
-              latestStart: endLimit,
-              end: endLimit
+              latestStart: workEndMinutes - totalDuration,
+              end: workEndMinutes
             });
           }
         } else {
           // No appointments at all
-          if (earliestAvailableTime <= endLimit) {
+          if (earliestAvailableTime + totalDuration <= workEndMinutes) {
             availableTimeSlots[washType].push({
               start: earliestAvailableTime,
-              latestStart: endLimit,
-              end: endLimit
+              latestStart: workEndMinutes - totalDuration,
+              end: workEndMinutes
             });
           }
         }
@@ -3109,33 +3100,34 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         };
         
-        // Helper to format time range - shows end time as the configured last arrival for that wash
-        const formatTimeRange = (slots, washDuration, washType) => {
+        // Helper to format time range - shows end time INCLUDING wash duration
+        const formatTimeRange = (slots, washDuration) => {
           if (!slots || slots.length === 0) return '';
-
-          const endLimit = washLastArrival[washType] || workEndMinutes;
+          
           let ranges = [];
           slots.forEach(slot => {
             const startTime = formatTimeSimple(slot.start);
-            const endTime = formatTimeSimple(endLimit);
+            // Calculate actual end time: latestStart + wash duration (NOT including travel time)
+            const latestEndTime = slot.latestStart + washDuration;
+            const endTime = formatTimeSimple(latestEndTime);
             ranges.push(`من ${startTime} إلى ${endTime}`);
           });
-
+          
           return ranges.join(' • وأيضاً ');
         };
         
         if (availableTimeSlots.premium && availableTimeSlots.premium.length > 0) {
-          const timeRange = formatTimeRange(availableTimeSlots.premium, 60, 'premium');
+          const timeRange = formatTimeRange(availableTimeSlots.premium, 60);
           html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">⭐ غسيل ممتاز: ${timeRange}</div>`;
         }
-
+        
         if (availableTimeSlots.special && availableTimeSlots.special.length > 0) {
-          const timeRange = formatTimeRange(availableTimeSlots.special, 120, 'special');
+          const timeRange = formatTimeRange(availableTimeSlots.special, 120);
           html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل خصوصي: ${timeRange}</div>`;
         }
-
+        
         if (availableTimeSlots.ultra && availableTimeSlots.ultra.length > 0) {
-          const timeRange = formatTimeRange(availableTimeSlots.ultra, 180, 'ultra');
+          const timeRange = formatTimeRange(availableTimeSlots.ultra, 180);
           html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ${timeRange}</div>`;
         }
         
@@ -3175,15 +3167,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                     <th style="min-width: 100px;">رقم الهاتف</th>
                     <th style="min-width: 120px;">الموقع</th>
                     <th style="min-width: 100px;">المدة</th>
-                    <th style="min-width: 120px;">أقرب سابق</th>
-                    <th style="min-width: 120px;">أقرب لاحق</th>
                     <th style="min-width: 90px;">الدفع</th>
                   </tr>
                 </thead>
                 <tbody>
         `;
         
-          todayAppointments.forEach((apt) => {
+        todayAppointments.forEach((apt) => {
           const timeParts = apt.time.split(':').map(Number);
           const hours = timeParts[0];
           const minutes = timeParts[1];
@@ -3254,20 +3244,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             paymentStatus = '❌ لم يتم';
           }
           
-          // compute nearest previous and next possible start times around this appointment
-          const totalBuffer = washDuration + travelTime; // minutes
-          const prevStart = startMinutes - totalBuffer;
-          const prevDisplay = (prevStart >= workStartMinutes) ? formatTimeSimple(prevStart) : '-';
-
-          // determine wash key for last-arrival limits
-          let washKey = 'premium';
-          if (washType.includes('خصوصي')) washKey = 'special';
-          else if (washType.includes('الترا')) washKey = 'ultra';
-
-          const nextStart = startMinutes + totalBuffer;
-          const nextLimit = (typeof washLastArrival !== 'undefined') ? (washLastArrival[washKey] || workEndMinutes) : workEndMinutes;
-          const nextDisplay = (nextStart <= nextLimit) ? formatTimeSimple(nextStart) : '-';
-
           html += `
             <tr>
               <td style="font-weight: 600; color: #F2BC1B;">${displayTime}</td>
@@ -3278,8 +3254,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               <td style="direction: ltr; text-align: center;">${apt.phone || '-'}</td>
               <td>${apt.location || 'غير محدد'}</td>
               <td style="font-size: 10px; color: #999;">${displayTime} - ${endDisplayTime}<br>(${washDuration} دقيقة)</td>
-              <td style="font-weight:600; color:#10b981;">${prevDisplay}</td>
-              <td style="font-weight:600; color:#10b981;">${nextDisplay}</td>
               <td>${paymentStatus}</td>
             </tr>
           `;
