@@ -3125,15 +3125,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         };
         
-        // Helper to format time range - shows end time as the configured last arrival for that wash
+        // Helper to format time range - show actual available window (earliest start -> latest allowed start)
         const formatTimeRange = (slots, washDuration, washType) => {
           if (!slots || slots.length === 0) return '';
 
-          const endLimit = washLastArrival[washType] || workEndMinutes;
           let ranges = [];
           slots.forEach(slot => {
             const startTime = formatTimeSimple(slot.start);
-            const endTime = formatTimeSimple(endLimit);
+            // show latest allowed START time (slot.latestStart) as the window end
+            const endTime = formatTimeSimple(slot.latestStart);
             ranges.push(`من ${startTime} إلى ${endTime}`);
           });
 
