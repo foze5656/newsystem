@@ -2380,6 +2380,10 @@
       contentArea.innerHTML = `
         <div class="form-section">
           <h3 class="section-title">نوع الخدمة</h3>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <div style="flex:1"></div>
+            <button id="mechAppointmentsBtn" class="btn-option" style="padding:6px 10px;">المواعيد</button>
+          </div>
           <div class="btn-grid" style="grid-template-columns: repeat(5, 1fr);">
             <button class="btn-option" data-mech="inspection">فحص السيارة</button>
             <button class="btn-option" data-mech="brakes">سفايف وديسكات</button>
@@ -2436,6 +2440,39 @@
           </div>
           <div id="mechNote" class="info-box hidden"></div>
         </div>
+        
+        <div id="mechAppointmentsSection" class="data-table-container hidden" style="margin-top:12px; grid-column: 1 / -1;">
+          <div class="table-header">مواعيد الميكانيكية</div>
+          <div style="display:flex;gap:8px;align-items:center;margin:8px 0;">
+            <div>
+              <label>التاريخ</label>
+              <input type="date" id="mechApptDate" class="form-control" style="max-width:160px;" />
+            </div>
+            <div>
+              <label>الفني</label>
+              <select id="mechTechnicianFilter" class="form-control" style="min-width:160px;"><option value="">الكل</option></select>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px;">
+              <button id="mechRegisterBtn" class="btn-primary">تسجيل موعد</button>
+              <button id="mechEditBtn" class="btn-primary" style="background:#666;color:#fff;">تعديل موعد</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table" id="mechAppointmentsTable">
+              <thead>
+                <tr>
+                  <th>التاريخ</th>
+                  <th>الوقت</th>
+                  <th>رقم الطلب</th>
+                  <th>المنطقة</th>
+                  <th>نوع الخدمة</th>
+                  <th>الفني</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
       `;
       
       document.querySelectorAll('[data-mech]').forEach(btn => {
@@ -2480,7 +2517,8 @@
           } else if (formData.mechanicalService === 'inspection') {
             document.getElementById('diskTurningSection').classList.add('hidden');
             document.getElementById('mechAreaSection').classList.remove('hidden');
-            loadAreaOptionsDatalist('خدمات ميكانيكية', [0, 1, 2, 4, 5, 6], calculateMechanicalPrice);
+            // Use خدمات ميكانيكية2 for inspection areas (A,B,C and E,F,G)
+            loadAreaOptionsDatalist('خدمات ميكانيكية2', [0, 1, 2, 4, 5, 6], calculateMechanicalPrice);
           } else if (formData.mechanicalService === 'brakes') {
             document.getElementById('diskTurningSection').classList.remove('hidden');
             document.getElementById('mechAreaSection').classList.remove('hidden');
@@ -2531,6 +2569,13 @@
               if (formData.area) calculateAlternatorPrice();
             };
           }
+          // Appointments button
+          const apptBtn = document.getElementById('mechAppointmentsBtn');
+          if (apptBtn) {
+            apptBtn.onclick = () => {
+              renderMechanicalAppointments();
+            };
+          }
         };
       });
     }
@@ -2538,7 +2583,13 @@
     function calculateMechanicalPrice() {
       if (!formData.area) return;
       
-      const rows = sheetsData['خدمات ميكانيكية'];
+      // Select appropriate sheet depending on mechanical service
+      let rows = null;
+      if (formData.mechanicalService === 'inspection') {
+        rows = sheetsData['خدمات ميكانيكية2'];
+      } else {
+        rows = sheetsData['خدمات ميكانيكية'];
+      }
       if (!rows) return;
       
       let columns;
@@ -2656,6 +2707,103 @@
       if (noteDiv) noteDiv.classList.add('hidden');
 
       document.getElementById('mechResultSection').classList.remove('hidden');
+    }
+
+    // Load and render mechanical appointments from external Google Sheet (ميكانيكية)
+    async function loadMechanicalAppointmentsData() {
+      try {
+        const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+        const sheetName = 'ميكانيكية';
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        const res = await fetch(csvUrl);
+        if (!res.ok) throw new Error('failed');
+        const text = await res.text();
+        const rows = parseCSV(text);
+        // store temporarily
+        window._mechAppointmentsRaw = rows;
+        return rows;
+      } catch (err) {
+        console.error('Could not load mechanical appointments', err);
+        return null;
+      }
+    }
+
+    function parseCellDate(cell) {
+      if (!cell) return null;
+      const d = new Date(cell);
+      if (isNaN(d.getTime())) return null;
+      return d.toISOString().split('T')[0];
+    }
+
+    async function renderMechanicalAppointments() {
+      const section = document.getElementById('mechAppointmentsSection');
+      const dateInput = document.getElementById('mechApptDate');
+      const techFilter = document.getElementById('mechTechnicianFilter');
+      const tableBody = document.querySelector('#mechAppointmentsTable tbody');
+
+      // default date = today
+      if (!dateInput.value) {
+        const today = new Date();
+        dateInput.value = today.toISOString().split('T')[0];
+      }
+
+      // load data
+      let rows = window._mechAppointmentsRaw || await loadMechanicalAppointmentsData();
+      if (!rows) {
+        section.classList.remove('hidden');
+        tableBody.innerHTML = '<tr><td colspan="6">خطأ في تحميل المواعيد</td></tr>';
+        return;
+      }
+
+      // rows: include header rows; data starts from row index 2 (third row)
+      const dataRows = rows.slice(2);
+
+      // build technicians list
+      const techs = new Set();
+      dataRows.forEach(r => { if (r[6]) techs.add(r[6]); });
+      techFilter.innerHTML = '<option value="">الكل</option>' + Array.from(techs).map(t => `<option value="${t}">${t}</option>`).join('');
+
+      function filterAndRender() {
+        const selectedDate = dateInput.value;
+        const selectedTech = techFilter.value;
+        const filtered = dataRows.filter(r => {
+          const dateCell = parseCellDate(r[1]); // column B -> index 1
+          if (!dateCell) return false;
+          if (dateCell !== selectedDate) return false;
+          if (selectedTech && (r[6] || '') !== selectedTech) return false;
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="6">لا توجد مواعيد لهذا التاريخ</td></tr>';
+        } else {
+          tableBody.innerHTML = filtered.map(r => `
+            <tr>
+              <td>${parseCellDate(r[1]) || '-'}</td>
+              <td>${r[2] || '-'}</td>
+              <td>${r[3] || '-'}</td>
+              <td>${r[4] || '-'}</td>
+              <td>${r[5] || '-'}</td>
+              <td>${r[6] || '-'}</td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      // attach handlers
+      dateInput.onchange = filterAndRender;
+      techFilter.onchange = filterAndRender;
+
+      document.getElementById('mechRegisterBtn').onclick = () => {
+        window.open('https://forms.gle/bEaLAvkrtcSoJWQb8', '_blank');
+      };
+
+      document.getElementById('mechEditBtn').onclick = () => {
+        window.open('https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing', '_blank');
+      };
+
+      section.classList.remove('hidden');
+      filterAndRender();
     }
 
     function calculateAlternatorPrice() {
