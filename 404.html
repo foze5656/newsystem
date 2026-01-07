@@ -2380,11 +2380,12 @@
       contentArea.innerHTML = `
         <div class="form-section">
           <h3 class="section-title">نوع الخدمة</h3>
-          <div class="btn-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="btn-grid" style="grid-template-columns: repeat(5, 1fr);">
             <button class="btn-option" data-mech="inspection">فحص السيارة</button>
             <button class="btn-option" data-mech="brakes">سفايف وديسكات</button>
             <button class="btn-option" data-mech="oilfilter">زيت وفلتر</button>
             <button class="btn-option" data-mech="alternator">تبديل دينمو/سلف</button>
+            <button class="btn-option" data-mech="wipers">تبديل المساحات</button>
           </div>
         </div>
         
@@ -2496,21 +2497,37 @@
             });
             
             loadAreaOptionsDatalist('خدمات ميكانيكية', [16, 17, 18, 20, 21, 22], calculateMechanicalPrice);
+          } else if (formData.mechanicalService === 'wipers') {
+            // تبديل المساحات — مناطق من خدمات ميكانيكية2 (أعمدة I,J,K و M,N,O)
+            document.getElementById('mechAreaSection').classList.remove('hidden');
+            loadAreaOptionsDatalist('خدمات ميكانيكية2', [8, 9, 10, 12, 13, 14], calculateWipersPrice);
           } else if (formData.mechanicalService === 'alternator') {
             // Show area selection for alternator service from sheet 'خدمات ميكانيكية2'
             document.getElementById('mechAreaSection').classList.remove('hidden');
             document.getElementById('alternatorSupplierPriceSection').classList.remove('hidden');
-            
+
             // Load areas from columns A & E from sheet 'خدمات ميكانيكية2'
             loadAreaOptionsDatalist('خدمات ميكانيكية2', [0, 1, 2, 4, 5, 6], calculateAlternatorPrice);
-            
-            // Add listener to supplier price input
+
+            // Add listener to supplier price input — hide results if cleared
             const supplierPriceInput = document.getElementById('supplierPrice');
             const newSupplierPriceInput = supplierPriceInput.cloneNode(true);
             supplierPriceInput.parentNode.replaceChild(newSupplierPriceInput, supplierPriceInput);
-            
+
             newSupplierPriceInput.oninput = () => {
-              formData.supplierPrice = parseFloat(newSupplierPriceInput.value) || 0;
+              const raw = newSupplierPriceInput.value.trim();
+              if (raw === '') {
+                formData.supplierPrice = null;
+                document.getElementById('mechResultSection').classList.add('hidden');
+                return;
+              }
+
+              formData.supplierPrice = parseFloat(raw) || 0;
+              if (!formData.supplierPrice) {
+                document.getElementById('mechResultSection').classList.add('hidden');
+                return;
+              }
+
               if (formData.area) calculateAlternatorPrice();
             };
           }
@@ -2598,6 +2615,49 @@
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
 
+    // Calculate Wipers (تبديل المساحات)
+    function calculateWipersPrice() {
+      if (!formData.area) return;
+
+      const rows = sheetsData['خدمات ميكانيكية2'];
+      if (!rows) return;
+
+      const columns = [8, 9, 10, 12, 13, 14]; // I,J,K and M,N,O
+
+      let servicePrice = 0;
+      let cancellation = 'غير محدد';
+
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        if (row[columns[0]] === formData.area) {
+          servicePrice = parseFloat(row[columns[1]]) || 0;
+          cancellation = row[columns[2]] ? `${parseFloat(row[columns[2]]).toFixed(2)} ${config.currency}` : 'غير محدد';
+          break;
+        } else if (row[columns[3]] === formData.area) {
+          servicePrice = parseFloat(row[columns[4]]) || 0;
+          cancellation = row[columns[5]] ? `${parseFloat(row[columns[5]]).toFixed(2)} ${config.currency}` : 'غير محدد';
+          break;
+        }
+      }
+
+      const tbody = document.getElementById('mechResultBody');
+      tbody.innerHTML = `
+        <tr>
+          <td>رسوم خدمة تبديل المساحات</td>
+          <td class="highlight">${servicePrice.toFixed(2)} ${config.currency}</td>
+        </tr>
+        <tr>
+          <td>رسوم الإلغاء</td>
+          <td>${cancellation}</td>
+        </tr>
+      `;
+
+      const noteDiv = document.getElementById('mechNote');
+      if (noteDiv) noteDiv.classList.add('hidden');
+
+      document.getElementById('mechResultSection').classList.remove('hidden');
+    }
+
     function calculateAlternatorPrice() {
       if (!formData.area || !formData.supplierPrice) return;
       
@@ -2647,6 +2707,9 @@
         </tr>
       `;
       
+      const noteDiv = document.getElementById('mechNote');
+      if (noteDiv) noteDiv.classList.add('hidden');
+
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
 
