@@ -2622,8 +2622,8 @@
         }
       }
       
-      // Supplier price + 20 fils = part price
-      const partPrice = formData.supplierPrice + 0.20;
+      // Supplier price + 20 dinars = part price
+      const partPrice = formData.supplierPrice + 20;
       const total = servicePrice + partPrice;
       
       const tbody = document.getElementById('mechResultBody');
@@ -2638,7 +2638,7 @@
           <td class="highlight">${formData.supplierPrice.toFixed(2)} ${config.currency}</td>
         </tr>
         <tr>
-          <td>سعر القطعة (المورد + 20 فلس)</td>
+          <td>سعر القطعة (المورد + 20 د.ك)</td>
           <td class="highlight">${partPrice.toFixed(2)} ${config.currency}</td>
         </tr>
         <tr style="background: #262626;">
