@@ -3678,8 +3678,25 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const areaSelect = document.getElementById('areaSelect');
       const areaDatalist = document.getElementById('areaOptions');
       
+      // If the sheet data isn't loaded yet, show a loading option and retry a few times
       if (!sheetsData[sheetName]) {
-        areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+        areaDatalist.innerHTML = '<option value="">...جارٍ التحميل</option>';
+
+        let attempts = 0;
+        const maxAttempts = 20; // ~4 seconds at 200ms interval
+
+        const waiter = setInterval(() => {
+          attempts++;
+          if (sheetsData[sheetName]) {
+            clearInterval(waiter);
+            // call again to populate now that data is available
+            loadAreaOptionsDatalist(sheetName, columns, callback);
+          } else if (attempts >= maxAttempts) {
+            clearInterval(waiter);
+            areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+          }
+        }, 200);
+
         return;
       }
       
