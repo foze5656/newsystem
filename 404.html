@@ -1146,10 +1146,17 @@
       // wire inline toggle button (in header) to show/hide completed months
       const inlineToggle = document.getElementById('completedToggleInline');
       if (inlineToggle) {
-        inlineToggle.onclick = () => {
+        inlineToggle.onclick = async () => {
           const fm = document.getElementById('completedMonths');
           if (!fm) return;
-          fm.classList.toggle('hidden');
+          // ensure box positioned correctly
+          positionCompletedBox();
+          // load months fresh for current month
+          const cm = window._staffMonth || (new Date()).getMonth() + 1;
+          try { await loadCompletedMonths(cm); } catch (e) {}
+          // show it explicitly (avoid !important display issues)
+          fm.classList.remove('hidden');
+          fm.style.display = '';
         };
       }
       // add a delegated click listener as a fallback in case DOM nodes are replaced
@@ -3299,6 +3306,32 @@
         window.open(url, 'googleFormWindow', 'width=800,height=600');
       };
 
+      // Edit Appointment button (restore functionality)
+      const editBtn = document.createElement('button');
+      editBtn.id = 'editAppointmentBtn';
+      editBtn.className = 'btn-option';
+      editBtn.style.marginLeft = '8px';
+      editBtn.textContent = '✏️ تعديل الموعد';
+      editBtn.onclick = async () => {
+        const ref = prompt('ادخل رقم الحجز أو QR لتعديل الموعد:');
+        if (!ref) return;
+        const appointmentDate = document.getElementById('appointmentDate');
+        const payload = {
+          date: appointmentDate ? appointmentDate.value : '',
+          time: '',
+          qrOrder: ref,
+          customerName: '',
+          phone: '',
+          location: '',
+          washType: (formData.selectedWashes || []).join(', '),
+          payment: ''
+        };
+        submitToGoogleForm(payload);
+      };
+      // insert edit button next to book button
+      const bookBtn = document.getElementById('bookAppointmentBtn');
+      if (bookBtn && bookBtn.parentNode) bookBtn.parentNode.insertBefore(editBtn, bookBtn.nextSibling);
+
       // initialize appointment date and load slots immediately (no need to click a wash)
       (function initAppointments() {
         const appointmentDate = document.getElementById('appointmentDate');
@@ -3318,6 +3351,9 @@
           handleWashTypeSelection(washType);
         };
       });
+
+      // show all wash types by default (populate the table/cards)
+      try { handleWashTypeSelection('all'); } catch (e) {}
     }
 
     function handleWashTypeSelection(quality) {
