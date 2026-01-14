@@ -4177,10 +4177,18 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const protResult = document.getElementById('protResult');
         protResult.innerHTML = `
           <div class="table-header">خيارات الحماية والتغيم</div>
-          <div style="padding:12px 16px;">${servicesHtml}${transportHtml}${noteHtml}</div>
+          <div style="padding:12px 16px; display:flex; flex-direction:column; gap:14px;">
+            <div class="services-wrap">${servicesHtml}</div>
+            <div class="transport-wrap">${transportHtml}</div>
+            <div class="note-wrap">${noteHtml}</div>
+          </div>
         `;
 
-        document.getElementById('protResult').classList.remove('hidden');
+        // allow protResult to expand so transport box is fully visible and doesn't overlap
+        protResult.style.maxHeight = 'none';
+        protResult.style.overflow = 'visible';
+
+        protResult.classList.remove('hidden');
         const nb = document.getElementById('protNoteBox'); if (nb) nb.style.display = 'block';
       };
 
