@@ -797,6 +797,8 @@
     </div>
     <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
     </div>
+    <div class="service-item" data-service="protection"><span class="icon">🛡️</span> <span class="label">الحمايه والتغيم</span>
+    </div>
     <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span>
     </div>
    </aside><!-- Main Content -->
@@ -1037,6 +1039,7 @@
           'staff_centers': 'مراكز الطلبات',
           'staff_followup': 'متابعة الطلبات',
           'carwash': 'غسيل السيارات',
+          'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات'
         };
         
@@ -1084,6 +1087,9 @@
             break;
           case 'carwash':
             renderCarWashInterface();
+            break;
+          case 'protection':
+            renderProtectionInterface();
             break;
           case 'insurance':
             renderInsuranceInterface();
@@ -1297,9 +1303,7 @@
             <button class="btn-option" data-type="normal">ونش عادي</button>
             <button class="btn-option" data-type="flatbed">ونش فل داون</button>
           </div>
-          <div style="margin-top:12px; display:flex; gap:8px;">
-            <button id="openProtectionBtn" class="btn-option">الحمايه والتغيم</button>
-          </div>
+          
           
           <div id="lockedOption" class="hidden" style="margin-top: 10px;">
             <h3 class="section-title">ونش مسكر</h3>
@@ -4006,8 +4010,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         }, 300);
       };
-      const openProtBtn = document.getElementById('openProtectionBtn');
-      if (openProtBtn) openProtBtn.onclick = () => renderProtectionInterface();
+      
     }
 
     // Render Protection & Coverage Interface (الحمايه والتغيم)
