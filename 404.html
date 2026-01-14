@@ -731,6 +731,8 @@
       width: 360px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
+    .animated-highlight{ animation: glowGradient 6s linear infinite; background: linear-gradient(90deg, rgba(242,188,27,0.12), rgba(242,188,27,0.04)); border:1px solid rgba(242,188,27,0.2); }
+    @keyframes glowGradient{ 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
     .completed-months h4{ color: #F2BC1B; margin:0 0 8px 0; font-size:14px }
     .completed-months .month-block{ border-top:1px dashed #333; padding-top:8px; margin-top:8px }
     .completed-months .month-title{ color:#ccc; font-weight:700; font-size:13px; margin-bottom:6px }
@@ -1107,7 +1109,7 @@
         </div>
       `;
 
-      // ensure floating completed months box exists
+      // ensure floating completed months box exists and position it near the sidebar
       if (!document.getElementById('completedMonths')) {
         const fm = document.createElement('div');
         fm.id = 'completedMonths';
@@ -1115,6 +1117,30 @@
         fm.innerHTML = `<h4>الشهور المكتملة</h4><div id="completedMonthsList"></div>`;
         document.body.appendChild(fm);
       }
+
+      // position the completed months box next to the sidebar for better layout
+      function positionCompletedBox(){
+        const fm = document.getElementById('completedMonths');
+        const toggle = document.getElementById('completedToggle');
+        const sidebar = document.getElementById('sidebar');
+        let left = 12;
+        if (sidebar) {
+          const rect = sidebar.getBoundingClientRect();
+          left = rect.right + 12;
+        }
+        const maxWidth = Math.min(420, window.innerWidth - left - 24);
+        if (fm) {
+          fm.style.left = left + 'px';
+          fm.style.top = '16px';
+          fm.style.width = Math.max(260, Math.min(420, maxWidth)) + 'px';
+        }
+        if (toggle) {
+          toggle.style.left = (left - 44) + 'px';
+          toggle.style.top = '16px';
+        }
+      }
+      positionCompletedBox();
+      window.addEventListener('resize', positionCompletedBox);
       // create toggle button (four-line icon) if not present
       if (!document.getElementById('completedToggle')) {
         const t = document.createElement('div');
@@ -1128,6 +1154,8 @@
           fm.classList.toggle('hidden');
         };
         document.body.appendChild(t);
+        // position after append
+        positionCompletedBox();
       }
 
       // initial load and setup refresh (load current month and completed months)
@@ -1223,6 +1251,8 @@
             if (a) top3Div.innerHTML += `<div><div style="font-size:12px;color:#ccc">الأول</div><div style="font-weight:800;color:#F2BC1B">${a.name}</div><div style="color:#fff">${a.count} طلب</div></div>`;
             if (b) top3Div.innerHTML += `<div><div style="font-size:12px;color:#ccc">الثاني</div><div style="font-weight:700;color:#F2BC1B">${b.name}</div><div style="color:#fff">${b.count} طلب</div></div>`;
             if (c) top3Div.innerHTML += `<div><div style="font-size:12px;color:#ccc">الثالث</div><div style="font-weight:700;color:#F2BC1B">${c.name}</div><div style="color:#fff">${c.count} طلب</div></div>`;
+            // add subtle animated highlight to the first place box
+            if (top3Div.children && top3Div.children[0]) top3Div.children[0].classList.add('animated-highlight');
             block.appendChild(top3Div);
 
             // others
@@ -1296,6 +1326,7 @@
         f.style.width = '100%';
         f.style.background = 'linear-gradient(90deg, rgba(242,188,27,0.06), transparent)';
         f.innerHTML = `<div style="font-size:16px;color:#ccc;margin-bottom:6px;">المركز الأول</div><div style="font-size:28px;font-weight:900;color:#F2BC1B;">${first.name}</div><div style="color:#fff;font-size:20px;margin-top:8px;">${first.count} طلب</div>`;
+        f.classList.add('animated-highlight');
         topEl.appendChild(f);
       }
 
@@ -1349,8 +1380,9 @@
           chunk.forEach((it, idx) => {
             const globalIndex = 3 + i + idx + 1; // rank number
             const div = document.createElement('div');
-            div.style.color = '#ccc';
-            div.style.fontSize = '14px';
+            div.style.color = '#fff';
+            div.style.fontSize = '16px';
+            div.style.textAlign = 'center';
             div.textContent = `${globalIndex}- ${it.name} ${it.count} طلب`;
             col.appendChild(div);
           });
