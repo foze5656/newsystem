@@ -725,6 +725,8 @@
     <div class="logo-section"><img src="https://i.top4top.io/p_35860o72q1.png" alt="Logo">
      <h1 id="siteTitle">خدمات بورتراج</h1>
     </div>
+    <div class="service-item" data-service="staff"><span class="icon">👥</span> <span class="label">الموظفين</span>
+    </div>
     <div class="service-item" data-service="tow"><span class="icon">🚚</span> <span class="label">ونشات</span>
     </div>
     <div class="service-item has-submenu" data-service="battery"><span class="icon">🔋</span> <span class="label">بطارية</span> <span class="arrow">▼</span>
@@ -994,6 +996,7 @@
           'puncture': 'بنشر',
           'balance': 'ميزان وتركيب',
           'mechanical': 'خدمات ميكانيكية',
+          'staff': 'الموظفين',
           'carwash': 'غسيل السيارات',
           'insurance': 'تأمينات'
         };
@@ -1034,6 +1037,9 @@
           case 'mechanical':
             renderMechanicalInterface();
             break;
+          case 'staff':
+            renderStaffInterface();
+            break;
           case 'carwash':
             renderCarWashInterface();
             break;
@@ -1048,6 +1054,148 @@
     function renderBatterySubscriptionInterface() {
       renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
         '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
+    }
+
+    // Render Staff Interface
+    function renderStaffInterface() {
+      // clear any existing interval
+      if (window.staffIntervalId) clearInterval(window.staffIntervalId);
+
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">الموظفين</h3>
+          <div id="staffUpdated" style="color:#999; font-size:13px; margin-bottom:8px;">تحميل...</div>
+          <div id="staffTop" style="display:flex;flex-direction:column;gap:8px;align-items:center;
+               background:#0f0f0f;border:1px solid #333;padding:12px;border-radius:6px;">
+            <!-- top 3 will be injected here -->
+          </div>
+        </div>
+        <div id="staffListSection" class="form-section full-width hidden" style="padding-top:8px;">
+          <div id="staffColumns" style="display:flex;gap:12px;flex-wrap:wrap;
+               align-items:flex-start;
+               "></div>
+        </div>
+      `;
+
+      // initial load and setup refresh
+      loadStaffData();
+      window.staffIntervalId = setInterval(loadStaffData, 5 * 60 * 1000);
+    }
+
+    async function loadStaffData() {
+      try {
+        const sheetId = '1FkHv8c06WTPtOK9WUYM2ZNBR_IFhDq4W05JUr-b3SnI';
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+        const res = await fetch(csvUrl, { cache: 'no-cache' });
+        if (!res.ok) throw new Error('failed to load staff sheet');
+        const text = await res.text();
+
+        // detect change silently
+        if (window._staffRawText && window._staffRawText === text) return; // no change
+        window._staffRawText = text;
+
+        const rows = parseCSV(text);
+        // find last update: try first row col C (index 2)
+        const headerRow = rows[0] || [];
+        const lastUpdate = (headerRow[2] && headerRow[2].trim()) ? headerRow[2].trim() : new Date().toLocaleString();
+
+        // Staff data from second row onward
+        const dataRows = rows.slice(1).filter(r => r && (r[0] || r[1]));
+        const staff = dataRows.map(r => ({ name: (r[0] || '').toString().trim(), count: parseInt((r[1] || '0').toString().trim()) || 0 }));
+
+        // sort by count desc
+        staff.sort((a,b) => b.count - a.count);
+
+        updateStaffUI(staff, lastUpdate);
+      } catch (err) {
+        console.error(err);
+        const up = document.getElementById('staffUpdated'); if (up) up.textContent = 'خطأ في تحميل البيانات';
+      }
+    }
+
+    function updateStaffUI(staff, lastUpdate) {
+      const updatedEl = document.getElementById('staffUpdated');
+      if (updatedEl) updatedEl.textContent = lastUpdate;
+
+      const topEl = document.getElementById('staffTop');
+      const listSection = document.getElementById('staffListSection');
+      const colsContainer = document.getElementById('staffColumns');
+
+      if (!topEl || !colsContainer) return;
+
+      // Build top 3
+      const first = staff[0] || null;
+      const second = staff[1] || null;
+      const third = staff[2] || null;
+
+      topEl.innerHTML = '';
+      if (first) {
+        const f = document.createElement('div');
+        f.style.textAlign = 'center';
+        f.style.padding = '14px';
+        f.style.border = '1px solid #333';
+        f.style.borderRadius = '6px';
+        f.style.width = '100%';
+        f.innerHTML = `<div style="font-size:20px;font-weight:800;color:#F2BC1B;">${first.name}</div><div style="color:#fff;font-size:18px;margin-top:6px;">${first.count} طلب</div>`;
+        topEl.appendChild(f);
+      }
+
+      const duo = document.createElement('div');
+      duo.style.display = 'flex';
+      duo.style.gap = '12px';
+      duo.style.width = '100%';
+      duo.style.justifyContent = 'center';
+
+      if (second) {
+        const s = document.createElement('div');
+        s.style.flex = '1';
+        s.style.padding = '10px';
+        s.style.border = '1px solid #333';
+        s.style.borderRadius = '6px';
+        s.style.textAlign = 'center';
+        s.innerHTML = `<div style="font-weight:700;color:#F2BC1B;">${second.name}</div><div style="color:#fff;">${second.count} طلب</div>`;
+        duo.appendChild(s);
+      }
+      if (third) {
+        const t = document.createElement('div');
+        t.style.flex = '1';
+        t.style.padding = '10px';
+        t.style.border = '1px solid #333';
+        t.style.borderRadius = '6px';
+        t.style.textAlign = 'center';
+        t.innerHTML = `<div style="font-weight:700;color:#F2BC1B;">${third.name}</div><div style="color:#fff;">${third.count} طلب</div>`;
+        duo.appendChild(t);
+      }
+
+      if (duo.children.length > 0) topEl.appendChild(duo);
+
+      // Build remaining in columns of 4
+      const rest = staff.slice(3);
+      colsContainer.innerHTML = '';
+      if (rest.length === 0) {
+        listSection.classList.add('hidden');
+      } else {
+        listSection.classList.remove('hidden');
+        // split into chunks of 4
+        for (let i = 0; i < rest.length; i += 4) {
+          const chunk = rest.slice(i, i+4);
+          const col = document.createElement('div');
+          col.style.minWidth = '180px';
+          col.style.flex = '0 0 220px';
+          col.style.display = 'flex';
+          col.style.flexDirection = 'column';
+          col.style.gap = '6px';
+          chunk.forEach((it, idx) => {
+            const div = document.createElement('div');
+            div.style.color = '#ccc';
+            div.style.fontSize = '14px';
+            div.textContent = `- ${it.name} ${it.count} طلب`;
+            col.appendChild(div);
+          });
+          colsContainer.appendChild(col);
+        }
+      }
     }
 
     // Render Tow Interface
@@ -2569,15 +2717,15 @@
               if (formData.area) calculateAlternatorPrice();
             };
           }
-          // Appointments button
-          const apptBtn = document.getElementById('mechAppointmentsBtn');
-          if (apptBtn) {
-            apptBtn.onclick = () => {
-              renderMechanicalAppointments();
-            };
-          }
         };
       });
+      // Appointments button (available immediately without selecting a service)
+      const apptBtn = document.getElementById('mechAppointmentsBtn');
+      if (apptBtn) {
+        apptBtn.onclick = () => {
+          renderMechanicalAppointments();
+        };
+      }
     }
 
     function calculateMechanicalPrice() {
@@ -2881,7 +3029,7 @@
           </div>
         </div>
         
-        <div id="appointmentSection" class="form-section full-width hidden">
+        <div id="appointmentSection" class="form-section full-width">
           <h3 class="section-title">اختيار الموعد</h3>
           <div class="form-field">
             <label>تاريخ الموعد</label>
@@ -2889,7 +3037,6 @@
           </div>
           <div style="display:flex;gap:8px;">
             <button id="bookAppointmentBtn" class="btn-primary">📅 حجز الموعد</button>
-            <button id="editAppointmentBtn" class="btn-primary" style="background:#666;color:#fff;">✏️ تعديل موعد</button>
           </div>
           <div id="availableSlots" style="margin-top: 12px;"></div>
         </div>
@@ -2918,11 +3065,16 @@
         window.open(url, 'googleFormWindow', 'width=800,height=600');
       };
 
-      // Edit Appointment button handler — open Google Sheet
-      document.getElementById('editAppointmentBtn').onclick = () => {
-        window.open('https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing', '_blank', 'noopener,noreferrer');
-      };
-      
+      // initialize appointment date and load slots immediately (no need to click a wash)
+      (function initAppointments() {
+        const appointmentDate = document.getElementById('appointmentDate');
+        const today = new Date().toISOString().split('T')[0];
+        appointmentDate.min = today;
+        if (!appointmentDate.value) appointmentDate.value = today;
+        loadCarWashAppointments(appointmentDate.value);
+        appointmentDate.onchange = () => loadCarWashAppointments(appointmentDate.value);
+      })();
+
       document.querySelectorAll('[data-wash]').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('[data-wash]').forEach(b => b.classList.remove('active'));
@@ -2940,7 +3092,7 @@
       
       if (!quality) {
         washCardsSection.classList.add('hidden');
-        document.getElementById('appointmentSection').classList.add('hidden');
+        // keep appointmentSection visible even if no wash selected
         return;
       }
       
