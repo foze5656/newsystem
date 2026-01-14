@@ -3017,11 +3017,11 @@
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
 
-    // Load and render mechanical appointments from external Google Sheet (ميكانيكية)
+    // Load and render mechanical appointments from external Google Sheet (مواعيد الميكانيكيه)
     async function loadMechanicalAppointmentsData() {
       try {
         const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
-        const sheetName = 'm1';
+        const sheetName = 'مواعيد الميكانيكيه';
         const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
         const res = await fetch(csvUrl);
         if (!res.ok) throw new Error('failed');
@@ -3063,22 +3063,22 @@
         return;
       }
 
-      // rows: include header rows; data starts from row index 2 (third row)
-      const dataRows = rows.slice(2);
+      // rows: include header row; data starts from row index 1 (second row)
+      const dataRows = rows.slice(1);
 
-      // build technicians list
+      // build technicians list (column F -> index 5)
       const techs = new Set();
-      dataRows.forEach(r => { if (r[6]) techs.add(r[6]); });
+      dataRows.forEach(r => { if (r[5]) techs.add(r[5]); });
       techFilter.innerHTML = '<option value="">الكل</option>' + Array.from(techs).map(t => `<option value="${t}">${t}</option>`).join('');
 
       function filterAndRender() {
         const selectedDate = dateInput.value;
         const selectedTech = techFilter.value;
         const filtered = dataRows.filter(r => {
-          const dateCell = parseCellDate(r[1]); // column B -> index 1
+          const dateCell = parseCellDate(r[0]); // column A -> index 0 (التاريخ)
           if (!dateCell) return false;
           if (dateCell !== selectedDate) return false;
-          if (selectedTech && (r[6] || '') !== selectedTech) return false;
+          if (selectedTech && (r[5] || '') !== selectedTech) return false;
           return true;
         });
 
@@ -3087,12 +3087,12 @@
         } else {
           tableBody.innerHTML = filtered.map(r => `
             <tr>
-              <td>${parseCellDate(r[1]) || '-'}</td>
+              <td>${parseCellDate(r[0]) || '-'}</td>
+              <td>${r[1] || '-'}</td>
               <td>${r[2] || '-'}</td>
               <td>${r[3] || '-'}</td>
               <td>${r[4] || '-'}</td>
               <td>${r[5] || '-'}</td>
-              <td>${r[6] || '-'}</td>
             </tr>
           `).join('');
         }
