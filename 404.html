@@ -728,7 +728,7 @@
       z-index: 1200;
       max-height: 80vh;
       overflow: auto;
-      width: 320px;
+      width: 360px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
     .completed-months h4{ color: #F2BC1B; margin:0 0 8px 0; font-size:14px }
@@ -737,7 +737,10 @@
     .completed-months .top3{ display:flex; gap:8px; margin-bottom:6px }
     .completed-months .top3 div{ flex:1; text-align:center; padding:6px; border-radius:6px; background:#0f0f0f; border:1px solid #222 }
     .completed-months .others{ display:flex; gap:8px; flex-wrap:wrap }
-    .completed-months .others div{ flex:1 0 45%; color:#fff; text-align:center; font-size:15px; padding:6px }
+    .completed-months .others div{ flex:1 0 45%; color:#fff; text-align:center; font-size:16px; padding:8px }
+    .completed-toggle{ position: fixed; left: 12px; top: 12px; width:36px; height:36px; background:#0a0a0a; border:1px solid #333; border-radius:6px; z-index:1300; display:flex; align-items:center; justify-content:center; cursor:pointer }
+    .completed-toggle .lines{ width:18px; height:14px; display:flex; flex-direction:column; gap:3px }
+    .completed-toggle .lines span{ display:block; height:2px; background:#F2BC1B; border-radius:2px }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
