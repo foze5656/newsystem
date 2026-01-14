@@ -757,7 +757,13 @@
     <div class="logo-section"><img src="https://i.top4top.io/p_35860o72q1.png" alt="Logo">
      <h1 id="siteTitle">خدمات بورتراج</h1>
     </div>
-    <div class="service-item" data-service="staff"><span class="icon">👥</span> <span class="label">الموظفين</span>
+    <div class="service-item has-submenu" data-service="staff"><span class="icon">👥</span> <span class="label">الموظفين</span> <span class="arrow">▼</span>
+    </div>
+    <div class="service-submenu" id="staffSubmenu">
+     <div class="service-item submenu-item" data-service="staff_centers"><span class="label">مراكز الطلبات</span>
+     </div>
+     <div class="service-item submenu-item" data-service="staff_followup"><span class="label">متابعة الطلبات</span>
+     </div>
     </div>
     <div class="service-item" data-service="tow"><span class="icon">🚚</span> <span class="label">ونشات</span>
     </div>
@@ -997,12 +1003,12 @@
     document.addEventListener('click', (e) => {
       const serviceItem = e.target.closest('.service-item');
       if (serviceItem) {
-        // Handle submenu toggle for battery and tire
-        if ((serviceItem.dataset.service === 'battery' || serviceItem.dataset.service === 'tire') && serviceItem.classList.contains('has-submenu')) {
+        // Handle submenu toggle for battery, tire, and staff
+        if ((serviceItem.dataset.service === 'battery' || serviceItem.dataset.service === 'tire' || serviceItem.dataset.service === 'staff') && serviceItem.classList.contains('has-submenu')) {
           serviceItem.classList.toggle('expanded');
-          const submenuId = serviceItem.dataset.service === 'battery' ? 'batterySubmenu' : 'tireSubmenu';
+          const submenuId = serviceItem.dataset.service === 'battery' ? 'batterySubmenu' : (serviceItem.dataset.service === 'tire' ? 'tireSubmenu' : 'staffSubmenu');
           const submenu = document.getElementById(submenuId);
-          submenu.classList.toggle('show');
+          if (submenu) submenu.classList.toggle('show');
           return;
         }
         
@@ -1028,7 +1034,8 @@
           'puncture': 'بنشر',
           'balance': 'ميزان وتركيب',
           'mechanical': 'خدمات ميكانيكية',
-          'staff': 'الموظفين',
+          'staff_centers': 'مراكز الطلبات',
+          'staff_followup': 'متابعة الطلبات',
           'carwash': 'غسيل السيارات',
           'insurance': 'تأمينات'
         };
@@ -1069,8 +1076,11 @@
           case 'mechanical':
             renderMechanicalInterface();
             break;
-          case 'staff':
+          case 'staff_centers':
             renderStaffInterface();
+            break;
+          case 'staff_followup':
+            renderDriverFollowupInterface();
             break;
           case 'carwash':
             renderCarWashInterface();
@@ -1115,14 +1125,14 @@
       
 
       // initial load and periodic refresh (every 5 minutes)
-      loadStaffData();
+      loadStaffData(true);
       if (window.staffIntervalId) clearInterval(window.staffIntervalId);
       window.staffIntervalId = setInterval(() => {
         loadStaffData();
       }, 5 * 60 * 1000);
     }
 
-    async function loadStaffData() {
+    async function loadStaffData(force = false) {
       try {
         const sheetId = '1FkHv8c06WTPtOK9WUYM2ZNBR_IFhDq4W05JUr-b3SnI';
       const sheetName = 'طلبات الموظفين';
@@ -1132,7 +1142,7 @@
         const text = await res.text();
 
         // detect change silently
-        if (window._staffRawText && window._staffRawText === text) return; // no change
+        if (!force && window._staffRawText && window._staffRawText === text) return; // no change
         window._staffRawText = text;
 
         const rows = parseCSV(text);
@@ -1438,6 +1448,93 @@
       formData.isLocked = false;
       formData.gearWorks = true;
       updateTowTypeOptions();
+    }
+
+    // Render Driver Follow-up Interface (متابعة الطلبات)
+    function renderDriverFollowupInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">متابعة الطلبات - مواعيد السائقين</h3>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <button id="openFollowForm" class="btn-primary">📝 تسجيل متابعة سائق</button>
+            <button id="refreshFollow" class="btn-option">🔄 تحديث الآن</button>
+          </div>
+          <div id="followNotes" style="color:#999;font-size:13px;margin-bottom:8px;">يتم قراءة كل التواريخ والأوقات من الشيت.</div>
+        </div>
+        <div class="form-section full-width">
+          <div class="table-scroll">
+            <table class="data-table" id="driverScheduleTable">
+              <thead>
+                <tr>
+                  <th>نوع الخدمة</th>
+                  <th>اسم السائق</th>
+                  <th>التاريخ والوقت</th>
+                  <th>اسم الموظف</th>
+                  <th>ملاحظات</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('openFollowForm').onclick = () => {
+        window.open('https://forms.gle/sseHak21qRmfFcXc7', '_blank');
+      };
+      document.getElementById('refreshFollow').onclick = () => loadDriverSchedules();
+
+      // initial load
+      loadDriverSchedules();
+    }
+
+    async function loadDriverSchedules() {
+      try {
+        const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+        const sheetName = 'مواعيد السائقين';
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        const res = await fetch(csvUrl, { cache: 'no-cache' });
+        const tbody = document.querySelector('#driverScheduleTable tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="5" style="color:#999;padding:12px">جاري التحميل...</td></tr>';
+        if (!res.ok) {
+          tbody.innerHTML = `<tr><td colspan="5" style="color:#f88;padding:12px">خطأ في تحميل الشيت (تأكد من أن الشيت عام)</td></tr>`;
+          return;
+        }
+        const text = await res.text();
+        const rows = parseCSV(text || '');
+        const dataRows = rows.slice(1).filter(r => r && (r[0] || r[1] || r[2] || r[3]));
+
+        if (dataRows.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="color:#999;padding:12px">لا توجد بيانات</td></tr>';
+          return;
+        }
+
+        // The sheet columns expected: A: اسم الموظف, B: نوع الخدمة, C: اسم السائق, D: الوقت والتاريخ, E: ملاحظات
+        // We'll display: نوع الخدمة | اسم السائق | التاريخ والوقت | اسم الموظف | ملاحظات
+        tbody.innerHTML = '';
+        dataRows.forEach(r => {
+          const emp = (r[0]||'').toString().trim();
+          const svc = (r[1]||'').toString().trim();
+          const driver = (r[2]||'').toString().trim();
+          const datetime = (r[3]||'').toString().trim();
+          const notes = (r[4]||'').toString().trim();
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${escapeHtml(svc)}</td><td>${escapeHtml(driver)}</td><td>${escapeHtml(datetime)}</td><td>${escapeHtml(emp)}</td><td>${escapeHtml(notes)}</td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+        const tbody = document.querySelector('#driverScheduleTable tbody');
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="color:#f88;padding:12px">خطأ في تحميل البيانات</td></tr>`;
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
     function updateTowTypeOptions() {
