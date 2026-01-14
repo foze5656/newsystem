@@ -1297,6 +1297,9 @@
             <button class="btn-option" data-type="normal">ونش عادي</button>
             <button class="btn-option" data-type="flatbed">ونش فل داون</button>
           </div>
+          <div style="margin-top:12px; display:flex; gap:8px;">
+            <button id="openProtectionBtn" class="btn-option">الحمايه والتغيم</button>
+          </div>
           
           <div id="lockedOption" class="hidden" style="margin-top: 10px;">
             <h3 class="section-title">ونش مسكر</h3>
@@ -4003,6 +4006,164 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         }, 300);
       };
+      const openProtBtn = document.getElementById('openProtectionBtn');
+      if (openProtBtn) openProtBtn.onclick = () => renderProtectionInterface();
+    }
+
+    // Render Protection & Coverage Interface (الحمايه والتغيم)
+    function renderProtectionInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">الحمايه والتغيم</h3>
+          <div style="margin-bottom:8px;">
+            <div class="btn-grid" id="protectionCompanies" style="grid-template-columns: repeat(4, 1fr);">
+              <button class="btn-option active" data-prot-company="كارباث">كارباث</button>
+            </div>
+          </div>
+          <div id="protRegionSection" class="form-section hidden">
+            <h3 class="section-title">اختر المنطقة</h3>
+            <div class="form-field">
+              <input type="text" list="protRegionOptions" id="protRegionSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
+              <datalist id="protRegionOptions"></datalist>
+            </div>
+          </div>
+          <div id="protResult" class="data-table-container hidden">
+            <div class="table-header">نتيجة الحساب</div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead><tr><th>البيان</th><th>القيمة</th></tr></thead>
+                <tbody id="protResultBody"></tbody>
+              </table>
+            </div>
+            <div id="protNote" class="info-box hidden"></div>
+          </div>
+          <div id="protOptions" style="margin-top:10px; display:none;">
+            <label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="protClientGoes" /> العميل يذهب بنفسه إلى الكراج</label>
+          </div>
+        </div>
+        <div id="protCompaniesCards" class="form-section full-width hidden">
+          <h3 class="section-title">شركات الحماية (من الشيت)</h3>
+          <div id="protCardsGrid" class="cards-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;"></div>
+        </div>
+      `;
+
+      // Company selection
+      document.querySelectorAll('#protectionCompanies [data-prot-company]').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('#protectionCompanies [data-prot-company]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          // For now only كارباث uses Portarage regions
+          document.getElementById('protRegionSection').classList.remove('hidden');
+
+          // Load regions from portarage towtruk (use normal tow 'from' column indices)
+          loadProtRegionOptions();
+        };
+      });
+
+      // Region selection handler
+      const protRegionSelect = document.getElementById('protRegionSelect');
+      protRegionSelect.oninput = () => {
+        const area = protRegionSelect.value.trim();
+        if (!area) return;
+        // Automatically choose destination to 'شويخ'
+        const dest = 'شويخ';
+        // compute price using portarage normal tow routes
+        const routes = getTowRoutes('portarage towtruk', 'normal');
+        const route = routes.find(r => r.from === area && r.to && r.to.includes(dest));
+        const tbody = document.getElementById('protResultBody');
+        const note = document.getElementById('protNote');
+        if (!route) {
+          tbody.innerHTML = '<tr><td colspan="2">لا يوجد سعر مُسجل لهذه المنطقة (تحقق من الشيت)</td></tr>';
+          document.getElementById('protResult').classList.remove('hidden');
+          note.classList.add('hidden');
+          return;
+        }
+
+        const basePrice = parseFloat(route.price) || 0;
+        const transportPrice = basePrice * 2; // user requested multiply by two
+
+        tbody.innerHTML = `
+          <tr><td>سعر النقل (اتجاه واحد)</td><td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td></tr>
+          <tr><td>سعر النقل (ذهاب وعودة) - مضاعف</td><td class="highlight">${transportPrice.toFixed(2)} ${config.currency}</td></tr>
+          <tr><td>ملاحظة</td><td>سعر النقل مختلف عن رسوم الخدمة</td></tr>
+        `;
+
+        note.textContent = 'رسوم الذهاب والعودة تُحسب هنا؛ يمكن للعميل الذهاب للكراج بنفسه ودفع الرسوم أولاً.';
+        note.classList.remove('hidden');
+        document.getElementById('protResult').classList.remove('hidden');
+        document.getElementById('protOptions').style.display = 'block';
+      };
+
+      // Load companies cards from sheet 'حمايه وتغيم' if available
+      setTimeout(() => {
+        renderProtectionCompaniesCards();
+      }, 200);
+    }
+
+    function loadProtRegionOptions() {
+      const areaDatalist = document.getElementById('protRegionOptions');
+      const areaInput = document.getElementById('protRegionSelect');
+      const sheetName = 'portarage towtruk';
+      // Use columns for normal tow: from (index 6), price (4), cancel (3) and alternate (2,1,0)
+      const cols = [6,4,3, 6,1,0];
+      if (!sheetsData[sheetName]) {
+        areaDatalist.innerHTML = '<option value="">...جارٍ التحميل</option>';
+        // retry later
+        setTimeout(loadProtRegionOptions, 300);
+        return;
+      }
+      const rows = sheetsData[sheetName];
+      const areas = [];
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        cols.forEach((colIndex, idx) => {
+          if (idx % 3 === 0 && row[colIndex]) areas.push(row[colIndex]);
+        });
+      }
+      const unique = [...new Set(areas)].filter(Boolean);
+      areaDatalist.innerHTML = unique.map(a => `<option value="${a}"></option>`).join('');
+      // clear value
+      if (areaInput) areaInput.value = '';
+    }
+
+    function renderProtectionCompaniesCards() {
+      const grid = document.getElementById('protCardsGrid');
+      const wrapper = document.getElementById('protCompaniesCards');
+      const sheetName = 'حمايه وتغيم';
+      if (!sheetsData[sheetName]) {
+        wrapper.classList.add('hidden');
+        return;
+      }
+      const rows = sheetsData[sheetName];
+      if (!rows || rows.length < 1) return;
+
+      const headers = rows[0];
+      const cards = [];
+      for (let c = 0; c < headers.length; c += 2) {
+        const compName = (headers[c] || headers[c+1] || '').toString().trim();
+        if (!compName) continue;
+        const features = [];
+        for (let r = 1; r < rows.length; r++) {
+          const left = rows[r][c] || '';
+          const right = rows[r][c+1] || '';
+          const txt = (left || right).toString().trim();
+          if (txt) features.push(txt);
+        }
+
+        const contentHtml = features.map(f => `<div style="margin-bottom:6px;">• ${escapeHtml(f)}</div>`).join('');
+        cards.push({ name: compName, content: contentHtml });
+      }
+
+      grid.innerHTML = cards.map(card => `
+        <div class="data-card" style="padding:10px;border:1px solid #333;border-radius:8px; background:#0b1220;">
+          <h4 style="margin:0 0 8px 0;">${escapeHtml(card.name)}</h4>
+          <div style="font-size:13px;line-height:1.4;">${card.content}</div>
+        </div>
+      `).join('');
+
+      if (cards.length) wrapper.classList.remove('hidden');
+      else wrapper.classList.add('hidden');
     }
     
     function updateInsuranceSuggestions(query) {
