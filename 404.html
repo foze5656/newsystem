@@ -1146,18 +1146,155 @@
       // wire inline toggle button (in header) to show/hide completed months
       const inlineToggle = document.getElementById('completedToggleInline');
       if (inlineToggle) {
-        inlineToggle.onclick = async () => {
-          const fm = document.getElementById('completedMonths');
-          if (!fm) return;
-          // ensure box positioned correctly
-          positionCompletedBox();
-          // load months fresh for current month
-          const cm = window._staffMonth || (new Date()).getMonth() + 1;
-          try { await loadCompletedMonths(cm); } catch (e) {}
-          // show it explicitly (avoid !important display issues)
-          fm.classList.remove('hidden');
-          fm.style.display = '';
+        inlineToggle.onclick = async (ev) => {
+          ev.stopPropagation();
+          // build or toggle months menu
+          let menu = document.getElementById('completedMonthsMenu');
+          if (!menu) {
+            menu = document.createElement('div');
+            menu.id = 'completedMonthsMenu';
+            menu.className = 'months-menu';
+            menu.style.position = 'absolute';
+            menu.style.background = 'rgba(8,8,8,0.98)';
+            menu.style.border = '1px solid #333';
+            menu.style.borderRadius = '6px';
+            menu.style.padding = '8px';
+            menu.style.width = '220px';
+            menu.style.maxHeight = '60vh';
+            menu.style.overflow = 'auto';
+            menu.style.zIndex = 1400;
+            document.body.appendChild(menu);
+
+            // populate month buttons
+            const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+            for (let m = 1; m <= 12; m++) {
+              const btn = document.createElement('div');
+              btn.className = 'month-option';
+              btn.style.padding = '8px';
+              btn.style.marginBottom = '6px';
+              btn.style.borderRadius = '6px';
+              btn.style.cursor = 'pointer';
+              btn.style.background = '#0f0f0f';
+              btn.style.border = '1px solid #222';
+              btn.style.color = '#ddd';
+              btn.dataset.m = m;
+              btn.textContent = `${monthNames[m-1]} (شهر${m})`;
+              btn.onclick = async () => {
+                // show details for selected month
+                await showMonthDetails(m);
+                // hide menu after selection
+                menu.classList.add('hidden');
+              };
+              menu.appendChild(btn);
+            }
+          }
+
+          // position menu under the toggle
+          const rect = inlineToggle.getBoundingClientRect();
+          menu.style.left = (rect.left) + 'px';
+          menu.style.top = (rect.bottom + 6) + 'px';
+          menu.classList.toggle('hidden');
         };
+      }
+
+      // click outside to close months menu
+      document.addEventListener('click', (e) => {
+        const menu = document.getElementById('completedMonthsMenu');
+        const inline = document.getElementById('completedToggleInline');
+        if (!menu) return;
+        if (e.target.closest && (e.target.closest('#completedMonthsMenu') || e.target.closest('#completedToggleInline'))) return;
+        menu.classList.add('hidden');
+      });
+
+      // helper: fetch and render specific month into completedMonthsList
+      async function showMonthDetails(m) {
+        const sheetId = '1FkHv8c06WTPtOK9WUYM2ZNBR_IFhDq4W05JUr-b3SnI';
+        const sheetName = `شهر${m}`;
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        const listEl = document.getElementById('completedMonthsList');
+        const fm = document.getElementById('completedMonths');
+        if (!listEl || !fm) return;
+        listEl.innerHTML = '';
+        try {
+          const res = await fetch(csvUrl, { cache: 'no-cache' });
+          if (!res.ok) {
+            listEl.innerHTML = `<div class="month-block"><div class="month-title">شهر ${m}</div><div class="no-data">لم يتم الوصول لهذا الشهر حتى الآن 👀</div></div>`;
+            fm.classList.remove('hidden');
+            positionCompletedBox();
+            return;
+          }
+          const text = await res.text();
+          const rows = parseCSV(text || '');
+          const dataRows = rows.slice(1).filter(r => r && (r[0] || r[1]));
+          if (dataRows.length === 0) {
+            listEl.innerHTML = `<div class="month-block"><div class="month-title">شهر ${m}</div><div class="no-data">لم يتم الوصول لهذا الشهر حتى الآن 👀</div></div>`;
+            fm.classList.remove('hidden');
+            positionCompletedBox();
+            return;
+          }
+
+          // build month block similar to loadCompletedMonths
+          const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+          const staff = dataRows.map(r => ({ name: (r[0]||'').toString().trim(), count: parseInt((r[1]||'0').toString().trim()) || 0 }));
+          staff.sort((a,b) => b.count - a.count);
+          const a = staff[0] || null;
+          const b = staff[1] || null;
+          const c = staff[2] || null;
+
+          const block = document.createElement('div');
+          block.className = 'month-block';
+          block.innerHTML = `<div class="month-title">${monthNames[m-1]} (${m})</div>`;
+          const top3Div = document.createElement('div');
+          top3Div.className = 'top3';
+          if (a) top3Div.innerHTML += `<div><div style="font-size:12px;color:#ccc">الأول</div><div style="font-weight:800;color:#F2BC1B">${a.name}</div><div style="color:#fff">${a.count} طلب</div></div>`;
+          if (b) top3Div.innerHTML += `<div><div style="font-size:12px;color:#ccc">الثاني</div><div style="font-weight:700;color:#F2BC1B">${b.name}</div><div style="color:#fff">${b.count} طلب</div></div>`;
+          if (c) top3Div.innerHTML += `<div><div style="font-size:12px;color:#ccc">الثالث</div><div style="font-weight:700;color:#F2BC1B">${c.name}</div><div style="color:#fff">${c.count} طلب</div></div>`;
+          if (top3Div.children && top3Div.children[0]) top3Div.children[0].classList.add('animated-highlight');
+          block.appendChild(top3Div);
+
+          const rest = staff.slice(3);
+          if (rest.length > 0) {
+            const othersDiv = document.createElement('div');
+            othersDiv.className = 'others';
+            const containerWidth = Math.min(420, window.innerWidth - 120);
+            const approxColWidth = 160;
+            let columnsCount = Math.max(1, Math.floor(containerWidth / approxColWidth));
+            columnsCount = Math.min(columnsCount, rest.length);
+            const perCol = Math.ceil(rest.length / columnsCount);
+            for (let i = 0; i < columnsCount; i++) {
+              const col = document.createElement('div');
+              col.style.flex = '1 0 ' + Math.floor(100 / columnsCount) + '%';
+              const start = i * perCol;
+              const chunk = rest.slice(start, start + perCol);
+              const inner = document.createElement('div');
+              inner.style.display = 'flex';
+              inner.style.flexDirection = 'column';
+              inner.style.gap = '8px';
+              chunk.forEach((it, idx) => {
+                const rank = 4 + start + idx;
+                const d = document.createElement('div');
+                d.style.fontSize = '17px';
+                d.style.textAlign = 'center';
+                d.style.color = '#fff';
+                d.style.fontWeight = '600';
+                d.textContent = `${rank}- ${it.name} ${it.count} طلب`;
+                inner.appendChild(d);
+              });
+              col.appendChild(inner);
+              othersDiv.appendChild(col);
+            }
+            block.appendChild(othersDiv);
+          }
+
+          listEl.innerHTML = '';
+          listEl.appendChild(block);
+          fm.classList.remove('hidden');
+          positionCompletedBox();
+        } catch (err) {
+          listEl.innerHTML = `<div class="month-block"><div class="month-title">شهر ${m}</div><div class="no-data">لم يتم الوصول لهذا الشهر حتى الآن 👀</div></div>`;
+          fm.classList.remove('hidden');
+          positionCompletedBox();
+        }
       }
       // add a delegated click listener as a fallback in case DOM nodes are replaced
       if (!window._completedToggleDelegated) {
