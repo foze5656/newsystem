@@ -1152,6 +1152,21 @@
           fm.classList.toggle('hidden');
         };
       }
+      // add a delegated click listener as a fallback in case DOM nodes are replaced
+      if (!window._completedToggleDelegated) {
+        document.body.addEventListener('click', function (ev) {
+          try {
+            const t = ev.target.closest ? ev.target.closest('#completedToggleInline') : null;
+            if (t) {
+              const fm = document.getElementById('completedMonths');
+              if (!fm) return;
+              fm.classList.toggle('hidden');
+              ev.preventDefault();
+            }
+          } catch (e) {}
+        });
+        window._completedToggleDelegated = true;
+      }
 
       // initial load and setup refresh (load current month and completed months)
       loadStaffData(currentMonth);
