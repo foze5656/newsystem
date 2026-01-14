@@ -743,6 +743,10 @@
     .completed-toggle{ position: fixed; left: 12px; top: 12px; width:36px; height:36px; background:#0a0a0a; border:1px solid #333; border-radius:6px; z-index:1300; display:flex; align-items:center; justify-content:center; cursor:pointer }
     .completed-toggle .lines{ width:18px; height:14px; display:flex; flex-direction:column; gap:3px }
     .completed-toggle .lines span{ display:block; height:2px; background:#F2BC1B; border-radius:2px }
+    .completed-toggle-inline{ width:36px; height:36px; background:#0a0a0a; border:1px solid #333; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; margin-left:6px }
+    .completed-toggle-inline .lines{ width:16px; height:12px; display:flex; flex-direction:column; gap:3px }
+    .completed-toggle-inline .lines span{ display:block; height:2px; background:#F2BC1B; border-radius:2px }
+    .completed-months .no-data{ color:#bbb; font-size:14px; text-align:center; padding:8px }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
@@ -1098,7 +1102,10 @@
       contentArea.innerHTML = `
         <div class="form-section full-width">
           <h3 class="section-title">الموظفين - ${monthNames[currentMonth-1]}</h3>
-          <div id="staffUpdated" style="color:#999; font-size:13px; margin-bottom:8px;">تحميل...</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div id="completedToggleInline" class="completed-toggle-inline" title="الشهور المكتملة"><div class="lines"><span></span><span></span><span></span><span></span></div></div>
+            <div id="staffUpdated" style="color:#999; font-size:13px; margin-left:8px;">تحميل...</div>
+          </div>
           <div id="staffTop" style="display:flex;flex-direction:column;gap:8px;align-items:center;
                background:#0f0f0f;border:1px solid #333;padding:12px;border-radius:6px;">
             <!-- top 3 will be injected here -->
@@ -1121,7 +1128,6 @@
       // position the completed months box next to the sidebar for better layout
       function positionCompletedBox(){
         const fm = document.getElementById('completedMonths');
-        const toggle = document.getElementById('completedToggle');
         const sidebar = document.getElementById('sidebar');
         let left = 12;
         if (sidebar) {
@@ -1134,28 +1140,17 @@
           fm.style.top = '16px';
           fm.style.width = Math.max(260, Math.min(420, maxWidth)) + 'px';
         }
-        if (toggle) {
-          toggle.style.left = (left - 44) + 'px';
-          toggle.style.top = '16px';
-        }
       }
       positionCompletedBox();
       window.addEventListener('resize', positionCompletedBox);
-      // create toggle button (four-line icon) if not present
-      if (!document.getElementById('completedToggle')) {
-        const t = document.createElement('div');
-        t.id = 'completedToggle';
-        t.className = 'completed-toggle';
-        t.title = 'الشهور المكتملة';
-        t.innerHTML = `<div class="lines"><span></span><span></span><span></span><span></span></div>`;
-        t.onclick = () => {
+      // wire inline toggle button (in header) to show/hide completed months
+      const inlineToggle = document.getElementById('completedToggleInline');
+      if (inlineToggle) {
+        inlineToggle.onclick = () => {
           const fm = document.getElementById('completedMonths');
           if (!fm) return;
           fm.classList.toggle('hidden');
         };
-        document.body.appendChild(t);
-        // position after append
-        positionCompletedBox();
       }
 
       // initial load and setup refresh (load current month and completed months)
@@ -1222,17 +1217,31 @@
 
         const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 
-        for (let m = 1; m < currentMonth; m++) {
+        for (let m = 1; m <= 12; m++) {
           const sheetName = `شهر${m}`;
           const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
           try {
             const res = await fetch(csvUrl, { cache: 'no-cache' });
-            if (!res.ok) continue;
+            // if fetch fails (private sheet or not present), treat as no data for that month
+            if (!res.ok) {
+              // create a placeholder block showing no data
+              const blockEmpty = document.createElement('div');
+              blockEmpty.className = 'month-block';
+              blockEmpty.innerHTML = `<div class="month-title">${monthNames[m-1]} (${m})</div><div class="no-data">لم يتم الوصول لهذا الشهر حتى الآن 👀</div>`;
+              listEl.appendChild(blockEmpty);
+              continue;
+            }
             const text = await res.text();
             // detect empty
             const rows = parseCSV(text || '');
             const dataRows = rows.slice(1).filter(r => r && (r[0] || r[1]));
-            if (dataRows.length === 0) continue; // skip empty months
+            if (dataRows.length === 0) {
+              const blockEmpty = document.createElement('div');
+              blockEmpty.className = 'month-block';
+              blockEmpty.innerHTML = `<div class="month-title">${monthNames[m-1]} (${m})</div><div class="no-data">لم يتم الوصول لهذا الشهر حتى الآن 👀</div>`;
+              listEl.appendChild(blockEmpty);
+              continue;
+            }
 
             // build month block
             const block = document.createElement('div');
@@ -1301,8 +1310,9 @@
           }
         }
 
+        // keep the completed months box hidden by default; user toggles it via header button
         const fm = document.getElementById('completedMonths');
-        if (listEl.children.length > 0) fm.classList.remove('hidden'); else fm.classList.add('hidden');
+        if (fm) fm.classList.add('hidden');
       } catch (err) {
         console.error(err);
       }
