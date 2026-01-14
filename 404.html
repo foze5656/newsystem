@@ -1261,29 +1261,36 @@
               const othersDiv = document.createElement('div');
               othersDiv.className = 'others';
 
-              // distribute evenly into columns so no empty gaps
-              const columnsCount = Math.max(1, Math.ceil(rest.length / 4));
-              const perCol = Math.ceil(rest.length / columnsCount);
-              for (let i = 0; i < columnsCount; i++) {
-                const col = document.createElement('div');
-                const start = i * perCol;
-                const end = start + perCol;
-                const chunk = rest.slice(start, end);
-                const inner = document.createElement('div');
-                inner.style.display = 'flex';
-                inner.style.flexDirection = 'column';
-                inner.style.gap = '6px';
-                chunk.forEach((it, idx) => {
-                  const rank = 4 + start + idx;
-                  const d = document.createElement('div');
-                  d.style.fontSize = '15px';
-                  d.style.textAlign = 'center';
-                  d.style.color = '#fff';
-                  d.textContent = `${rank}- ${it.name} ${it.count} طلب`;
-                  inner.appendChild(d);
-                });
-                othersDiv.appendChild(inner);
-              }
+              // distribute into responsive columns to avoid empty gaps
+                // compute columns based on available width, fallback to 1..4
+                const containerWidth = Math.min(420, window.innerWidth - 120);
+                const approxColWidth = 160; // desired column width
+                let columnsCount = Math.max(1, Math.floor(containerWidth / approxColWidth));
+                columnsCount = Math.min(columnsCount, rest.length);
+                const perCol = Math.ceil(rest.length / columnsCount);
+                for (let i = 0; i < columnsCount; i++) {
+                  const col = document.createElement('div');
+                  col.style.flex = '1 0 ' + Math.floor(100 / columnsCount) + '%';
+                  const start = i * perCol;
+                  const end = start + perCol;
+                  const chunk = rest.slice(start, end);
+                  const inner = document.createElement('div');
+                  inner.style.display = 'flex';
+                  inner.style.flexDirection = 'column';
+                  inner.style.gap = '8px';
+                  chunk.forEach((it, idx) => {
+                    const rank = 4 + start + idx;
+                    const d = document.createElement('div');
+                    d.style.fontSize = '17px';
+                    d.style.textAlign = 'center';
+                    d.style.color = '#fff';
+                    d.style.fontWeight = '600';
+                    d.textContent = `${rank}- ${it.name} ${it.count} طلب`;
+                    inner.appendChild(d);
+                  });
+                  col.appendChild(inner);
+                  othersDiv.appendChild(col);
+                }
 
               block.appendChild(othersDiv);
             }
@@ -1361,31 +1368,40 @@
 
       if (duo.children.length > 0) topEl.appendChild(duo);
 
-      // Build remaining in columns of 4
+      // Build remaining in responsive columns (avoid fixed 4-per-column)
       const rest = staff.slice(3);
       colsContainer.innerHTML = '';
       if (rest.length === 0) {
         listSection.classList.add('hidden');
       } else {
         listSection.classList.remove('hidden');
-        // split into chunks of 4
-        for (let i = 0; i < rest.length; i += 4) {
-          const chunk = rest.slice(i, i+4);
+        // determine columns based on available width
+        const available = Math.max(320, Math.min(window.innerWidth - 420, 900));
+        const approxCol = 180;
+        let columnsCount = Math.max(1, Math.floor(available / approxCol));
+        columnsCount = Math.min(columnsCount, rest.length);
+        const perCol = Math.ceil(rest.length / columnsCount);
+
+        for (let c = 0; c < columnsCount; c++) {
+          const start = c * perCol;
+          const chunk = rest.slice(start, start + perCol);
           const col = document.createElement('div');
-          col.style.minWidth = '180px';
-          col.style.flex = '0 0 220px';
+          col.style.flex = `1 0 ${Math.floor(100 / columnsCount)}%`;
           col.style.display = 'flex';
           col.style.flexDirection = 'column';
-          col.style.gap = '6px';
+          col.style.gap = '8px';
+
           chunk.forEach((it, idx) => {
-            const globalIndex = 3 + i + idx + 1; // rank number
+            const globalIndex = 4 + start + idx; // rank number starting at 4
             const div = document.createElement('div');
             div.style.color = '#fff';
             div.style.fontSize = '16px';
             div.style.textAlign = 'center';
+            div.style.fontWeight = '600';
             div.textContent = `${globalIndex}- ${it.name} ${it.count} طلب`;
             col.appendChild(div);
           });
+
           colsContainer.appendChild(col);
         }
       }
