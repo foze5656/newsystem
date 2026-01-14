@@ -4086,14 +4086,64 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const basePrice = parseFloat(route.price) || 0;
         const transportPrice = basePrice * 2; // user requested multiply by two
 
-        tbody.innerHTML = `
-          <tr><td>سعر النقل (اتجاه واحد)</td><td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td></tr>
-          <tr><td>سعر النقل (ذهاب وعودة) - مضاعف</td><td class="highlight">${transportPrice.toFixed(2)} ${config.currency}</td></tr>
-          <tr><td>ملاحظة</td><td>سعر النقل مختلف عن رسوم الخدمة</td></tr>
+        // Build services cards with detailed prices
+        const servicesHtml = `
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">حماية الطلاء (PPF)</h4>
+              <div>كبوت كامل: <strong>285 د.ك</strong></div>
+              <div>حماية كاملة للسيارة: <strong>620 د.ك</strong></div>
+              <div>حماية كاملة مطفي (مات): <strong>700 د.ك</strong></div>
+            </div>
+
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">الباكجات (PPF + تظليل + حماية القلاس الأمامي)</h4>
+              <div>كبوت كامل: <strong>410 د.ك</strong></div>
+              <div>حماية كاملة للسيارة: <strong>710 د.ك</strong></div>
+              <div>حماية كاملة مطفي (مات): <strong>810 د.ك</strong></div>
+            </div>
+
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">التظليل وحماية القلاس الأمامي</h4>
+              <div>تظليل نانو سيراميك: <strong>155 د.ك</strong></div>
+              <div>حماية القلاس الأمامي (بدون سطحة): <strong>60 د.ك</strong></div>
+            </div>
+
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">تغليف فينيل</h4>
+              <div>تغليف كامل: <strong>920 د.ك</strong></div>
+              <div>ألوان وخامات خاصة حسب الطلب</div>
+            </div>
+
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">الصبغ القابل للإزالة (Peelable Paint)</h4>
+              <div>بلاك آوت كامل: <strong>320 د.ك</strong></div>
+              <div>الجنطات: <strong>140 د.ك</strong></div>
+            </div>
+          </div>
         `;
 
-        note.textContent = 'رسوم الذهاب والعودة تُحسب هنا؛ يمكن للعميل الذهاب للكراج بنفسه ودفع الرسوم أولاً.';
-        note.classList.remove('hidden');
+        // Transport (red) box
+        const transportHtml = `
+          <div style="margin-top:12px;padding:12px;border-radius:8px;background:#7f1d1d;color:#fff;border:1px solid #f87171;">
+            <strong>رسوم النقل (ذهاب وعودة):</strong> <span style="font-size:18px; margin-left:8px;">${transportPrice.toFixed(2)} ${config.currency}</span>
+            <div style="margin-top:8px;">يمكن للعميل الذهاب بنفسه للكراج ولكن يُشترط الدفع أولاً قبل إرسال الموقع.</div>
+          </div>
+        `;
+
+        // Note box under services
+        const noteHtml = `
+          <div style="margin-top:10px;" class="info-box">
+            <strong>ملاحظه مهمه!</strong> رسوم نقل السيارة (روحة ورده) تختلف عن رسوم الخدمة.
+          </div>
+        `;
+
+        const protResult = document.getElementById('protResult');
+        protResult.innerHTML = `
+          <div class="table-header">خيارات الحماية والتغيم</div>
+          <div style="padding:12px 16px;">${servicesHtml}${transportHtml}${noteHtml}</div>
+        `;
+
         document.getElementById('protResult').classList.remove('hidden');
         document.getElementById('protOptions').style.display = 'block';
       };
