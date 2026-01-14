@@ -3021,7 +3021,7 @@
     async function loadMechanicalAppointmentsData() {
       try {
         const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
-        const sheetName = 'ميكانيكية';
+        const sheetName = 'm1';
         const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
         const res = await fetch(csvUrl);
         if (!res.ok) throw new Error('failed');
