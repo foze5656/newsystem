@@ -736,8 +736,8 @@
     .completed-months .month-title{ color:#ccc; font-weight:700; font-size:13px; margin-bottom:6px }
     .completed-months .top3{ display:flex; gap:8px; margin-bottom:6px }
     .completed-months .top3 div{ flex:1; text-align:center; padding:6px; border-radius:6px; background:#0f0f0f; border:1px solid #222 }
-    .completed-months .others{ display:flex; gap:8px; flex-wrap:wrap }
-    .completed-months .others div{ flex:1 0 45%; color:#fff; text-align:center; font-size:16px; padding:8px }
+    .completed-months .others{ display:flex; gap:8px; flex-wrap:wrap; align-items:stretch }
+    .completed-months .others div{ flex:1 0 45%; color:#fff; text-align:center; font-size:18px; padding:10px; display:flex; align-items:center; justify-content:center }
     .completed-toggle{ position: fixed; left: 12px; top: 12px; width:36px; height:36px; background:#0a0a0a; border:1px solid #333; border-radius:6px; z-index:1300; display:flex; align-items:center; justify-content:center; cursor:pointer }
     .completed-toggle .lines{ width:18px; height:14px; display:flex; flex-direction:column; gap:3px }
     .completed-toggle .lines span{ display:block; height:2px; background:#F2BC1B; border-radius:2px }
@@ -1114,6 +1114,20 @@
         fm.className = 'completed-months hidden';
         fm.innerHTML = `<h4>الشهور المكتملة</h4><div id="completedMonthsList"></div>`;
         document.body.appendChild(fm);
+      }
+      // create toggle button (four-line icon) if not present
+      if (!document.getElementById('completedToggle')) {
+        const t = document.createElement('div');
+        t.id = 'completedToggle';
+        t.className = 'completed-toggle';
+        t.title = 'الشهور المكتملة';
+        t.innerHTML = `<div class="lines"><span></span><span></span><span></span><span></span></div>`;
+        t.onclick = () => {
+          const fm = document.getElementById('completedMonths');
+          if (!fm) return;
+          fm.classList.toggle('hidden');
+        };
+        document.body.appendChild(t);
       }
 
       // initial load and setup refresh (load current month and completed months)
