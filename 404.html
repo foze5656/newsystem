@@ -1124,7 +1124,7 @@
 
       if (!topEl || !colsContainer) return;
 
-      // Build top 3
+      // Build top 3 with rank labels and larger, exciting typography
       const first = staff[0] || null;
       const second = staff[1] || null;
       const third = staff[2] || null;
@@ -1133,11 +1133,12 @@
       if (first) {
         const f = document.createElement('div');
         f.style.textAlign = 'center';
-        f.style.padding = '14px';
+        f.style.padding = '18px';
         f.style.border = '1px solid #333';
-        f.style.borderRadius = '6px';
+        f.style.borderRadius = '8px';
         f.style.width = '100%';
-        f.innerHTML = `<div style="font-size:20px;font-weight:800;color:#F2BC1B;">${first.name}</div><div style="color:#fff;font-size:18px;margin-top:6px;">${first.count} طلب</div>`;
+        f.style.background = 'linear-gradient(90deg, rgba(242,188,27,0.06), transparent)';
+        f.innerHTML = `<div style="font-size:16px;color:#ccc;margin-bottom:6px;">المركز الأول</div><div style="font-size:28px;font-weight:900;color:#F2BC1B;">${first.name}</div><div style="color:#fff;font-size:20px;margin-top:8px;">${first.count} طلب</div>`;
         topEl.appendChild(f);
       }
 
@@ -1150,21 +1151,23 @@
       if (second) {
         const s = document.createElement('div');
         s.style.flex = '1';
-        s.style.padding = '10px';
+        s.style.padding = '12px';
         s.style.border = '1px solid #333';
-        s.style.borderRadius = '6px';
+        s.style.borderRadius = '8px';
         s.style.textAlign = 'center';
-        s.innerHTML = `<div style="font-weight:700;color:#F2BC1B;">${second.name}</div><div style="color:#fff;">${second.count} طلب</div>`;
+        s.style.background = '#0f0f0f';
+        s.innerHTML = `<div style="font-size:14px;color:#ccc;margin-bottom:4px;">المركز الثاني</div><div style="font-weight:800;color:#F2BC1B;">${second.name}</div><div style="color:#fff;">${second.count} طلب</div>`;
         duo.appendChild(s);
       }
       if (third) {
         const t = document.createElement('div');
         t.style.flex = '1';
-        t.style.padding = '10px';
+        t.style.padding = '12px';
         t.style.border = '1px solid #333';
-        t.style.borderRadius = '6px';
+        t.style.borderRadius = '8px';
         t.style.textAlign = 'center';
-        t.innerHTML = `<div style="font-weight:700;color:#F2BC1B;">${third.name}</div><div style="color:#fff;">${third.count} طلب</div>`;
+        t.style.background = '#0f0f0f';
+        t.innerHTML = `<div style="font-size:14px;color:#ccc;margin-bottom:4px;">المركز الثالث</div><div style="font-weight:800;color:#F2BC1B;">${third.name}</div><div style="color:#fff;">${third.count} طلب</div>`;
         duo.appendChild(t);
       }
 
@@ -1187,10 +1190,11 @@
           col.style.flexDirection = 'column';
           col.style.gap = '6px';
           chunk.forEach((it, idx) => {
+            const globalIndex = 3 + i + idx + 1; // rank number
             const div = document.createElement('div');
             div.style.color = '#ccc';
             div.style.fontSize = '14px';
-            div.textContent = `- ${it.name} ${it.count} طلب`;
+            div.textContent = `${globalIndex}- ${it.name} ${it.count} طلب`;
             col.appendChild(div);
           });
           colsContainer.appendChild(col);
