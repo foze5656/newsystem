@@ -764,6 +764,8 @@
     .prot-logo.active{ border-color:#F2BC1B; box-shadow: 0 14px 36px rgba(242,188,27,0.06); transform: translateY(-4px) }
     .prot-transport{ margin-top:12px;padding:14px;border-radius:10px;background:#7f1d1d;color:#fff;border:1px solid #f87171; box-shadow: 0 8px 24px rgba(0,0,0,0.6) }
     .prot-note{ margin-top:18px; padding:14px; border-radius:10px; background: linear-gradient(180deg,#071018, #08131a); border:1px solid #123; color:#dbeafe }
+    /* Important red message used in protection results (single red note as requested) */
+    .prot-important{ margin-top:12px; padding:12px; border-radius:8px; background: rgba(127,29,29,0.04); border:1px solid #ef4444; color:#ffb3b3; font-weight:700 }
     .prot-toast{ position:fixed; top:80px; right:40px; background:#F2BC1B; color:#000; padding:12px 16px; border-radius:10px; border:1px solid rgba(0,0,0,0.12); box-shadow:0 12px 40px rgba(0,0,0,0.6); display:none; z-index:1500; font-weight:700 }
   </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -799,7 +801,7 @@
     </div>
     <div class="service-item" data-service="unlock"><span class="icon">🔓</span> <span class="label">فتح قفل السيارة</span>
     </div>
-    <div class="service-item has-submenu" data-service="tire"><span class="icon">📀</span> <span class="label">العناية بالإطارات</span> <span class="arrow">▼</span>
+    <div class="service-item has-submenu" data-service="tire"><span class="icon">🛞</span> <span class="label">العناية بالإطارات</span> <span class="arrow">▼</span>
     </div>
     <div class="service-submenu" id="tireSubmenu">
      <div class="service-item submenu-item" data-service="puncture"><span class="label">بنشر</span>
@@ -815,7 +817,7 @@
     </div>
     <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
     </div>
-    <div class="service-item" data-service="protection"><span class="icon">🛡️</span> <span class="label">الحمايه والتغيم</span>
+    <div class="service-item" data-service="protection"><span class="icon">🕶️</span> <span class="label">الحمايه والتغيم</span>
     </div>
     <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span>
     </div>
@@ -4061,9 +4063,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             </div>
             <div id="protNote" class="info-box hidden"></div>
           </div>
-          <div id="protNoteBox" style="margin-top:10px; display:none;">
-            <div class="prot-note">يمكن للعميل الذهاب بنفسه إلى الكراج ولكن يُشترط الدفع أولاً قبل إرسال الموقع.</div>
-          </div>
+          <!-- replaced previous separate note with unified in-result important message -->
         </div>
         <div id="protCompaniesCards" class="form-section full-width hidden">
           <h3 class="section-title">شركات الحماية (من الشيت)</h3>
@@ -4081,23 +4081,22 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             document.getElementById('protRegionSection').classList.remove('hidden');
             loadProtRegionOptions();
           } else {
-            // show temporary toast "قريباً..."
-            showProtToast('قريباً...');
+            // show centered "قريباً..." inside the protection page (clear other content)
+            renderProtectionComingSoon();
           }
         };
       });
 
-      function showProtToast(msg) {
-        let t = document.getElementById('protToast');
-        if (!t) {
-          t = document.createElement('div');
-          t.id = 'protToast';
-          t.className = 'prot-toast';
-          document.body.appendChild(t);
-        }
-        t.textContent = msg;
-        t.style.display = 'block';
-        setTimeout(() => { t.style.display = 'none'; }, 1500);
+      function renderProtectionComingSoon() {
+        const contentArea = document.getElementById('contentArea');
+        contentArea.innerHTML = `
+          <div class="form-section full-width">
+            <h3 class="section-title">الحمايه والتغيم</h3>
+            <div style="display:flex;align-items:center;justify-content:center;padding:60px 20px;">
+              <div style="font-size:28px;color:#ef4444;font-weight:900;">قريباً...</div>
+            </div>
+          </div>
+        `;
       }
 
       // Region selection handler
@@ -4115,12 +4114,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         if (!route) {
           tbody.innerHTML = '<tr><td colspan="2">لا يوجد سعر مُسجل لهذه المنطقة (تحقق من الشيت)</td></tr>';
           document.getElementById('protResult').classList.remove('hidden');
-          note.classList.add('hidden');
+          if (note) note.classList.add('hidden');
           return;
         }
 
         const basePrice = parseFloat(route.price) || 0;
-        const transportPrice = basePrice * 2; // user requested multiply by two
+        const routesFlat = getTowRoutes('portarage towtruk', 'flatbed');
+        const routeFlat = routesFlat.find(r => r.from === area && r.to && r.to.includes(dest));
+        const flatbedPrice = routeFlat ? (parseFloat(routeFlat.price) || 0) : null;
 
         // Build services cards with detailed prices
         const servicesHtml = `
@@ -4159,28 +4160,29 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           </div>
         `;
 
-        // Transport (red) box
-        const transportHtml = `
-          <div style="margin-top:12px;padding:12px;border-radius:8px;background:#7f1d1d;color:#fff;border:1px solid #f87171;">
-            <strong>رسوم النقل (ذهاب وعودة):</strong> <span style="font-size:18px; margin-left:8px;">${transportPrice.toFixed(2)} ${config.currency}</span>
-            <div style="margin-top:8px;">يمكن للعميل الذهاب بنفسه للكراج ولكن يُشترط الدفع أولاً قبل إرسال الموقع.</div>
+        // Unified important red note (single message) with link to garage location
+        const flatbedPriceStr = flatbedPrice !== null ? flatbedPrice.toFixed(2) : 'غير متوفر';
+        const importantHtml = `
+          <div class="prot-important">
+            ملاحظه رسوم النقل لا تشمل رسوم الخدمه أعلاه,
+            <br>١-رسوم النقل (الروحة والرده): الونش العادي (${basePrice.toFixed(2)}) ${config.currency}
+            <br>الفل داون (${flatbedPriceStr}) ${config.currency}
+            <br><br>٢-يمكن للعميل الذهاب بنفسه للكراج ولكن يُشترط الدفع أولاً قبل إرسال الموقع.
+            <br><br><a href="https://maps.app.goo.gl/A9WwLj4PjiZcH68N8" target="_blank" style="color:#ffb3b3;text-decoration:underline;">لوكيشن كراج (كار باث)</a>
           </div>
         `;
 
-        // Note box under services
-        const noteHtml = `
-          <div style="margin-top:10px;" class="info-box">
-            <strong>ملاحظه مهمه!</strong> رسوم نقل السيارة (روحة ورده) تختلف عن رسوم الخدمة.
-          </div>
-        `;
+        const transportPrice = basePrice * 2; // user requested multiply by two (kept for backward compatibility)
 
         const protResult = document.getElementById('protResult');
         protResult.innerHTML = `
           <div class="table-header">خيارات الحماية والتغيم</div>
           <div style="padding:12px 16px; display:flex; flex-direction:column; gap:14px;">
             <div class="services-wrap">${servicesHtml}</div>
-            <div class="transport-wrap">${transportHtml}</div>
-            <div class="note-wrap">${noteHtml}</div>
+            <div class="transport-wrap">
+              <div style="font-weight:800; color:#fff;">رسوم نقل (مرجعة للمراجعة): <span style="color:#F2BC1B; margin-left:8px;">${transportPrice.toFixed(2)} ${config.currency}</span></div>
+            </div>
+            <div class="note-wrap">${importantHtml}</div>
           </div>
         `;
 
@@ -4189,7 +4191,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         protResult.style.overflow = 'visible';
 
         protResult.classList.remove('hidden');
-        const nb = document.getElementById('protNoteBox'); if (nb) nb.style.display = 'block';
       };
 
       // Load companies cards from sheet 'حمايه وتغيم' if available
