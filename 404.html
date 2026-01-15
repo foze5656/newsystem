@@ -2733,7 +2733,7 @@
     function renderMechanicalInterface() {
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
-        <div class="form-section">
+        <div class="form-section" id="mechTypeSection">
           <h3 class="section-title">نوع الخدمة</h3>
           <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
             <div style="flex:1"></div>
@@ -2750,6 +2750,12 @@
             <button class="btn-option" data-mech="brakefluid">زيت بريك</button>
             <button class="btn-option" data-mech="transmission">زيت سكان</button>
           </div>
+        </div>
+        
+        <div class="form-section" id="mechBackButtonSection" style="display:none;">
+          <button class="btn-back" onclick="renderMechanicalInterface()" style="width:100%;justify-content:center;">
+            <span>←</span> <span>رجوع</span>
+          </button>
         </div>
         
         <div id="oilFilterSourceSection" class="form-section hidden">
@@ -2838,6 +2844,10 @@
         btn.onclick = () => {
           document.querySelectorAll('[data-mech]').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
+          
+          // Hide service type section and show back button
+          document.getElementById('mechTypeSection').style.display = 'none';
+          document.getElementById('mechBackButtonSection').style.display = 'block';
           
           formData.mechanicalService = btn.dataset.mech;
           
@@ -4220,9 +4230,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           const comp = btn.dataset.protCompany;
           if (comp === 'كارباث') {
             document.getElementById('protRegionSection').classList.remove('hidden');
+            document.getElementById('protResult').classList.add('hidden');
+            document.getElementById('protRegionSelect').value = '';
             loadProtRegionOptions();
           } else {
-            // show centered "قريباً..." inside the protection page (clear other content)
+            // Hide region section and results for upcoming companies
+            document.getElementById('protRegionSection').classList.add('hidden');
+            document.getElementById('protResult').classList.add('hidden');
+            document.getElementById('protRegionSelect').value = '';
+            // Show notification
             renderProtectionComingSoon();
           }
         };
