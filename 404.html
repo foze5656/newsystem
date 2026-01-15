@@ -985,6 +985,20 @@
           }
         }
         
+        // Load others sheet separately
+        try {
+          const othersSheetId = '1ax4pCBDTm6Vkq-MZjmmOY1dgwKCUQS5x1GeffkUYOzI';
+          const csvUrl = `https://docs.google.com/spreadsheets/d/${othersSheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('others')}`;
+          const res = await fetch(csvUrl);
+          if (res.ok) {
+            const csvText = await res.text();
+            const rows = parseCSV(csvText);
+            sheetsData['others'] = rows;
+          }
+        } catch (err) {
+          console.log('Could not load others sheet');
+        }
+        
       } catch (error) {
         console.error('Error loading sheets:', error);
       }
