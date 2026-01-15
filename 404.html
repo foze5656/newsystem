@@ -2753,9 +2753,12 @@
         </div>
         
         <div class="form-section" id="mechBackButtonSection" style="display:none;">
-          <button class="btn-back" onclick="renderMechanicalInterface()" style="width:100%;justify-content:center;">
-            <span>←</span> <span>رجوع</span>
-          </button>
+          <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;">
+            <button class="btn-back" onclick="renderMechanicalInterface()" style="padding:8px 12px;font-size:12px;flex:0;">
+              <span>←</span> <span>رجوع</span>
+            </button>
+            <div id="mechSelectedService" style="color:#F2BC1B;font-weight:700;font-size:14px;text-align:center;flex:1;"></div>
+          </div>
         </div>
         
         <div id="oilFilterSourceSection" class="form-section hidden">
@@ -2840,6 +2843,19 @@
         </div>
       `;
       
+      // Service names mapping
+      const serviceNames = {
+        'inspection': 'فحص السيارة',
+        'brakes': 'سفايف وديسكات',
+        'oilfilter': 'زيت وفلتر',
+        'alternator': 'تبديل دينمو/سلف',
+        'wipers': 'تبديل المساحات',
+        'acgas': 'تعبئه غاز مكيف',
+        'coolant': 'ماي راديتر',
+        'brakefluid': 'زيت بريك',
+        'transmission': 'زيت سكان'
+      };
+      
       document.querySelectorAll('[data-mech]').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('[data-mech]').forEach(b => b.classList.remove('active'));
@@ -2848,6 +2864,10 @@
           // Hide service type section and show back button
           document.getElementById('mechTypeSection').style.display = 'none';
           document.getElementById('mechBackButtonSection').style.display = 'block';
+          
+          // Display selected service name
+          const serviceName = serviceNames[btn.dataset.mech];
+          document.getElementById('mechSelectedService').textContent = serviceName;
           
           formData.mechanicalService = btn.dataset.mech;
           
@@ -2947,6 +2967,7 @@
       const apptBtn = document.getElementById('mechAppointmentsBtn');
       if (apptBtn) {
         apptBtn.onclick = () => {
+          // Keep the service type section visible
           renderMechanicalAppointments();
         };
       }
@@ -3138,12 +3159,7 @@
 
       // Add note for coolant
       if (formData.mechanicalService === 'coolant') {
-        noteDiv.innerHTML = `
-          <div style="color:#ef4444; font-weight:bold;">
-            ١- لازم تسالون العميل لو السياره فيها حراره ولو ارتفعت الحراره بعد ما عبينا لازم توديها كراج ويشيك على التسريب لنه ما عندنا خدمه تصليح او فحص تسريب<br>
-            ٢-هذا السعر في حال العميل طلب تعبئه ماي راديتر و(ليس تبديل) التبديل يختلف سعره عن التعبئه يرجى التأكد من الاداره
-          </div>
-        `;
+        noteDiv.textContent = 'لازم تسالون العميل لو السياره فيها حراره. التبديل يختلف السعر عن التعبئه';
         noteDiv.classList.remove('hidden');
       } else {
         noteDiv.classList.add('hidden');
