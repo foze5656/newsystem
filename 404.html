@@ -801,7 +801,7 @@
     </div>
     <div class="service-item" data-service="unlock"><span class="icon">🔓</span> <span class="label">فتح قفل السيارة</span>
     </div>
-    <div class="service-item has-submenu" data-service="tire"><span class="icon">🛞</span> <span class="label">العناية بالإطارات</span> <span class="arrow">▼</span>
+    <div class="service-item has-submenu" data-service="tire"><span class="icon">�️</span> <span class="label">العناية بالإطارات</span> <span class="arrow">▼</span>
     </div>
     <div class="service-submenu" id="tireSubmenu">
      <div class="service-item submenu-item" data-service="puncture"><span class="label">بنشر</span>
@@ -819,7 +819,7 @@
     </div>
     <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
     </div>
-    <div class="service-item" data-service="protection"><span class="icon">🕶️</span> <span class="label">الحمايه والتغيم</span>
+    <div class="service-item" data-service="protection"><span class="icon">�️</span> <span class="label">الحمايه والتغيم</span>
     </div>
     <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span>
     </div>
@@ -2858,8 +2858,8 @@
           } else if (formData.mechanicalService === 'inspection' || formData.mechanicalService === 'acgas') {
             document.getElementById('diskTurningSection').classList.add('hidden');
             document.getElementById('mechAreaSection').classList.remove('hidden');
-            // Use خدمات ميكانيكية2 for inspection areas (A,B,C and E,F,G)
-            loadAreaOptionsDatalist('خدمات ميكانيكية2', [0, 1, 2, 4, 5, 6], calculateMechanicalPrice);
+            // Use خدمات ميكانيكية for inspection areas (A,B,C and E,F,G)
+            loadAreaOptionsDatalist('خدمات ميكانيكية', [0, 1, 2, 4, 5, 6], calculateMechanicalPrice);
           } else if (formData.mechanicalService === 'brakes') {
             document.getElementById('diskTurningSection').classList.remove('hidden');
             document.getElementById('mechAreaSection').classList.remove('hidden');
@@ -2927,7 +2927,7 @@
       // Select appropriate sheet depending on mechanical service
       let rows = null;
       if (formData.mechanicalService === 'inspection' || formData.mechanicalService === 'acgas') {
-        rows = sheetsData['خدمات ميكانيكية2'];
+        rows = sheetsData['خدمات ميكانيكية'];
       } else {
         rows = sheetsData['خدمات ميكانيكية'];
       }
@@ -4094,27 +4094,34 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       });
 
       function renderProtectionComingSoon() {
-        const contentArea = document.getElementById('contentArea');
-        contentArea.innerHTML = `
-          <div class="form-section full-width">
-            <h3 class="section-title">الحمايه والتغيم</h3>
-            <div id="comingSoonNotification" style="display:flex;align-items:center;justify-content:center;padding:20px;">
-              <div style="font-size:18px;color:#ef4444;font-weight:600;background:#fff;border-radius:8px;padding:10px 20px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-                قريباً...
-              </div>
-            </div>
-          </div>
+        // Show a small notification without hiding the options
+        const notification = document.createElement('div');
+        notification.id = 'protectionNotification';
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #ef4444;
+          color: #fff;
+          padding: 10px 20px;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          z-index: 1000;
+          opacity: 1;
+          transition: opacity 1s;
         `;
+        notification.textContent = 'قريباً...';
+        document.body.appendChild(notification);
+        
         // Fade out after 3 seconds
         setTimeout(() => {
-          const notification = document.getElementById('comingSoonNotification');
-          if (notification) {
-            notification.style.transition = 'opacity 1s';
-            notification.style.opacity = '0';
-            setTimeout(() => {
-              if (notification.parentNode) notification.parentNode.removeChild(notification);
-            }, 1000);
-          }
+          notification.style.opacity = '0';
+          setTimeout(() => {
+            if (notification.parentNode) notification.parentNode.removeChild(notification);
+          }, 1000);
         }, 3000);
       }
 
