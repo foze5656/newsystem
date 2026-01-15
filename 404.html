@@ -2799,7 +2799,7 @@
               <thead>
                 <tr>
                   <th>البيان</th>
-                  <th>القيمة</th>
+                  <th>الإجمالى</th>
                 </tr>
               </thead>
               <tbody id="mechResultBody">
@@ -3098,23 +3098,12 @@
 
       const tbody = document.getElementById('mechResultBody');
       const noteDiv = document.getElementById('mechNote');
-
-      // Show service price
-      tbody.innerHTML = `
-        <tr>
-          <td>رسوم خدمة تعبئه ${serviceName}</td>
-          <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-        </tr>
-        <tr>
-          <td>رسوم الإلغاء</td>
-          <td>${cancellation}</td>
-        </tr>
-      `;
+      const resultSection = document.getElementById('mechResultSection');
 
       // Load brands from 'others' sheet
       const othersRows = sheetsData['others'];
+      let brands = [];
       if (othersRows) {
-        const brands = [];
         for (let i = 1; i < othersRows.length; i++) { // start from 1 to skip header
           const row = othersRows[i];
           if (row[1] === typeFilter) { // column B is type
@@ -3128,32 +3117,62 @@
             brands.push({ brand, country, price });
           }
         }
+      }
 
-        if (brands.length > 0) {
-          // Add brands section
-          let brandsHtml = '<tr><td colspan="2" style="text-align:center; font-weight:bold; padding:10px;">الماركات المتوفرة</td></tr>';
-          brands.forEach(b => {
-            brandsHtml += `
-              <tr>
-                <td>${b.brand} (${b.country})</td>
-                <td class="highlight">${b.price.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          });
-          tbody.innerHTML += brandsHtml;
+      // Build table rows - only details, no headers
+      let tableHtml = '';
+      
+      if (brands.length > 0) {
+        brands.forEach(b => {
+          const total = basePrice + b.price;
+          tableHtml += `
+            <tr>
+              <td>${b.brand} (${b.price.toFixed(2)} ${config.currency}) - رسوم خدمة التعبئه: ${basePrice.toFixed(2)} ${config.currency}</td>
+              <td class="highlight">${total.toFixed(2)} ${config.currency}</td>
+            </tr>
+          `;
+        });
+        
+        // Add cancellation fee once at the bottom
+        tableHtml += `
+          <tr style="border-top: 1px solid #333; padding-top: 8px; margin-top: 8px;">
+            <td>رسوم الإلغاء</td>
+            <td>${cancellation}</td>
+          </tr>
+        `;
+      } else {
+        // If no brands, just show service price
+        tableHtml = `
+          <tr>
+            <td>رسوم خدمة تعبئه ${serviceName}</td>
+            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+          </tr>
+          <tr>
+            <td>رسوم الإلغاء</td>
+            <td>${cancellation}</td>
+          </tr>
+        `;
+      }
 
-          // Add details
-          let detailsHtml = '<tr><td colspan="2" style="text-align:center; font-weight:bold; padding:10px;">التفاصيل</td></tr>';
-          brands.forEach(b => {
-            const total = basePrice + b.price;
-            detailsHtml += `
-              <tr>
-                <td>${b.brand} + رسوم خدمة التعبئه الاجمالى</td>
-                <td class="highlight">${total.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          });
-          tbody.innerHTML += detailsHtml;
+      tbody.innerHTML = tableHtml;
+
+      // Auto-expand the result container when there are multiple brands
+      if (brands.length > 1) {
+        resultSection.style.maxHeight = 'none';
+        resultSection.style.overflow = 'visible';
+        const tableScroll = resultSection.querySelector('.table-scroll');
+        if (tableScroll) {
+          tableScroll.style.maxHeight = 'none';
+          tableScroll.style.overflow = 'visible';
+        }
+      } else {
+        // Reset to normal for single brand
+        resultSection.style.maxHeight = '350px';
+        resultSection.style.overflow = 'hidden';
+        const tableScroll = resultSection.querySelector('.table-scroll');
+        if (tableScroll) {
+          tableScroll.style.maxHeight = '300px';
+          tableScroll.style.overflowY = 'auto';
         }
       }
 
@@ -3165,7 +3184,7 @@
         noteDiv.classList.add('hidden');
       }
 
-      document.getElementById('mechResultSection').classList.remove('hidden');
+      resultSection.classList.remove('hidden');
     }
 
     // Calculate Wipers (تبديل المساحات)
