@@ -1,5 +1,4 @@
 <!doctype html>
-<!doctype html>
 <html lang="ar" dir="rtl" class="h-full">
 
 <head>
@@ -1023,7 +1022,7 @@
       <div class="service-item" data-service="unlock"><span class="icon">🔓</span> <span class="label">فتح قفل
           السيارة</span>
       </div>
-      <div class="service-item has-submenu" data-service="tire"><span class="icon">�️</span> <span class="label">العناية
+      <div class="service-item has-submenu" data-service="tire"><span class="icon">📀</span> <span class="label">العناية
           بالإطارات</span> <span class="arrow">▼</span>
       </div>
       <div class="service-submenu" id="tireSubmenu">
@@ -1044,14 +1043,10 @@
       <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل
           السيارات</span>
       </div>
-      <div class="service-item" data-service="protection"><span class="icon">�️</span> <span class="label">الحمايه
+      <div class="service-item" data-service="protection"><span class="icon">🛡️</span> <span class="label">الحمايه
           والتغيم</span>
       </div>
-      <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span
-          class="label">تأمينات</span>
-      </div>
-      <div class="service-item" data-service="order_list"><span class="icon">📦</span> <span class="label">طلبات الغسيل
-          (النظام)</span>
+      <div class="service-item" data-service="insurance"><span class="icon">🚧</span> <span class="label">تأمينات</span>
       </div>
     </aside><!-- Main Content -->
     <main class="main-content"><!-- Header Bar -->
@@ -1365,9 +1360,6 @@
             break;
           case 'insurance':
             renderInsuranceInterface();
-            break;
-          case 'order_list':
-            renderOrderListInterface();
             break;
         }
       }
@@ -1741,7 +1733,6 @@
           <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
             <button id="openFollowForm" class="btn-primary">📝 تسجيل متابعة سائق</button>
             <button id="editFollowSheet" class="btn-primary">✏️ تعديل متابعة</button>
-            <button id="refreshFollow" class="btn-option">🔄 تحديث الآن</button>
           </div>
         </div>
         <div class="form-section full-width">
@@ -1771,10 +1762,17 @@
         const url = `https://docs.google.com/spreadsheets/d/${sheetId}/edit`;
         window.open(url, '_blank');
       };
-      document.getElementById('refreshFollow').onclick = () => loadDriverSchedules();
+
+      // Clear any existing interval and set up auto-refresh
+      if (window.driverFollowIntervalId) clearInterval(window.driverFollowIntervalId);
 
       // initial load
       loadDriverSchedules();
+
+      // Auto-refresh every 3 minutes
+      window.driverFollowIntervalId = setInterval(() => {
+        loadDriverSchedules();
+      }, 3 * 60 * 1000);
     }
 
     async function loadDriverSchedules() {
@@ -2967,7 +2965,7 @@
     function renderMechanicalInterface() {
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
-        <div class="form-section">
+        <div class="form-section" id="mechTypeSection">
           <h3 class="section-title">نوع الخدمة</h3>
           <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
             <div style="flex:1"></div>
@@ -2983,6 +2981,15 @@
             <button class="btn-option" data-mech="coolant">ماي راديتر</button>
             <button class="btn-option" data-mech="brakefluid">زيت بريك</button>
             <button class="btn-option" data-mech="transmission">زيت سكان</button>
+          </div>
+        </div>
+        
+        <div class="form-section" id="mechBackButtonSection" style="display:none;">
+          <div style="display:flex;gap:8px;align-items:center;justify-content:flex-start;">
+            <button class="btn-back" onclick="renderMechanicalInterface()" style="padding:8px 12px;font-size:12px;flex:0;">
+              <span>←</span> <span>رجوع</span>
+            </button>
+            <div id="mechSelectedService" style="color:#F2BC1B;font-weight:700;font-size:14px;white-space:nowrap;padding:4px 8px;"></div>
           </div>
         </div>
         
@@ -3024,7 +3031,7 @@
               <thead>
                 <tr>
                   <th>البيان</th>
-                  <th>القيمة</th>
+                  <th>الإجمالى</th>
                 </tr>
               </thead>
               <tbody id="mechResultBody">
@@ -3038,11 +3045,11 @@
           <div class="table-header">مواعيد الميكانيكية</div>
           <div style="display:flex;gap:8px;align-items:center;margin:8px 0;">
             <div>
-              <label>التاريخ</label>
+              <label style="color:#fff;">التاريخ</label>
               <input type="date" id="mechApptDate" class="form-control" style="max-width:160px;" />
             </div>
             <div>
-              <label>الفني</label>
+              <label style="color:#fff;">الفني</label>
               <select id="mechTechnicianFilter" class="form-control" style="min-width:160px;"><option value="">الكل</option></select>
             </div>
             <div style="margin-left:auto;display:flex;gap:8px;">
@@ -3068,10 +3075,31 @@
         </div>
       `;
 
+      // Service names mapping
+      const serviceNames = {
+        'inspection': 'فحص السيارة',
+        'brakes': 'سفايف وديسكات',
+        'oilfilter': 'زيت وفلتر',
+        'alternator': 'تبديل دينمو/سلف',
+        'wipers': 'تبديل المساحات',
+        'acgas': 'تعبئه غاز مكيف',
+        'coolant': 'ماي راديتر',
+        'brakefluid': 'زيت بريك',
+        'transmission': 'زيت سكان'
+      };
+
       document.querySelectorAll('[data-mech]').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('[data-mech]').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
+
+          // Hide service type section and show back button
+          document.getElementById('mechTypeSection').style.display = 'none';
+          document.getElementById('mechBackButtonSection').style.display = 'block';
+
+          // Display selected service name
+          const serviceName = serviceNames[btn.dataset.mech];
+          document.getElementById('mechSelectedService').textContent = serviceName;
 
           formData.mechanicalService = btn.dataset.mech;
 
@@ -3171,6 +3199,11 @@
       const apptBtn = document.getElementById('mechAppointmentsBtn');
       if (apptBtn) {
         apptBtn.onclick = () => {
+          // Hide service type section and show back button with appointments title
+          document.getElementById('mechTypeSection').style.display = 'none';
+          document.getElementById('mechBackButtonSection').style.display = 'block';
+          document.getElementById('mechSelectedService').textContent = 'جدول المواعيد';
+
           renderMechanicalAppointments();
         };
       }
@@ -3301,23 +3334,21 @@
 
       const tbody = document.getElementById('mechResultBody');
       const noteDiv = document.getElementById('mechNote');
+      const resultSection = document.getElementById('mechResultSection');
 
-      // Show service price
-      tbody.innerHTML = `
-        <tr>
-          <td>رسوم خدمة تعبئه ${serviceName}</td>
-          <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-        </tr>
-        <tr>
-          <td>رسوم الإلغاء</td>
-          <td>${cancellation}</td>
-        </tr>
-      `;
-
-      // Load brands from 'others' sheet
+      // Load brands from 'others' sheet - retry if not loaded
+      let brands = [];
       const othersRows = sheetsData['others'];
+
+      if (!othersRows) {
+        // If data not loaded, retry in a moment
+        setTimeout(() => {
+          calculateFluidPrice();
+        }, 500);
+        return;
+      }
+
       if (othersRows) {
-        const brands = [];
         for (let i = 1; i < othersRows.length; i++) { // start from 1 to skip header
           const row = othersRows[i];
           if (row[1] === typeFilter) { // column B is type
@@ -3328,42 +3359,74 @@
             else if (country === 'dukhum') country = 'داكهام';
             const brand = row[0] || ''; // column A
             const price = parseFloat(row[3]) || 0; // column D
-            brands.push({ brand, country, price });
+            if (brand && !isNaN(price)) {
+              brands.push({ brand, country, price });
+            }
           }
         }
+      }
 
-        if (brands.length > 0) {
-          // Add brands section
-          let brandsHtml = '<tr><td colspan="2" style="text-align:center; font-weight:bold; padding:10px;">الماركات المتوفرة</td></tr>';
-          brands.forEach(b => {
-            brandsHtml += `
-              <tr>
-                <td>${b.brand} (${b.country})</td>
-                <td class="highlight">${b.price.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          });
-          tbody.innerHTML += brandsHtml;
+      // Build table rows - only details, no headers
+      let tableHtml = '';
 
-          // Add details
-          let detailsHtml = '<tr><td colspan="2" style="text-align:center; font-weight:bold; padding:10px;">التفاصيل</td></tr>';
-          brands.forEach(b => {
-            const total = basePrice + b.price;
-            detailsHtml += `
-              <tr>
-                <td>${b.brand} + رسوم خدمة التعبئه الاجمالى</td>
-                <td class="highlight">${total.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          });
-          tbody.innerHTML += detailsHtml;
+      if (brands.length > 0) {
+        brands.forEach(b => {
+          const total = basePrice + b.price;
+          tableHtml += `
+            <tr>
+              <td>${b.brand} (${b.price.toFixed(2)} ${config.currency}) - رسوم خدمة التعبئه: ${basePrice.toFixed(2)} ${config.currency}</td>
+              <td class="highlight">${total.toFixed(2)} ${config.currency}</td>
+            </tr>
+          `;
+        });
+
+        // Add cancellation fee once at the bottom
+        tableHtml += `
+          <tr style="border-top: 1px solid #333; padding-top: 8px; margin-top: 8px;">
+            <td>رسوم الإلغاء</td>
+            <td>${cancellation}</td>
+          </tr>
+        `;
+      } else {
+        // If no brands, just show service price
+        tableHtml = `
+          <tr>
+            <td>رسوم خدمة تعبئه ${serviceName}</td>
+            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+          </tr>
+          <tr>
+            <td>رسوم الإلغاء</td>
+            <td>${cancellation}</td>
+          </tr>
+        `;
+      }
+
+      tbody.innerHTML = tableHtml;
+
+      // Auto-expand the result container when there are multiple brands
+      if (brands.length > 1) {
+        resultSection.style.maxHeight = 'none';
+        resultSection.style.overflow = 'visible';
+        const tableScroll = resultSection.querySelector('.table-scroll');
+        if (tableScroll) {
+          tableScroll.style.maxHeight = 'none';
+          tableScroll.style.overflow = 'visible';
+        }
+      } else {
+        // Reset to normal for single brand or no brands
+        resultSection.style.maxHeight = '350px';
+        resultSection.style.overflow = 'hidden';
+        const tableScroll = resultSection.querySelector('.table-scroll');
+        if (tableScroll) {
+          tableScroll.style.maxHeight = '300px';
+          tableScroll.style.overflowY = 'auto';
         }
       }
 
       // Add note for coolant
       if (formData.mechanicalService === 'coolant') {
         noteDiv.innerHTML = `
-          <div style="color:#ef4444; font-weight:bold;">
+          <div style="line-height: 1.6;">
             ١- لازم تسالون العميل لو السياره فيها حراره ولو ارتفعت الحراره بعد ما عبينا لازم توديها كراج ويشيك على التسريب لنه ما عندنا خدمه تصليح او فحص تسريب<br>
             ٢-هذا السعر في حال العميل طلب تعبئه ماي راديتر و(ليس تبديل) التبديل يختلف سعره عن التعبئه يرجى التأكد من الاداره
           </div>
@@ -3373,7 +3436,7 @@
         noteDiv.classList.add('hidden');
       }
 
-      document.getElementById('mechResultSection').classList.remove('hidden');
+      resultSection.classList.remove('hidden');
     }
 
     // Calculate Wipers (تبديل المساحات)
@@ -3593,74 +3656,88 @@
         
         <div id="appointmentSection" class="form-section full-width">
           <h3 class="section-title">بيانات الحجز</h3>
-          <div class="form-grid">
+          <div class="form-grid" style="margin-bottom: 12px;">
              <div class="form-field">
                 <label>تاريخ الموعد</label>
                 <input type="date" id="appointmentDate" class="form-control">
              </div>
              <div class="form-field">
-                <label>اسم العميل</label>
-                <input type="text" id="customerName" class="form-control" placeholder="الاسم الكامل">
+                <label>الاسم</label>
+                <input type="text" id="customerName" class="form-control" placeholder="الاسم الكريم">
              </div>
              <div class="form-field">
                 <label>رقم الهاتف</label>
                 <input type="tel" id="customerPhone" class="form-control" placeholder="99999999">
              </div>
              <div class="form-field">
-                <label>المنطقة</label>
-                <input type="text" id="areaDisplay" class="form-control" disabled style="background:#333;color:#aaa">
-             </div>
+                <label>المنطقة / العنوان</label>
+                <input type="text" id="areaDisplay" class="form-control" placeholder="المنطقة والقطعة" value="${formData.area || ''}">
+            </div>
              <div class="form-field">
                 <label>طريقة الدفع</label>
                 <select id="paymentMethod" class="form-control">
-                   <option value="cash">كاش / رابط</option>
-                   <option value="prepaid">مدفوع مسبقاً</option>
+                   <option value="كاش / رابط">كاش / رابط</option>
+                   <option value="مدفوع مسبقاً">مدفوع مسبقاً</option>
                 </select>
-             </div>
+            </div>
           </div>
-          <div style="display:flex;gap:8px;margin-top:12px;">
+
+          <div style="display:flex;gap:8px;">
             <button id="bookAppointmentBtn" class="btn-primary">💾 تأكيد الحجز (حفظ في النظام)</button>
           </div>
           <div id="availableSlots" style="margin-top: 12px;"></div>
         </div>
       `;
 
-      // Book Appointment button handler — open Google Form directly
-      document.getElementById('areaDisplay').value = formData.area || 'غير محدد';
-
+      // Book Appointment button handler — Submit directly to SheetDB
       document.getElementById('bookAppointmentBtn').onclick = async () => {
         const date = document.getElementById('appointmentDate').value;
         const name = document.getElementById('customerName').value;
         const phone = document.getElementById('customerPhone').value;
         const payment = document.getElementById('paymentMethod').value;
-        const area = formData.area || 'غير محدد';
-        const washType = (formData.selectedWashes || []).join(', ');
+        const area = document.getElementById('areaDisplay').value;
+        const washTypes = formData.selectedWashes || [];
+        const washTypeStr = washTypes.join(', ');
 
         if (!date || !name || !phone) {
           alert('الرجاء تعبئة جميع الحقول المطلوبة (التاريخ، الاسم، الهاتف)');
           return;
         }
 
-        const booking = {
-          id: Date.now(),
-          service: 'carwash',
-          date,
+        const btn = document.getElementById('bookAppointmentBtn');
+        const originalText = btn.textContent;
+        btn.textContent = 'جاري إرسال الطلب...';
+        btn.disabled = true;
+
+        const payload = {
+          date: date,
+          time: new Date().toTimeString().split(' ')[0],
+          qrOrder: 'جديد',
           customerName: name,
-          phone,
+          phone: phone,
           location: area,
-          washType,
-          payment,
-          timestamp: new Date().toISOString()
+          washType: washTypeStr,
+          payment: payment
         };
 
         try {
-          await window.bookingDB.addBooking(booking);
-          alert('تم حفظ الطلب بنجاح في النظام!');
-          document.getElementById('customerName').value = '';
-          document.getElementById('customerPhone').value = '';
+          const result = await postToGoogleSheet(payload);
+          if (result.ok) {
+            alert('تم حجز الموعد بنجاح!');
+            // Reload appointments to show the new one
+            loadCarWashAppointments(date);
+            // Clear inputs
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+          } else {
+            alert('حدث خطأ أثناء الحجز: ' + (result.error || result.reason));
+          }
         } catch (e) {
-          alert('حدث خطأ أثناء الحفظ: ' + e.message);
           console.error(e);
+          alert('خطأ في النظام');
+        } finally {
+          btn.textContent = originalText;
+          btn.disabled = false;
         }
       };
 
@@ -4491,9 +4568,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           const comp = btn.dataset.protCompany;
           if (comp === 'كارباث') {
             document.getElementById('protRegionSection').classList.remove('hidden');
+            document.getElementById('protResult').classList.add('hidden');
+            document.getElementById('protRegionSelect').value = '';
             loadProtRegionOptions();
           } else {
-            // show centered "قريباً..." inside the protection page (clear other content)
+            // Hide region section and results for upcoming companies
+            document.getElementById('protRegionSection').classList.add('hidden');
+            document.getElementById('protResult').classList.add('hidden');
+            document.getElementById('protRegionSelect').value = '';
+            // Show notification
             renderProtectionComingSoon();
           }
         };
@@ -4569,16 +4652,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             </div>
 
             <div class="data-card">
-              <h4 style="margin:0 0 8px 0;">الباكجات (PPF + تظليل + حماية القلاس الأمامي)</h4>
+              <h4 style="margin:0 0 8px 0;">الباكجات (PPF + تظليل + حماية الزجاج الأمامي)</h4>
               <div>كبوت كامل: <strong>410 د.ك</strong></div>
               <div>حماية كاملة للسيارة: <strong>710 د.ك</strong></div>
               <div>حماية كاملة مطفي (مات): <strong>810 د.ك</strong></div>
             </div>
 
             <div class="data-card">
-              <h4 style="margin:0 0 8px 0;">التظليل وحماية القلاس الأمامي</h4>
+              <h4 style="margin:0 0 8px 0;">التظليل وحماية الزجاج الأمامي</h4>
               <div>تظليل نانو سيراميك: <strong>155 د.ك</strong></div>
-              <div>حماية القلاس الأمامي : <strong>60 د.ك</strong></div>
+              <div>حماية الزجاج الأمامي : <strong>60 د.ك</strong></div>
             </div>
 
             <div class="data-card">
@@ -4590,7 +4673,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             <div class="data-card">
               <h4 style="margin:0 0 8px 0;">الصبغ القابل للإزالة (Peelable Paint)</h4>
               <div>بلاك آوت كامل: <strong>320 د.ك</strong></div>
-              <div>الجنطات: <strong>140 د.ك</strong></div>
+              <div>الرنقات: <strong>140 د.ك</strong></div>
             </div>
           </div>
         `;
@@ -4600,9 +4683,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const importantHtml = `
           <div class="prot-important">
             ملاحظه رسوم النقل لا تشمل رسوم الخدمه أعلاه,
-            <br>١-رسوم النقل (الروحة والرده): الونش العادي (${(basePrice * 2).toFixed(2)}) ${config.currency}
-            <br>الفل داون (${flatbedPriceStr}) ${config.currency}
-            <br><br>٢-يمكن للعميل الذهاب بنفسه للكراج ولكن يُشترط الدفع أولاً قبل إرسال الموقع.
+            <br><br>١-رسوم النقل (الروحة والرده): 
+            <br style="line-height: 0.5;">
+            <div style="margin-right: 20px; margin-top: 4px;">
+              الونش العادي: ${(basePrice * 2).toFixed(2)} ${config.currency}
+              <br>الفل داون: ${flatbedPriceStr} ${config.currency}
+            </div>
+            <br>٢-يمكن للعميل الذهاب بنفسه للكراج ولكن يُشترط الدفع أولاً قبل إرسال الموقع.
             <br><br><a href="https://maps.app.goo.gl/A9WwLj4PjiZcH68N8" target="_blank" style="color:#ffb3b3;text-decoration:underline;">لوكيشن كراج (كار باث)</a>
           </div>
         `;
@@ -4665,11 +4752,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         const noteHtml = `
           <div class="ring-note">
-            ١-رسوم نقل الرنق من ال(${area}) إلى شويخ الصناعيه (${towPrice.toFixed(2)} د.ك)<br>
+            ١-رسوم نقل الرنق (روحه ورده) من (${area}) إلى شويخ الصناعيه (${towPrice.toFixed(2)} د.ك)<br>
             ٢-رسوم تصليح الرنق تتراوح مابين ٢٠ د.ك إلى ٥٠ د.ك<br>
             ٣-رسوم تبديل الطوق عاده مابين ٥٠ الي ٨٠ د.ك ولكن يختلف حسب نوع السياره وحجم الرنق<br>
             ٤-الزياده لتصليح الرنق او تبديل الطوق الكامل ١٥ د.ك<br>
-            ٥-كراج المتوكل لتصليح الرنقات (<a href="https://maps.app.goo.gl/AbxzYpyaFXe4XQj68" target="_blank" style="color:#007bff;">اضغط هنا</a>)
+            ٥-كراج المتوكل لتصليح الرنقات (<a href="https://maps.app.goo.gl/eEct9MapCFQyYwi86" target="_blank" style="color:#007bff;">اضغط هنا</a>)
           </div>
         `;
 
@@ -5111,50 +5198,64 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       document.getElementById('serviceResultSection').classList.remove('hidden');
     }
 
-    // Option 1: Google Sheets Webhook (Apps Script) — leave empty to disable
-    const GOOGLE_SHEETS_WEBHOOK = '';
 
-    // Google Form submission using pre-filled link
-    const FORM_ID = 'e/1FAIpQLScQh0wzxb2oVHXTtPx-NZdbBX63IhaNuMLNag-rPeMdwQVKNw'; // Form ID from the sharing URL
-    const FORM_ACTION = `https://docs.google.com/forms/d/${FORM_ID}/viewform?usp=pp_url`; // Base URL with pp_url parameter
 
-    // Map payload keys to Google Form entry ids (for pre-filled link parameters)
-    const entryMapping = {
-      date: 'entry.1589254434', // Date field
-      time: 'entry.1405698644', // Time field
-      qrOrder: 'entry.1649370181', // QR ORDER field
-      customerName: 'entry.1226088444', // Customer Name field
-      phone: 'entry.1698262844', // Customer Number field
-      location: 'entry.920891999', // Customer Location field
-      washType: 'entry.897996772', // Wash Type field
-      payment: 'entry.929707556' // Payment yes/no field
-    };
+    // -----------------------------------------------------------
+    //     CONFITUGRATION: SheetDB API (Direct Google Sheet Access)
+    // -----------------------------------------------------------
+    // رابط SheetDB للربط مع Google Sheets
+    const GOOGLE_SHEETS_WEBHOOK = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
 
     /**
-     * Post booking payload to Google Sheets webhook.
-     * Expects the webhook to accept JSON and return HTTP 200 on success.
+     * Post booking payload to Google Sheets via SheetDB.
      */
     async function postToGoogleSheet(payload) {
-      if (FORM_ACTION) {
-        // If FORM_ACTION set, submit to Google Form instead of Apps Script
-        return submitToGoogleForm(payload);
+      if (!GOOGLE_SHEETS_WEBHOOK || GOOGLE_SHEETS_WEBHOOK.includes('ضع_الرابط_هنا')) {
+        alert('تنبيه: لم يتم وضع رابط API في الكود بعد.');
+        return { ok: false, reason: 'no-webhook' };
       }
 
-      if (!GOOGLE_SHEETS_WEBHOOK) {
-        console.warn('No remote configured (GOOGLE_SHEETS_WEBHOOK or FORM_ACTION). Skipping remote push.');
-        return { ok: false, reason: 'no-remote' };
-      }
+      // Map payload to Arabic Sheet Headers
+      // Captured headers: "تاريخ تسجيل الطلب","تاريخ الموعد","الوقت","رقم الطلب","موقع العميل","اسم العميل","رقم العميل","نوع الغسيل","حاله الدفع"
+      const now = new Date();
+      const timestamp = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0') + ' ' +
+        String(now.getHours()).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0') + ':' +
+        String(now.getSeconds()).padStart(2, '0');
+
+      const sheetData = {
+        "تاريخ تسجيل الطلب": timestamp,
+        "تاريخ الموعد": payload.date,
+        "الوقت": payload.time,
+        "رقم الطلب": payload.qrOrder || "جديد",
+        "موقع العميل": payload.location,
+        "اسم العميل": payload.customerName,
+        "رقم العميل": payload.phone,
+        "نوع الغسيل": payload.washType,
+        "حاله الدفع": payload.payment
+      };
 
       try {
         const res = await fetch(GOOGLE_SHEETS_WEBHOOK, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(sheetData)
         });
-        return res;
+
+        if (!res.ok) {
+          throw new Error(`SheetDB Error: ${res.status} ${res.statusText}`);
+        }
+
+        const result = await res.json();
+        return { ok: true, data: result };
+
       } catch (err) {
         console.error('postToGoogleSheet error', err);
-        throw err;
+        return { ok: false, error: err };
       }
     }
 
@@ -5179,98 +5280,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     // Load data on page load
     loadAllSheets();
-
-    // --- IndexedDB Logic ---
-    class BookingDB {
-      constructor() {
-        this.dbName = 'WashingServiceDB';
-        this.storeName = 'bookings';
-        this.db = null;
-      }
-      async init() {
-        return new Promise((resolve, reject) => {
-          const request = indexedDB.open(this.dbName, 1);
-          request.onupgradeneeded = (e) => {
-            const db = e.target.result;
-            if (!db.objectStoreNames.contains(this.storeName)) {
-              db.createObjectStore(this.storeName, { keyPath: 'id' });
-            }
-          };
-          request.onsuccess = (e) => {
-            this.db = e.target.result;
-            resolve();
-          };
-          request.onerror = (e) => reject(e);
-        });
-      }
-      async addBooking(booking) {
-        if (!this.db) await this.init();
-        return new Promise((resolve, reject) => {
-          const tx = this.db.transaction(this.storeName, 'readwrite');
-          const store = tx.objectStore(this.storeName);
-          store.add(booking);
-          tx.oncomplete = () => resolve();
-          tx.onerror = (e) => reject(e);
-        });
-      }
-      async getAllBookings() {
-        if (!this.db) await this.init();
-        return new Promise((resolve, reject) => {
-          const tx = this.db.transaction(this.storeName, 'readonly');
-          const store = tx.objectStore(this.storeName);
-          const request = store.getAll();
-          request.onsuccess = () => resolve(request.result);
-          request.onerror = (e) => reject(e);
-        });
-      }
-    }
-    window.bookingDB = new BookingDB();
-
-    function renderOrderListInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-          <div class="form-section full-width">
-             <h3 class="section-title">قائمة الطلبات المحفوظة (محلياً)</h3>
-             <div class="data-table-container">
-                <div class="table-scroll">
-                   <table class="data-table">
-                      <thead>
-                         <tr>
-                            <th>التاريخ</th>
-                            <th>الاسم</th>
-                            <th>الهاتف</th>
-                            <th>المنطقة</th>
-                            <th>نوع الغسيل</th>
-                            <th>الدفع</th>
-                         </tr>
-                      </thead>
-                      <tbody id="ordersTableBody">
-                         <tr><td colspan="6">جاري التحميل...</td></tr>
-                      </tbody>
-                   </table>
-                </div>
-             </div>
-          </div>
-       `;
-      window.bookingDB.getAllBookings().then(bookings => {
-        const tbody = document.getElementById('ordersTableBody');
-        if (bookings.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6">لا توجد طلبات محفوظة</td></tr>';
-          return;
-        }
-        bookings.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        tbody.innerHTML = bookings.map(b => `
-             <tr>
-                <td>${b.date}</td>
-                <td class="highlight">${b.customerName}</td>
-                <td>${b.phone}</td>
-                <td>${b.location || '-'}</td>
-                <td>${b.washType}</td>
-                <td>${b.payment === 'cash' ? 'كاش/رابط' : 'مدفوع'}</td>
-             </tr>
-          `).join('');
-      });
-    }
   </script>
   <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
