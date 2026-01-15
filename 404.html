@@ -819,6 +819,8 @@
     </div>
     <div class="service-item" data-service="protection"><span class="icon">🕶️</span> <span class="label">الحمايه والتغيم</span>
     </div>
+    <div class="service-item" data-service="rimrepair"><span class="icon">🔧</span> <span class="label">تصليح الرنق</span>
+    </div>
     <div class="service-item" data-service="insurance"><span class="icon">🛡️</span> <span class="label">تأمينات</span>
     </div>
    </aside><!-- Main Content -->
@@ -1060,6 +1062,7 @@
           'staff_followup': 'متابعة الطلبات',
           'carwash': 'غسيل السيارات',
           'protection': 'الحمايه والتغيم',
+          'rimrepair': 'تصليح الرنق',
           'insurance': 'تأمينات'
         };
         
@@ -1110,6 +1113,9 @@
             break;
           case 'protection':
             renderProtectionInterface();
+            break;
+          case 'rimrepair':
+            renderRimRepairInterface();
             break;
           case 'insurance':
             renderInsuranceInterface();
@@ -4093,17 +4099,30 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           <div class="form-section full-width">
             <h3 class="section-title">الحمايه والتغيم</h3>
             <div style="display:flex;align-items:center;justify-content:center;padding:60px 20px;">
-              <div style="font-size:28px;color:#ef4444;font-weight:900;">قريباً...</div>
+              <div id="comingSoonMsg" style="font-size:18px;color:#ef4444;font-weight:600;opacity:1;transition:opacity 0.5s;">قريباً...</div>
             </div>
           </div>
         `;
+        // Fade out after 2 seconds
+        setTimeout(() => {
+          const msg = document.getElementById('comingSoonMsg');
+          if (msg) {
+            msg.style.opacity = '0';
+            setTimeout(() => {
+              // Optionally reset to original logos or something, but for now just leave it
+            }, 500);
+          }
+        }, 2000);
       }
 
       // Region selection handler
       const protRegionSelect = document.getElementById('protRegionSelect');
       protRegionSelect.oninput = () => {
         const area = protRegionSelect.value.trim();
-        if (!area) return;
+        if (!area) {
+          document.getElementById('protResult').classList.add('hidden');
+          return;
+        }
         // Automatically choose destination to 'شويخ'
         const dest = 'شويخ';
         // compute price using portarage normal tow routes
@@ -4112,6 +4131,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const tbody = document.getElementById('protResultBody');
         const note = document.getElementById('protNote');
         if (!route) {
+          tbody.innerHTML = '<tr><td colspan="2">لا يوجد سعر مُسجل لهذه المنطقة (تحقق من الشيت)</td></tr>';
+          document.getElementById('protResult').classList.remove('hidden');
+          if (note) note.classList.add('hidden');
+          return;
+        }
           tbody.innerHTML = '<tr><td colspan="2">لا يوجد سعر مُسجل لهذه المنطقة (تحقق من الشيت)</td></tr>';
           document.getElementById('protResult').classList.remove('hidden');
           if (note) note.classList.add('hidden');
@@ -4180,7 +4204,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           <div style="padding:12px 16px; display:flex; flex-direction:column; gap:14px;">
             <div class="services-wrap">${servicesHtml}</div>
             <div class="transport-wrap">
-              <div style="font-weight:800; color:#fff;">رسوم نقل (مرجعة للمراجعة): <span style="color:#F2BC1B; margin-left:8px;">${transportPrice.toFixed(2)} ${config.currency}</span></div>
+              <div style="font-weight:800; color:#fff;">رسوم النقل: <span style="color:#F2BC1B; margin-left:8px;">${transportPrice.toFixed(2)} ${config.currency}</span></div>
             </div>
             <div class="note-wrap">${importantHtml}</div>
           </div>
@@ -4197,6 +4221,79 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       setTimeout(() => {
         renderProtectionCompaniesCards();
       }, 200);
+    }
+
+    // Render Rim Repair Interface (تصليح الرنق)
+    function renderRimRepairInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">تصليح الرنق</h3>
+          <div class="form-field">
+            <label>اسم المنطقة</label>
+            <input type="text" list="rimRegionOptions" id="rimRegionSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
+            <datalist id="rimRegionOptions"></datalist>
+          </div>
+          <div id="rimResultSection" class="form-section hidden">
+            <div class="prot-important">
+              ١-رسوم نقل الرنق من ال(${document.getElementById('rimRegionSelect') ? document.getElementById('rimRegionSelect').value : 'اسم المنطقة'}) إلى شويخ الصناعيه (${'سعر الونش العادي ضرب 2 دك'})<br><br>
+              ٢-رسوم تصليح الرنق تتراوح مابين ٢٠ دك إلى ٥٠ دك<br><br>
+              ٣-رسوم تبديل الطوق عاده مابين ٥٠ الي ٨٠ دك ولكن يختلف حسب نوع السياره وحجم الرنق<br><br>
+              ٤-الزياده لتصليح الرنق او تبديل الطوق الكامل ١٥ دك<br><br>
+              ٥-كراج المتوكل لتصليح الرنقات (<a href="https://maps.app.goo.gl/AbxzYpyaFXe4XQj68" target="_blank" style="color:#3b82f6;text-decoration:underline;">اضغط هنا</a>)
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Load region options from portarage towtruk sheet
+      loadRimRegionOptions();
+
+      // Add event listener to hide result if region is cleared
+      const regionSelect = document.getElementById('rimRegionSelect');
+      regionSelect.oninput = () => {
+        const area = regionSelect.value.trim();
+        if (!area) {
+          document.getElementById('rimResultSection').classList.add('hidden');
+          return;
+        }
+        // Compute transport price: normal tow price * 2
+        const routes = getTowRoutes('portarage towtruk', 'normal');
+        const route = routes.find(r => r.from === area && r.to && r.to.includes('شويخ'));
+        if (!route) {
+          document.getElementById('rimResultSection').classList.add('hidden');
+          return;
+        }
+        const transportPrice = (parseFloat(route.price) || 0) * 2;
+        // Update the note with actual area and price
+        const noteDiv = document.querySelector('#rimResultSection .prot-important');
+        noteDiv.innerHTML = `
+          ١-رسوم نقل الرنق من ال(${area}) إلى شويخ الصناعيه (${transportPrice.toFixed(2)} دك)<br><br>
+          ٢-رسوم تصليح الرنق تتراوح مابين ٢٠ دك إلى ٥٠ دك<br><br>
+          ٣-رسوم تبديل الطوق عاده مابين ٥٠ الي ٨٠ دك ولكن يختلف حسب نوع السياره وحجم الرنق<br><br>
+          ٤-الزياده لتصليح الرنق او تبديل الطوق الكامل ١٥ دك<br><br>
+          ٥-كراج المتوكل لتصليح الرنقات (<a href="https://maps.app.goo.gl/AbxzYpyaFXe4XQj68" target="_blank" style="color:#3b82f6;text-decoration:underline;">اضغط هنا</a>)
+        `;
+        document.getElementById('rimResultSection').classList.remove('hidden');
+      };
+    }
+
+    function loadRimRegionOptions() {
+      const areaDatalist = document.getElementById('rimRegionOptions');
+      const sheetName = 'portarage towtruk';
+      if (!sheetsData[sheetName]) {
+        areaDatalist.innerHTML = '<option value="">...جارٍ التحميل</option>';
+        setTimeout(loadRimRegionOptions, 300);
+        return;
+      }
+      const rows = sheetsData[sheetName];
+      const areas = [];
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        if (row[6]) areas.push(row[6]); // from column
+      }
+      const uniqueAreas = [...new Set(areas)].filter(Boolean);
+      areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
     }
 
     function loadProtRegionOptions() {
