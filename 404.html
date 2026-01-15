@@ -5133,77 +5133,37 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       document.getElementById('serviceResultSection').classList.remove('hidden');
     }
 
-    // Option 1: Google Sheets Webhook (Apps Script) — leave empty to disable
-    const GOOGLE_SHEETS_WEBHOOK = '';
 
-    // Google Form submission using pre-filled link
-    const FORM_ID = 'e/1FAIpQLScQh0wzxb2oVHXTtPx-NZdbBX63IhaNuMLNag-rPeMdwQVKNw'; // Form ID from the sharing URL
-    const FORM_ACTION = `https://docs.google.com/forms/d/${FORM_ID}/viewform?usp=pp_url`; // Base URL with pp_url parameter
-
-    // Map payload keys to Google Form entry ids (for pre-filled link parameters)
-    const entryMapping = {
-      date: 'entry.1589254434', // Date field
-      time: 'entry.1405698644', // Time field
-      qrOrder: 'entry.1649370181', // QR ORDER field
-      customerName: 'entry.1226088444', // Customer Name field
-      phone: 'entry.1698262844', // Customer Number field
-      location: 'entry.920891999', // Customer Location field
-      washType: 'entry.897996772', // Wash Type field
-      payment: 'entry.929707556' // Payment yes/no field
-    };
+    // -----------------------------------------------------------
+    //     CONFITUGRATION: Google Sheets Webhook (Apps Script)
+    // -----------------------------------------------------------
+    // رابط الـ Web App للربط مع Google Sheets مباشرة
+    const GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbws87gWxi5EFcWzMsJMbNKHH1m92iNFx21v8-tJofitNZrRl0kWRL8V2lG662z3LF8q/exec';
 
     /**
-     * Post booking payload to Google Sheets webhook.
-     * Expects the webhook to accept JSON and return HTTP 200 on success.
+     * Post booking payload to Google Sheets webhook (Apps Script).
      */
     async function postToGoogleSheet(payload) {
-      if (FORM_ACTION) {
-        // If FORM_ACTION set, submit to Google Form instead of Apps Script
-        return submitToGoogleForm(payload);
-      }
-
-      if (!GOOGLE_SHEETS_WEBHOOK) {
-        console.warn('No remote configured (GOOGLE_SHEETS_WEBHOOK or FORM_ACTION). Skipping remote push.');
-        return { ok: false, reason: 'no-remote' };
+      if (!GOOGLE_SHEETS_WEBHOOK || GOOGLE_SHEETS_WEBHOOK.includes('ضع_الرابط_هنا')) {
+        alert('تنبيه: لم يتم وضع رابط السكريبت (Web App URL) في الكود بعد.\nالرجاء اتباع خطوات "ربط الشيت" الموضحة.');
+        return { ok: false, reason: 'no-webhook' };
       }
 
       try {
         const res = await fetch(GOOGLE_SHEETS_WEBHOOK, {
           method: 'POST',
+          mode: 'no-cors', // Important for Google Apps Script
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        return res;
-      } catch (err) {
-        console.error('postToGoogleSheet error', err);
-        throw err;
-      }
-    }
-
-    // Submit to Google Form by opening a pre-filled link in a new window
-    async function submitToGoogleForm(payload) {
-      // Use formResponse endpoint for silent submission
-      const formUrl = `https://docs.google.com/forms/d/${FORM_ID}/formResponse`;
-
-      const formData = new FormData();
-      Object.keys(entryMapping).forEach(key => {
-        const entryId = entryMapping[key];
-        const value = payload[key] || '';
-        formData.append(entryId, value);
-      });
-
-      try {
-        await fetch(formUrl, {
-          method: 'POST',
-          mode: 'no-cors', // Opaque response
-          body: formData
-        });
+        // With mode: 'no-cors', we can't read the response status, so we assume success if no error thrown.
         return { ok: true };
       } catch (err) {
-        console.error('Form submission failed', err);
+        console.error('postToGoogleSheet error', err);
         return { ok: false, error: err };
       }
     }
+
 
     // Load data on page load
     loadAllSheets();
