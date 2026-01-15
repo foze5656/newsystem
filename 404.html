@@ -964,7 +964,8 @@
           'تركيب بطارية',
           'تأمين وربه',
           'تأمين صفينه VIP',
-          'تأمين إيلاف'
+          'تأمين إيلاف',
+          'others'
         ];
         
         sheetsData = { currentSheetId: sheetId };
@@ -2731,6 +2732,9 @@
             <button class="btn-option" data-mech="alternator">تبديل دينمو/سلف</button>
             <button class="btn-option" data-mech="wipers">تبديل المساحات</button>
             <button class="btn-option" data-mech="acgas">تعبئه غاز مكيف</button>
+            <button class="btn-option" data-mech="coolant">ماي راديتر</button>
+            <button class="btn-option" data-mech="brakefluid">زيت بريك</button>
+            <button class="btn-option" data-mech="transmission">زيت سكان</button>
           </div>
         </div>
         
@@ -2909,6 +2913,9 @@
 
               if (formData.area) calculateAlternatorPrice();
             };
+          } else if (formData.mechanicalService === 'coolant' || formData.mechanicalService === 'brakefluid' || formData.mechanicalService === 'transmission') {
+            document.getElementById('mechAreaSection').classList.remove('hidden');
+            loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], calculateFluidPrice);
           }
         };
       });
@@ -3004,6 +3011,120 @@
         }
       }
       
+      document.getElementById('mechResultSection').classList.remove('hidden');
+    }
+
+    function calculateFluidPrice() {
+      if (!formData.area) return;
+
+      const rows = sheetsData['خدمات5'];
+      if (!rows) return;
+
+      const columns = [0, 1, 2, 4, 5, 6];
+      let basePrice = 0;
+      let cancellation = 'غير محدد';
+
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        if (row[columns[0]] === formData.area) {
+          basePrice = parseFloat(row[columns[1]]) || 0;
+          cancellation = row[columns[2]] ? `${parseFloat(row[columns[2]]).toFixed(2)} ${config.currency}` : 'غير محدد';
+          break;
+        } else if (row[columns[3]] === formData.area) {
+          basePrice = parseFloat(row[columns[4]]) || 0;
+          cancellation = row[columns[5]] ? `${parseFloat(row[columns[5]]).toFixed(2)} ${config.currency}` : 'غير محدد';
+          break;
+        }
+      }
+
+      // Determine service name and type
+      let serviceName = '';
+      let typeFilter = '';
+      if (formData.mechanicalService === 'coolant') {
+        serviceName = 'ماي راديتر';
+        typeFilter = 'COOLANT';
+      } else if (formData.mechanicalService === 'brakefluid') {
+        serviceName = 'زيت بريك';
+        typeFilter = 'BREAK LIQUIDO';
+      } else if (formData.mechanicalService === 'transmission') {
+        serviceName = 'زيت سكان';
+        typeFilter = 'TRANSMISIONES';
+      }
+
+      const tbody = document.getElementById('mechResultBody');
+      const noteDiv = document.getElementById('mechNote');
+
+      // Show service price
+      tbody.innerHTML = `
+        <tr>
+          <td>رسوم خدمة تعبئه ${serviceName}</td>
+          <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+        </tr>
+        <tr>
+          <td>رسوم الإلغاء</td>
+          <td>${cancellation}</td>
+        </tr>
+      `;
+
+      // Load brands from 'others' sheet
+      const othersRows = sheetsData['others'];
+      if (othersRows) {
+        const brands = [];
+        for (let i = 1; i < othersRows.length; i++) { // start from 1 to skip header
+          const row = othersRows[i];
+          if (row[1] === typeFilter) { // column B is type
+            let country = row[2] || ''; // column C
+            if (country === 'Spain') country = 'إسبانيا';
+            else if (country === 'Britain') country = 'بريطانيا';
+            else if (country === 'Cepsa') country = 'سيسبا';
+            else if (country === 'dukhum') country = 'داكهام';
+            const brand = row[0] || ''; // column A
+            const price = parseFloat(row[3]) || 0; // column D
+            brands.push({ brand, country, price });
+          }
+        }
+
+        if (brands.length > 0) {
+          // Add brands section
+          let brandsHtml = '<tr><td colspan="2" style="text-align:center; font-weight:bold; padding:10px;">الماركات المتوفرة</td></tr>';
+          brands.forEach(b => {
+            brandsHtml += `
+              <tr>
+                <td>${b.brand} (${b.country})</td>
+                <td class="highlight">${b.price.toFixed(2)} ${config.currency}</td>
+              </tr>
+            `;
+          });
+          tbody.innerHTML += brandsHtml;
+
+          // Add details
+          let detailsHtml = '<tr><td colspan="2" style="text-align:center; font-weight:bold; padding:10px;">التفاصيل</td></tr>';
+          brands.forEach(b => {
+            const total = basePrice + b.price;
+            detailsHtml += `
+              <tr>
+                <td>${b.brand} + رسوم خدمة التعبئه الاجمالى</td>
+                <td class="highlight">${total.toFixed(2)} ${config.currency}</td>
+              </tr>
+            `;
+          });
+          tbody.innerHTML += detailsHtml;
+        }
+      }
+
+      // Add note for coolant
+      if (formData.mechanicalService === 'coolant') {
+        noteDiv.innerHTML = `
+          <div style="color:#ef4444; font-weight:bold;">
+            ١- لازم تسالون العميل لو السياره فيها حراره ولو ارتفعت الحراره بعد ما عبينا لازم توديها كراج ويشيك على التسريب لنه ما عندنا خدمه تصليح او فحص تسريب<br>
+            ٢-هذا السعر في حال العميل طلب تعبئه ماي راديتر و(ليس تبديل) التبديل يختلف سعره عن التعبئه يرجى التأكد من الاداره
+          </div>
+        `;
+        noteDiv.classList.remove('hidden');
+      } else {
+        noteDiv.classList.add('hidden');
+      }
+
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
 
