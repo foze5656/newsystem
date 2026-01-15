@@ -3656,11 +3656,24 @@
         try {
           const result = await postToGoogleSheet(payload);
           if (result.ok) {
-            alert('تم إرسال الطلب بنجاح! سيظهر في المواعيد المحجوزة بعد قليل.');
-            document.getElementById('customerName').value = '';
-            document.getElementById('customerPhone').value = '';
-            // Refresh appointments
-            loadCarWashAppointments(date);
+            // Optimistically update UI
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+            carWashData.push({
+              date: date,
+              time: timeString,
+              qrOrder: 'جديد',
+              customerName: name,
+              phone: phone,
+              location: area,
+              washType: washType,
+              payment: payment === 'prepaid' ? 'مدفوع مسبقاً' : 'كاش / رابط'
+            });
+
+            calculateAvailableSlots(date);
+
+            alert('تم حجز الموعد بنجاح! \nبياناتك ظهرت الآن في الجدول بالأسفل.');
           } else {
             throw new Error('Submission failed');
           }
