@@ -812,6 +812,8 @@
      </div>
      <div class="service-item submenu-item" data-service="balance"><span class="label">ميزان وتركيب</span>
      </div>
+     <div class="service-item submenu-item" data-service="ringRepair"><span class="label">تصليح الرنقات</span>
+     </div>
     </div>
     <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمات ميكانيكية</span>
     </div>
@@ -1055,6 +1057,7 @@
           'tireIncrease': 'زيادات التواير',
           'puncture': 'بنشر',
           'balance': 'ميزان وتركيب',
+          'ringRepair': 'تصليح الرنقات',
           'mechanical': 'خدمات ميكانيكية',
           'staff_centers': 'مراكز الطلبات',
           'staff_followup': 'متابعة الطلبات',
@@ -1095,6 +1098,9 @@
             break;
           case 'balance':
             renderBalanceService();
+            break;
+          case 'ringRepair':
+            renderRingRepairInterface();
             break;
           case 'mechanical':
             renderMechanicalInterface();
@@ -4092,18 +4098,34 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         contentArea.innerHTML = `
           <div class="form-section full-width">
             <h3 class="section-title">الحمايه والتغيم</h3>
-            <div style="display:flex;align-items:center;justify-content:center;padding:60px 20px;">
-              <div style="font-size:28px;color:#ef4444;font-weight:900;">قريباً...</div>
+            <div id="comingSoonNotification" style="display:flex;align-items:center;justify-content:center;padding:20px;">
+              <div style="font-size:18px;color:#ef4444;font-weight:600;background:#fff;border-radius:8px;padding:10px 20px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                قريباً...
+              </div>
             </div>
           </div>
         `;
+        // Fade out after 3 seconds
+        setTimeout(() => {
+          const notification = document.getElementById('comingSoonNotification');
+          if (notification) {
+            notification.style.transition = 'opacity 1s';
+            notification.style.opacity = '0';
+            setTimeout(() => {
+              if (notification.parentNode) notification.parentNode.removeChild(notification);
+            }, 1000);
+          }
+        }, 3000);
       }
 
       // Region selection handler
       const protRegionSelect = document.getElementById('protRegionSelect');
       protRegionSelect.oninput = () => {
         const area = protRegionSelect.value.trim();
-        if (!area) return;
+        if (!area) {
+          document.getElementById('protResult').classList.add('hidden');
+          return;
+        }
         // Automatically choose destination to 'شويخ'
         const dest = 'شويخ';
         // compute price using portarage normal tow routes
@@ -4161,27 +4183,22 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         `;
 
         // Unified important red note (single message) with link to garage location
-        const flatbedPriceStr = flatbedPrice !== null ? flatbedPrice.toFixed(2) : 'غير متوفر';
+        const flatbedPriceStr = flatbedPrice !== null ? (flatbedPrice * 2).toFixed(2) : 'غير متوفر';
         const importantHtml = `
           <div class="prot-important">
             ملاحظه رسوم النقل لا تشمل رسوم الخدمه أعلاه,
-            <br>١-رسوم النقل (الروحة والرده): الونش العادي (${basePrice.toFixed(2)}) ${config.currency}
+            <br>١-رسوم النقل (الروحة والرده): الونش العادي (${(basePrice * 2).toFixed(2)}) ${config.currency}
             <br>الفل داون (${flatbedPriceStr}) ${config.currency}
             <br><br>٢-يمكن للعميل الذهاب بنفسه للكراج ولكن يُشترط الدفع أولاً قبل إرسال الموقع.
             <br><br><a href="https://maps.app.goo.gl/A9WwLj4PjiZcH68N8" target="_blank" style="color:#ffb3b3;text-decoration:underline;">لوكيشن كراج (كار باث)</a>
           </div>
         `;
 
-        const transportPrice = basePrice * 2; // user requested multiply by two (kept for backward compatibility)
-
         const protResult = document.getElementById('protResult');
         protResult.innerHTML = `
           <div class="table-header">خيارات الحماية والتغيم</div>
           <div style="padding:12px 16px; display:flex; flex-direction:column; gap:14px;">
             <div class="services-wrap">${servicesHtml}</div>
-            <div class="transport-wrap">
-              <div style="font-weight:800; color:#fff;">رسوم نقل (مرجعة للمراجعة): <span style="color:#F2BC1B; margin-left:8px;">${transportPrice.toFixed(2)} ${config.currency}</span></div>
-            </div>
             <div class="note-wrap">${importantHtml}</div>
           </div>
         `;
@@ -4197,6 +4214,78 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       setTimeout(() => {
         renderProtectionCompaniesCards();
       }, 200);
+    }
+
+    function renderRingRepairInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">تصليح الرنقات</h3>
+          <div class="form-field">
+            <input type="text" list="ringRegionOptions" id="ringRegionSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
+            <datalist id="ringRegionOptions"></datalist>
+          </div>
+          <div id="ringResult" class="info-box hidden"></div>
+        </div>
+      `;
+
+      loadRingRegionOptions();
+
+      const ringRegionSelect = document.getElementById('ringRegionSelect');
+      ringRegionSelect.oninput = () => {
+        const area = ringRegionSelect.value.trim();
+        const result = document.getElementById('ringResult');
+        if (!area) {
+          result.classList.add('hidden');
+          return;
+        }
+        // Compute price using portarage normal tow routes
+        const routes = getTowRoutes('portarage towtruk', 'normal');
+        const route = routes.find(r => r.from === area && r.to && r.to.includes('شويخ'));
+        if (!route) {
+          result.innerHTML = '<div style="color:#ef4444;">لا يوجد سعر مُسجل لهذه المنطقة (تحقق من الشيت)</div>';
+          result.classList.remove('hidden');
+          return;
+        }
+        const basePrice = parseFloat(route.price) || 0;
+        const towPrice = basePrice * 2;
+
+        const noteHtml = `
+          <div class="ring-note">
+            ١-رسوم نقل الرنق من ال(${area}) إلى شويخ الصناعيه (${towPrice.toFixed(2)} د.ك)<br>
+            ٢-رسوم تصليح الرنق تتراوح مابين ٢٠ د.ك إلى ٥٠ د.ك<br>
+            ٣-رسوم تبديل الطوق عاده مابين ٥٠ الي ٨٠ د.ك ولكن يختلف حسب نوع السياره وحجم الرنق<br>
+            ٤-الزياده لتصليح الرنق او تبديل الطوق الكامل ١٥ د.ك<br>
+            ٥-كراج المتوكل لتصليح الرنقات (<a href="https://maps.app.goo.gl/AbxzYpyaFXe4XQj68" target="_blank" style="color:#007bff;">اضغط هنا</a>)
+          </div>
+        `;
+
+        result.innerHTML = noteHtml;
+        result.classList.remove('hidden');
+      };
+    }
+
+    function loadRingRegionOptions() {
+      const areaDatalist = document.getElementById('ringRegionOptions');
+      const areaInput = document.getElementById('ringRegionSelect');
+      const sheetName = 'portarage towtruk';
+      const cols = [6,4,3, 6,1,0];
+      if (!sheetsData[sheetName]) {
+        areaDatalist.innerHTML = '<option value="">...جارٍ التحميل</option>';
+        setTimeout(loadRingRegionOptions, 300);
+        return;
+      }
+      const rows = sheetsData[sheetName];
+      const areas = [];
+      for (let i = 2; i < rows.length; i++) {
+        const row = rows[i];
+        cols.forEach((colIndex, idx) => {
+          if (idx % 3 === 0 && row[colIndex]) areas.push(row[colIndex]);
+        });
+      }
+      const unique = [...new Set(areas)].filter(Boolean);
+      areaDatalist.innerHTML = unique.map(a => `<option value="${a}"></option>`).join('');
+      if (areaInput) areaInput.value = '';
     }
 
     function loadProtRegionOptions() {
