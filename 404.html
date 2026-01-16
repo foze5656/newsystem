@@ -1016,6 +1016,10 @@
       display: block;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     /* Success Toast Notification */
     .appointment-success-toast {
       position: fixed;
@@ -1060,13 +1064,14 @@
       
       <form id="appointmentForm">
         <div class="appointment-form-group">
-          <label for="appointmentDate">تاريخ الموعد *</label>
-          <input type="date" id="appointmentDate" class="appointment-form-control" required>
+          <label for="appointmentDateTime">تاريخ ووقت الموعد *</label>
+          <input type="datetime-local" id="appointmentDateTime" class="appointment-form-control" required>
         </div>
 
-        <div class="appointment-form-group">
-          <label for="appointmentTime">وقت الموعد *</label>
-          <input type="time" id="appointmentTime" class="appointment-form-control" required>
+        <div id="availableSlotsPreview" class="appointment-form-group hidden" style="margin-top: -8px;">
+          <div style="font-size: 12px; color: #10b981; padding: 8px; background: rgba(16, 185, 129, 0.1); border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div id="availableSlotsText"></div>
+          </div>
         </div>
 
         <div class="appointment-form-group">
@@ -5275,18 +5280,17 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       statusMsg.className = 'appointment-status-message info';
       statusMsg.textContent = '⏳ جاري تحميل المواعيد المحجوزة...';
       
-      // Set minimum date to today
-      const appointmentDate = document.getElementById('appointmentDate');
-      const today = new Date().toISOString().split('T')[0];
-      appointmentDate.min = today;
-      appointmentDate.value = today;
-      
-      // Set minimum time to current time
-      const appointmentTime = document.getElementById('appointmentTime');
+      // Set minimum datetime to now
+      const appointmentDateTime = document.getElementById('appointmentDateTime');
       const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
-      appointmentTime.min = `${hours}:${minutes}`;
+      
+      appointmentDateTime.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+      appointmentDateTime.value = `${year}-${month}-${day}T${hours}:${minutes}`;
       
       // Show modal
       modal.classList.add('active');
@@ -5295,6 +5299,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       loadAppointmentsForChecking().then(() => {
         statusMsg.className = 'appointment-status-message';
         statusMsg.textContent = '';
+      });
+      
+      // Add event listener for datetime change to show available slots
+      appointmentDateTime.addEventListener('change', function() {
+        const selectedDateTime = this.value;
+        if (selectedDateTime) {
+          const [date] = selectedDateTime.split('T');
+          showAvailableSlotsForDate(date);
+        }
       });
     }
 
@@ -5401,6 +5414,51 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
     }
 
+    // Show available slots for selected date
+    function showAvailableSlotsForDate(selectedDate) {
+      const previewDiv = document.getElementById('availableSlotsPreview');
+      const textDiv = document.getElementById('availableSlotsText');
+      
+      // Check if it's Friday (closed)
+      const dateObj = new Date(selectedDate + 'T00:00:00');
+      const dayIndex = dateObj.getDay();
+      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
+      const days = Math.floor((dateObj - startOfYear) / (24 * 60 * 60 * 1000));
+      const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+      
+      if (dayIndex === 5 && weekNumber % 2 === 1) {
+        textDiv.innerHTML = '❌ الغسيل غير متوفر يوم الجمعة';
+        textDiv.style.color = '#ef4444';
+        textDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+        textDiv.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+        previewDiv.classList.remove('hidden');
+        return;
+      }
+      
+      // Get appointments for this date
+      const todayAppointments = appointmentsCheckCache.filter(apt => apt.date === selectedDate);
+      
+      if (todayAppointments.length === 0) {
+        textDiv.innerHTML = '✅ جميع الأوقات متاحة لهذا اليوم (من 10:30 صباحاً)';
+        textDiv.style.color = '#10b981';
+        textDiv.style.background = 'rgba(16, 185, 129, 0.1)';
+        textDiv.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+      } else {
+        const times = todayAppointments.map(apt => {
+          const [h, m] = apt.time.split(':').map(Number);
+          const period = h >= 12 ? 'مساءً' : 'صباحاً';
+          const displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+          return `${displayH}:${String(m).padStart(2, '0')} ${period}`;
+        }).join('، ');
+        textDiv.innerHTML = `⚠️ مواعيد محجوزة: ${times}`;
+        textDiv.style.color = '#f59e0b';
+        textDiv.style.background = 'rgba(245, 158, 11, 0.1)';
+        textDiv.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+      }
+      
+      previewDiv.classList.remove('hidden');
+    }
+    
     // Check if appointment time slot is available
     function isTimeSlotAvailable(date, time, washType) {
       // Check if it's Friday (closed)
@@ -5516,8 +5574,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           e.preventDefault();
           
           const statusMsg = document.getElementById('appointmentStatusMessage');
-          const appointmentDate = document.getElementById('appointmentDate').value;
-          const appointmentTime = document.getElementById('appointmentTime').value;
+          const appointmentDateTime = document.getElementById('appointmentDateTime').value;
           const qrOrder = document.getElementById('appointmentQrOrder').value.trim();
           const customerName = document.getElementById('appointmentCustomerName').value.trim();
           const location = document.getElementById('appointmentLocation').value.trim();
@@ -5530,13 +5587,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           statusMsg.textContent = '';
 
           // Validate required fields
-          if (!appointmentDate || !appointmentTime || !qrOrder || !customerName || !location || !washType || !payment) {
+          if (!appointmentDateTime || !qrOrder || !customerName || !location || !washType || !payment) {
             statusMsg.className = 'appointment-status-message error';
             statusMsg.textContent = '❌ جميع الحقول مطلوبة';
             appointmentSaveBtn.disabled = false;
             return;
           }
 
+          // Split datetime into date and time
+          const [appointmentDate, appointmentTime] = appointmentDateTime.split('T');
+          
           // Check if time slot is available
           const availabilityCheck = isTimeSlotAvailable(appointmentDate, appointmentTime, washType);
           
