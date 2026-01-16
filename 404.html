@@ -5289,6 +5289,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         }
         
         const csvText = await response.text();
+        console.log('CSV Data received:', csvText.substring(0, 500)); // Debug: show first 500 chars
+        
         if (!csvText || csvText.trim().length === 0) {
           console.warn('Empty CSV data received');
           appointmentsCheckCache = [];
@@ -5296,6 +5298,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         }
         
         const rows = parseCSV(csvText);
+        console.log('Parsed rows:', rows.length, 'rows'); // Debug: show row count
+        
         if (!rows || rows.length < 2) {
           console.warn('No data rows found in sheet');
           appointmentsCheckCache = [];
@@ -5307,11 +5311,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         // Parse data - first row is headers
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
+          console.log(`Row ${i}:`, row); // Debug: show each row
           
           // Columns: A=تاريخ الموعد, B=وقت الموعد, C=رقم الطلب, D=اسم العميل, E=المنطقة, F=نوع الخدمه, G=الفنين
           const date = (row[0] || '').toString().trim();
           const time = (row[1] || '').toString().trim();
           const technician = (row[6] || '').toString().trim();
+          
+          console.log(`  Date: "${date}", Time: "${time}", Technician: "${technician}"`); // Debug
           
           if (date && time && technician) {
             // Normalize date format
@@ -5341,15 +5348,19 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               parsedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
             }
             
+            console.log(`  Parsed: ${parsedDate} ${parsedTime} (${technician})`); // Debug
+            
             appointmentsCheckCache.push({
               date: parsedDate,
               time: parsedTime,
               technician: technician
             });
+          } else {
+            console.log('  ⚠️ Skipped: missing data'); // Debug
           }
         }
         
-        console.log(`Loaded ${appointmentsCheckCache.length} appointments`);
+        console.log(`✅ Loaded ${appointmentsCheckCache.length} appointments:`, appointmentsCheckCache);
         
       } catch (error) {
         console.error('Error loading appointments:', error);
