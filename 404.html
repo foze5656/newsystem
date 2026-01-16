@@ -5372,13 +5372,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         }
 
         const idx = {
-          date: findHeader('تاريخ الموعد', 'appointment date', 'date'),
-          time: findHeader('الوقت', 'time')
+          date: findHeader('تاريخ الموعد', 'appointment date', 'date', 'A'),
+          time: findHeader('وقت الموعد', 'time', 'B', 'الوقت')
         };
 
         const col = {
-          date: idx.date >= 0 ? idx.date : 1,
-          time: idx.time >= 0 ? idx.time : 2
+          date: idx.date >= 0 ? idx.date : 0,  // Column A
+          time: idx.time >= 0 ? idx.time : 1   // Column B
         };
 
         // Check for conflicts with existing appointments
@@ -5441,15 +5441,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         }
 
         // Prepare data for SheetDB
+        // فصل التاريخ والوقت من datetime-local input
         const [date, time] = dateTimeValue.split('T');
         const appointmentData = {
-          'تاريخ الموعد': date,
-          'الوقت': time,
-          'رقم الطلب': orderNum,
-          'اسم العميل': customerName,
-          'موقع العميل': location,
-          'نوع الغسيل': washType,
-          'حالة الدفع': payment
+          'A': date,           // تاريخ الموعد
+          'B': time,           // وقت الموعد (منفصل)
+          'C': orderNum,       // رقم الطلب
+          'D': customerName,   // اسم العميل
+          'E': location,       // المنطقة
+          'F': washType,       // نوع الغسيل
+          'G': payment         // حالة الدفع
         };
 
         // Save to SheetDB
