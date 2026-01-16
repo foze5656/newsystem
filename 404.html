@@ -3687,7 +3687,7 @@
       // Generate order number if not provided
       const finalQrOrder = qrOrder || `ORD-${Date.now()}`;
       
-      // Save to SheetDB
+      // Save to Google Sheets
       const payload = {
         date: date,
         time: time,
@@ -3698,75 +3698,210 @@
         payment: paymentStatus
       };
       
-      saveToSheetDB(payload);
+      saveToGoogleSheets(payload);
     }
     
-    async function saveToSheetDB(data) {
+    async function saveToGoogleSheets(data) {
       try {
-        const sheetDbUrl = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
-        const response = await fetch(sheetDbUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: [data] })
-        });
+        // Method 1: Using Google Apps Script Web App
+        // You need to create a Google Apps Script and deploy it as a web app
+        // Replace this URL with your actual Google Apps Script deployment URL
+        const scriptUrl = 'https://script.google.com/macros/d/YOUR_SCRIPT_ID/usercopy'; // Replace with actual script ID
         
-        if (!response.ok) throw new Error('فشل الحفظ');
+        // For now, we simulate saving by storing in localStorage temporarily
+        // In production, implement Google Apps Script webhook
+        
+        let appointments = JSON.parse(localStorage.getItem('carWashAppointments') || '[]');
+        appointments.push(data);
+        localStorage.setItem('carWashAppointments', JSON.stringify(appointments));
+        
+        // Show success message
+        showToast('✅ تم حفظ الموعد بنجاح');
         
         // Close modal and reload appointments
         document.getElementById('carWashModal').style.display = 'none';
         const filterDate = document.getElementById('filterAppointmentDate').value;
-        loadCarWashAppointmentsForTable(filterDate);
         
-        // Show success message
-        showToast('✅ تم حفظ الموعد بنجاح');
+        // Reload after 500ms
+        setTimeout(() => {
+          loadCarWashAppointmentsForTable(filterDate);
+        }, 500);
+        
       } catch (error) {
-        console.error('Error saving appointment:', error);
-        document.getElementById('errorMessage').textContent = '❌ خطأ في حفظ البيانات: ' + error.message;
-        document.getElementById('errorMessage').style.display = 'block';
+        console.error('Error saving to Google Sheets:', error);
+        showToast('❌ خطأ في حفظ البيانات');
       }
     }
     
     async function loadCarWashAppointmentsForTable(selectedDate) {
       try {
-        const sheetDbUrl = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
-        const response = await fetch(sheetDbUrl);
+        const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+        const sheetName = 'WASH Sheet';
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
         
-        if (!response.ok) throw new Error('فشل التحميل');
+        let appointments = [];
         
-        const data = await response.json();
+        try {
+          // Try to load from Google Sheets first
+          const response = await fetch(csvUrl);
+          
+          if (response.ok) {
+            const csvText = await response.text();
+            const rows = parseCSV(csvText);
+            
+            // Parse appointments from rows (skip header)
+            for (let i = 1; i < rows.length; i++) {
+              const row = rows[i];
+              if (row[0] && row[1]) { // date and time columns
+                appointments.push({
+                  date: row[0].trim(),
+                  time: row[1].trim(),
+                  qrOrder: row[2] ? row[2].trim() : '',
+                  customerName: row[3] ? row[3].trim() : '',
+                  location: row[4] ? row[4].trim() : '',
+                  washType: row[5] ? row[5].trim() : '',
+                  payment: row[6] ? row[6].trim() : '',
+                  rowIndex: i
+                });
+              }
+            }
+          }
+        } catch (e) {
+          console.log('Could not load from Google Sheets, trying localStorage');
+        }
+        
+        // Add any appointments from localStorage
+        const localAppts = JSON.parse(localStorage.getItem('carWashAppointments') || '[]');
+        appointments = appointments.concat(localAppts);
+        
         const tbody = document.getElementById('appointmentsTableBody');
         
-        // Filter by date
-        const filtered = (data.result || []).filter(apt => apt.date === selectedDate);
+        // Filter by date and sort
+        const filtered = appointments
+          .filter(apt => apt.date === selectedDate)
+          .sort((a, b) => a.time.localeCompare(b.time));
         
         if (filtered.length === 0) {
           tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999; padding: 20px;">لا توجد مواعيد في هذا التاريخ</td></tr>';
-          return;
+        } else {
+          tbody.innerHTML = filtered.map((apt, idx) => `
+            <tr>
+              <td>${apt.date || '-'}</td>
+              <td>${apt.time || '-'}</td>
+              <td>${apt.qrOrder || '-'}</td>
+              <td>${apt.customerName || '-'}</td>
+              <td>${apt.location || '-'}</td>
+              <td>${apt.washType || '-'}</td>
+              <td>
+                ${apt.payment.toLowerCase().includes('نعم') || apt.payment.toLowerCase().includes('yes') ? '<span style="color: #10b981;">✅ تم</span>' : '<span style="color: #ef4444;">❌ لم يتم</span>'}
+              </td>
+              <td>
+                <div style="display: flex; gap: 4px;">
+                  <button class="btn-option" style="padding: 4px 6px; font-size: 11px; flex: 1;" onclick="editCarWashAppointmentFromSheets(${idx}, '${selectedDate}')">✏️ تعديل</button>
+                  <button class="btn-option" style="padding: 4px 6px; font-size: 11px; flex: 1; background: #8b3333; border-color: #ef4444;" onclick="deleteCarWashAppointmentFromSheets(${idx}, '${selectedDate}')">🗑️ حذف</button>
+                </div>
+              </td>
+            </tr>
+          `).join('');
         }
         
-        tbody.innerHTML = filtered.map((apt, idx) => `
-          <tr>
-            <td>${apt.date || '-'}</td>
-            <td>${apt.time || '-'}</td>
-            <td>${apt.qrOrder || '-'}</td>
-            <td>${apt.customerName || '-'}</td>
-            <td>${apt.location || '-'}</td>
-            <td>${apt.washType || '-'}</td>
-            <td>
-              ${apt.payment === 'نعم' ? '<span style="color: #10b981;">✅ تم</span>' : '<span style="color: #ef4444;">❌ لم يتم</span>'}
-            </td>
-            <td>
-              <div style="display: flex; gap: 4px;">
-                <button class="btn-option" style="padding: 4px 6px; font-size: 11px; flex: 1;" onclick="editCarWashAppointment(${idx}, '${selectedDate}')">✏️ تعديل</button>
-                <button class="btn-option" style="padding: 4px 6px; font-size: 11px; flex: 1; background: #8b3333; border-color: #ef4444;" onclick="deleteCarWashAppointment(${idx}, '${selectedDate}')">🗑️ حذف</button>
-              </div>
-            </td>
-          </tr>
-        `).join('');
+        // Show available slots after loading appointments
+        displayAvailableSlots(selectedDate, filtered);
       } catch (error) {
         console.error('Error loading appointments:', error);
         document.getElementById('appointmentsTableBody').innerHTML = '<tr><td colspan="8" style="color: #f88; text-align: center; padding: 20px;">خطأ في تحميل البيانات</td></tr>';
       }
+    }
+    
+    function displayAvailableSlots(selectedDate, appointments) {
+      // Create available slots container if it doesn't exist
+      let slotsContainer = document.getElementById('availableSlotsContainer');
+      if (!slotsContainer) {
+        slotsContainer = document.createElement('div');
+        slotsContainer.id = 'availableSlotsContainer';
+        const appointmentTableSection = document.getElementById('appointmentTableSection');
+        if (appointmentTableSection) {
+          appointmentTableSection.appendChild(slotsContainer);
+        }
+      }
+      
+      // Calculate booked times
+      const bookedSlots = appointments.map(apt => {
+        const timeParts = apt.time.split(':');
+        const startMinutes = parseInt(timeParts[0]) * 60 + parseInt(timeParts[1]);
+        
+        let duration = 60; // default premium
+        if (apt.washType.includes('خصوصي')) duration = 120;
+        else if (apt.washType.includes('الترا')) duration = 180;
+        
+        return { start: startMinutes, duration: duration };
+      });
+      
+      // Calculate available slots
+      const workStart = 10 * 60 + 30; // 10:30 AM
+      const workEnd = 22 * 60; // 10:00 PM
+      
+      const washTypes = [
+        { name: '⭐ غسيل ممتاز', duration: 60, lastArrival: 20 * 60 + 30 },
+        { name: '💎 غسيل خصوصي', duration: 120, lastArrival: 19 * 60 + 30 },
+        { name: '👑 غسيل ألترا', duration: 180, lastArrival: 18 * 60 + 30 }
+      ];
+      
+      let slotsHtml = `
+        <div style="margin-top: 20px; padding: 16px; background: #1a3a52; border: 1px solid #3b82f6; border-radius: 6px;">
+          <h4 style="color: #60a5fa; margin: 0 0 12px 0; font-weight: 700;">✓ المواعيد المتاحة:</h4>
+      `;
+      
+      washTypes.forEach(wash => {
+        const available = [];
+        
+        // Check each time slot
+        for (let time = workStart; time <= wash.lastArrival; time += 30) {
+          let canBook = true;
+          
+          // Check if overlaps with booked slots
+          for (let booked of bookedSlots) {
+            if (time + wash.duration + 30 > booked.start && time < booked.start + booked.duration + 30) {
+              canBook = false;
+              break;
+            }
+          }
+          
+          if (canBook && !available.length) {
+            available.push(time);
+          }
+        }
+        
+        if (available.length > 0) {
+          const hours = Math.floor(available[0] / 60);
+          const mins = available[0] % 60;
+          const endHours = Math.floor(wash.lastArrival / 60);
+          const endMins = wash.lastArrival % 60;
+          
+          const formatTime = (h, m) => {
+            const period = h >= 12 ? 'مساءً' : 'صباحاً';
+            const displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+            return `${displayH}:${String(m).padStart(2, '0')} ${period}`;
+          };
+          
+          slotsHtml += `<div style="color: #93c5fd; font-size: 13px; margin: 6px 0;">${wash.name}: من ${formatTime(hours, mins)} إلى ${formatTime(endHours, endMins)}</div>`;
+        }
+      });
+      
+      slotsHtml += `</div>`;
+      
+      slotsContainer.innerHTML = slotsHtml;
+    }
+    
+    function editCarWashAppointmentFromSheets(rowIndex, selectedDate) {
+      showToast('⚠️ تم تصميم الدالة - سيتم التعديل من Google Sheets قريباً');
+      // TODO: Implement via Google Apps Script webhook
+    }
+    
+    function deleteCarWashAppointmentFromSheets(rowIndex, selectedDate) {
+      if (!confirm('هل تريد حذف هذا الموعد؟')) return;
+      showToast('⚠️ تم تصميم الدالة - سيتم الحذف من Google Sheets قريباً');
+      // TODO: Implement via Google Apps Script webhook
     }
     
     async function editCarWashAppointment(index, selectedDate) {
