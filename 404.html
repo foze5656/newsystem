@@ -4069,22 +4069,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const dayOfWeek = dateObj.toLocaleDateString('ar-EG', { weekday: 'long' });
       const formattedDate = dateObj.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
       
-      const dayIndex = dateObj.getDay();
-      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
-      const days = Math.floor((dateObj - startOfYear) / (24 * 60 * 60 * 1000));
-      const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-      
-      if (dayIndex === 5 && weekNumber % 2 === 1) {
-        availableSlots.innerHTML = `
-          <div class="error-box">
-            <strong>❌ مغلق يوم الجمعة</strong><br>
-            أقرب موعد متاح: يوم السبت
-          </div>
-        `;
-        return;
-      }
-      
       const todayAppointments = carWashData.filter(apt => apt.date === selectedDate);
+      console.log('Today appointments:', todayAppointments);
+      
       todayAppointments.sort((a, b) => {
         const timeA = a.time.split(':').map(Number);
         const timeB = b.time.split(':').map(Number);
@@ -4098,278 +4085,43 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         </div>
       `;
       
-      const workStartMinutes = 630; // 10:30 AM
-      // Last allowed START time (آخر وصول) per wash type
-      const washLastArrival = {
-        premium: 20 * 60 + 30, // 20:30
-        special: 19 * 60 + 30, // 19:30
-        ultra: 18 * 60 + 30    // 18:30
-      };
-      const workEndMinutes = 1320;  // 10:00 PM (fallback, not used for per-wash limits)
-      
-      const today = new Date();
-      const isToday = dateObj.getDate() === today.getDate() && 
-                      dateObj.getMonth() === today.getMonth() && 
-                      dateObj.getFullYear() === today.getFullYear();
-      
-      let earliestAvailableTime = workStartMinutes;
-      
-      if (isToday) {
-        const currentMinutes = today.getHours() * 60 + today.getMinutes();
-        const roundedMinutes = Math.ceil((currentMinutes + 30) / 5) * 5;
-        earliestAvailableTime = Math.max(earliestAvailableTime, roundedMinutes);
-      }
-      
-      // Build list of appointments with their actual times
-      const appointments = [];
-      todayAppointments.forEach(apt => {
-        const timeParts = apt.time.split(':').map(Number);
-        const appointmentMinutes = timeParts[0] * 60 + timeParts[1];
-        
-        let washDuration = 60;
-        const washType = apt.washType.toLowerCase();
-        if (washType.includes('خصوصي')) washDuration = 120;
-        else if (washType.includes('الترا')) washDuration = 180;
-        
-        appointments.push({
-          start: appointmentMinutes,
-          duration: washDuration,
-          end: appointmentMinutes + washDuration + 30
-        });
-      });
-      
-      // Sort appointments by start time
-      appointments.sort((a, b) => a.start - b.start);
-      
-      const selectedWashes = formData.selectedWashes || [];
-      const washDurations = {
-        premium: 60,
-        special: 120,
-        ultra: 180
-      };
-      
-      const travelTime = 30;
-      
-        // Find all available time slots for each wash type
-      const availableTimeSlots = {};
-      
-      selectedWashes.forEach(washType => {
-        const duration = washDurations[washType];
-        const totalDuration = duration + travelTime;
-        availableTimeSlots[washType] = [];
-        
-        // Calculate end limit for this wash type (latest allowed START time)
-        const endLimit = washLastArrival[washType] || workEndMinutes;
-
-        // Check before first appointment
-        if (appointments.length > 0) {
-          const firstAppointmentStart = appointments[0].start;
-          const latestStartBeforeFirst = firstAppointmentStart - totalDuration;
-          
-          if (earliestAvailableTime <= latestStartBeforeFirst) {
-            availableTimeSlots[washType].push({
-              start: earliestAvailableTime,
-              latestStart: latestStartBeforeFirst,
-              end: firstAppointmentStart
-            });
-          }
-        }
-        
-        // Check gaps between appointments
-        for (let i = 0; i < appointments.length - 1; i++) {
-          const currentAppointmentEnd = appointments[i].end;
-          const nextAppointmentStart = appointments[i + 1].start;
-          
-          const earliestStartInGap = Math.max(currentAppointmentEnd, earliestAvailableTime);
-          const latestStartInGap = nextAppointmentStart - totalDuration;
-          
-          if (earliestStartInGap <= latestStartInGap && earliestStartInGap + totalDuration <= nextAppointmentStart) {
-            availableTimeSlots[washType].push({
-              start: earliestStartInGap,
-              latestStart: latestStartInGap,
-              end: nextAppointmentStart
-            });
-          }
-        }
-        
-        // Check after last appointment (ensure start is <= endLimit)
-        if (appointments.length > 0) {
-          const lastAppointmentEnd = appointments[appointments.length - 1].end;
-          const earliestStartAfterLast = Math.max(lastAppointmentEnd, earliestAvailableTime);
-
-          if (earliestStartAfterLast <= endLimit) {
-            availableTimeSlots[washType].push({
-              start: earliestStartAfterLast,
-              latestStart: endLimit,
-              end: endLimit
-            });
-          }
-        } else {
-          // No appointments at all
-          if (earliestAvailableTime <= endLimit) {
-            availableTimeSlots[washType].push({
-              start: earliestAvailableTime,
-              latestStart: endLimit,
-              end: endLimit
-            });
-          }
-        }
-      });
-      
-      // Check if any wash type has available slots
-      const hasAnyAvailable = Object.values(availableTimeSlots).some(slots => slots.length > 0);
-      
-      if (!hasAnyAvailable) {
+      if (todayAppointments.length === 0) {
         html += `
-          <div class="warning-box">
-            <strong>⚠️ لا يوجد وقت كافٍ لأي نوع غسيل محدد اليوم</strong><br>
-            ساعات العمل تنتهي الساعة 10:00 مساءً
-          </div>
-        `;
-        
-        const tomorrow = new Date(dateObj);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowDay = tomorrow.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        
-        html += `
-          <div class="info-box" style="background: #1a4a2a; border-color: #10b981; margin-top: 10px;">
-            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">💡 اقتراح: ${tomorrowDay}</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">⭐ غسيل ممتاز: ابتداءً من 10:30 صباحاً</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل خصوصي: ابتداءً من 10:30 صباحاً</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ابتداءً من 10:30 صباحاً</div>
+          <div class="info-box" style="background: #1a4a2a; border-color: #10b981;">
+            <strong>✅ لا توجد مواعيد محجوزة لهذا اليوم</strong>
           </div>
         `;
       } else {
         html += `
-          <div class="info-box" style="background: #1a4a2a; border-color: #10b981;">
-            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">✓ المواعيد المتاحة:</div>
+          <div class="info-box" style="background: #4a3a1a; border-color: #f59e0b;">
+            <div style="font-size: 12px; font-weight: 700; color: #f59e0b; margin-bottom: 8px;">⚠️ مواعيد محجوزة (${todayAppointments.length}):</div>
         `;
         
-        // Helper function to format time
-        const formatTimeSimple = (minutes) => {
-          const hours = Math.floor(minutes / 60);
-          const mins = minutes % 60;
-          const period = hours >= 12 ? 'مساءً' : 'صباحاً';
-          const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
-          
-          if (mins === 0) {
-            return `${displayHours} ${period}`;
-          } else {
-            return `${displayHours}:${mins.toString().padStart(2, '0')} ${period}`;
-          }
-        };
-        
-        // Helper to format time range - show actual available window (earliest start -> latest allowed start)
-        const formatTimeRange = (slots, washDuration, washType) => {
-          if (!slots || slots.length === 0) return '';
-
-          let ranges = [];
-          slots.forEach(slot => {
-            const startTime = formatTimeSimple(slot.start);
-            // show latest allowed START time (slot.latestStart) as the window end
-            const endTime = formatTimeSimple(slot.latestStart);
-            ranges.push(`من ${startTime} إلى ${endTime}`);
-          });
-
-          return ranges.join(' • وأيضاً ');
-        };
-        
-        if (availableTimeSlots.premium && availableTimeSlots.premium.length > 0) {
-          const timeRange = formatTimeRange(availableTimeSlots.premium, 60, 'premium');
-          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">⭐ غسيل ممتاز: ${timeRange}</div>`;
-        }
-
-        if (availableTimeSlots.special && availableTimeSlots.special.length > 0) {
-          const timeRange = formatTimeRange(availableTimeSlots.special, 120, 'special');
-          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل خصوصي: ${timeRange}</div>`;
-        }
-
-        if (availableTimeSlots.ultra && availableTimeSlots.ultra.length > 0) {
-          const timeRange = formatTimeRange(availableTimeSlots.ultra, 180, 'ultra');
-          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ${timeRange}</div>`;
-        }
-        
-        html += `</div>`;
-        
-        const unavailableTypes = [];
-        if (selectedWashes.includes('premium') && availableTimeSlots.premium.length === 0) unavailableTypes.push('⭐ غسيل ممتاز');
-        if (selectedWashes.includes('special') && availableTimeSlots.special.length === 0) unavailableTypes.push('💎 غسيل خصوصي');
-        if (selectedWashes.includes('ultra') && availableTimeSlots.ultra.length === 0) unavailableTypes.push('👑 غسيل ألترا');
-        
-        if (unavailableTypes.length > 0) {
-          html += `<div class="warning-box">
-            <div style="font-size: 12px; font-weight: 700; color: #fbbf24; margin-bottom: 4px;">⚠️ غير متوفر اليوم:</div>`;
-          
-          unavailableTypes.forEach(type => {
-            html += `<div style="font-size: 11px; color: #fbbf24; margin: 2px 0;">${type}</div>`;
-          });
-          
-          html += `</div>`;
-        }
-      }
-      
-      if (todayAppointments.length > 0) {
-        html += `<div style="margin-top: 12px; font-size: 12px; font-weight: 700; color: #F2BC1B; margin-bottom: 8px;">المواعيد المحجوزة:</div>`;
-        
-        html += `
-          <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 5px; overflow: hidden;">
-            <div style="overflow-x: auto;">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="min-width: 120px;">تاريخ الموعد</th>
-                    <th style="min-width: 90px;">وقت الموعد</th>
-                    <th style="min-width: 90px;">رقم الطلب</th>
-                    <th style="min-width: 140px;">اسم العميل</th>
-                    <th style="min-width: 120px;">المنطقة</th>
-                    <th style="min-width: 100px;">نوع الغسيل</th>
-                    <th style="min-width: 90px;">حالة الدفع</th>
-                  </tr>
-                </thead>
-                <tbody>
-        `;
-        
-        todayAppointments.forEach((apt) => {
-          const timeParts = apt.time.split(':').map(Number);
-          const hours = timeParts[0];
-          const minutes = timeParts[1];
-          const period = hours >= 12 ? 'مساءً' : 'صباحاً';
-          const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
-          const displayTime = `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
-          
-          const paymentVal = (apt.payment || '').toString().toLowerCase();
-          let paymentStatus = 'غير محدد';
-          if (paymentVal.includes('نعم') || paymentVal.includes('yes') || paymentVal === 'y' || paymentVal === 'true') {
-            paymentStatus = '✅ تم';
-          } else if (paymentVal.includes('لا') || paymentVal.includes('no') || paymentVal === 'n' || paymentVal === 'false') {
-            paymentStatus = '❌ لم يتم';
-          }
-          
-          const displayDate = apt.date || '-';
-          const location = apt.location || 'غير محدد';
-          const washName = apt.washType || '-';
-          const orderNumber = apt.qrOrder || '-';
-          const customer = apt.customerName || 'غير محدد';
+        todayAppointments.forEach(apt => {
+          const [h, m] = apt.time.split(':').map(Number);
+          const period = h >= 12 ? 'مساءً' : 'صباحاً';
+          const displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+          const displayTime = `${displayH}:${String(m).padStart(2, '0')} ${period}`;
           
           html += `
-            <tr>
-              <td>${displayDate}</td>
-              <td style="font-weight: 600; color: #F2BC1B;">${displayTime}</td>
-              <td>${orderNumber}</td>
-              <td>${customer}</td>
-              <td>${location}</td>
-              <td>${washName}</td>
-              <td>${paymentStatus}</td>
-            </tr>
+            <div style="background: #2a2a2a; padding: 8px; border-radius: 4px; margin-bottom: 6px; border: 1px solid #444;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 13px; color: #F2BC1B; font-weight: 600;">🕐 ${displayTime}</div>
+                  <div style="font-size: 11px; color: #999; margin-top: 2px;">👤 ${apt.customerName}</div>
+                  <div style="font-size: 11px; color: #999;">🔧 ${apt.technician}</div>
+                </div>
+                <div style="text-align: left;">
+                  <div style="font-size: 11px; color: #aaa;">📋 ${apt.qrOrder}</div>
+                  <div style="font-size: 11px; color: #aaa;">📍 ${apt.location}</div>
+                  <div style="font-size: 11px; color: #aaa;">⚙️ ${apt.serviceType}</div>
+                </div>
+              </div>
+            </div>
           `;
         });
         
-        html += `
-                </tbody>
-              </table>
-            </div>
-          </div>
-        `;
+        html += `</div>`;
       }
       
       availableSlots.innerHTML = html;
