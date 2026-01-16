@@ -767,11 +767,296 @@
     /* Important red message used in protection results (single red note as requested) */
     .prot-important{ margin-top:12px; padding:12px; border-radius:8px; background: rgba(127,29,29,0.04); border:1px solid #ef4444; color:#ffb3b3; font-weight:700 }
     .prot-toast{ position:fixed; top:80px; right:40px; background:#F2BC1B; color:#000; padding:12px 16px; border-radius:10px; border:1px solid rgba(0,0,0,0.12); box-shadow:0 12px 40px rgba(0,0,0,0.6); display:none; z-index:1500; font-weight:700 }
+    
+    /* Appointment Modal Styles */
+    .appointment-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .appointment-modal.active {
+      display: flex;
+    }
+    
+    .appointment-modal-content {
+      background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+      border: 1px solid #F2BC1B;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(242, 188, 27, 0.2);
+    }
+    
+    .appointment-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .appointment-modal-header h2 {
+      color: #F2BC1B;
+      font-size: 20px;
+      margin: 0;
+    }
+    
+    .appointment-modal-close {
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    
+    .appointment-modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    
+    .appointment-form-group {
+      margin-bottom: 16px;
+    }
+    
+    .appointment-form-group label {
+      display: block;
+      color: #F2BC1B;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .appointment-form-control,
+    .appointment-form-select {
+      width: 100%;
+      padding: 12px;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    
+    .appointment-form-control:focus,
+    .appointment-form-select:focus {
+      outline: none;
+      border-color: #F2BC1B;
+      box-shadow: 0 0 0 3px rgba(242, 188, 27, 0.1);
+    }
+    
+    .appointment-form-control::placeholder {
+      color: #666;
+    }
+    
+    /* Datetime input styling */
+    input[type="datetime-local"].appointment-form-control {
+      color-scheme: dark;
+    }
+    
+    input[type="datetime-local"].appointment-form-control::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+    
+    .appointment-modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .appointment-btn-save,
+    .appointment-btn-cancel {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .appointment-btn-save {
+      background: #F2BC1B;
+      color: #000;
+    }
+    
+    .appointment-btn-save:hover {
+      background: #d9a616;
+      transform: translateY(-1px);
+    }
+    
+    .appointment-btn-save:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .appointment-btn-cancel {
+      background: #333;
+      color: #fff;
+    }
+    
+    .appointment-btn-cancel:hover {
+      background: #444;
+    }
+    
+    .appointment-status-message {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      display: none;
+    }
+    
+    .appointment-status-message.error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      display: block;
+    }
+    
+    .appointment-status-message.success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid #10b981;
+      color: #6ee7b7;
+      display: block;
+    }
+    
+    .appointment-status-message.info {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid #3b82f6;
+      color: #93c5fd;
+      display: block;
+    }
+    
+    .appointment-success-toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
+      z-index: 99999;
+      font-weight: 600;
+      animation: slideDownToast 0.3s ease-out;
+    }
+    
+    @keyframes slideDownToast {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+    
+    .hidden {
+      display: none;
+    }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
+  <!-- Appointment Modal -->
+  <div class="appointment-modal" id="appointmentModal">
+    <div class="appointment-modal-content">
+      <div class="appointment-modal-header">
+        <h2 id="appointmentModalTitle">🗓️ تسجيل موعد جديد</h2>
+        <button class="appointment-modal-close" id="appointmentModalClose">✕</button>
+      </div>
+      
+      <div class="appointment-status-message" id="appointmentStatusMessage"></div>
+      
+      <form id="appointmentForm">
+        <div class="appointment-form-group">
+          <label for="appointmentDateTime">تاريخ ووقت الموعد *</label>
+          <input type="datetime-local" id="appointmentDateTime" class="appointment-form-control" required>
+        </div>
+
+        <div class="appointment-form-group">
+          <label for="appointmentQrOrder">رقم الطلب *</label>
+          <input type="text" id="appointmentQrOrder" class="appointment-form-control" placeholder="أدخل رقم الطلب" required>
+        </div>
+
+        <div class="appointment-form-group">
+          <label for="appointmentCustomerName">اسم العميل *</label>
+          <input type="text" id="appointmentCustomerName" class="appointment-form-control" placeholder="أدخل اسم العميل" required>
+        </div>
+
+        <div class="appointment-form-group">
+          <label for="appointmentLocation">المنطقة *</label>
+          <input type="text" id="appointmentLocation" class="appointment-form-control" placeholder="أدخل المنطقة" required>
+        </div>
+
+        <div class="appointment-form-group" id="washTypeGroup">
+          <label for="appointmentWashType">نوع الغسيل *</label>
+          <select id="appointmentWashType" class="appointment-form-select" required>
+            <option value="">اختر نوع الغسيل</option>
+            <option value="غسيل ممتاز">⭐ غسيل ممتاز</option>
+            <option value="غسيل خصوصي">💎 غسيل خصوصي</option>
+            <option value="غسيل ألترا">👑 غسيل ألترا</option>
+          </select>
+        </div>
+        
+        <div class="appointment-form-group" id="paymentGroup">
+          <label for="appointmentPayment">حالة الدفع *</label>
+          <select id="appointmentPayment" class="appointment-form-select" required>
+            <option value="">اختر حالة الدفع</option>
+            <option value="نعم">✅ تم الدفع</option>
+            <option value="لا">❌ لم يتم الدفع</option>
+          </select>
+        </div>
+        
+        <div class="appointment-form-group hidden" id="serviceTypeGroup">
+          <label for="appointmentServiceType">نوع الخدمة *</label>
+          <input type="text" id="appointmentServiceType" class="appointment-form-control" placeholder="أدخل نوع الخدمة">
+        </div>
+        
+        <div class="appointment-form-group hidden" id="technicianGroup">
+          <label for="appointmentTechnician">الفنيين *</label>
+          <select id="appointmentTechnician" class="appointment-form-select">
+            <option value="">اختر الفنيين</option>
+            <option value="يوسف و رحمه الله">🔧 يوسف و رحمه الله</option>
+            <option value="سيد و رامس">🔧 سيد و رامس</option>
+            <option value="محمد و علي">🔧 محمد و علي</option>
+          </select>
+        </div>
+      </form>
+
+      <div class="appointment-modal-buttons">
+        <button type="submit" form="appointmentForm" class="appointment-btn-save" id="appointmentSaveBtn">حفظ الموعد</button>
+        <button type="button" class="appointment-btn-cancel" id="appointmentCancelBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
   <div class="dashboard-wrapper" id="dashboardWrapper"><!-- Sidebar -->
    <aside class="sidebar" id="sidebar">
     <div class="logo-section"><img src="https://i.top4top.io/p_35860o72q1.png" alt="Logo">
@@ -3342,11 +3627,11 @@
       techFilter.onchange = filterAndRender;
 
       document.getElementById('mechRegisterBtn').onclick = () => {
-        window.open('https://forms.gle/bEaLAvkrtcSoJWQb8', '_blank');
+        openAppointmentModal('mechanical');
       };
 
       document.getElementById('mechEditBtn').onclick = () => {
-        window.open('https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing', '_blank');
+        window.open('https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit#gid=0', '_blank');
       };
 
       section.classList.remove('hidden');
@@ -3436,6 +3721,7 @@
           </div>
           <div style="display:flex;gap:8px;">
             <button id="bookAppointmentBtn" class="btn-primary">📅 حجز الموعد</button>
+            <button id="editWashAppointmentBtn" class="btn-primary" style="background:#666;color:#fff;">✏️ تعديل موعد</button>
           </div>
           <div id="availableSlots" style="margin-top: 12px;"></div>
         </div>
@@ -3443,25 +3729,11 @@
       
       // Book Appointment button handler — open Google Form directly
       document.getElementById('bookAppointmentBtn').onclick = () => {
-        // Build pre-filled form URL
-        let url = FORM_ACTION;
-        const emptyPayload = {
-          date: document.getElementById('appointmentDate').value || '',
-          time: '',
-          qrOrder: '',
-          customerName: '',
-          phone: '',
-          location: '',
-          washType: (formData.selectedWashes || []).join(', '),
-          payment: ''
-        };
-        Object.keys(entryMapping).forEach(key => {
-          const fieldName = entryMapping[key];
-          const value = encodeURIComponent(emptyPayload[key] || '');
-          url += `&${fieldName}=${value}`;
-        });
-        // Open the form in a new window
-        window.open(url, 'googleFormWindow', 'width=800,height=600');
+        openAppointmentModal('wash');
+      
+            document.getElementById('editWashAppointmentBtn').onclick = () => {
+              window.open('https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing', '_blank');
+            };
       };
 
       // Edit Appointment button (restore functionality)
@@ -4989,6 +5261,366 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     // Load data on page load
     loadAllSheets();
+    
+    // ==================== APPOINTMENT SYSTEM ====================
+    
+    // Configuration
+    const GOOGLE_SHEET_ID = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+    const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
+    
+    // Track appointment type (wash or mechanical)
+    let currentAppointmentType = null;
+    
+    // Track cached appointments
+    let appointmentsCache = [];
+    
+    // Open appointment modal
+    function openAppointmentModal(type) {
+      currentAppointmentType = type;
+      const modal = document.getElementById('appointmentModal');
+      const form = document.getElementById('appointmentForm');
+      const statusMsg = document.getElementById('appointmentStatusMessage');
+      const modalTitle = document.getElementById('appointmentModalTitle');
+      
+      // Reset form
+      form.reset();
+      statusMsg.className = 'appointment-status-message';
+      statusMsg.textContent = '';
+      
+      // Show/hide fields based on type
+      const washTypeGroup = document.getElementById('washTypeGroup');
+      const paymentGroup = document.getElementById('paymentGroup');
+      const serviceTypeGroup = document.getElementById('serviceTypeGroup');
+      const technicianGroup = document.getElementById('technicianGroup');
+      
+      const washType = document.getElementById('appointmentWashType');
+      const payment = document.getElementById('appointmentPayment');
+      const serviceType = document.getElementById('appointmentServiceType');
+      const technician = document.getElementById('appointmentTechnician');
+      
+      if (type === 'wash') {
+        modalTitle.textContent = '🗓️ تسجيل موعد غسيل';
+        washTypeGroup.classList.remove('hidden');
+        paymentGroup.classList.remove('hidden');
+        serviceTypeGroup.classList.add('hidden');
+        technicianGroup.classList.add('hidden');
+        washType.required = true;
+        payment.required = true;
+        serviceType.required = false;
+        technician.required = false;
+      } else if (type === 'mechanical') {
+        modalTitle.textContent = '🗓️ تسجيل موعد ميكانيكية';
+        washTypeGroup.classList.add('hidden');
+        paymentGroup.classList.add('hidden');
+        serviceTypeGroup.classList.remove('hidden');
+        technicianGroup.classList.remove('hidden');
+        washType.required = false;
+        payment.required = false;
+        serviceType.required = true;
+        technician.required = true;
+      }
+      
+      // Set minimum datetime to now
+      const appointmentDateTime = document.getElementById('appointmentDateTime');
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      appointmentDateTime.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+      
+      // Show modal
+      modal.classList.add('active');
+      
+      // Load appointments for checking
+      loadAppointmentsForChecking(type);
+    }
+    
+    // Close appointment modal
+    function closeAppointmentModal() {
+      const modal = document.getElementById('appointmentModal');
+      modal.classList.remove('active');
+      currentAppointmentType = null;
+    }
+    
+    // Load appointments from Google Sheet
+    async function loadAppointmentsForChecking(type) {
+      try {
+        const sheetName = type === 'wash' ? 'WASH Sheet' : 'مواعيد الميكانيكيه';
+        let csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        
+        let response = await fetch(csvUrl, {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-cache'
+        });
+        
+        if (!response.ok) {
+          csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=0`;
+          response = await fetch(csvUrl, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache'
+          });
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Failed to load: ${response.status}`);
+        }
+        
+        const csvText = await response.text();
+        if (!csvText || csvText.trim().length === 0) {
+          appointmentsCache = [];
+          return;
+        }
+        
+        const rows = parseCSV(csvText);
+        if (!rows || rows.length < 2) {
+          appointmentsCache = [];
+          return;
+        }
+        
+        appointmentsCache = [];
+        
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          const date = (row[0] || '').toString().trim();
+          const time = (row[1] || '').toString().trim();
+          
+          if (date && time) {
+            let parsedDate = date;
+            const dateObj = new Date(date);
+            if (!isNaN(dateObj.getTime())) {
+              const year = dateObj.getFullYear();
+              const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+              const day = String(dateObj.getDate()).padStart(2, '0');
+              parsedDate = `${year}-${month}-${day}`;
+            }
+            
+            let parsedTime = time;
+            const timeMatch = time.match(/(\d{1,2}):(\d{2})/);
+            if (timeMatch) {
+              let hours = parseInt(timeMatch[1], 10);
+              const mins = parseInt(timeMatch[2], 10);
+              const isPM = /pm|م|مساء/i.test(time);
+              const isAM = /am|ص|صباح/i.test(time);
+              if (isPM && hours !== 12) hours += 12;
+              if (isAM && hours === 12) hours = 0;
+              parsedTime = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+            }
+            
+            const appt = {
+              date: parsedDate,
+              time: parsedTime
+            };
+            
+            if (type === 'mechanical' && row[6]) {
+              appt.technician = row[6].toString().trim();
+            }
+            
+            appointmentsCache.push(appt);
+          }
+        }
+        
+        console.log(`Loaded ${appointmentsCache.length} appointments for ${type}`);
+      } catch (error) {
+        console.error('Error loading appointments:', error);
+        appointmentsCache = [];
+      }
+    }
+    
+    // Check if time slot is available
+    function isTimeSlotAvailable(date, time, technician = null) {
+      for (let apt of appointmentsCache) {
+        if (apt.date === date && apt.time === time) {
+          if (currentAppointmentType === 'mechanical') {
+            if (apt.technician && technician && apt.technician === technician) {
+              return false;
+            }
+          } else {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    
+    // Save appointment to SheetDB
+    async function saveAppointmentToSheetDB(appointmentData) {
+      try {
+        const payload = {
+          'تاريخ الموعد': appointmentData.date,
+          'وقت الموعد': appointmentData.time,
+          'رقم الطلب': appointmentData.qrOrder,
+          'اسم العميل': appointmentData.customerName,
+          'المنطقة': appointmentData.location
+        };
+        
+        if (currentAppointmentType === 'wash') {
+          payload['نوع الغسيل'] = appointmentData.washType;
+          payload['حالة الدفع'] = appointmentData.payment;
+        } else if (currentAppointmentType === 'mechanical') {
+          payload['نوع الخدمه'] = appointmentData.serviceType;
+          payload['الفنين'] = appointmentData.technician;
+        }
+        
+        console.log('Sending to SheetDB:', JSON.stringify(payload));
+        
+        const response = await fetch(SHEETDB_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        const responseData = await response.json();
+        
+        if (!response.ok) {
+          console.error('SheetDB error:', responseData);
+          throw new Error(responseData.error || `HTTP ${response.status}`);
+        }
+        
+        console.log('Success response:', responseData);
+        return { success: true };
+      } catch (error) {
+        console.error('Error saving appointment:', error);
+        throw error;
+      }
+    }
+    
+    // Show success toast
+    function showSuccessToast() {
+      const toast = document.createElement('div');
+      toast.className = 'appointment-success-toast';
+      toast.textContent = '✅ تم حفظ الموعد بنجاح';
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideDownToast 0.3s ease-out reverse';
+        setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+    
+    // Initialize appointment system
+    document.addEventListener('DOMContentLoaded', function() {
+      const appointmentForm = document.getElementById('appointmentForm');
+      const appointmentModalClose = document.getElementById('appointmentModalClose');
+      const appointmentCancelBtn = document.getElementById('appointmentCancelBtn');
+      const appointmentSaveBtn = document.getElementById('appointmentSaveBtn');
+      
+      if (appointmentForm) {
+        appointmentForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const statusMsg = document.getElementById('appointmentStatusMessage');
+          const appointmentDateTime = document.getElementById('appointmentDateTime').value;
+          const qrOrder = document.getElementById('appointmentQrOrder').value.trim();
+          const customerName = document.getElementById('appointmentCustomerName').value.trim();
+          const location = document.getElementById('appointmentLocation').value.trim();
+          
+          appointmentSaveBtn.disabled = true;
+          statusMsg.className = 'appointment-status-message';
+          statusMsg.textContent = '';
+          
+          let washType = '', payment = '', serviceType = '', technician = '';
+          
+          if (currentAppointmentType === 'wash') {
+            washType = document.getElementById('appointmentWashType').value;
+            payment = document.getElementById('appointmentPayment').value;
+            
+            if (!appointmentDateTime || !qrOrder || !customerName || !location || !washType || !payment) {
+              statusMsg.className = 'appointment-status-message error';
+              statusMsg.textContent = '❌ جميع الحقول مطلوبة';
+              appointmentSaveBtn.disabled = false;
+              return;
+            }
+          } else if (currentAppointmentType === 'mechanical') {
+            serviceType = document.getElementById('appointmentServiceType').value.trim();
+            technician = document.getElementById('appointmentTechnician').value;
+            
+            if (!appointmentDateTime || !qrOrder || !customerName || !location || !serviceType || !technician) {
+              statusMsg.className = 'appointment-status-message error';
+              statusMsg.textContent = '❌ جميع الحقول مطلوبة';
+              appointmentSaveBtn.disabled = false;
+              return;
+            }
+          }
+          
+          const [appointmentDate, appointmentTime] = appointmentDateTime.split('T');
+          
+          const available = isTimeSlotAvailable(appointmentDate, appointmentTime, technician);
+          
+          if (!available) {
+            statusMsg.className = 'appointment-status-message error';
+            if (currentAppointmentType === 'mechanical') {
+              statusMsg.textContent = '❌ هذا الفني محجوز في نفس الوقت. يرجى اختيار وقت آخر أو فني آخر';
+            } else {
+              statusMsg.textContent = '❌ هذا الموعد محجوز. يرجى اختيار وقت آخر';
+            }
+            appointmentSaveBtn.disabled = false;
+            return;
+          }
+          
+          statusMsg.className = 'appointment-status-message info';
+          statusMsg.textContent = '⏳ جاري حفظ الموعد...';
+          
+          try {
+            const data = {
+              date: appointmentDate,
+              time: appointmentTime,
+              qrOrder,
+              customerName,
+              location
+            };
+            
+            if (currentAppointmentType === 'wash') {
+              data.washType = washType;
+              data.payment = payment;
+            } else if (currentAppointmentType === 'mechanical') {
+              data.serviceType = serviceType;
+              data.technician = technician;
+            }
+            
+            await saveAppointmentToSheetDB(data);
+            
+            appointmentsCache.push({
+              date: appointmentDate,
+              time: appointmentTime,
+              technician: technician || null
+            });
+            
+            closeAppointmentModal();
+            showSuccessToast();
+            appointmentForm.reset();
+            
+          } catch (error) {
+            statusMsg.className = 'appointment-status-message error';
+            statusMsg.textContent = `❌ خطأ في حفظ الموعد: ${error.message}`;
+            appointmentSaveBtn.disabled = false;
+          }
+        });
+      }
+      
+      if (appointmentModalClose) {
+        appointmentModalClose.addEventListener('click', closeAppointmentModal);
+      }
+      if (appointmentCancelBtn) {
+        appointmentCancelBtn.addEventListener('click', closeAppointmentModal);
+      }
+      
+      const appointmentModal = document.getElementById('appointmentModal');
+      if (appointmentModal) {
+        appointmentModal.addEventListener('click', (e) => {
+          if (e.target === appointmentModal) {
+            closeAppointmentModal();
+          }
+        });
+      }
+    });
   </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
