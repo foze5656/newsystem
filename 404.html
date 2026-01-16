@@ -1090,21 +1090,17 @@
         </div>
 
         <div class="appointment-form-group">
-          <label for="appointmentWashType">نوع الغسيل *</label>
-          <select id="appointmentWashType" class="appointment-form-select" required>
-            <option value="">اختر نوع الغسيل</option>
-            <option value="غسيل ممتاز">⭐ غسيل ممتاز</option>
-            <option value="غسيل خصوصي">💎 غسيل خصوصي</option>
-            <option value="غسيل ألترا">👑 غسيل ألترا</option>
-          </select>
+          <label for="appointmentServiceType">نوع الخدمة *</label>
+          <input type="text" id="appointmentServiceType" class="appointment-form-control" placeholder="أدخل نوع الخدمة" required>
         </div>
 
         <div class="appointment-form-group">
-          <label for="appointmentPayment">حالة الدفع *</label>
-          <select id="appointmentPayment" class="appointment-form-select" required>
-            <option value="">اختر حالة الدفع</option>
-            <option value="نعم">✅ تم الدفع</option>
-            <option value="لا">❌ لم يتم الدفع</option>
+          <label for="appointmentTechnician">الفنيين *</label>
+          <select id="appointmentTechnician" class="appointment-form-select" required>
+            <option value="">اختر الفنيين</option>
+            <option value="يوسف و رحمه الله">🔧 يوسف و رحمه الله</option>
+            <option value="سيد و رامس">🔧 سيد و رامس</option>
+            <option value="محمد و علي">🔧 محمد و علي</option>
           </select>
         </div>
       </form>
@@ -3686,7 +3682,7 @@
       techFilter.onchange = filterAndRender;
 
       document.getElementById('mechRegisterBtn').onclick = () => {
-        window.open('https://forms.gle/bEaLAvkrtcSoJWQb8', '_blank');
+        openAppointmentModal();
       };
 
       document.getElementById('mechEditBtn').onclick = () => {
@@ -5457,15 +5453,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     async function saveAppointmentToSheetDB(appointmentData) {
       try {
         // SheetDB expects field names that match the sheet columns
-        // Using Arabic header names if they exist in the sheet
+        // Using Arabic header names for mechanical services
         const payload = {
           'تاريخ الموعد': appointmentData.date,
           'وقت الموعد': appointmentData.time,
           'رقم الطلب': appointmentData.qrOrder,
           'اسم العميل': appointmentData.customerName,
           'المنطقة': appointmentData.location,
-          'نوع الغسيل': appointmentData.washType,
-          'حالة الدفع': appointmentData.payment
+          'نوع الخدمة': appointmentData.serviceType,
+          'الفنيين': appointmentData.technician
         };
 
         console.log('Sending to SheetDB:', JSON.stringify(payload));
@@ -5525,8 +5521,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           const qrOrder = document.getElementById('appointmentQrOrder').value.trim();
           const customerName = document.getElementById('appointmentCustomerName').value.trim();
           const location = document.getElementById('appointmentLocation').value.trim();
-          const washType = document.getElementById('appointmentWashType').value;
-          const payment = document.getElementById('appointmentPayment').value;
+          const serviceType = document.getElementById('appointmentServiceType').value.trim();
+          const technician = document.getElementById('appointmentTechnician').value;
 
           // Disable save button during submission
           appointmentSaveBtn.disabled = true;
@@ -5534,7 +5530,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           statusMsg.textContent = '';
 
           // Validate required fields
-          if (!appointmentDateTime || !qrOrder || !customerName || !location || !washType || !payment) {
+          if (!appointmentDateTime || !qrOrder || !customerName || !location || !serviceType || !technician) {
             statusMsg.className = 'appointment-status-message error';
             statusMsg.textContent = '❌ جميع الحقول مطلوبة';
             appointmentSaveBtn.disabled = false;
@@ -5543,58 +5539,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
           // Split datetime into date and time
           const [appointmentDate, appointmentTime] = appointmentDateTime.split('T');
-
-          // Enforce working window 10:00 AM to 10:00 PM including travel time
-          const [timeHours, timeMinutes] = appointmentTime.split(':').map(Number);
-          const startMinutes = timeHours * 60 + timeMinutes;
-          const washDurations = { premium: 60, special: 120, ultra: 180 };
-          const travelTime = 30;
-          const serviceDuration = (washDurations[washType] || 60) + travelTime;
-          const workStart = 10 * 60;   // 10:00 AM
-          const workEnd = 22 * 60;     // 10:00 PM
-
-          if (startMinutes < workStart || (startMinutes + serviceDuration) > workEnd) {
-            statusMsg.className = 'appointment-status-message error';
-            let suggestion = '';
-            const todayStr = new Date().toISOString().split('T')[0];
-            const isToday = appointmentDate === todayStr;
-            if (startMinutes < workStart) {
-              suggestion = isToday ? 'أقرب وقت متاح اليوم 10:00 صباحاً' : 'يرجى اختيار وقت بعد 10:00 صباحاً';
-            } else {
-              suggestion = isToday ? 'الوقت غير كاف لليوم، أقرب موعد غداً 10:00 صباحاً' : 'اختر وقتاً لا يتجاوز 10:00 مساءً';
-            }
-            statusMsg.textContent = `❌ الوقت غير متاح ضمن دوام العمل. ${suggestion}`;
-            appointmentSaveBtn.disabled = false;
-            return;
-          }
-
-          // If today and remaining time is not enough for selected service
-          const now = new Date();
-          const todayStr = now.toISOString().split('T')[0];
-          if (appointmentDate === todayStr) {
-            const remainingToday = (22 * 60) - (now.getHours() * 60 + now.getMinutes());
-            if (remainingToday < serviceDuration && startMinutes <= (now.getHours() * 60 + now.getMinutes())) {
-              statusMsg.className = 'appointment-status-message error';
-              statusMsg.textContent = '❌ الوقت المتبقي اليوم غير كاف، أقرب موعد غداً 10:00 صباحاً';
-              appointmentSaveBtn.disabled = false;
-              return;
-            }
-          }
-          
-          // Check if time slot is available
-          const availabilityCheck = isTimeSlotAvailable(appointmentDate, appointmentTime, washType);
-          
-          if (!availabilityCheck.available) {
-            if (availabilityCheck.reason === 'friday_closed') {
-              statusMsg.className = 'appointment-status-message error';
-              statusMsg.textContent = '❌ الغسيل غير متوفر اليوم';
-            } else if (availabilityCheck.reason === 'time_conflict') {
-              statusMsg.className = 'appointment-status-message error';
-              statusMsg.textContent = '❌ هذا الموعد محجوز';
-            }
-            appointmentSaveBtn.disabled = false;
-            return;
-          }
 
           // Show loading message
           statusMsg.className = 'appointment-status-message info';
@@ -5608,15 +5552,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               qrOrder,
               customerName,
               location,
-              washType,
-              payment
+              serviceType,
+              technician
             });
 
             // Update cache
             appointmentsCheckCache.push({
               date: appointmentDate,
               time: appointmentTime,
-              washType: washType
+              serviceType: serviceType
             });
 
             // Close modal immediately
@@ -5627,11 +5571,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             
             // Reset form
             appointmentForm.reset();
-
-            // Reload appointments list after a short delay
-            setTimeout(() => {
-              loadCarWashAppointments(document.getElementById('appointmentDate').value);
-            }, 500);
 
           } catch (error) {
             statusMsg.className = 'appointment-status-message error';
