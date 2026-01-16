@@ -3686,7 +3686,7 @@
       };
 
       document.getElementById('mechEditBtn').onclick = () => {
-        window.open('https://docs.google.com/spreadsheets/d/1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4/edit?usp=sharing', '_blank');
+        window.open('https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing', '_blank');
       };
 
       section.classList.remove('hidden');
@@ -5200,14 +5200,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       });
     }
 
-    // SheetDB API endpoint for saving mechanical appointments
-    const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/jcvn1kw9zy7o7';
+    // SheetDB API endpoint for saving appointments
+    const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
 
-    // Google Sheet for reading mechanical appointments (read-only)
+    // Google Sheet for reading appointments (read-only)
     // ⚠️ IMPORTANT: The Google Sheet must be shared with "Anyone with the link can view"
-    // Share link: https://docs.google.com/spreadsheets/d/1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4/edit?usp=sharing
-    const APPOINTMENT_SHEET_ID = '1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4';
-    const APPOINTMENT_SHEET_NAME = 'Sheet1';
+    // Share link: https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing
+    const APPOINTMENT_SHEET_ID = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+    const APPOINTMENT_SHEET_NAME = 'WASH Sheet';
 
     // Track current appointments data
     let appointmentsCheckCache = [];
@@ -5460,8 +5460,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           'رقم الطلب': appointmentData.qrOrder,
           'اسم العميل': appointmentData.customerName,
           'المنطقة': appointmentData.location,
-          'نوع الخدمه': appointmentData.serviceType,
-          'الفنين': appointmentData.technician
+          'نوع الخدمة': appointmentData.serviceType,
+          'الفنيين': appointmentData.technician
         };
 
         console.log('Sending to SheetDB:', JSON.stringify(payload));
