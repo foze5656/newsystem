@@ -767,351 +767,11 @@
     /* Important red message used in protection results (single red note as requested) */
     .prot-important{ margin-top:12px; padding:12px; border-radius:8px; background: rgba(127,29,29,0.04); border:1px solid #ef4444; color:#ffb3b3; font-weight:700 }
     .prot-toast{ position:fixed; top:80px; right:40px; background:#F2BC1B; color:#000; padding:12px 16px; border-radius:10px; border:1px solid rgba(0,0,0,0.12); box-shadow:0 12px 40px rgba(0,0,0,0.6); display:none; z-index:1500; font-weight:700 }
-
-    /* Modal Styles for Appointment Booking */
-    .appointment-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(4px);
-    }
-
-    .appointment-modal.active {
-      display: flex;
-    }
-
-    .appointment-modal-content {
-      background: #1a1a1a;
-      border: 2px solid #F2BC1B;
-      border-radius: 12px;
-      padding: 24px;
-      width: 90%;
-      max-width: 500px;
-      max-height: 85vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-      animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-      from {
-        transform: translateY(-50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .appointment-modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #333;
-    }
-
-    .appointment-modal-header h2 {
-      color: #F2BC1B;
-      font-size: 18px;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .appointment-modal-close {
-      background: none;
-      border: none;
-      color: #F2BC1B;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 0;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-
-    .appointment-modal-close:hover {
-      color: #fff;
-      transform: scale(1.1);
-    }
-
-    .appointment-form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    .appointment-form-group label {
-      font-size: 13px;
-      color: #999;
-      font-weight: 600;
-    }
-
-    .appointment-form-control {
-      background: #262626;
-      border: 1px solid #404040;
-      border-radius: 4px;
-      padding: 10px 12px;
-      color: #fff;
-      font-size: 14px;
-      transition: all 0.2s ease;
-      font-family: 'Cairo', sans-serif;
-    }
-
-    .appointment-form-control:focus {
-      outline: none;
-      border-color: #F2BC1B;
-      background: #2d2d2d;
-      box-shadow: 0 0 0 3px rgba(242, 188, 27, 0.1);
-    }
-
-    .appointment-form-control::placeholder {
-      color: #666;
-    }
-
-    /* Custom datetime-local styling */
-    input[type="datetime-local"].appointment-form-control {
-      cursor: pointer;
-    }
-
-    input[type="datetime-local"].appointment-form-control::-webkit-calendar-picker-indicator {
-      cursor: pointer;
-      filter: invert(0.8) saturate(2) hue-rotate(45deg);
-    }
-
-    input[type="datetime-local"].appointment-form-control::-webkit-outer-spin-button,
-    input[type="datetime-local"].appointment-form-control::-webkit-inner-spin-button {
-      display: none;
-    }
-
-    .appointment-form-select {
-      background: #262626;
-      border: 1px solid #404040;
-      border-radius: 4px;
-      padding: 10px 12px;
-      color: #fff;
-      font-size: 14px;
-      transition: all 0.2s ease;
-      font-family: 'Cairo', sans-serif;
-      cursor: pointer;
-    }
-
-    .appointment-form-select:focus {
-      outline: none;
-      border-color: #F2BC1B;
-      background: #2d2d2d;
-      box-shadow: 0 0 0 3px rgba(242, 188, 27, 0.1);
-    }
-
-    .appointment-form-select option {
-      background: #0a0a0a;
-      color: #FFD700;
-      padding: 8px;
-    }
-
-    .appointment-form-select option:checked {
-      background: #B8860B;
-      color: #000;
-    }
-
-    .appointment-modal-buttons {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-      padding-top: 12px;
-      border-top: 1px solid #333;
-    }
-
-    .appointment-btn-save {
-      flex: 1;
-      background: #F2BC1B;
-      color: #000;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 5px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: 'Cairo', sans-serif;
-    }
-
-    .appointment-btn-save:hover {
-      background: #d9a616;
-      transform: translateY(-2px);
-    }
-
-    .appointment-btn-save:disabled {
-      background: #666;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .appointment-btn-cancel {
-      flex: 1;
-      background: #2a2a2a;
-      color: #999;
-      border: 1px solid #404040;
-      padding: 12px 20px;
-      border-radius: 5px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: 'Cairo', sans-serif;
-    }
-
-    .appointment-btn-cancel:hover {
-      background: #353535;
-      border-color: #F2BC1B;
-      color: #F2BC1B;
-    }
-
-    .appointment-status-message {
-      padding: 12px;
-      border-radius: 5px;
-      font-size: 13px;
-      margin-bottom: 16px;
-      display: none;
-    }
-
-    .appointment-status-message.error {
-      background: #4a1a1a;
-      border: 1px solid #ef4444;
-      color: #fca5a5;
-      display: block;
-    }
-
-    .appointment-status-message.success {
-      background: #1a4a2a;
-      border: 1px solid #10b981;
-      color: #a7f3d0;
-      display: block;
-    }
-
-    .appointment-status-message.info {
-      background: #1a3a52;
-      border: 1px solid #3b82f6;
-      color: #93c5fd;
-      display: block;
-    }
-
-    .appointment-status-message.warning {
-      background: #4a3a1a;
-      border: 1px solid #f59e0b;
-      color: #fbbf24;
-      display: block;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Success Toast Notification */
-    .appointment-success-toast {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #10b981;
-      color: #fff;
-      padding: 16px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 700;
-      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
-      z-index: 2500;
-      animation: slideDownToast 0.3s ease-out;
-    }
-
-    @keyframes slideDownToast {
-      from {
-        transform: translate(-50%, -100px);
-        opacity: 0;
-      }
-      to {
-        transform: translate(-50%, 0);
-        opacity: 1;
-      }
-    }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <!-- Appointment Modal -->
-  <div class="appointment-modal" id="appointmentModal">
-    <div class="appointment-modal-content">
-      <div class="appointment-modal-header">
-        <h2>🗓️ تسجيل موعد جديد</h2>
-        <button class="appointment-modal-close" id="appointmentModalClose">✕</button>
-      </div>
-      
-      <div class="appointment-status-message" id="appointmentStatusMessage"></div>
-      
-      <form id="appointmentForm">
-        <div class="appointment-form-group">
-          <label for="appointmentDateTime">تاريخ ووقت الموعد *</label>
-          <input type="datetime-local" id="appointmentDateTime" class="appointment-form-control" required>
-        </div>
-
-        <div id="availableSlotsPreview" class="appointment-form-group hidden" style="margin-top: -8px;">
-          <div style="font-size: 12px; color: #10b981; padding: 8px; background: rgba(16, 185, 129, 0.1); border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3);">
-            <div id="availableSlotsText"></div>
-          </div>
-        </div>
-
-        <div class="appointment-form-group">
-          <label for="appointmentQrOrder">رقم الطلب *</label>
-          <input type="text" id="appointmentQrOrder" class="appointment-form-control" placeholder="أدخل رقم الطلب" required>
-        </div>
-
-        <div class="appointment-form-group">
-          <label for="appointmentCustomerName">اسم العميل *</label>
-          <input type="text" id="appointmentCustomerName" class="appointment-form-control" placeholder="أدخل اسم العميل" required>
-        </div>
-
-        <div class="appointment-form-group">
-          <label for="appointmentLocation">المنطقة *</label>
-          <input type="text" id="appointmentLocation" class="appointment-form-control" placeholder="أدخل المنطقة" required>
-        </div>
-
-        <div class="appointment-form-group">
-          <label for="appointmentServiceType">نوع الخدمة *</label>
-          <input type="text" id="appointmentServiceType" class="appointment-form-control" placeholder="أدخل نوع الخدمة" required>
-        </div>
-
-        <div class="appointment-form-group">
-          <label for="appointmentTechnician">الفنيين *</label>
-          <select id="appointmentTechnician" class="appointment-form-select" required>
-            <option value="">اختر الفنيين</option>
-            <option value="يوسف و رحمه الله">🔧 يوسف و رحمه الله</option>
-            <option value="سيد و رامس">🔧 سيد و رامس</option>
-            <option value="محمد و علي">🔧 محمد و علي</option>
-          </select>
-        </div>
-      </form>
-
-      <div class="appointment-modal-buttons">
-        <button type="submit" form="appointmentForm" class="appointment-btn-save" id="appointmentSaveBtn">حفظ الموعد</button>
-        <button type="button" class="appointment-btn-cancel" id="appointmentCancelBtn">إلغاء</button>
-      </div>
-    </div>
-  </div>
-
   <div class="dashboard-wrapper" id="dashboardWrapper"><!-- Sidebar -->
    <aside class="sidebar" id="sidebar">
     <div class="logo-section"><img src="https://i.top4top.io/p_35860o72q1.png" alt="Logo">
@@ -3682,7 +3342,7 @@
       techFilter.onchange = filterAndRender;
 
       document.getElementById('mechRegisterBtn').onclick = () => {
-        openAppointmentModal();
+        window.open('https://forms.gle/bEaLAvkrtcSoJWQb8', '_blank');
       };
 
       document.getElementById('mechEditBtn').onclick = () => {
@@ -3781,9 +3441,27 @@
         </div>
       `;
       
-      // Book Appointment button handler — open Modal dialog
+      // Book Appointment button handler — open Google Form directly
       document.getElementById('bookAppointmentBtn').onclick = () => {
-        openAppointmentModal();
+        // Build pre-filled form URL
+        let url = FORM_ACTION;
+        const emptyPayload = {
+          date: document.getElementById('appointmentDate').value || '',
+          time: '',
+          qrOrder: '',
+          customerName: '',
+          phone: '',
+          location: '',
+          washType: (formData.selectedWashes || []).join(', '),
+          payment: ''
+        };
+        Object.keys(entryMapping).forEach(key => {
+          const fieldName = entryMapping[key];
+          const value = encodeURIComponent(emptyPayload[key] || '');
+          url += `&${fieldName}=${value}`;
+        });
+        // Open the form in a new window
+        window.open(url, 'googleFormWindow', 'width=800,height=600');
       };
 
       // Edit Appointment button (restore functionality)
@@ -3965,84 +3643,143 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     async function loadCarWashAppointments(selectedDate) {
       try {
-        // Get the spreadsheet data - try multiple methods
         const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=WASH%20Sheet`;
         
-        // Method 1: Try export with gid 0
-        let csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
-        let response = await fetch(csvUrl, {
-          method: 'GET',
+        const response = await fetch(csvUrl, {
           mode: 'cors',
-          cache: 'no-cache'
+          credentials: 'omit'
         });
-        
-        // If method 1 fails, try method 2: gviz endpoint
-        if (!response.ok) {
-          csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=0`;
-          response = await fetch(csvUrl, {
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache'
-          });
-        }
-        
-        if (!response.ok) {
-          throw new Error(`Failed: ${response.status}`);
-        }
+        if (!response.ok) throw new Error('Failed to load');
         
         const csvText = await response.text();
-        if (!csvText || csvText.trim().length === 0) {
-          throw new Error('Empty response');
-        }
-        
         const rows = parseCSV(csvText);
         
         carWashData = [];
-        
-        // Parse data directly by column position
-        // Columns: A=date, B=time, C=qrOrder, D=customerName, E=location, F=washType, G=payment
+
+        // Detect header indices so renamed columns (Arabic/English) still map correctly.
+        const headerRow = rows[0] || [];
+        const headers = headerRow.map(h => (h || '').toString().toLowerCase());
+
+        // Prefer exact column headers (Arabic) if provided by user A..I, otherwise fallback to keyword search
+        const headerMap = {};
+        headers.forEach((h, i) => headerMap[h.trim()] = i);
+
+        function findHeader(...candidates) {
+          for (const c of candidates) {
+            const key = c.toString().toLowerCase().trim();
+            // exact match
+            for (const hh in headerMap) {
+              if (hh.toLowerCase().trim() === key) return headerMap[hh];
+            }
+            // substring match
+            for (const hh in headerMap) {
+              if (hh.toLowerCase().includes(key)) return headerMap[hh];
+            }
+          }
+          return -1;
+        }
+
+        const idx = {
+          timestamp: findHeader('timestamp', 'time stamp', 'timestamp', 'توقيت'),
+          date: findHeader('تاريخ تسجيل الطلب', 'تاريخ الطلب', 'date', 'تاريخ', 'التاريخ'),
+          time: findHeader('الوقت', 'time'),
+          qrOrder: findHeader('رقم الطلب', 'qr order', 'qr'),
+          location: findHeader('موقع العميل', 'location', 'موقع'),
+          customerName: findHeader('اسم العميل', 'customer name', 'customer'),
+          customerNumber: findHeader('رقم العميل', 'customer number', 'phone', 'رقم'),
+          washType: findHeader('نوع الغسيل', 'wash type', 'نوع'),
+          payment: findHeader('حاله الدفع', 'حالة الدفع', 'payment', 'نعم', 'لا')
+        };
+
+        // If the detected date header is actually the "order timestamp" (تاريخ تسجيل الطلب) or timestamp, prefer an appointment-date header if present,
+        // otherwise fall back to column B (index 1).
+        if (idx.date >= 0) {
+          const detectedHeader = (headerRow[idx.date] || '').toString().toLowerCase();
+          if (detectedHeader.includes('تاريخ تسجيل') || detectedHeader.includes('timestamp') || detectedHeader.includes('توقيت')) {
+            const alt = findHeader('تاريخ الموعد', 'appointment date', 'appointment', 'موعد');
+            if (alt >= 0) {
+              idx.date = alt;
+            } else {
+              idx.date = -1; // force fallback to default below (column B)
+            }
+          }
+        }
+
+        // Fallback to legacy indices if detection failed
+        const col = {
+          // Use column B as the default date column (index 1)
+          date: idx.date >= 0 ? idx.date : 1,
+          time: idx.time >= 0 ? idx.time : 2,
+          qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 3,
+          location: idx.location >= 0 ? idx.location : 4,
+          customerName: idx.customerName >= 0 ? idx.customerName : 5,
+          customerNumber: idx.customerNumber >= 0 ? idx.customerNumber : 6,
+          washType: idx.washType >= 0 ? idx.washType : 7,
+          payment: idx.payment >= 0 ? idx.payment : 8
+        };
+
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
-          
-          const date = (row[0] || '').toString().trim();
-          const time = (row[1] || '').toString().trim();
-          
-          if (date && time) {
-            // Normalize date format
-            let parsedDate = date;
-            const dateObj = new Date(date);
+          if (row[col.date] && row[col.time]) {
+            let parsedDate = (row[col.date] || '').toString().trim();
+            const dateObj = new Date(parsedDate);
             if (!isNaN(dateObj.getTime())) {
               const year = dateObj.getFullYear();
               const month = String(dateObj.getMonth() + 1).padStart(2, '0');
               const day = String(dateObj.getDate()).padStart(2, '0');
               parsedDate = `${year}-${month}-${day}`;
             }
-            
-            // Normalize time format (HH:MM)
-            let parsedTime = time;
-            const timeMatch = time.match(/(\d{1,2}):(\d{2})/);
-            if (timeMatch) {
-              let hours = parseInt(timeMatch[1], 10);
-              const minutes = parseInt(timeMatch[2], 10);
-              
-              // Handle AM/PM if present
-              const isPM = /pm|م|مساء/i.test(time);
-              const isAM = /am|ص|صباح/i.test(time);
-              
-              if (isPM && hours !== 12) hours += 12;
-              if (isAM && hours === 12) hours = 0;
-              
-              parsedTime = `${hours}:${String(minutes).padStart(2, '0')}`;
+
+            // helper: parse time like "10:00:00 PM", "10:00 PM", "22:00", or with seconds
+            function parseTimeString(s) {
+              s = (s || '').toString().trim();
+              if (!s) return '';
+              // capture hh:mm (ignore seconds)
+              const m = s.match(/(\d{1,2}):(\d{2})/);
+              if (m) {
+                let hh = parseInt(m[1], 10);
+                const mm = parseInt(m[2], 10);
+                // detect AM/PM (including Arabic م/ص or words)
+                const isPM = /\bpm\b|م(?![a-z])|مساء/i.test(s);
+                const isAM = /\bam\b|ص(?![a-z])|صباح/i.test(s);
+                if (isPM && hh !== 12) hh += 12;
+                if (isAM && hh === 12) hh = 0;
+                return `${hh}:${String(mm).padStart(2, '0')}`;
+              }
+              // fallback: try to parse as Date
+              const d = new Date('1970-01-01T' + s);
+              if (!isNaN(d.getTime())) return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+              return s;
             }
-            
+
+            // helper: normalize phone (preserve as string, trim)
+            function normalizePhone(p) {
+              return (p || '').toString().trim();
+            }
+
+            // helper: normalize payment to Arabic نعم/لا
+            function normalizePayment(p) {
+              const v = (p || '').toString().toLowerCase();
+              if (!v) return '';
+              if (v.includes('نعم') || v.includes('yes') || v === 'y' || v.includes('paid') || v === 'true') return 'نعم';
+              if (v.includes('لا') || v.includes('no') || v === 'n' || v === 'false') return 'لا';
+              return p;
+            }
+
+            const formattedTime = parseTimeString(row[col.time]);
+            const phoneVal = normalizePhone(row[col.customerNumber]);
+            const paymentVal = normalizePayment(row[col.payment]);
+
             carWashData.push({
               date: parsedDate,
-              time: parsedTime,
-              qrOrder: (row[2] || '').toString().trim(),
-              customerName: (row[3] || '').toString().trim(),
-              location: (row[4] || '').toString().trim(),
-              washType: (row[5] || '').toString().trim(),
-              payment: (row[6] || '').toString().trim()
+              time: formattedTime,
+              qrOrder: (row[col.qrOrder] || '').toString().trim(),
+              customerName: (row[col.customerName] || '').toString().trim(),
+              phone: phoneVal,
+              location: (row[col.location] || '').toString().trim(),
+              washType: (row[col.washType] || '').toString().trim(),
+              payment: paymentVal
             });
           }
         }
@@ -4050,11 +3787,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         calculateAvailableSlots(selectedDate);
         
       } catch (error) {
-        console.error('Error loading appointments:', error);
         document.getElementById('availableSlots').innerHTML = `
-          <div class="info-box" style="background: #4a3a1a; border-color: #f59e0b;">
-            ⚠️ تم فتح الموقع بنجاح لكن هناك مشكلة في تحميل المواعيد المحجوزة. يمكنك إضافة موعد جديد أو <a href="https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing" target="_blank" style="color:#fbbf24;text-decoration:underline;">فتح جدول المواعيد</a>
-          </div>
+          <div class="error-box">خطأ في تحميل المواعيد. تأكد من صلاحيات الوصول للشيت</div>
         `;
       }
     }
@@ -4314,13 +4048,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th style="min-width: 120px;">تاريخ الموعد</th>
-                    <th style="min-width: 90px;">وقت الموعد</th>
-                    <th style="min-width: 90px;">رقم الطلب</th>
-                    <th style="min-width: 140px;">اسم العميل</th>
-                    <th style="min-width: 120px;">المنطقة</th>
-                    <th style="min-width: 100px;">نوع الغسيل</th>
-                    <th style="min-width: 90px;">حالة الدفع</th>
+                    <th style="min-width: 80px;">الوقت</th>
+                    <th style="min-width: 100px;">الحالة</th>
+                    <th style="min-width: 80px;">نوع الغسيل</th>
+                    <th style="min-width: 80px;">رقم الطلب</th>
+                    <th style="min-width: 120px;">اسم العميل</th>
+                    <th style="min-width: 100px;">رقم الهاتف</th>
+                    <th style="min-width: 120px;">الموقع</th>
+                    <th style="min-width: 100px;">المدة</th>
+                    <th style="min-width: 90px;">الدفع</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -4334,6 +4070,61 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
           const displayTime = `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
           
+          let washDuration = 60;
+          const washType = apt.washType.toLowerCase();
+          if (washType.includes('خصوصي')) washDuration = 120;
+          else if (washType.includes('الترا')) washDuration = 180;
+          
+          const startMinutes = timeParts[0] * 60 + timeParts[1];
+          const endMinutes = startMinutes + washDuration;
+          const endHours = Math.floor(endMinutes / 60);
+          const endMins = endMinutes % 60;
+          const endPeriod = endHours >= 12 ? 'مساءً' : 'صباحاً';
+          const endDisplayHours = endHours > 12 ? endHours - 12 : (endHours === 0 ? 12 : endHours);
+          const endDisplayTime = `${endDisplayHours}:${endMins.toString().padStart(2, '0')} ${endPeriod}`;
+          
+          let orderStatus = '';
+          let statusColor = '';
+          
+          const selectedDate = document.getElementById('appointmentDate').value;
+          const today = new Date();
+          const todayStr = today.toISOString().split('T')[0];
+          const isToday = selectedDate === todayStr;
+          
+          if (isToday) {
+            const currentMinutes = today.getHours() * 60 + today.getMinutes();
+            const minutesUntilStart = startMinutes - currentMinutes;
+            const minutesSinceEnd = currentMinutes - endMinutes;
+            
+            if (minutesSinceEnd > 0) {
+              orderStatus = '✅ تم الانتهاء';
+              statusColor = '#10b981';
+            } else if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+              orderStatus = '🔄 قيد التنفيذ';
+              statusColor = '#3b82f6';
+            } else if (minutesUntilStart <= 30 && minutesUntilStart > 0) {
+              orderStatus = '🚗 بالطريق';
+              statusColor = '#f59e0b';
+            } else if (minutesUntilStart > 0) {
+              orderStatus = '📅 محجوز';
+              statusColor = '#3b82f6';
+            } else {
+              orderStatus = '📋 محجوز';
+              statusColor = '#3b82f6';
+            }
+          } else {
+            const selectedDateObj = new Date(selectedDate + 'T00:00:00');
+            const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            
+            if (selectedDateObj < todayDate) {
+              orderStatus = '✅ تم الانتهاء';
+              statusColor = '#10b981';
+            } else {
+              orderStatus = '📅 محجوز';
+              statusColor = '#3b82f6';
+            }
+          }
+          
           const paymentVal = (apt.payment || '').toString().toLowerCase();
           let paymentStatus = 'غير محدد';
           if (paymentVal.includes('نعم') || paymentVal.includes('yes') || paymentVal === 'y' || paymentVal === 'true') {
@@ -4342,20 +4133,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             paymentStatus = '❌ لم يتم';
           }
           
-          const displayDate = apt.date || '-';
-          const location = apt.location || 'غير محدد';
-          const washName = apt.washType || '-';
-          const orderNumber = apt.qrOrder || '-';
-          const customer = apt.customerName || 'غير محدد';
-          
           html += `
             <tr>
-              <td>${displayDate}</td>
               <td style="font-weight: 600; color: #F2BC1B;">${displayTime}</td>
-              <td>${orderNumber}</td>
-              <td>${customer}</td>
-              <td>${location}</td>
-              <td>${washName}</td>
+              <td style="color: ${statusColor}; font-weight: 600;">${orderStatus}</td>
+              <td>${apt.washType}</td>
+              <td>${apt.qrOrder || '-'}</td>
+              <td>${apt.customerName || 'غير محدد'}</td>
+              <td style="direction: ltr; text-align: center;">${apt.phone || '-'}</td>
+              <td>${apt.location || 'غير محدد'}</td>
+              <td style="font-size: 10px; color: #999;">${displayTime} - ${endDisplayTime}<br>(${washDuration} دقيقة)</td>
               <td>${paymentStatus}</td>
             </tr>
           `;
@@ -5199,405 +4986,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         resolve({ ok: true });
       });
     }
-
-    // SheetDB API endpoint for saving appointments
-    const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
-
-    // Google Sheet for reading appointments (read-only)
-    // ⚠️ IMPORTANT: The Google Sheet must be shared with "Anyone with the link can view"
-    // Share link: https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing
-    const APPOINTMENT_SHEET_ID = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
-    const APPOINTMENT_SHEET_NAME = 'WASH Sheet';
-
-    // Track current appointments data
-    let appointmentsCheckCache = [];
-
-    // Open Appointment Modal
-    function openAppointmentModal() {
-      const modal = document.getElementById('appointmentModal');
-      const form = document.getElementById('appointmentForm');
-      const statusMsg = document.getElementById('appointmentStatusMessage');
-      
-      // Reset form and status message
-      form.reset();
-      statusMsg.className = 'appointment-status-message info';
-      statusMsg.textContent = '⏳ جاري تحميل المواعيد المحجوزة...';
-      
-      // Set minimum datetime to now
-      const appointmentDateTime = document.getElementById('appointmentDateTime');
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      
-      appointmentDateTime.min = `${year}-${month}-${day}T${hours}:${minutes}`;
-      appointmentDateTime.value = `${year}-${month}-${day}T${hours}:${minutes}`;
-      
-      // Show modal
-      modal.classList.add('active');
-      
-      // Load appointments from Google Sheet for checking availability
-      loadAppointmentsForChecking().then(() => {
-        statusMsg.className = 'appointment-status-message';
-        statusMsg.textContent = '';
-      });
-      
-      // Add event listener for datetime change to show available slots
-      appointmentDateTime.addEventListener('change', function() {
-        const selectedDateTime = this.value;
-        if (selectedDateTime) {
-          const [date] = selectedDateTime.split('T');
-          showAvailableSlotsForDate(date);
-        }
-      });
-    }
-
-    // Close Appointment Modal
-    function closeAppointmentModal() {
-      const modal = document.getElementById('appointmentModal');
-      modal.classList.remove('active');
-    }
-
-    // Load existing appointments from Google Sheet (for checking availability)
-    async function loadAppointmentsForChecking() {
-      try {
-        // Get the spreadsheet data - try multiple methods
-        const sheetId = APPOINTMENT_SHEET_ID;
-        
-        // Method 1: Try export with gid 0 (first sheet)
-        let csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
-        let response = await fetch(csvUrl, {
-          method: 'GET',
-          mode: 'cors',
-          cache: 'no-cache'
-        });
-        
-        // If method 1 fails, try method 2: gviz endpoint
-        if (!response.ok) {
-          csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=0`;
-          response = await fetch(csvUrl, {
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache'
-          });
-        }
-        
-        if (!response.ok) {
-          throw new Error(`Failed to load: ${response.status}`);
-        }
-        
-        const csvText = await response.text();
-        if (!csvText || csvText.trim().length === 0) {
-          console.warn('Empty CSV data received');
-          appointmentsCheckCache = [];
-          return;
-        }
-        
-        const rows = parseCSV(csvText);
-        if (!rows || rows.length < 2) {
-          console.warn('No data rows found in sheet');
-          appointmentsCheckCache = [];
-          return;
-        }
-        
-        appointmentsCheckCache = [];
-        
-        // Parse data - first row is headers
-        for (let i = 1; i < rows.length; i++) {
-          const row = rows[i];
-          
-          // Columns: A=date, B=time, C=qrOrder, D=customerName, E=location, F=washType, G=payment
-          const date = (row[0] || '').toString().trim();
-          const time = (row[1] || '').toString().trim();
-          const washType = (row[5] || '').toString().trim();
-          
-          if (date && time) {
-            // Normalize date format
-            let parsedDate = date;
-            const dateObj = new Date(date);
-            if (!isNaN(dateObj.getTime())) {
-              const year = dateObj.getFullYear();
-              const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-              const day = String(dateObj.getDate()).padStart(2, '0');
-              parsedDate = `${year}-${month}-${day}`;
-            }
-            
-            // Normalize time format (HH:MM)
-            let parsedTime = time;
-            const timeMatch = time.match(/(\d{1,2}):(\d{2})/);
-            if (timeMatch) {
-              let hours = parseInt(timeMatch[1], 10);
-              const minutes = parseInt(timeMatch[2], 10);
-              
-              // Handle AM/PM if present
-              const isPM = /pm|م|مساء/i.test(time);
-              const isAM = /am|ص|صباح/i.test(time);
-              
-              if (isPM && hours !== 12) hours += 12;
-              if (isAM && hours === 12) hours = 0;
-              
-              parsedTime = `${hours}:${String(minutes).padStart(2, '0')}`;
-            }
-            
-            appointmentsCheckCache.push({
-              date: parsedDate,
-              time: parsedTime,
-              washType: washType
-            });
-          }
-        }
-        
-        console.log(`Loaded ${appointmentsCheckCache.length} appointments`);
-        
-      } catch (error) {
-        console.error('Error loading appointments:', error);
-        appointmentsCheckCache = [];
-      }
-    }
-
-    // Show available slots for selected date
-    function showAvailableSlotsForDate(selectedDate) {
-      const previewDiv = document.getElementById('availableSlotsPreview');
-      const textDiv = document.getElementById('availableSlotsText');
-      
-      // Check if it's Friday (closed)
-      const dateObj = new Date(selectedDate + 'T00:00:00');
-      const dayIndex = dateObj.getDay();
-      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
-      const days = Math.floor((dateObj - startOfYear) / (24 * 60 * 60 * 1000));
-      const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-      
-      if (dayIndex === 5 && weekNumber % 2 === 1) {
-        textDiv.innerHTML = '❌ الغسيل غير متوفر يوم الجمعة';
-        textDiv.style.color = '#ef4444';
-        textDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-        textDiv.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-        previewDiv.classList.remove('hidden');
-        return;
-      }
-      
-      // Get appointments for this date
-      const todayAppointments = appointmentsCheckCache.filter(apt => apt.date === selectedDate);
-      
-      if (todayAppointments.length === 0) {
-        textDiv.innerHTML = '✅ جميع الأوقات متاحة لهذا اليوم (من 10:30 صباحاً)';
-        textDiv.style.color = '#10b981';
-        textDiv.style.background = 'rgba(16, 185, 129, 0.1)';
-        textDiv.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-      } else {
-        const times = todayAppointments.map(apt => {
-          const [h, m] = apt.time.split(':').map(Number);
-          const period = h >= 12 ? 'مساءً' : 'صباحاً';
-          const displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h);
-          return `${displayH}:${String(m).padStart(2, '0')} ${period}`;
-        }).join('، ');
-        textDiv.innerHTML = `⚠️ مواعيد محجوزة: ${times}`;
-        textDiv.style.color = '#f59e0b';
-        textDiv.style.background = 'rgba(245, 158, 11, 0.1)';
-        textDiv.style.borderColor = 'rgba(245, 158, 11, 0.3)';
-      }
-      
-      previewDiv.classList.remove('hidden');
-    }
-    
-    // Check if appointment time slot is available
-    function isTimeSlotAvailable(date, time, washType) {
-      // Check if it's Friday (closed)
-      const dateObj = new Date(date + 'T00:00:00');
-      const dayIndex = dateObj.getDay();
-      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
-      const days = Math.floor((dateObj - startOfYear) / (24 * 60 * 60 * 1000));
-      const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-      
-      if (dayIndex === 5 && weekNumber % 2 === 1) {
-        return { available: false, reason: 'friday_closed' };
-      }
-
-      // Convert date and time to the format used in cache
-      const [hours, minutes] = time.split(':').map(Number);
-      const timeInMinutes = hours * 60 + minutes;
-
-      // Calculate wash duration
-      let duration = 60; // default premium
-      if (washType.includes('خصوصي')) duration = 120;
-      else if (washType.includes('الترا')) duration = 180;
-
-      // Check for conflicts with existing appointments
-      for (let apt of appointmentsCheckCache) {
-        if (apt.date === date) {
-          const [aptHours, aptMinutes] = apt.time.split(':').map(Number);
-          const appointmentStartMinutes = aptHours * 60 + aptMinutes;
-          
-          let aptDuration = 60;
-          if (apt.washType.includes('خصوصي')) aptDuration = 120;
-          else if (apt.washType.includes('الترا')) aptDuration = 180;
-          
-          const appointmentEndMinutes = appointmentStartMinutes + aptDuration + 30; // 30 min travel time
-          
-          const newStartMinutes = timeInMinutes;
-          const newEndMinutes = newStartMinutes + duration + 30; // 30 min travel time
-
-          // Check for overlap
-          if ((newStartMinutes < appointmentEndMinutes && newEndMinutes > appointmentStartMinutes)) {
-            return { available: false, reason: 'time_conflict' };
-          }
-        }
-      }
-
-      return { available: true, reason: null };
-    }
-
-    // Save appointment to SheetDB
-    async function saveAppointmentToSheetDB(appointmentData) {
-      try {
-        // SheetDB expects field names that match the sheet columns
-        // Using Arabic header names for mechanical services
-        const payload = {
-          'تاريخ الموعد': appointmentData.date,
-          'وقت الموعد': appointmentData.time,
-          'رقم الطلب': appointmentData.qrOrder,
-          'اسم العميل': appointmentData.customerName,
-          'المنطقة': appointmentData.location,
-          'نوع الخدمة': appointmentData.serviceType,
-          'الفنيين': appointmentData.technician
-        };
-
-        console.log('Sending to SheetDB:', JSON.stringify(payload));
-
-        const response = await fetch(SHEETDB_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const responseData = await response.json();
-        
-        if (!response.ok) {
-          console.error('SheetDB error:', responseData);
-          throw new Error(responseData.error || `HTTP ${response.status}: ${JSON.stringify(responseData)}`);
-        }
-
-        console.log('Success response:', responseData);
-        return { success: true };
-      } catch (error) {
-        console.error('Error saving appointment:', error);
-        throw error;
-      }
-    }
-
-    // Show success toast notification
-    function showSuccessToast() {
-      const toast = document.createElement('div');
-      toast.className = 'appointment-success-toast';
-      toast.textContent = '✅ تم حفظ الموعد بنجاح';
-      document.body.appendChild(toast);
-
-      // Auto-remove after 3 seconds
-      setTimeout(() => {
-        toast.style.animation = 'slideDownToast 0.3s ease-out reverse';
-        setTimeout(() => {
-          if (toast.parentNode) toast.parentNode.removeChild(toast);
-        }, 300);
-      }, 3000);
-    }
-
-    // Handle appointment form submission
-    document.addEventListener('DOMContentLoaded', function() {
-      const appointmentForm = document.getElementById('appointmentForm');
-      const appointmentModalClose = document.getElementById('appointmentModalClose');
-      const appointmentCancelBtn = document.getElementById('appointmentCancelBtn');
-      const appointmentSaveBtn = document.getElementById('appointmentSaveBtn');
-
-      if (appointmentForm) {
-        appointmentForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          
-          const statusMsg = document.getElementById('appointmentStatusMessage');
-          const appointmentDateTime = document.getElementById('appointmentDateTime').value;
-          const qrOrder = document.getElementById('appointmentQrOrder').value.trim();
-          const customerName = document.getElementById('appointmentCustomerName').value.trim();
-          const location = document.getElementById('appointmentLocation').value.trim();
-          const serviceType = document.getElementById('appointmentServiceType').value.trim();
-          const technician = document.getElementById('appointmentTechnician').value;
-
-          // Disable save button during submission
-          appointmentSaveBtn.disabled = true;
-          statusMsg.className = 'appointment-status-message';
-          statusMsg.textContent = '';
-
-          // Validate required fields
-          if (!appointmentDateTime || !qrOrder || !customerName || !location || !serviceType || !technician) {
-            statusMsg.className = 'appointment-status-message error';
-            statusMsg.textContent = '❌ جميع الحقول مطلوبة';
-            appointmentSaveBtn.disabled = false;
-            return;
-          }
-
-          // Split datetime into date and time
-          const [appointmentDate, appointmentTime] = appointmentDateTime.split('T');
-
-          // Show loading message
-          statusMsg.className = 'appointment-status-message info';
-          statusMsg.textContent = '⏳ جاري حفظ الموعد...';
-
-          try {
-            // Save to SheetDB
-            await saveAppointmentToSheetDB({
-              date: appointmentDate,
-              time: appointmentTime,
-              qrOrder,
-              customerName,
-              location,
-              serviceType,
-              technician
-            });
-
-            // Update cache
-            appointmentsCheckCache.push({
-              date: appointmentDate,
-              time: appointmentTime,
-              serviceType: serviceType
-            });
-
-            // Close modal immediately
-            closeAppointmentModal();
-            
-            // Show success toast
-            showSuccessToast();
-            
-            // Reset form
-            appointmentForm.reset();
-
-          } catch (error) {
-            statusMsg.className = 'appointment-status-message error';
-            statusMsg.textContent = `❌ خطأ في حفظ الموعد: ${error.message}`;
-            appointmentSaveBtn.disabled = false;
-          }
-        });
-      }
-
-      // Close modal handlers
-      if (appointmentModalClose) {
-        appointmentModalClose.addEventListener('click', closeAppointmentModal);
-      }
-      if (appointmentCancelBtn) {
-        appointmentCancelBtn.addEventListener('click', closeAppointmentModal);
-      }
-
-      // Close modal when clicking outside
-      const appointmentModal = document.getElementById('appointmentModal');
-      if (appointmentModal) {
-        appointmentModal.addEventListener('click', (e) => {
-          if (e.target === appointmentModal) {
-            closeAppointmentModal();
-          }
-        });
-      }
-    });
 
     // Load data on page load
     loadAllSheets();
