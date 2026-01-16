@@ -3599,7 +3599,7 @@
     // Load and render mechanical appointments from external Google Sheet (مواعيد الميكانيكيه)
     async function loadMechanicalAppointmentsData() {
       try {
-        const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+        const sheetId = '1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4';
         const sheetName = 'مواعيد الميكانيكيه';
         const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
         const res = await fetch(csvUrl);
