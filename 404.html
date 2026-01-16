@@ -3631,7 +3631,7 @@
       };
 
       document.getElementById('mechEditBtn').onclick = () => {
-        window.open('https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit#gid=0', '_blank');
+        window.open('https://docs.google.com/spreadsheets/d/1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4/edit#gid=0', '_blank');
       };
 
       section.classList.remove('hidden');
@@ -5264,9 +5264,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     
     // ==================== APPOINTMENT SYSTEM ====================
     
-    // Configuration
-    const GOOGLE_SHEET_ID = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
-    const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
+    // Configuration (per service)
+    const WASH_GOOGLE_SHEET_ID = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+    const WASH_SHEETDB_API_URL = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
+    const MECH_GOOGLE_SHEET_ID = '1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4';
+    const MECH_SHEETDB_API_URL = 'https://sheetdb.io/api/v1/jcvn1kw9zy7o7';
     
     // Track appointment type (wash or mechanical)
     let currentAppointmentType = null;
@@ -5348,7 +5350,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     async function loadAppointmentsForChecking(type) {
       try {
         const sheetName = type === 'wash' ? 'WASH Sheet' : 'مواعيد الميكانيكيه';
-        let csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        const sheetId = type === 'wash' ? WASH_GOOGLE_SHEET_ID : MECH_GOOGLE_SHEET_ID;
+        let csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
         
         let response = await fetch(csvUrl, {
           method: 'GET',
@@ -5357,7 +5360,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         });
         
         if (!response.ok) {
-          csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=0`;
+          csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
           response = await fetch(csvUrl, {
             method: 'GET',
             mode: 'cors',
@@ -5466,8 +5469,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         }
         
         console.log('Sending to SheetDB:', JSON.stringify(payload));
-        
-        const response = await fetch(SHEETDB_API_URL, {
+        const targetApi = currentAppointmentType === 'mechanical' ? MECH_SHEETDB_API_URL : WASH_SHEETDB_API_URL;
+        const response = await fetch(targetApi, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
