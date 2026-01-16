@@ -5308,12 +5308,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
           
-          // Columns: A=date, B=time, C=qrOrder, D=customerName, E=location, F=washType, G=payment
+          // Columns: A=تاريخ الموعد, B=وقت الموعد, C=رقم الطلب, D=اسم العميل, E=المنطقة, F=نوع الخدمه, G=الفنين
           const date = (row[0] || '').toString().trim();
           const time = (row[1] || '').toString().trim();
-          const washType = (row[5] || '').toString().trim();
+          const technician = (row[6] || '').toString().trim();
           
-          if (date && time) {
+          if (date && time && technician) {
             // Normalize date format
             let parsedDate = date;
             const dateObj = new Date(date);
@@ -5338,13 +5338,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               if (isPM && hours !== 12) hours += 12;
               if (isAM && hours === 12) hours = 0;
               
-              parsedTime = `${hours}:${String(minutes).padStart(2, '0')}`;
+              parsedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
             }
             
             appointmentsCheckCache.push({
               date: parsedDate,
               time: parsedTime,
-              washType: washType
+              technician: technician
             });
           }
         }
@@ -5362,38 +5362,22 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const previewDiv = document.getElementById('availableSlotsPreview');
       const textDiv = document.getElementById('availableSlotsText');
       
-      // Check if it's Friday (closed)
-      const dateObj = new Date(selectedDate + 'T00:00:00');
-      const dayIndex = dateObj.getDay();
-      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
-      const days = Math.floor((dateObj - startOfYear) / (24 * 60 * 60 * 1000));
-      const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-      
-      if (dayIndex === 5 && weekNumber % 2 === 1) {
-        textDiv.innerHTML = '❌ الغسيل غير متوفر يوم الجمعة';
-        textDiv.style.color = '#ef4444';
-        textDiv.style.background = 'rgba(239, 68, 68, 0.1)';
-        textDiv.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-        previewDiv.classList.remove('hidden');
-        return;
-      }
-      
       // Get appointments for this date
       const todayAppointments = appointmentsCheckCache.filter(apt => apt.date === selectedDate);
       
       if (todayAppointments.length === 0) {
-        textDiv.innerHTML = '✅ جميع الأوقات متاحة لهذا اليوم (من 10:30 صباحاً)';
+        textDiv.innerHTML = '✅ لا توجد مواعيد محجوزة لهذا اليوم';
         textDiv.style.color = '#10b981';
         textDiv.style.background = 'rgba(16, 185, 129, 0.1)';
         textDiv.style.borderColor = 'rgba(16, 185, 129, 0.3)';
       } else {
-        const times = todayAppointments.map(apt => {
+        const apptDetails = todayAppointments.map(apt => {
           const [h, m] = apt.time.split(':').map(Number);
           const period = h >= 12 ? 'مساءً' : 'صباحاً';
           const displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h);
-          return `${displayH}:${String(m).padStart(2, '0')} ${period}`;
+          return `${displayH}:${String(m).padStart(2, '0')} ${period} (${apt.technician})`;
         }).join('، ');
-        textDiv.innerHTML = `⚠️ مواعيد محجوزة: ${times}`;
+        textDiv.innerHTML = `⚠️ مواعيد محجوزة: ${apptDetails}`;
         textDiv.style.color = '#f59e0b';
         textDiv.style.background = 'rgba(245, 158, 11, 0.1)';
         textDiv.style.borderColor = 'rgba(245, 158, 11, 0.3)';
@@ -5402,47 +5386,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       previewDiv.classList.remove('hidden');
     }
     
-    // Check if appointment time slot is available
-    function isTimeSlotAvailable(date, time, washType) {
-      // Check if it's Friday (closed)
-      const dateObj = new Date(date + 'T00:00:00');
-      const dayIndex = dateObj.getDay();
-      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
-      const days = Math.floor((dateObj - startOfYear) / (24 * 60 * 60 * 1000));
-      const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-      
-      if (dayIndex === 5 && weekNumber % 2 === 1) {
-        return { available: false, reason: 'friday_closed' };
-      }
-
-      // Convert date and time to the format used in cache
-      const [hours, minutes] = time.split(':').map(Number);
-      const timeInMinutes = hours * 60 + minutes;
-
-      // Calculate wash duration
-      let duration = 60; // default premium
-      if (washType.includes('خصوصي')) duration = 120;
-      else if (washType.includes('الترا')) duration = 180;
-
-      // Check for conflicts with existing appointments
+    // Check if appointment time slot is available for mechanical services
+    function isTimeSlotAvailable(date, time, technician) {
+      // Check for conflicts: same date + same time + same technician
       for (let apt of appointmentsCheckCache) {
-        if (apt.date === date) {
-          const [aptHours, aptMinutes] = apt.time.split(':').map(Number);
-          const appointmentStartMinutes = aptHours * 60 + aptMinutes;
-          
-          let aptDuration = 60;
-          if (apt.washType.includes('خصوصي')) aptDuration = 120;
-          else if (apt.washType.includes('الترا')) aptDuration = 180;
-          
-          const appointmentEndMinutes = appointmentStartMinutes + aptDuration + 30; // 30 min travel time
-          
-          const newStartMinutes = timeInMinutes;
-          const newEndMinutes = newStartMinutes + duration + 30; // 30 min travel time
-
-          // Check for overlap
-          if ((newStartMinutes < appointmentEndMinutes && newEndMinutes > appointmentStartMinutes)) {
-            return { available: false, reason: 'time_conflict' };
-          }
+        if (apt.date === date && apt.time === time && apt.technician === technician) {
+          return { available: false, reason: 'time_conflict' };
         }
       }
 
@@ -5540,6 +5489,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           // Split datetime into date and time
           const [appointmentDate, appointmentTime] = appointmentDateTime.split('T');
 
+          // Check if time slot is available for this technician
+          const availabilityCheck = isTimeSlotAvailable(appointmentDate, appointmentTime, technician);
+          
+          if (!availabilityCheck.available) {
+            statusMsg.className = 'appointment-status-message error';
+            statusMsg.textContent = '❌ هذا الفني محجوز في نفس الوقت. يرجى اختيار وقت آخر أو فني آخر';
+            appointmentSaveBtn.disabled = false;
+            return;
+          }
+
           // Show loading message
           statusMsg.className = 'appointment-status-message info';
           statusMsg.textContent = '⏳ جاري حفظ الموعد...';
@@ -5560,7 +5519,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             appointmentsCheckCache.push({
               date: appointmentDate,
               time: appointmentTime,
-              serviceType: serviceType
+              technician: technician
             });
 
             // Close modal immediately
