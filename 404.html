@@ -3964,17 +3964,30 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     async function loadCarWashAppointments(selectedDate) {
       try {
-        // Use export endpoint instead of gviz for better reliability
+        // Get the spreadsheet data - try multiple methods
         const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
         
-        const response = await fetch(csvUrl, {
+        // Method 1: Try export with gid 0
+        let csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+        let response = await fetch(csvUrl, {
           method: 'GET',
           mode: 'cors',
           cache: 'no-cache'
         });
         
-        if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to load`);
+        // If method 1 fails, try method 2: gviz endpoint
+        if (!response.ok) {
+          csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=0`;
+          response = await fetch(csvUrl, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache'
+          });
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Failed: ${response.status}`);
+        }
         
         const csvText = await response.text();
         if (!csvText || csvText.trim().length === 0) {
@@ -3984,130 +3997,51 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const rows = parseCSV(csvText);
         
         carWashData = [];
-
-        // Detect header indices so renamed columns (Arabic/English) still map correctly.
-        const headerRow = rows[0] || [];
-        const headers = headerRow.map(h => (h || '').toString().toLowerCase());
-
-        // Prefer exact column headers (Arabic) if provided by user A..I, otherwise fallback to keyword search
-        const headerMap = {};
-        headers.forEach((h, i) => headerMap[h.trim()] = i);
-
-        function findHeader(...candidates) {
-          for (const c of candidates) {
-            const key = c.toString().toLowerCase().trim();
-            // exact match
-            for (const hh in headerMap) {
-              if (hh.toLowerCase().trim() === key) return headerMap[hh];
-            }
-            // substring match
-            for (const hh in headerMap) {
-              if (hh.toLowerCase().includes(key)) return headerMap[hh];
-            }
-          }
-          return -1;
-        }
-
-        const idx = {
-          timestamp: findHeader('timestamp', 'time stamp', 'timestamp', 'توقيت'),
-          date: findHeader('تاريخ تسجيل الطلب', 'تاريخ الطلب', 'date', 'تاريخ', 'التاريخ'),
-          time: findHeader('الوقت', 'time'),
-          qrOrder: findHeader('رقم الطلب', 'qr order', 'qr'),
-          location: findHeader('موقع العميل', 'location', 'موقع'),
-          customerName: findHeader('اسم العميل', 'customer name', 'customer'),
-          customerNumber: findHeader('رقم العميل', 'customer number', 'phone', 'رقم'),
-          washType: findHeader('نوع الغسيل', 'wash type', 'نوع'),
-          payment: findHeader('حاله الدفع', 'حالة الدفع', 'payment', 'نعم', 'لا')
-        };
-
-        // If the detected date header is actually the "order timestamp" (تاريخ تسجيل الطلب) or timestamp, prefer an appointment-date header if present,
-        // otherwise fall back to column B (index 1).
-        if (idx.date >= 0) {
-          const detectedHeader = (headerRow[idx.date] || '').toString().toLowerCase();
-          if (detectedHeader.includes('تاريخ تسجيل') || detectedHeader.includes('timestamp') || detectedHeader.includes('توقيت')) {
-            const alt = findHeader('تاريخ الموعد', 'appointment date', 'appointment', 'موعد');
-            if (alt >= 0) {
-              idx.date = alt;
-            } else {
-              idx.date = -1; // force fallback to default below (column B)
-            }
-          }
-        }
-
-        // Fallback to legacy indices if detection failed
-        const col = {
-          // Use column B as the default date column (index 1)
-          date: idx.date >= 0 ? idx.date : 1,
-          time: idx.time >= 0 ? idx.time : 2,
-          qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 3,
-          location: idx.location >= 0 ? idx.location : 4,
-          customerName: idx.customerName >= 0 ? idx.customerName : 5,
-          customerNumber: idx.customerNumber >= 0 ? idx.customerNumber : 6,
-          washType: idx.washType >= 0 ? idx.washType : 7,
-          payment: idx.payment >= 0 ? idx.payment : 8
-        };
-
+        
+        // Parse data directly by column position
+        // Columns: A=date, B=time, C=qrOrder, D=customerName, E=location, F=washType, G=payment
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
-          if (row[col.date] && row[col.time]) {
-            let parsedDate = (row[col.date] || '').toString().trim();
-            const dateObj = new Date(parsedDate);
+          
+          const date = (row[0] || '').toString().trim();
+          const time = (row[1] || '').toString().trim();
+          
+          if (date && time) {
+            // Normalize date format
+            let parsedDate = date;
+            const dateObj = new Date(date);
             if (!isNaN(dateObj.getTime())) {
               const year = dateObj.getFullYear();
               const month = String(dateObj.getMonth() + 1).padStart(2, '0');
               const day = String(dateObj.getDate()).padStart(2, '0');
               parsedDate = `${year}-${month}-${day}`;
             }
-
-            // helper: parse time like "10:00:00 PM", "10:00 PM", "22:00", or with seconds
-            function parseTimeString(s) {
-              s = (s || '').toString().trim();
-              if (!s) return '';
-              // capture hh:mm (ignore seconds)
-              const m = s.match(/(\d{1,2}):(\d{2})/);
-              if (m) {
-                let hh = parseInt(m[1], 10);
-                const mm = parseInt(m[2], 10);
-                // detect AM/PM (including Arabic م/ص or words)
-                const isPM = /\bpm\b|م(?![a-z])|مساء/i.test(s);
-                const isAM = /\bam\b|ص(?![a-z])|صباح/i.test(s);
-                if (isPM && hh !== 12) hh += 12;
-                if (isAM && hh === 12) hh = 0;
-                return `${hh}:${String(mm).padStart(2, '0')}`;
-              }
-              // fallback: try to parse as Date
-              const d = new Date('1970-01-01T' + s);
-              if (!isNaN(d.getTime())) return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
-              return s;
+            
+            // Normalize time format (HH:MM)
+            let parsedTime = time;
+            const timeMatch = time.match(/(\d{1,2}):(\d{2})/);
+            if (timeMatch) {
+              let hours = parseInt(timeMatch[1], 10);
+              const minutes = parseInt(timeMatch[2], 10);
+              
+              // Handle AM/PM if present
+              const isPM = /pm|م|مساء/i.test(time);
+              const isAM = /am|ص|صباح/i.test(time);
+              
+              if (isPM && hours !== 12) hours += 12;
+              if (isAM && hours === 12) hours = 0;
+              
+              parsedTime = `${hours}:${String(minutes).padStart(2, '0')}`;
             }
-
-            // helper: normalize phone (preserve as string, trim)
-            function normalizePhone(p) {
-              return (p || '').toString().trim();
-            }
-
-            // helper: normalize payment to Arabic نعم/لا
-            function normalizePayment(p) {
-              const v = (p || '').toString().toLowerCase();
-              if (!v) return '';
-              if (v.includes('نعم') || v.includes('yes') || v === 'y' || v.includes('paid') || v === 'true') return 'نعم';
-              if (v.includes('لا') || v.includes('no') || v === 'n' || v === 'false') return 'لا';
-              return p;
-            }
-
-            const formattedTime = parseTimeString(row[col.time]);
-            const phoneVal = normalizePhone(row[col.customerNumber]);
-            const paymentVal = normalizePayment(row[col.payment]);
-
+            
             carWashData.push({
               date: parsedDate,
-              time: formattedTime,
-              qrOrder: (row[col.qrOrder] || '').toString().trim(),
-              customerName: (row[col.customerName] || '').toString().trim(),
-              phone: phoneVal,
-              location: (row[col.location] || '').toString().trim(),
-              washType: (row[col.washType] || '').toString().trim(),
-              payment: paymentVal
+              time: parsedTime,
+              qrOrder: (row[2] || '').toString().trim(),
+              customerName: (row[3] || '').toString().trim(),
+              location: (row[4] || '').toString().trim(),
+              washType: (row[5] || '').toString().trim(),
+              payment: (row[6] || '').toString().trim()
             });
           }
         }
@@ -5373,105 +5307,96 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     // Load existing appointments from Google Sheet (for checking availability)
     async function loadAppointmentsForChecking() {
       try {
-        // Try multiple endpoints for better compatibility
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${APPOINTMENT_SHEET_ID}/export?format=csv&gid=0`;
+        // Get the spreadsheet data - try multiple methods
+        const sheetId = APPOINTMENT_SHEET_ID;
         
-        const response = await fetch(csvUrl, {
+        // Method 1: Try export with gid 0 (first sheet)
+        let csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+        let response = await fetch(csvUrl, {
           method: 'GET',
           mode: 'cors',
           cache: 'no-cache'
         });
         
-        if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to load appointments`);
+        // If method 1 fails, try method 2: gviz endpoint
+        if (!response.ok) {
+          csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=0`;
+          response = await fetch(csvUrl, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache'
+          });
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Failed to load: ${response.status}`);
+        }
         
         const csvText = await response.text();
         if (!csvText || csvText.trim().length === 0) {
-          throw new Error('Empty response from Google Sheets');
+          console.warn('Empty CSV data received');
+          appointmentsCheckCache = [];
+          return;
         }
         
         const rows = parseCSV(csvText);
-        
-        if (!rows || rows.length === 0) {
-          throw new Error('No data found in sheet');
+        if (!rows || rows.length < 2) {
+          console.warn('No data rows found in sheet');
+          appointmentsCheckCache = [];
+          return;
         }
         
         appointmentsCheckCache = [];
         
-        const headerRow = rows[0] || [];
-        const headers = headerRow.map(h => (h || '').toString().toLowerCase());
-        const headerMap = {};
-        headers.forEach((h, i) => headerMap[h.trim()] = i);
-
-        function findHeader(...candidates) {
-          for (const c of candidates) {
-            const key = c.toString().toLowerCase().trim();
-            for (const hh in headerMap) {
-              if (hh.toLowerCase().trim() === key) return headerMap[hh];
-            }
-            for (const hh in headerMap) {
-              if (hh.toLowerCase().includes(key)) return headerMap[hh];
-            }
-          }
-          return -1;
-        }
-
-        const idx = {
-          date: findHeader('تاريخ الموعد', 'appointment date', 'تاريخ', 'date'),
-          time: findHeader('الوقت', 'time', 'وقت'),
-          washType: findHeader('نوع الغسيل', 'wash type', 'نوع')
-        };
-
-        const col = {
-          date: idx.date >= 0 ? idx.date : 1,
-          time: idx.time >= 0 ? idx.time : 2,
-          washType: idx.washType >= 0 ? idx.washType : 7
-        };
-
+        // Parse data - first row is headers
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
-          if (row[col.date] && row[col.time]) {
-            let parsedDate = (row[col.date] || '').toString().trim();
-            const dateObj = new Date(parsedDate);
+          
+          // Columns: A=date, B=time, C=qrOrder, D=customerName, E=location, F=washType, G=payment
+          const date = (row[0] || '').toString().trim();
+          const time = (row[1] || '').toString().trim();
+          const washType = (row[5] || '').toString().trim();
+          
+          if (date && time) {
+            // Normalize date format
+            let parsedDate = date;
+            const dateObj = new Date(date);
             if (!isNaN(dateObj.getTime())) {
               const year = dateObj.getFullYear();
               const month = String(dateObj.getMonth() + 1).padStart(2, '0');
               const day = String(dateObj.getDate()).padStart(2, '0');
               parsedDate = `${year}-${month}-${day}`;
             }
-
-            function parseTimeString(s) {
-              s = (s || '').toString().trim();
-              if (!s) return '';
-              const m = s.match(/(\d{1,2}):(\d{2})/);
-              if (m) {
-                let hh = parseInt(m[1], 10);
-                const mm = parseInt(m[2], 10);
-                const isPM = /\bpm\b|م(?![a-z])|مساء/i.test(s);
-                const isAM = /\bam\b|ص(?![a-z])|صباح/i.test(s);
-                if (isPM && hh !== 12) hh += 12;
-                if (isAM && hh === 12) hh = 0;
-                return `${hh}:${String(mm).padStart(2, '0')}`;
-              }
-              const d = new Date('1970-01-01T' + s);
-              if (!isNaN(d.getTime())) return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
-              return s;
+            
+            // Normalize time format (HH:MM)
+            let parsedTime = time;
+            const timeMatch = time.match(/(\d{1,2}):(\d{2})/);
+            if (timeMatch) {
+              let hours = parseInt(timeMatch[1], 10);
+              const minutes = parseInt(timeMatch[2], 10);
+              
+              // Handle AM/PM if present
+              const isPM = /pm|م|مساء/i.test(time);
+              const isAM = /am|ص|صباح/i.test(time);
+              
+              if (isPM && hours !== 12) hours += 12;
+              if (isAM && hours === 12) hours = 0;
+              
+              parsedTime = `${hours}:${String(minutes).padStart(2, '0')}`;
             }
-
-            const formattedTime = parseTimeString(row[col.time]);
-            const washType = (row[col.washType] || '').toString().trim();
-
+            
             appointmentsCheckCache.push({
               date: parsedDate,
-              time: formattedTime,
+              time: parsedTime,
               washType: washType
             });
           }
         }
         
+        console.log(`Loaded ${appointmentsCheckCache.length} appointments`);
+        
       } catch (error) {
         console.error('Error loading appointments:', error);
-        // Don't show error in status message, just continue with empty cache
-        // User can still add appointments, but won't see conflicts
         appointmentsCheckCache = [];
       }
     }
