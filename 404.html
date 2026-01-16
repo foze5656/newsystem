@@ -1015,6 +1015,34 @@
       color: #fbbf24;
       display: block;
     }
+
+    /* Success Toast Notification */
+    .appointment-success-toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+      z-index: 2500;
+      animation: slideDownToast 0.3s ease-out;
+    }
+
+    @keyframes slideDownToast {
+      from {
+        transform: translate(-50%, -100px);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+    }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
@@ -1032,8 +1060,13 @@
       
       <form id="appointmentForm">
         <div class="appointment-form-group">
-          <label for="appointmentDateTime">تاريخ ووقت الموعد *</label>
-          <input type="datetime-local" id="appointmentDateTime" class="appointment-form-control" required>
+          <label for="appointmentDate">تاريخ الموعد *</label>
+          <input type="date" id="appointmentDate" class="appointment-form-control" required>
+        </div>
+
+        <div class="appointment-form-group">
+          <label for="appointmentTime">وقت الموعد *</label>
+          <input type="time" id="appointmentTime" class="appointment-form-control" required>
         </div>
 
         <div class="appointment-form-group">
@@ -1047,8 +1080,8 @@
         </div>
 
         <div class="appointment-form-group">
-          <label for="appointmentLocation">موقع العميل *</label>
-          <input type="text" id="appointmentLocation" class="appointment-form-control" placeholder="أدخل موقع العميل" required>
+          <label for="appointmentLocation">المنطقة *</label>
+          <input type="text" id="appointmentLocation" class="appointment-form-control" placeholder="أدخل المنطقة" required>
         </div>
 
         <div class="appointment-form-group">
@@ -5296,16 +5329,18 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       statusMsg.className = 'appointment-status-message';
       statusMsg.textContent = '';
       
-      // Set minimum datetime to now
-      const appointmentDateTime = document.getElementById('appointmentDateTime');
+      // Set minimum date to today
+      const appointmentDate = document.getElementById('appointmentDate');
+      const today = new Date().toISOString().split('T')[0];
+      appointmentDate.min = today;
+      appointmentDate.value = today;
+      
+      // Set minimum time to current time
+      const appointmentTime = document.getElementById('appointmentTime');
       const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
-      
-      appointmentDateTime.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+      appointmentTime.min = `${hours}:${minutes}`;
       
       // Show modal
       modal.classList.add('active');
@@ -5417,20 +5452,30 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     }
 
     // Check if appointment time slot is available
-    function isTimeSlotAvailable(dateTime, washType) {
-      // Convert datetime-local to the format used in cache
-      const [datePart, timePart] = dateTime.split('T');
-      const [hours, minutes] = timePart.split(':');
-      const time = `${parseInt(hours)}:${minutes}`;
+    function isTimeSlotAvailable(date, time, washType) {
+      // Check if it's Friday (closed)
+      const dateObj = new Date(date + 'T00:00:00');
+      const dayIndex = dateObj.getDay();
+      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
+      const days = Math.floor((dateObj - startOfYear) / (24 * 60 * 60 * 1000));
+      const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+      
+      if (dayIndex === 5 && weekNumber % 2 === 1) {
+        return { available: false, reason: 'friday_closed' };
+      }
+
+      // Convert date and time to the format used in cache
+      const [hours, minutes] = time.split(':').map(Number);
+      const timeInMinutes = hours * 60 + minutes;
 
       // Calculate wash duration
       let duration = 60; // default premium
       if (washType.includes('خصوصي')) duration = 120;
       else if (washType.includes('الترا')) duration = 180;
 
-      // Check for conflicts
+      // Check for conflicts with existing appointments
       for (let apt of appointmentsCheckCache) {
-        if (apt.date === datePart) {
+        if (apt.date === date) {
           const [aptHours, aptMinutes] = apt.time.split(':').map(Number);
           const appointmentStartMinutes = aptHours * 60 + aptMinutes;
           
@@ -5440,34 +5485,30 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           
           const appointmentEndMinutes = appointmentStartMinutes + aptDuration + 30; // 30 min travel time
           
-          const [newHours, newMinutes] = time.split(':').map(Number);
-          const newStartMinutes = newHours * 60 + newMinutes;
+          const newStartMinutes = timeInMinutes;
           const newEndMinutes = newStartMinutes + duration + 30; // 30 min travel time
 
           // Check for overlap
           if ((newStartMinutes < appointmentEndMinutes && newEndMinutes > appointmentStartMinutes)) {
-            return false;
+            return { available: false, reason: 'time_conflict' };
           }
         }
       }
 
-      return true;
+      return { available: true, reason: null };
     }
 
     // Save appointment to SheetDB
     async function saveAppointmentToSheetDB(appointmentData) {
       try {
-        // Parse datetime-local format to separate date and time
-        const [date, time] = appointmentData.appointmentDateTime.split('T');
-        
         const payload = {
-          'تاريخ الموعد': date,
-          'الوقت': time,
-          'رقم الطلب': appointmentData.qrOrder,
-          'اسم العميل': appointmentData.customerName,
-          'موقع العميل': appointmentData.location,
-          'نوع الغسيل': appointmentData.washType,
-          'حالة الدفع': appointmentData.payment
+          'A': appointmentData.date,           // تاريخ الموعد
+          'B': appointmentData.time,           // وقت الموعد
+          'C': appointmentData.qrOrder,        // رقم الطلب
+          'D': appointmentData.customerName,   // اسم العميل
+          'E': appointmentData.location,       // المنطقة
+          'F': appointmentData.washType,       // نوع الغسيل
+          'G': appointmentData.payment         // حالة الدفع
         };
 
         const response = await fetch(SHEETDB_API_URL, {
@@ -5490,6 +5531,22 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
     }
 
+    // Show success toast notification
+    function showSuccessToast() {
+      const toast = document.createElement('div');
+      toast.className = 'appointment-success-toast';
+      toast.textContent = '✅ تم حفظ الموعد بنجاح';
+      document.body.appendChild(toast);
+
+      // Auto-remove after 3 seconds
+      setTimeout(() => {
+        toast.style.animation = 'slideDownToast 0.3s ease-out reverse';
+        setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
+
     // Handle appointment form submission
     document.addEventListener('DOMContentLoaded', function() {
       const appointmentForm = document.getElementById('appointmentForm');
@@ -5502,7 +5559,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           e.preventDefault();
           
           const statusMsg = document.getElementById('appointmentStatusMessage');
-          const appointmentDateTime = document.getElementById('appointmentDateTime').value;
+          const appointmentDate = document.getElementById('appointmentDate').value;
+          const appointmentTime = document.getElementById('appointmentTime').value;
           const qrOrder = document.getElementById('appointmentQrOrder').value.trim();
           const customerName = document.getElementById('appointmentCustomerName').value.trim();
           const location = document.getElementById('appointmentLocation').value.trim();
@@ -5515,7 +5573,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           statusMsg.textContent = '';
 
           // Validate required fields
-          if (!appointmentDateTime || !qrOrder || !customerName || !location || !washType || !payment) {
+          if (!appointmentDate || !appointmentTime || !qrOrder || !customerName || !location || !washType || !payment) {
             statusMsg.className = 'appointment-status-message error';
             statusMsg.textContent = '❌ جميع الحقول مطلوبة';
             appointmentSaveBtn.disabled = false;
@@ -5523,9 +5581,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
 
           // Check if time slot is available
-          if (!isTimeSlotAvailable(appointmentDateTime, washType)) {
-            statusMsg.className = 'appointment-status-message error';
-            statusMsg.textContent = '❌ هذا الموعد محجوز بالفعل. اختر موعداً آخر.';
+          const availabilityCheck = isTimeSlotAvailable(appointmentDate, appointmentTime, washType);
+          
+          if (!availabilityCheck.available) {
+            if (availabilityCheck.reason === 'friday_closed') {
+              statusMsg.className = 'appointment-status-message error';
+              statusMsg.textContent = '❌ الغسيل غير متوفر اليوم';
+            } else if (availabilityCheck.reason === 'time_conflict') {
+              statusMsg.className = 'appointment-status-message error';
+              statusMsg.textContent = '❌ هذا الموعد محجوز';
+            }
             appointmentSaveBtn.disabled = false;
             return;
           }
@@ -5537,7 +5602,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           try {
             // Save to SheetDB
             await saveAppointmentToSheetDB({
-              appointmentDateTime,
+              date: appointmentDate,
+              time: appointmentTime,
               qrOrder,
               customerName,
               location,
@@ -5546,26 +5612,25 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             });
 
             // Update cache
-            const [date, time] = appointmentDateTime.split('T');
             appointmentsCheckCache.push({
-              date: date,
-              time: time,
+              date: appointmentDate,
+              time: appointmentTime,
               washType: washType
             });
 
-            // Show success message
-            statusMsg.className = 'appointment-status-message success';
-            statusMsg.textContent = '✅ تم حفظ الموعد بنجاح!';
+            // Close modal immediately
+            closeAppointmentModal();
+            
+            // Show success toast
+            showSuccessToast();
             
             // Reset form
             appointmentForm.reset();
 
-            // Close modal after 2 seconds
+            // Reload appointments list after a short delay
             setTimeout(() => {
-              closeAppointmentModal();
-              // Reload appointments list
               loadCarWashAppointments(document.getElementById('appointmentDate').value);
-            }, 2000);
+            }, 500);
 
           } catch (error) {
             statusMsg.className = 'appointment-status-message error';
