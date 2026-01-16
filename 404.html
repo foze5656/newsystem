@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="ar" dir="rtl" class="h-full">
-
-<head>
+ <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>اسعار خدمات بورتراج</title>
@@ -11,14 +10,14 @@
     body {
       box-sizing: border-box;
     }
-
+    
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-
+    
     * {
       font-family: 'Cairo', sans-serif;
       font-size: 18px;
     }
-
+    
     /* Datalist and Select Styling — Black × Gold luxury theme */
     input[list]::-webkit-calendar-picker-indicator {
       filter: invert(1);
@@ -26,13 +25,11 @@
     }
 
     datalist {
-      background: #050505;
-      /* very dark */
-      color: #FFD700;
-      /* gold */
+      background: #050505; /* very dark */
+      color: #FFD700; /* gold */
       border: 1px solid #FFD700;
       border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.06);
+      box-shadow: 0 10px 30px rgba(255,215,0,0.06);
       padding: 6px;
     }
 
@@ -46,10 +43,9 @@
     }
 
     option:hover {
-      background: #B8860B;
-      /* dark gold */
+      background: #B8860B; /* dark gold */
       color: #000;
-      box-shadow: 0 8px 20px rgba(255, 215, 0, 0.12), 0 0 12px rgba(255, 215, 0, 0.06) inset;
+      box-shadow: 0 8px 20px rgba(255,215,0,0.12), 0 0 12px rgba(255,215,0,0.06) inset;
     }
 
     select {
@@ -59,7 +55,7 @@
       padding: 8px 12px;
       border-radius: 8px;
       font-size: 14px;
-      box-shadow: 0 8px 24px rgba(255, 215, 0, 0.04);
+      box-shadow: 0 8px 24px rgba(255,215,0,0.04);
     }
 
     select option {
@@ -73,7 +69,7 @@
     select option:checked {
       background: #B8860B;
       color: #000;
-      box-shadow: 0 8px 20px rgba(255, 215, 0, 0.12);
+      box-shadow: 0 8px 20px rgba(255,215,0,0.12);
     }
 
     /* Firefox specific */
@@ -88,15 +84,14 @@
         color: #000;
       }
     }
-
-    html,
-    body {
+    
+    html, body {
       height: 100%;
       overflow: hidden;
       margin: 0;
       padding: 0;
     }
-
+    
     .dashboard-wrapper {
       height: 100%;
       width: 100%;
@@ -107,7 +102,7 @@
       position: relative;
       gap: 0;
     }
-
+    
     /* Sidebar */
     .sidebar {
       background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
@@ -120,40 +115,40 @@
       position: relative;
       z-index: 100;
     }
-
+    
     .sidebar::-webkit-scrollbar {
       width: 6px;
     }
-
+    
     .sidebar::-webkit-scrollbar-track {
       background: #1a1a1a;
     }
-
+    
     .sidebar::-webkit-scrollbar-thumb {
       background: #F2BC1B;
       border-radius: 3px;
     }
-
+    
     .logo-section {
       text-align: center;
       padding: 10px 0 12px 0;
       border-bottom: 1px solid #333;
       margin-bottom: 8px;
     }
-
+    
     .logo-section img {
       max-width: 100px;
       height: auto;
       margin: 0 auto 6px;
     }
-
+    
     .logo-section h1 {
       font-size: 16px;
       font-weight: 700;
       color: #F2BC1B;
       margin: 0;
     }
-
+    
     .service-item {
       background: #2a2a2a;
       border: 1px solid #404040;
@@ -165,42 +160,42 @@
       align-items: center;
       gap: 8px;
     }
-
+    
     .service-item:hover {
       background: #353535;
       border-color: #F2BC1B;
       transform: translateX(-2px);
     }
-
+    
     .service-item.active {
       background: #F2BC1B;
       border-color: #F2BC1B;
       color: #000;
       font-weight: 700;
     }
-
+    
     .service-item .icon {
       font-size: 18px;
       width: 22px;
       text-align: center;
       color: #F2BC1B;
     }
-
+    
     .service-item.active .icon {
       color: #000;
     }
-
+    
     .service-item .label {
       flex: 1;
       font-size: 14px;
       color: #F2BC1B;
       font-weight: 600;
     }
-
+    
     .service-item.active .label {
       color: #000;
     }
-
+    
     /* Submenu styling */
     .service-submenu {
       display: none;
@@ -211,26 +206,26 @@
       padding-right: 8px;
       border-right: 2px solid #404040;
     }
-
+    
     .service-submenu.show {
       display: flex;
     }
-
+    
     .service-item.has-submenu .arrow {
       margin-right: auto;
       font-size: 12px;
       transition: transform 0.2s ease;
     }
-
+    
     .service-item.has-submenu.expanded .arrow {
       transform: rotate(180deg);
     }
-
+    
     .service-item.submenu-item {
       padding: 6px 8px;
       font-size: 13px;
     }
-
+    
     /* Main Content */
     .main-content {
       display: flex;
@@ -239,7 +234,7 @@
       background: #0a0a0a;
       height: 100%;
     }
-
+    
     /* Header Bar */
     .header-bar {
       background: #1a1a1a;
@@ -250,14 +245,14 @@
       justify-content: space-between;
       flex-shrink: 0;
     }
-
+    
     .header-bar h2 {
       font-size: 18px;
       font-weight: 700;
       color: #F2BC1B;
       margin: 0;
     }
-
+    
     .header-bar .status {
       font-size: 13px;
       color: #10b981;
@@ -265,7 +260,7 @@
       align-items: center;
       gap: 5px;
     }
-
+    
     .status-dot {
       width: 7px;
       height: 7px;
@@ -273,19 +268,12 @@
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
-
+    
     @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.5;
-      }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
-
+    
     /* Content Area */
     .content-area {
       flex: 1;
@@ -298,20 +286,20 @@
       gap: 10px;
       align-content: start;
     }
-
+    
     .content-area::-webkit-scrollbar {
       width: 8px;
     }
-
+    
     .content-area::-webkit-scrollbar-track {
       background: #1a1a1a;
     }
-
+    
     .content-area::-webkit-scrollbar-thumb {
       background: #F2BC1B;
       border-radius: 4px;
     }
-
+    
     /* Form Sections */
     .form-section {
       background: #1a1a1a;
@@ -320,7 +308,7 @@
       padding: 10px;
       height: fit-content;
     }
-
+    
     .form-section.full-width {
       grid-column: 1 / -1;
     }
@@ -341,7 +329,7 @@
     }
 
     #insuranceResults .table-scroll,
-    #insuranceResults>div>.table-scroll {
+    #insuranceResults > div > .table-scroll {
       overflow-x: auto;
       width: 100%;
     }
@@ -350,7 +338,7 @@
       width: 100%;
       table-layout: auto;
     }
-
+    
     .section-title {
       font-size: 14px;
       font-weight: 700;
@@ -361,25 +349,25 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-
+    
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 8px;
     }
-
+    
     .form-field {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-
+    
     .form-field label {
       font-size: 13px;
       color: #999;
       font-weight: 600;
     }
-
+    
     .form-control {
       background: #262626;
       border: 1px solid #404040;
@@ -389,17 +377,17 @@
       font-size: 14px;
       transition: all 0.2s ease;
     }
-
+    
     .form-control:focus {
       outline: none;
       border-color: #F2BC1B;
       background: #2d2d2d;
     }
-
+    
     .form-control::placeholder {
       color: #666;
     }
-
+    
     /* Buttons */
     .btn-grid {
       display: grid;
@@ -407,7 +395,7 @@
       gap: 6px;
       margin-top: 6px;
     }
-
+    
     .btn-option {
       background: #2a2a2a;
       border: 1px solid #404040;
@@ -420,19 +408,19 @@
       color: #ccc;
       font-weight: 600;
     }
-
+    
     .btn-option:hover {
       background: #353535;
       border-color: #F2BC1B;
     }
-
+    
     .btn-option.active {
       background: #F2BC1B;
       border-color: #F2BC1B;
       color: #000;
       font-weight: 700;
     }
-
+    
     .btn-primary {
       background: #F2BC1B;
       color: #000;
@@ -446,12 +434,12 @@
       width: 100%;
       margin-top: 10px;
     }
-
+    
     .btn-primary:hover {
       background: #d9a616;
       transform: translateY(-2px);
     }
-
+    
     /* Back Button */
     .btn-back {
       background: #F2BC1B;
@@ -467,24 +455,23 @@
       align-items: center;
       gap: 8px;
     }
-
+    
     .btn-back:hover {
       background: #d9a616;
       transform: translateY(-2px);
     }
-
-    /* Data Table */
-    .data-table-container {
-      grid-column: 1 / -1;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 5px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      max-height: 350px;
-    }
-
+    
+  /* Data Table */
+  .data-table-container {
+  grid-column: 1 / -1;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 350px;
+}    
     .table-header {
       background: #F2BC1B;
       padding: 10px 12px;
@@ -492,30 +479,30 @@
       font-weight: 700;
       color: #000;
     }
-
+    
     .table-scroll {
       overflow-y: auto;
       max-height: 300px;
     }
-
+    
     .table-scroll::-webkit-scrollbar {
       width: 5px;
     }
-
+    
     .table-scroll::-webkit-scrollbar-track {
       background: #262626;
     }
-
+    
     .table-scroll::-webkit-scrollbar-thumb {
       background: #F2BC1B;
       border-radius: 3px;
     }
-
+    
     .data-table {
       width: 100%;
       border-collapse: collapse;
     }
-
+    
     .data-table th {
       background: #262626;
       color: #F2BC1B;
@@ -528,25 +515,25 @@
       top: 0;
       z-index: 10;
     }
-
-    .data-table td {
-      padding: 10px 12px;
-      font-size: 14px;
-      color: #ccc;
-      text-align: center;
-      border-bottom: 1px solid #333;
-    }
-
+    
+  .data-table td {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #ccc;
+  text-align: center;
+  border-bottom: 1px solid #333;
+}
+    
     .data-table tr:hover td {
       background: #262626;
     }
-
+    
     .data-table .highlight {
       color: #F2BC1B;
       font-weight: 600;
       font-size: 15px;
     }
-
+    
     /* Info Boxes */
     .info-box {
       background: #1a3a52;
@@ -557,7 +544,7 @@
       color: #93c5fd;
       margin-top: 7px;
     }
-
+    
     .warning-box {
       background: #4a3a1a;
       border: 1px solid #f59e0b;
@@ -567,7 +554,7 @@
       color: #fbbf24;
       margin-top: 7px;
     }
-
+    
     .error-box {
       background: #4a1a1a;
       border: 1px solid #ef4444;
@@ -577,7 +564,7 @@
       color: #fca5a5;
       margin-top: 7px;
     }
-
+    
     /* Loading */
     .spinner {
       border: 2px solid #333;
@@ -588,21 +575,16 @@
       animation: spin 1s linear infinite;
       display: inline-block;
     }
-
+    
     @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-
+    
     .hidden {
       display: none !important;
     }
-
+    
     /* Fullscreen Iframe Container */
     .fullscreen-iframe-wrapper {
       position: fixed;
@@ -615,7 +597,7 @@
       display: flex;
       flex-direction: column;
     }
-
+    
     .fullscreen-iframe-header {
       position: absolute;
       top: 10px;
@@ -626,30 +608,30 @@
       padding: 0;
       pointer-events: none;
     }
-
+    
     .fullscreen-iframe-header .btn-back {
       pointer-events: all;
       background: rgba(242, 188, 27, 0.95);
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
-
+    
     .fullscreen-iframe-header .btn-back:hover {
       background: rgba(217, 166, 22, 0.95);
     }
-
+    
     .fullscreen-iframe-container {
       flex: 1;
       width: 100%;
       overflow: hidden;
     }
-
+    
     .fullscreen-iframe-container iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
-
+    
     /* Wash Cards Compact */
     .wash-cards-grid {
       display: grid;
@@ -657,7 +639,7 @@
       gap: 8px;
       margin-top: 6px;
     }
-
+    
     .wash-card-compact {
       background: #262626;
       border: 1px solid #404040;
@@ -665,32 +647,32 @@
       padding: 8px;
       transition: all 0.2s ease;
     }
-
+    
     .wash-card-compact:hover {
       border-color: #F2BC1B;
       transform: translateY(-2px);
     }
-
+    
     .wash-card-compact h3 {
       font-size: 14px;
       color: #F2BC1B;
       margin: 0 0 5px 0;
       font-weight: 700;
     }
-
+    
     .wash-card-compact .price {
       font-size: 13px;
       color: #fff;
       font-weight: 600;
       margin-bottom: 5px;
     }
-
+    
     .wash-card-compact ul {
       list-style: none;
       padding: 0;
       margin: 0;
     }
-
+    
     .wash-card-compact li {
       font-size: 12px;
       color: #999;
@@ -699,7 +681,7 @@
       position: relative;
       line-height: 1.3;
     }
-
+    
     .wash-card-compact li:before {
       content: "✓";
       position: absolute;
@@ -709,7 +691,7 @@
       font-weight: bold;
       font-size: 10px;
     }
-
+    
     /* Copy Button */
     .copy-btn-small {
       background: #F2BC1B;
@@ -724,11 +706,11 @@
       margin-top: 5px;
       transition: all 0.2s ease;
     }
-
+    
     .copy-btn-small:hover {
       background: #d9a616;
     }
-
+    
     .copy-btn-small.success {
       background: #10b981;
       color: #fff;
@@ -739,7 +721,7 @@
       position: fixed;
       left: 12px;
       top: 12px;
-      background: rgba(10, 10, 10, 0.95);
+      background: rgba(10,10,10,0.95);
       border: 1px solid #333;
       padding: 10px;
       border-radius: 6px;
@@ -747,331 +729,123 @@
       max-height: 80vh;
       overflow: auto;
       width: 360px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
-
-    .animated-highlight {
-      animation: glowGradient 6s linear infinite;
-      background: linear-gradient(90deg, rgba(242, 188, 27, 0.12), rgba(242, 188, 27, 0.04));
-      border: 1px solid rgba(242, 188, 27, 0.2);
-    }
-
-    @keyframes glowGradient {
-      0% {
-        background-position: 0% 50%
-      }
-
-      50% {
-        background-position: 100% 50%
-      }
-
-      100% {
-        background-position: 0% 50%
-      }
-    }
-
-    .completed-months h4 {
-      color: #F2BC1B;
-      margin: 0 0 8px 0;
-      font-size: 14px
-    }
-
-    .completed-months .month-block {
-      border-top: 1px dashed #333;
-      padding-top: 8px;
-      margin-top: 8px
-    }
-
-    .completed-months .month-title {
-      color: #ccc;
-      font-weight: 700;
-      font-size: 13px;
-      margin-bottom: 6px
-    }
-
-    .completed-months .top3 {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 6px
-    }
-
-    .completed-months .top3 div {
-      flex: 1;
-      text-align: center;
-      padding: 6px;
-      border-radius: 6px;
-      background: #0f0f0f;
-      border: 1px solid #222
-    }
-
-    .completed-months .others {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: stretch
-    }
-
-    .completed-months .others div {
-      flex: 1 0 45%;
-      color: #fff;
-      text-align: center;
-      font-size: 18px;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center
-    }
-
-    .completed-toggle {
-      position: fixed;
-      left: 12px;
-      top: 12px;
-      width: 36px;
-      height: 36px;
-      background: #0a0a0a;
-      border: 1px solid #333;
-      border-radius: 6px;
-      z-index: 1300;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer
-    }
-
-    .completed-toggle .lines {
-      width: 18px;
-      height: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px
-    }
-
-    .completed-toggle .lines span {
-      display: block;
-      height: 2px;
-      background: #F2BC1B;
-      border-radius: 2px
-    }
-
-    .completed-toggle-inline {
-      width: 36px;
-      height: 36px;
-      background: #0a0a0a;
-      border: 1px solid #333;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      margin-left: 6px
-    }
-
-    .completed-toggle-inline .lines {
-      width: 16px;
-      height: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px
-    }
-
-    .completed-toggle-inline .lines span {
-      display: block;
-      height: 2px;
-      background: #F2BC1B;
-      border-radius: 2px
-    }
-
-    .completed-months .no-data {
-      color: #bbb;
-      font-size: 14px;
-      text-align: center;
-      padding: 8px
-    }
-
+    .animated-highlight{ animation: glowGradient 6s linear infinite; background: linear-gradient(90deg, rgba(242,188,27,0.12), rgba(242,188,27,0.04)); border:1px solid rgba(242,188,27,0.2); }
+    @keyframes glowGradient{ 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
+    .completed-months h4{ color: #F2BC1B; margin:0 0 8px 0; font-size:14px }
+    .completed-months .month-block{ border-top:1px dashed #333; padding-top:8px; margin-top:8px }
+    .completed-months .month-title{ color:#ccc; font-weight:700; font-size:13px; margin-bottom:6px }
+    .completed-months .top3{ display:flex; gap:8px; margin-bottom:6px }
+    .completed-months .top3 div{ flex:1; text-align:center; padding:6px; border-radius:6px; background:#0f0f0f; border:1px solid #222 }
+    .completed-months .others{ display:flex; gap:8px; flex-wrap:wrap; align-items:stretch }
+    .completed-months .others div{ flex:1 0 45%; color:#fff; text-align:center; font-size:18px; padding:10px; display:flex; align-items:center; justify-content:center }
+    .completed-toggle{ position: fixed; left: 12px; top: 12px; width:36px; height:36px; background:#0a0a0a; border:1px solid #333; border-radius:6px; z-index:1300; display:flex; align-items:center; justify-content:center; cursor:pointer }
+    .completed-toggle .lines{ width:18px; height:14px; display:flex; flex-direction:column; gap:3px }
+    .completed-toggle .lines span{ display:block; height:2px; background:#F2BC1B; border-radius:2px }
+    .completed-toggle-inline{ width:36px; height:36px; background:#0a0a0a; border:1px solid #333; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; margin-left:6px }
+    .completed-toggle-inline .lines{ width:16px; height:12px; display:flex; flex-direction:column; gap:3px }
+    .completed-toggle-inline .lines span{ display:block; height:2px; background:#F2BC1B; border-radius:2px }
+    .completed-months .no-data{ color:#bbb; font-size:14px; text-align:center; padding:8px }
     /* Protection cards and logos */
     .data-card {
-      padding: 14px;
-      border: 1px solid rgba(255, 215, 0, 0.06);
-      border-radius: 12px;
-      background: linear-gradient(180deg, #0f1214 0%, #071018 100%);
-      color: #e6e6e6;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
-      min-height: 110px;
+      padding:14px;
+      border:1px solid rgba(255,215,0,0.06);
+      border-radius:12px;
+      background: linear-gradient(180deg,#0f1214 0%, #071018 100%);
+      color:#e6e6e6;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.65);
+      min-height:110px;
     }
-
-    .data-card h4 {
-      margin: 0 0 10px 0;
-      color: #F2BC1B;
-      font-size: 15px
-    }
-
-    .prot-logos-grid {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-    }
-
-    .prot-logo {
-      max-height: 80px;
-      width: auto;
-      object-fit: contain;
-      cursor: pointer;
-      padding: 12px;
-      border-radius: 12px;
-      background: linear-gradient(180deg, #070909, #0b0b0b);
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease
-    }
-
-    .prot-logo:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.7)
-    }
-
-    .prot-logo.active {
-      border-color: #F2BC1B;
-      box-shadow: 0 14px 36px rgba(242, 188, 27, 0.06);
-      transform: translateY(-4px)
-    }
-
-    .prot-transport {
-      margin-top: 12px;
-      padding: 14px;
-      border-radius: 10px;
-      background: #7f1d1d;
-      color: #fff;
-      border: 1px solid #f87171;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6)
-    }
-
-    .prot-note {
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 10px;
-      background: linear-gradient(180deg, #071018, #08131a);
-      border: 1px solid #123;
-      color: #dbeafe
-    }
-
+    .data-card h4{ margin:0 0 10px 0; color:#F2BC1B; font-size:15px }
+    .prot-logos-grid{ display:flex; gap:14px; align-items:center; }
+    .prot-logo{ max-height:80px; width:auto; object-fit:contain; cursor:pointer; padding:12px; border-radius:12px; background:linear-gradient(180deg,#070909,#0b0b0b); border:1px solid rgba(255,255,255,0.03); box-shadow: 0 8px 20px rgba(0,0,0,0.6); transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease }
+    .prot-logo:hover{ transform: translateY(-4px); box-shadow: 0 14px 30px rgba(0,0,0,0.7) }
+    .prot-logo.active{ border-color:#F2BC1B; box-shadow: 0 14px 36px rgba(242,188,27,0.06); transform: translateY(-4px) }
+    .prot-transport{ margin-top:12px;padding:14px;border-radius:10px;background:#7f1d1d;color:#fff;border:1px solid #f87171; box-shadow: 0 8px 24px rgba(0,0,0,0.6) }
+    .prot-note{ margin-top:18px; padding:14px; border-radius:10px; background: linear-gradient(180deg,#071018, #08131a); border:1px solid #123; color:#dbeafe }
     /* Important red message used in protection results (single red note as requested) */
-    .prot-important {
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 8px;
-      background: rgba(127, 29, 29, 0.04);
-      border: 1px solid #ef4444;
-      color: #ffb3b3;
-      font-weight: 700
-    }
-
-    .prot-toast {
-      position: fixed;
-      top: 80px;
-      right: 40px;
-      background: #F2BC1B;
-      color: #000;
-      padding: 12px 16px;
-      border-radius: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
-      display: none;
-      z-index: 1500;
-      font-weight: 700
-    }
+    .prot-important{ margin-top:12px; padding:12px; border-radius:8px; background: rgba(127,29,29,0.04); border:1px solid #ef4444; color:#ffb3b3; font-weight:700 }
+    .prot-toast{ position:fixed; top:80px; right:40px; background:#F2BC1B; color:#000; padding:12px 16px; border-radius:10px; border:1px solid rgba(0,0,0,0.12); box-shadow:0 12px 40px rgba(0,0,0,0.6); display:none; z-index:1500; font-weight:700 }
   </style>
-  <style>
-    @view-transition {
-      navigation: auto;
-    }
-  </style>
+  <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-</head>
-
-<body class="h-full">
+ </head>
+ <body class="h-full">
   <div class="dashboard-wrapper" id="dashboardWrapper"><!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="logo-section"><img src="https://i.top4top.io/p_35860o72q1.png" alt="Logo">
-        <h1 id="siteTitle">خدمات بورتراج</h1>
+   <aside class="sidebar" id="sidebar">
+    <div class="logo-section"><img src="https://i.top4top.io/p_35860o72q1.png" alt="Logo">
+     <h1 id="siteTitle">خدمات بورتراج</h1>
+    </div>
+    <div class="service-item has-submenu" data-service="staff"><span class="icon">👥</span> <span class="label">الموظفين</span> <span class="arrow">▼</span>
+    </div>
+    <div class="service-submenu" id="staffSubmenu">
+     <div class="service-item submenu-item" data-service="staff_centers"><span class="label">مراكز الطلبات</span>
+     </div>
+     <div class="service-item submenu-item" data-service="staff_followup"><span class="label">متابعة الطلبات</span>
+     </div>
+    </div>
+    <div class="service-item" data-service="tow"><span class="icon">🚚</span> <span class="label">ونشات</span>
+    </div>
+    <div class="service-item has-submenu" data-service="battery"><span class="icon">🔋</span> <span class="label">بطارية</span> <span class="arrow">▼</span>
+    </div>
+    <div class="service-submenu" id="batterySubmenu">
+     <div class="service-item submenu-item" data-service="batterySubscription"><span class="label">اشتراك بطارية</span>
+     </div>
+     <div class="service-item submenu-item" data-service="newBattery"><span class="label">بطارية جديدة</span>
+     </div>
+     <div class="service-item submenu-item" data-service="batteryInstall"><span class="label">تركيب بطارية</span>
+     </div>
+    </div>
+    <div class="service-item" data-service="fuel"><span class="icon">⛽</span> <span class="label">خدمة بنزين</span>
+    </div>
+    <div class="service-item" data-service="unlock"><span class="icon">🔓</span> <span class="label">فتح قفل السيارة</span>
+    </div>
+    <div class="service-item has-submenu" data-service="tire"><span class="icon">📀</span> <span class="label">العناية بالإطارات</span> <span class="arrow">▼</span>
+    </div>
+    <div class="service-submenu" id="tireSubmenu">
+     <div class="service-item submenu-item" data-service="puncture"><span class="label">بنشر</span>
+     </div>
+     <div class="service-item submenu-item" data-service="tireIncrease"><span class="label">زيادات التواير</span>
+     </div>
+     <div class="service-item submenu-item" data-service="tireSheet"><span class="label">شيت التواير</span>
+     </div>
+     <div class="service-item submenu-item" data-service="balance"><span class="label">ميزان وتركيب</span>
+     </div>
+     <div class="service-item submenu-item" data-service="ringRepair"><span class="label">تصليح الرنقات</span>
+     </div>
+    </div>
+    <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمات ميكانيكية</span>
+    </div>
+    <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
+    </div>
+    <div class="service-item" data-service="protection"><span class="icon">🛡️</span> <span class="label">الحمايه والتغيم</span>
+    </div>
+    <div class="service-item" data-service="insurance"><span class="icon">🚧</span> <span class="label">تأمينات</span>
+    </div>
+   </aside><!-- Main Content -->
+   <main class="main-content"><!-- Header Bar -->
+    <header class="header-bar">
+     <h2 id="serviceTitle">اختر خدمة من القائمة</h2>
+     <div class="status"><span class="status-dot"></span> <span>متصل</span>
+     </div>
+    </header><!-- Content Area -->
+    <div id="contentArea" class="content-area">
+     <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
+      <div style="font-size: 48px; margin-bottom: 16px;">
+       📊
       </div>
-      <div class="service-item has-submenu" data-service="staff"><span class="icon">👥</span> <span
-          class="label">الموظفين</span> <span class="arrow">▼</span>
-      </div>
-      <div class="service-submenu" id="staffSubmenu">
-        <div class="service-item submenu-item" data-service="staff_centers"><span class="label">مراكز الطلبات</span>
-        </div>
-        <div class="service-item submenu-item" data-service="staff_followup"><span class="label">متابعة الطلبات</span>
-        </div>
-      </div>
-      <div class="service-item" data-service="tow"><span class="icon">🚚</span> <span class="label">ونشات</span>
-      </div>
-      <div class="service-item has-submenu" data-service="battery"><span class="icon">🔋</span> <span
-          class="label">بطارية</span> <span class="arrow">▼</span>
-      </div>
-      <div class="service-submenu" id="batterySubmenu">
-        <div class="service-item submenu-item" data-service="batterySubscription"><span class="label">اشتراك
-            بطارية</span>
-        </div>
-        <div class="service-item submenu-item" data-service="newBattery"><span class="label">بطارية جديدة</span>
-        </div>
-        <div class="service-item submenu-item" data-service="batteryInstall"><span class="label">تركيب بطارية</span>
-        </div>
-      </div>
-      <div class="service-item" data-service="fuel"><span class="icon">⛽</span> <span class="label">خدمة بنزين</span>
-      </div>
-      <div class="service-item" data-service="unlock"><span class="icon">🔓</span> <span class="label">فتح قفل
-          السيارة</span>
-      </div>
-      <div class="service-item has-submenu" data-service="tire"><span class="icon">📀</span> <span class="label">العناية
-          بالإطارات</span> <span class="arrow">▼</span>
-      </div>
-      <div class="service-submenu" id="tireSubmenu">
-        <div class="service-item submenu-item" data-service="puncture"><span class="label">بنشر</span>
-        </div>
-        <div class="service-item submenu-item" data-service="tireIncrease"><span class="label">زيادات التواير</span>
-        </div>
-        <div class="service-item submenu-item" data-service="tireSheet"><span class="label">شيت التواير</span>
-        </div>
-        <div class="service-item submenu-item" data-service="balance"><span class="label">ميزان وتركيب</span>
-        </div>
-        <div class="service-item submenu-item" data-service="ringRepair"><span class="label">تصليح الرنقات</span>
-        </div>
-      </div>
-      <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمات
-          ميكانيكية</span>
-      </div>
-      <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل
-          السيارات</span>
-      </div>
-      <div class="service-item" data-service="protection"><span class="icon">🛡️</span> <span class="label">الحمايه
-          والتغيم</span>
-      </div>
-      <div class="service-item" data-service="insurance"><span class="icon">🚧</span> <span class="label">تأمينات</span>
-      </div>
-    </aside><!-- Main Content -->
-    <main class="main-content"><!-- Header Bar -->
-      <header class="header-bar">
-        <h2 id="serviceTitle">اختر خدمة من القائمة</h2>
-        <div class="status"><span class="status-dot"></span> <span>متصل</span>
-        </div>
-      </header><!-- Content Area -->
-      <div id="contentArea" class="content-area">
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
-          <div style="font-size: 48px; margin-bottom: 16px;">
-            📊
-          </div>
-          <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">مرحباً بك في لوحة التحكم</h3>
-          <p style="color: #999; font-size: 14px;">اختر خدمة من القائمة الجانبية للبدء</p>
-        </div>
-      </div>
-    </main>
+      <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">مرحباً بك في لوحة التحكم</h3>
+      <p style="color: #999; font-size: 14px;">اختر خدمة من القائمة الجانبية للبدء</p>
+     </div>
+    </div>
+   </main>
   </div><!-- Fullscreen Iframe Wrapper (Hidden by default) -->
   <div id="fullscreenIframeWrapper" class="fullscreen-iframe-wrapper hidden">
-    <div class="fullscreen-iframe-header"><button class="btn-back" onclick="closeFullscreenIframe()"> <span>←</span>
-        <span>رجوع</span> </button>
-    </div>
-    <div class="fullscreen-iframe-container" id="fullscreenIframeContainer">
-    </div>
+   <div class="fullscreen-iframe-header"><button class="btn-back" onclick="closeFullscreenIframe()"> <span>←</span> <span>رجوع</span> </button>
+   </div>
+   <div class="fullscreen-iframe-container" id="fullscreenIframeContainer">
+   </div>
   </div>
   <script>
     // Configuration
@@ -1098,7 +872,7 @@
         onConfigChange: async (newConfig) => {
           config = { ...defaultConfig, ...newConfig };
           document.getElementById('siteTitle').textContent = config.site_title;
-
+          
           if (newConfig.sheet_id && newConfig.sheet_id !== sheetsData.currentSheetId) {
             await loadAllSheets();
           }
@@ -1129,24 +903,24 @@
       'جيلي': 'Geely',
       'اوتو كابيتال': 'Auto Capital'
     };
-
+    
     const companies = Object.keys(companyMapping);
 
     // Parse CSV
     function parseCSV(csvText) {
       const rows = [];
       const lines = csvText.split('\n');
-
+      
       for (let line of lines) {
         if (!line.trim()) continue;
-
+        
         const cells = [];
         let cell = '';
         let inQuotes = false;
-
+        
         for (let i = 0; i < line.length; i++) {
           const char = line[i];
-
+          
           if (char === '"') {
             if (inQuotes && line[i + 1] === '"') {
               cell += '"';
@@ -1164,7 +938,7 @@
         cells.push(cell.replace(/^"|"$/g, ''));
         rows.push(cells);
       }
-
+      
       return rows;
     }
 
@@ -1172,7 +946,7 @@
     async function loadAllSheets() {
       try {
         const sheetId = config.sheet_id;
-
+        
         const sheetNames = [
           'portarage towtruk',
           'hero.works',
@@ -1193,14 +967,14 @@
           'تأمين إيلاف',
           'others'
         ];
-
+        
         sheetsData = { currentSheetId: sheetId };
-
+        
         for (const sheetName of sheetNames) {
           try {
             const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
             const response = await fetch(csvUrl);
-
+            
             if (response.ok) {
               const csvText = await response.text();
               const rows = parseCSV(csvText);
@@ -1210,7 +984,7 @@
             console.log(`Could not load sheet: ${sheetName}`);
           }
         }
-
+        
         // Load others sheet separately
         try {
           const othersSheetId = '1ax4pCBDTm6Vkq-MZjmmOY1dgwKCUQS5x1GeffkUYOzI';
@@ -1224,7 +998,7 @@
         } catch (err) {
           console.log('Could not load others sheet');
         }
-
+        
       } catch (error) {
         console.error('Error loading sheets:', error);
       }
@@ -1234,7 +1008,7 @@
     function openFullscreenIframe(url, title) {
       const wrapper = document.getElementById('fullscreenIframeWrapper');
       const container = document.getElementById('fullscreenIframeContainer');
-
+      
       // Store state before opening
       lastIframeState = {
         url: url,
@@ -1242,24 +1016,24 @@
         service: currentService,
         formData: { ...formData }
       };
-
+      
       container.innerHTML = `<iframe src="${url}" title="${title}"></iframe>`;
       wrapper.classList.remove('hidden');
-
+      
       // Hide the main dashboard
       document.getElementById('dashboardWrapper').style.display = 'none';
     }
 
-    window.closeFullscreenIframe = function () {
+    window.closeFullscreenIframe = function() {
       const wrapper = document.getElementById('fullscreenIframeWrapper');
       const container = document.getElementById('fullscreenIframeContainer');
-
+      
       wrapper.classList.add('hidden');
       container.innerHTML = '';
-
+      
       // Show the main dashboard again
       document.getElementById('dashboardWrapper').style.display = 'grid';
-
+      
       // Don't reset the service - keep the current state
       // The user will see the same service they had before opening the iframe
     };
@@ -1276,17 +1050,17 @@
           if (submenu) submenu.classList.toggle('show');
           return;
         }
-
+        
         // Clear all active states
         document.querySelectorAll('.service-item').forEach(item => {
           item.classList.remove('active');
         });
-
+        
         serviceItem.classList.add('active');
-
+        
         currentService = serviceItem.dataset.service;
         formData = {};
-
+        
         const serviceTitles = {
           'tow': 'خدمة ونشات',
           'batterySubscription': 'اشتراك بطارية',
@@ -1306,10 +1080,10 @@
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات'
         };
-
+        
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
-
-        switch (currentService) {
+        
+        switch(currentService) {
           case 'tow':
             renderTowInterface();
             break;
@@ -1367,7 +1141,7 @@
 
     // Render Battery Subscription Interface (was old "battery" service)
     function renderBatterySubscriptionInterface() {
-      renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6],
+      renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
         '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
     }
 
@@ -1377,7 +1151,7 @@
       if (window.staffIntervalId) clearInterval(window.staffIntervalId);
 
       const contentArea = document.getElementById('contentArea');
-      const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+      const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
       const now = new Date();
       const currentMonth = now.getMonth() + 1; // 1..12
       contentArea.innerHTML = `
@@ -1395,7 +1169,7 @@
           <div id="staffColumns" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;"></div>
         </div>
       `;
-
+      
 
       // initial load and periodic refresh (every 5 minutes)
       loadStaffData(true);
@@ -1408,8 +1182,8 @@
     async function loadStaffData(force = false) {
       try {
         const sheetId = '1FkHv8c06WTPtOK9WUYM2ZNBR_IFhDq4W05JUr-b3SnI';
-        const sheetName = 'طلبات الموظفين';
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+      const sheetName = 'طلبات الموظفين';
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
         const res = await fetch(csvUrl, { cache: 'no-cache' });
         if (!res.ok) throw new Error('failed to load staff sheet');
         const text = await res.text();
@@ -1428,7 +1202,7 @@
         const staff = dataRows.map(r => ({ name: (r[0] || '').toString().trim(), count: parseInt((r[1] || '0').toString().trim()) || 0 }));
 
         // sort by count desc
-        staff.sort((a, b) => b.count - a.count);
+        staff.sort((a,b) => b.count - a.count);
 
         updateStaffUI(staff, lastUpdate);
       } catch (err) {
@@ -1437,7 +1211,7 @@
       }
     }
 
-
+    
 
     function updateStaffUI(staff, lastUpdate) {
       const updatedEl = document.getElementById('staffUpdated');
@@ -1658,12 +1432,12 @@
           </div>
         </div>
       `;
-
+      
       // Toggle companies button
       const toggleBtn = document.getElementById('toggleCompanies');
       const moreCompanies = document.getElementById('moreCompanies');
       let companiesVisible = false;
-
+      
       toggleBtn.onclick = () => {
         companiesVisible = !companiesVisible;
         if (companiesVisible) {
@@ -1672,13 +1446,13 @@
         } else {
           moreCompanies.classList.add('hidden');
           toggleBtn.textContent = '⬇️ إظهار الشركات الأخرى';
-
+          
           // Reset to بورتراج when hiding
           const portarageBtn = document.querySelector('[data-company="بورتراج"]');
           if (portarageBtn && !portarageBtn.classList.contains('active')) {
             document.querySelectorAll('[data-company]').forEach(b => b.classList.remove('active'));
             portarageBtn.classList.add('active');
-
+            
             formData.companyArabic = 'بورتراج';
             formData.company = 'portarage towtruk';
             formData.isLocked = false;
@@ -1687,23 +1461,23 @@
           }
         }
       };
-
+      
       // Company selection
       document.querySelectorAll('[data-company]').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('[data-company]').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-
+          
           formData.companyArabic = btn.dataset.company;
           formData.company = companyMapping[btn.dataset.company];
-
+          
           // Clear previous state
           formData.towType = null;
           formData.from = null;
           formData.to = null;
           formData.isLocked = false;
           formData.extraCharges = 'no';
-
+          
           // Hide sections
           document.getElementById('towTypeSection').classList.add('hidden');
           document.getElementById('towLocationsSection').classList.add('hidden');
@@ -1711,11 +1485,11 @@
           document.getElementById('lockedOption').classList.add('hidden');
           document.getElementById('lockedYesNote').classList.add('hidden');
           document.getElementById('flatbedOnlyNote').classList.add('hidden');
-
+          
           updateTowTypeOptions();
         });
       });
-
+      
       // Set default to بورتراج
       formData.companyArabic = 'بورتراج';
       formData.company = 'portarage towtruk';
@@ -1765,10 +1539,10 @@
 
       // Clear any existing interval and set up auto-refresh
       if (window.driverFollowIntervalId) clearInterval(window.driverFollowIntervalId);
-
+      
       // initial load
       loadDriverSchedules();
-
+      
       // Auto-refresh every 3 minutes
       window.driverFollowIntervalId = setInterval(() => {
         loadDriverSchedules();
@@ -1801,11 +1575,11 @@
         // We'll display: نوع الخدمة | اسم السائق | التاريخ والوقت | اسم الموظف | ملاحظات
         tbody.innerHTML = '';
         dataRows.forEach(r => {
-          const emp = (r[0] || '').toString().trim();
-          const svc = (r[1] || '').toString().trim();
-          const driver = (r[2] || '').toString().trim();
-          const datetime = (r[3] || '').toString().trim();
-          const notes = (r[4] || '').toString().trim();
+          const emp = (r[0]||'').toString().trim();
+          const svc = (r[1]||'').toString().trim();
+          const driver = (r[2]||'').toString().trim();
+          const datetime = (r[3]||'').toString().trim();
+          const notes = (r[4]||'').toString().trim();
 
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${escapeHtml(svc)}</td><td>${escapeHtml(driver)}</td><td>${escapeHtml(datetime)}</td><td>${escapeHtml(emp)}</td><td>${escapeHtml(notes)}</td>`;
@@ -1819,35 +1593,35 @@
     }
 
     function escapeHtml(s) {
-      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
     function updateTowTypeOptions() {
       const towTypeSection = document.getElementById('towTypeSection');
       const sheetName = formData.company;
-
+      
       if (!sheetName || !sheetsData[sheetName]) {
         towTypeSection.classList.add('hidden');
         return;
       }
-
+      
       towTypeSection.classList.remove('hidden');
-
+      
       // Check which tow types are available
       const rows = sheetsData[sheetName];
       let hasNormal = false;
       let hasFlatbed = false;
-
+      
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
         if (row[4] || row[1]) hasNormal = true;
         if (row[12] || row[9]) hasFlatbed = true;
       }
-
+      
       // Update buttons visibility
       const towTypeButtons = document.getElementById('towTypeButtons');
       const buttons = towTypeButtons.querySelectorAll('.btn-option');
-
+      
       buttons.forEach(btn => {
         const type = btn.dataset.type;
         if (type === 'normal' && !hasNormal) {
@@ -1858,68 +1632,68 @@
           btn.style.display = 'block';
         }
       });
-
+      
       const visibleButtons = Array.from(buttons).filter(btn => btn.style.display !== 'none');
       towTypeButtons.style.gridTemplateColumns = `repeat(${visibleButtons.length}, 1fr)`;
-
+      
       buttons.forEach(btn => btn.classList.remove('active'));
-
+      
       if (!formData.towType) {
         document.getElementById('towLocationsSection').classList.add('hidden');
         document.getElementById('towResultSection').classList.add('hidden');
         document.getElementById('lockedOption').classList.add('hidden');
       }
-
+      
       // Tow type selection
       buttons.forEach(btn => {
         btn.onclick = () => {
           buttons.forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-
+          
           formData.towType = btn.dataset.type;
-
+          
           // Reset all sections
           document.getElementById('towResultSection').classList.add('hidden');
           document.getElementById('towLocationsSection').classList.add('hidden');
           formData.from = null;
           formData.to = null;
-
+          
           const fromSelect = document.getElementById('fromSelect');
           const toSelect = document.getElementById('toSelect');
           if (fromSelect) fromSelect.value = '';
           if (toSelect) toSelect.value = '';
-
+          
           const lockedOption = document.getElementById('lockedOption');
           const flatbedOnlyNote = document.getElementById('flatbedOnlyNote');
           const lockedCheckbox = document.getElementById('lockedCheckbox');
           const flatbedExtraChargesSection = document.getElementById('flatbedExtraChargesSection');
-
+          
           if (formData.towType === 'flatbed') {
             if (formData.companyArabic === 'بورتراج') {
               lockedOption.classList.remove('hidden');
               flatbedOnlyNote.classList.add('hidden');
               flatbedExtraChargesSection.classList.add('hidden');
-
+              
               if (formData.isLocked === undefined) {
                 formData.isLocked = false;
               }
-
+              
               if (lockedCheckbox) {
                 lockedCheckbox.checked = formData.isLocked;
               }
-
+              
               if (lockedCheckbox) {
                 lockedCheckbox.onchange = () => {
                   formData.isLocked = lockedCheckbox.checked;
-
+                  
                   const lockedYesNote = document.getElementById('lockedYesNote');
-
+                  
                   if (formData.isLocked) {
                     lockedYesNote.classList.remove('hidden');
                   } else {
                     lockedYesNote.classList.add('hidden');
                   }
-
+                  
                   if (formData.from && formData.to) {
                     calculateTowPrice();
                   }
@@ -1943,7 +1717,7 @@
             formData.isLocked = false;
             formData.flatbedExtraCharges = 'no';
           }
-
+          
           updateTowLocations();
         };
       });
@@ -1952,26 +1726,26 @@
     function updateTowLocations() {
       const towLocationsSection = document.getElementById('towLocationsSection');
       towLocationsSection.classList.remove('hidden');
-
+      
       const routes = getTowRoutes(formData.company, formData.towType);
       const fromLocations = [...new Set(routes.map(r => r.from))].filter(Boolean);
-
+      
       const fromDatalist = document.getElementById('fromLocations');
       fromDatalist.innerHTML = fromLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-
+      
       const fromSelect = document.getElementById('fromSelect');
       const toSelect = document.getElementById('toSelect');
-
+      
       fromSelect.oninput = () => {
         formData.from = fromSelect.value;
-
+        
         const currentTo = toSelect.value;
-
+        
         if (formData.from) {
           const toLocations = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(Boolean);
           const toDatalist = document.getElementById('toLocations');
           toDatalist.innerHTML = toLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-
+          
           if (currentTo && toLocations.includes(currentTo)) {
             toSelect.value = currentTo;
             formData.to = currentTo;
@@ -1984,73 +1758,73 @@
           document.getElementById('towResultSection').classList.add('hidden');
         }
       };
-
+      
       toSelect.oninput = () => {
         formData.to = toSelect.value;
         const currentToInput = toSelect.value.toLowerCase();
-        if (formData.from) {
-          const routes = getTowRoutes(formData.company, formData.towType);
-          const filteredToLocations = [...new Set(
-            routes
-              .filter(r => r.from === formData.from && r.to.toLowerCase().includes(currentToInput))
-              .map(r => r.to)
-          )].filter(Boolean);
+      if (formData.from) {
+        const routes = getTowRoutes(formData.company, formData.towType);
+        const filteredToLocations = [...new Set(
+          routes
+            .filter(r => r.from === formData.from && r.to.toLowerCase().includes(currentToInput))
+            .map(r => r.to)
+        )].filter(Boolean);
 
-          const toDatalist = document.getElementById('toLocations');
-          toDatalist.innerHTML = filteredToLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-        }
+        const toDatalist = document.getElementById('toLocations');
+        toDatalist.innerHTML = filteredToLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
+      }
         if (!formData.to) {
           document.getElementById('towResultSection').classList.add('hidden');
-
+          
           // Hide gear question sections
           document.getElementById('extraChargesSection').classList.add('hidden');
           document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
           return;
         }
-
+        
         if (formData.to) {
           // Show gear question ONLY for بورتراج flatbed
           if (formData.companyArabic === 'بورتراج' && formData.towType === 'flatbed') {
             document.getElementById('flatbedPortarageExtraChargesSection').classList.remove('hidden');
             document.getElementById('extraChargesSection').classList.add('hidden');
-
+            
             const flatbedPortarageExtraChargesSelect = document.getElementById('flatbedPortarageExtraChargesSelect');
             if (!formData.flatbedPortarageExtraCharges) {
               formData.flatbedPortarageExtraCharges = 'no';
             }
             flatbedPortarageExtraChargesSelect.value = formData.flatbedPortarageExtraCharges;
-
+            
             flatbedPortarageExtraChargesSelect.onchange = () => {
               formData.flatbedPortarageExtraCharges = flatbedPortarageExtraChargesSelect.value;
-
+              
               if (formData.flatbedPortarageExtraCharges === 'yes') {
                 document.getElementById('flatbedPortarageExtraChargesNote').classList.remove('hidden');
               } else {
                 document.getElementById('flatbedPortarageExtraChargesNote').classList.add('hidden');
               }
-
+              
               calculateTowPrice();
             };
           } else if (formData.companyArabic === 'بورتراج' && formData.towType === 'normal') {
             // For بورتراج normal tow
             document.getElementById('extraChargesSection').classList.remove('hidden');
             document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
-
+            
             const extraChargesSelect = document.getElementById('extraChargesSelect');
             if (!formData.extraCharges) {
               formData.extraCharges = 'no';
             }
             extraChargesSelect.value = formData.extraCharges;
-
+            
             extraChargesSelect.onchange = () => {
               formData.extraCharges = extraChargesSelect.value;
-
+              
               if (formData.extraCharges === 'yes') {
                 document.getElementById('extraChargesNote').classList.remove('hidden');
               } else {
                 document.getElementById('extraChargesNote').classList.add('hidden');
               }
-
+              
               calculateTowPrice();
             };
           } else {
@@ -2058,7 +1832,7 @@
             document.getElementById('extraChargesSection').classList.add('hidden');
             document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
           }
-
+          
           // Always recalculate when "to" location changes
           calculateTowPrice();
         }
@@ -2068,19 +1842,19 @@
     function getTowRoutes(sheetName, towType) {
       const rows = sheetsData[sheetName];
       if (!rows || rows.length < 3) return [];
-
+      
       const routes = [];
-
+      
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
-
+        
         if (towType === 'normal') {
           const from = row[6];
           const toF = row[5];
           const toC = row[2];
           const priceE = row[4];
           const priceB = row[1];
-
+          
           if (from && toF && priceE) {
             routes.push({ from, to: toF, price: priceE, cancelCol: 3 });
           }
@@ -2093,7 +1867,7 @@
           const toK = row[10];
           const priceM = row[12];
           const priceJ = row[9];
-
+          
           if (from && toN && priceM) {
             routes.push({ from, to: toN, price: priceM, cancelCol: 11 });
           }
@@ -2102,23 +1876,23 @@
           }
         }
       }
-
+      
       return routes;
     }
 
     function calculateTowPrice() {
       const routes = getTowRoutes(formData.company, formData.towType);
       const route = routes.find(r => r.from === formData.from && r.to === formData.to);
-
+      
       if (!route) {
         document.getElementById('towResultSection').classList.add('hidden');
         return;
       }
-
+      
       let companyPrice = parseFloat(route.price) || 0;
-
+      
       let extraCharges = 0;
-
+      
       if (formData.towType === 'normal') {
         // For normal tow بورتراج
         extraCharges = (formData.companyArabic === 'بورتراج' && formData.extraCharges === 'yes') ? 10 : 0;
@@ -2131,28 +1905,28 @@
           extraCharges = 0;
         }
       }
-
+      
       const lockedCharge = (formData.towType === 'flatbed' && formData.isLocked) ? 5 : 0;
-
+      
       let portaragePrice = companyPrice;
       let discount = 0;
-
+      
       if (formData.company.toLowerCase() !== 'portarage towtruk') {
         const portarageRoutes = getTowRoutes('portarage towtruk', formData.towType);
         const portarageRoute = portarageRoutes.find(r => r.from === formData.from && r.to === formData.to);
-
+        
         if (portarageRoute) {
           portaragePrice = parseFloat(portarageRoute.price) || 0;
           discount = portaragePrice - companyPrice;
         }
       }
-
+      
       const tbody = document.getElementById('towResultBody');
       let rows = '';
-
+      
       if (formData.company.toLowerCase() !== 'portarage towtruk') {
         const finalPrice = companyPrice + extraCharges + lockedCharge;
-
+        
         rows = `
           <tr>
             <td>سعر ${formData.companyArabic}</td>
@@ -2167,7 +1941,7 @@
             <td class="highlight" style="color: #10b981;"><strong>${discount.toFixed(2)} ${config.currency}</strong></td>
           </tr>
         `;
-
+        
         if (lockedCharge > 0 || extraCharges > 0) {
           if (lockedCharge > 0) {
             rows += `
@@ -2199,7 +1973,7 @@
             <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
           </tr>
         `;
-
+        
         if (lockedCharge > 0 || extraCharges > 0) {
           if (lockedCharge > 0) {
             rows += `
@@ -2225,7 +1999,7 @@
             </tr>
           `;
         }
-
+        
         const cancelPrice = getCancellationPrice(formData.from, formData.to, formData.towType);
         if (cancelPrice) {
           rows += `
@@ -2236,10 +2010,10 @@
           `;
         }
       }
-
+      
       tbody.innerHTML = rows;
       document.getElementById('towResultSection').classList.remove('hidden');
-
+      
       setTimeout(() => {
         const resultSection = document.getElementById('towResultSection');
         if (resultSection) {
@@ -2247,14 +2021,14 @@
         }
       }, 100);
     }
-
+    
     function getCancellationPrice(from, to, towType) {
       const rows = sheetsData['portarage towtruk'];
       if (!rows || rows.length < 3) return null;
-
+      
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
-
+        
         if (towType === 'normal') {
           if (row[6] === from && row[5] === to && row[3]) {
             return `${parseFloat(row[3]).toFixed(2)} ${config.currency}`;
@@ -2271,7 +2045,7 @@
           }
         }
       }
-
+      
       return null;
     }
 
@@ -2304,32 +2078,32 @@
           </div>
         </div>
       `;
-
+      
       loadBatteryInstallOptions();
     }
-
+    
     function loadBatteryInstallOptions() {
       const areaSelect = document.getElementById('areaSelect');
       const areaDatalist = document.getElementById('areaOptions');
-
+      
       if (!sheetsData['تركيب بطارية']) {
         areaDatalist.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
         return;
       }
-
+      
       const rows = sheetsData['تركيب بطارية'];
       const areas = [];
-
+      
       // Skip first 3 rows (headers)
       for (let i = 3; i < rows.length; i++) {
         const row = rows[i];
         if (row[0]) areas.push(row[0]);
         if (row[4]) areas.push(row[4]);
       }
-
+      
       const uniqueAreas = [...new Set(areas)].filter(Boolean);
       areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
-
+      
       areaSelect.oninput = () => {
         formData.area = areaSelect.value;
         if (formData.area) {
@@ -2339,36 +2113,36 @@
         }
       };
     }
-
+    
     function calculateBatteryInstallPrice() {
       const rows = sheetsData['تركيب بطارية'];
       if (!rows || !formData.area) return;
-
+      
       let price = null;
       let cancellation = null;
-
+      
       // Skip first 3 rows (headers)
       for (let i = 3; i < rows.length; i++) {
         const row = rows[i];
-
+        
         if (row[0] === formData.area) {
           price = row[1];
           cancellation = row[2];
           break;
         }
-
+        
         if (row[4] === formData.area) {
           price = row[5];
           cancellation = row[6];
           break;
         }
       }
-
+      
       if (!price) {
         document.getElementById('serviceResultSection').classList.add('hidden');
         return;
       }
-
+      
       const tbody = document.getElementById('serviceResultBody');
       tbody.innerHTML = `
         <tr>
@@ -2380,7 +2154,7 @@
           <td>${cancellation ? parseFloat(cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}</td>
         </tr>
       `;
-
+      
       document.getElementById('serviceResultSection').classList.remove('hidden');
     }
 
@@ -2426,7 +2200,7 @@
           </div>
         </div>
       `;
-
+      
       loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
         document.getElementById('fuelTypeSection').classList.remove('hidden');
 
@@ -2445,10 +2219,10 @@
     function calculateFuelPrice() {
       const rows = sheetsData['خدمات5'];
       if (!rows || !formData.area) return;
-
+      
       let servicePrice = 0;
       let cancellation = 'غير محدد';
-
+      
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
         if (row[0] === formData.area) {
@@ -2461,13 +2235,13 @@
           break;
         }
       }
-
+      
       const fuelPrices = { 'premium': 1.5, 'special': 1.5, 'ultra': 2.5 };
       const fuelPrice = fuelPrices[formData.fuelType] || 1.5;
       const total = servicePrice + fuelPrice;
-
+      
       const fuelNames = { 'premium': 'بنزين ممتاز', 'special': 'بنزين خصوصي', 'ultra': 'بنزين الترا' };
-
+      
       const tbody = document.getElementById('fuelResultBody');
       tbody.innerHTML = `
         <tr>
@@ -2491,7 +2265,7 @@
           <td>${cancellation}</td>
         </tr>
       `;
-
+      
       document.getElementById('fuelResultSection').classList.remove('hidden');
     }
 
@@ -2568,7 +2342,7 @@
       externalBody.innerHTML = `
         <tr>
           <td>سعر الفني الخارجي</td>
-          <td class="highlight">${(externalPrice || 0).toFixed(2)} ${config.currency}</td>
+          <td class="highlight">${(externalPrice||0).toFixed(2)} ${config.currency}</td>
         </tr>
         <tr style="background: #262626;">
           <td><strong>السعر النهائي</strong></td>
@@ -2638,7 +2412,7 @@
           </div>
         </div>
       `;
-
+      
       loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14], () => {
         calculatePuncturePrice();
       });
@@ -2753,13 +2527,13 @@
     function calculatePuncturePrice() {
       const rows = sheetsData['خدمات5'];
       if (!rows) return;
-
+      
       let externalPrice = 'غير متوفر', externalCancel = 'غير محدد';
       let internalPrice = 'غير متوفر', internalCancel = 'غير محدد';
-
+      
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
-
+        
         if (row[0] === formData.area) {
           externalPrice = row[1] ? `${parseFloat(row[1]).toFixed(2)} ${config.currency}` : 'غير متوفر';
           externalCancel = row[2] ? `${parseFloat(row[2]).toFixed(2)} ${config.currency}` : 'غير محدد';
@@ -2767,7 +2541,7 @@
           externalPrice = row[5] ? `${parseFloat(row[5]).toFixed(2)} ${config.currency}` : 'غير متوفر';
           externalCancel = row[6] ? `${parseFloat(row[6]).toFixed(2)} ${config.currency}` : 'غير محدد';
         }
-
+        
         if (row[8] === formData.area) {
           internalPrice = row[9] ? `${parseFloat(row[9]).toFixed(2)} ${config.currency}` : 'غير متوفر';
           internalCancel = row[10] ? `${parseFloat(row[10]).toFixed(2)} ${config.currency}` : 'غير محدد';
@@ -2776,7 +2550,7 @@
           internalCancel = row[14] ? `${parseFloat(row[14]).toFixed(2)} ${config.currency}` : 'غير محدد';
         }
       }
-
+      
       const tbody = document.getElementById('tireResultBody');
       tbody.innerHTML = `
         <tr>
@@ -2790,7 +2564,7 @@
           <td>${internalCancel}</td>
         </tr>
       `;
-
+      
       document.getElementById('tireResultSection').classList.remove('hidden');
     }
 
@@ -2838,24 +2612,24 @@
           <div id="balanceNote" class="info-box hidden"></div>
         </div>
       `;
-
+      
       document.querySelectorAll('[data-source]').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('[data-source]').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-
+          
           formData.tireSource = btn.dataset.source;
-
+          
           // Hide all sections first
           document.getElementById('balanceResultSection').classList.add('hidden');
           document.getElementById('balanceAreaSection').classList.add('hidden');
           document.getElementById('tireCountSection').classList.add('hidden');
           document.getElementById('areaSelect').value = '';
           formData.area = null;
-
+          
           // Show area section
           document.getElementById('balanceAreaSection').classList.remove('hidden');
-
+          
           if (formData.tireSource === 'ours') {
             document.getElementById('tireCountSection').classList.add('hidden');
             loadAreaOptionsDatalist('ميزان وتركيب', [0, 1, 2, 4, 5, 6], calculateBalancePrice);
@@ -2875,13 +2649,13 @@
 
     function calculateBalancePrice() {
       if (!formData.area) return;
-
+      
       const rows = sheetsData['ميزان وتركيب'];
       if (!rows) return;
-
+      
       let basePrice = 0;
       let cancellation = 'غير محدد';
-
+      
       if (formData.tireSource === 'ours') {
         for (let i = 2; i < rows.length; i++) {
           const row = rows[i];
@@ -2895,7 +2669,7 @@
             break;
           }
         }
-
+        
         const tbody = document.getElementById('balanceResultBody');
         tbody.innerHTML = `
           <tr>
@@ -2907,11 +2681,11 @@
             <td>${cancellation}</td>
           </tr>
         `;
-
+        
         const noteDiv = document.getElementById('balanceNote');
         noteDiv.textContent = 'السعر هذا سواء بنركب من تاير الى اربع تواير نفس رسوم الخدمه';
         noteDiv.classList.remove('hidden');
-
+        
       } else {
         for (let i = 2; i < rows.length; i++) {
           const row = rows[i];
@@ -2925,10 +2699,10 @@
             break;
           }
         }
-
+        
         const tireCount = formData.tireCount || 0;
         const total = basePrice + (tireCount * 5);
-
+        
         const tbody = document.getElementById('balanceResultBody');
         tbody.innerHTML = `
           <tr>
@@ -2952,12 +2726,12 @@
             <td>${cancellation}</td>
           </tr>
         `;
-
+        
         const noteDiv = document.getElementById('balanceNote');
         noteDiv.textContent = 'إذا التواير من عند العميل';
         noteDiv.classList.remove('hidden');
       }
-
+      
       document.getElementById('balanceResultSection').classList.remove('hidden');
     }
 
@@ -3074,7 +2848,7 @@
           </div>
         </div>
       `;
-
+      
       // Service names mapping
       const serviceNames = {
         'inspection': 'فحص السيارة',
@@ -3087,43 +2861,43 @@
         'brakefluid': 'زيت بريك',
         'transmission': 'زيت سكان'
       };
-
+      
       document.querySelectorAll('[data-mech]').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('[data-mech]').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-
+          
           // Hide service type section and show back button
           document.getElementById('mechTypeSection').style.display = 'none';
           document.getElementById('mechBackButtonSection').style.display = 'block';
-
+          
           // Display selected service name
           const serviceName = serviceNames[btn.dataset.mech];
           document.getElementById('mechSelectedService').textContent = serviceName;
-
+          
           formData.mechanicalService = btn.dataset.mech;
-
+          
           document.getElementById('mechResultSection').classList.add('hidden');
           document.getElementById('areaSelect').value = '';
           formData.area = null;
-
+          
           // Hide all dynamic sections
           document.getElementById('oilFilterSourceSection').classList.add('hidden');
           document.getElementById('mechAreaSection').classList.add('hidden');
           document.getElementById('diskTurningSection').classList.add('hidden');
           document.getElementById('alternatorSupplierPriceSection').classList.add('hidden');
-
+          
           if (formData.mechanicalService === 'oilfilter') {
             // Show oil source selection
             document.getElementById('oilFilterSourceSection').classList.remove('hidden');
-
+            
             document.querySelectorAll('[data-oil-source]').forEach(oilBtn => {
               oilBtn.onclick = () => {
                 document.querySelectorAll('[data-oil-source]').forEach(b => b.classList.remove('active'));
                 oilBtn.classList.add('active');
-
+                
                 formData.oilSource = oilBtn.dataset.oilSource;
-
+                
                 if (formData.oilSource === 'customer') {
                   // Show area selection and load data from columns 8-14
                   document.getElementById('mechAreaSection').classList.remove('hidden');
@@ -3134,7 +2908,7 @@
                 }
               };
             });
-
+            
           } else if (formData.mechanicalService === 'inspection' || formData.mechanicalService === 'acgas') {
             document.getElementById('diskTurningSection').classList.add('hidden');
             document.getElementById('mechAreaSection').classList.remove('hidden');
@@ -3144,17 +2918,17 @@
             document.getElementById('diskTurningSection').classList.remove('hidden');
             document.getElementById('mechAreaSection').classList.remove('hidden');
             formData.diskTurning = 'no';
-
+            
             document.querySelectorAll('[data-disk]').forEach(diskBtn => {
               diskBtn.onclick = () => {
                 document.querySelectorAll('[data-disk]').forEach(b => b.classList.remove('active'));
                 diskBtn.classList.add('active');
-
+                
                 formData.diskTurning = diskBtn.dataset.disk;
                 if (formData.area) calculateMechanicalPrice();
               };
             });
-
+            
             loadAreaOptionsDatalist('خدمات ميكانيكية', [16, 17, 18, 20, 21, 22], calculateMechanicalPrice);
           } else if (formData.mechanicalService === 'wipers') {
             // تبديل المساحات — مناطق من خدمات ميكانيكية2 (أعمدة I,J,K و M,N,O)
@@ -3203,7 +2977,7 @@
           document.getElementById('mechTypeSection').style.display = 'none';
           document.getElementById('mechBackButtonSection').style.display = 'block';
           document.getElementById('mechSelectedService').textContent = 'جدول المواعيد';
-
+          
           renderMechanicalAppointments();
         };
       }
@@ -3211,7 +2985,7 @@
 
     function calculateMechanicalPrice() {
       if (!formData.area) return;
-
+      
       // Select appropriate sheet depending on mechanical service
       let rows = null;
       if (formData.mechanicalService === 'inspection' || formData.mechanicalService === 'acgas') {
@@ -3220,7 +2994,7 @@
         rows = sheetsData['خدمات ميكانيكية'];
       }
       if (!rows) return;
-
+      
       let columns;
       if (formData.mechanicalService === 'inspection' || formData.mechanicalService === 'acgas') {
         columns = [0, 1, 2, 4, 5, 6];
@@ -3229,10 +3003,10 @@
       } else if (formData.mechanicalService === 'oilfilter' && formData.oilSource === 'customer') {
         columns = [8, 9, 10, 12, 13, 14];
       }
-
+      
       let basePrice = 0;
       let cancellation = 'غير محدد';
-
+      
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
         if (row[columns[0]] === formData.area) {
@@ -3245,13 +3019,13 @@
           break;
         }
       }
-
+      
       const tbody = document.getElementById('mechResultBody');
       const noteDiv = document.getElementById('mechNote');
-
+      
       if (formData.mechanicalService === 'brakes' && formData.diskTurning === 'yes') {
         const total = basePrice + 5;
-
+        
         tbody.innerHTML = `
           <tr>
             <td>سعر الخدمة الأساسي</td>
@@ -3283,7 +3057,7 @@
             <td>${cancellation}</td>
           </tr>
         `;
-
+        
         if (formData.mechanicalService === 'brakes' || formData.mechanicalService === 'oilfilter') {
           noteDiv.textContent = 'إذا القطع من عند العميل';
           noteDiv.classList.remove('hidden');
@@ -3291,7 +3065,7 @@
           noteDiv.classList.add('hidden');
         }
       }
-
+      
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
 
@@ -3339,7 +3113,7 @@
       // Load brands from 'others' sheet - retry if not loaded
       let brands = [];
       const othersRows = sheetsData['others'];
-
+      
       if (!othersRows) {
         // If data not loaded, retry in a moment
         setTimeout(() => {
@@ -3347,7 +3121,7 @@
         }, 500);
         return;
       }
-
+      
       if (othersRows) {
         for (let i = 1; i < othersRows.length; i++) { // start from 1 to skip header
           const row = othersRows[i];
@@ -3368,7 +3142,7 @@
 
       // Build table rows - only details, no headers
       let tableHtml = '';
-
+      
       if (brands.length > 0) {
         brands.forEach(b => {
           const total = basePrice + b.price;
@@ -3379,7 +3153,7 @@
             </tr>
           `;
         });
-
+        
         // Add cancellation fee once at the bottom
         tableHtml += `
           <tr style="border-top: 1px solid #333; padding-top: 8px; margin-top: 8px;">
@@ -3581,15 +3355,15 @@
 
     function calculateAlternatorPrice() {
       if (!formData.area || !formData.supplierPrice) return;
-
+      
       const rows = sheetsData['خدمات ميكانيكية2'];
       if (!rows) return;
-
+      
       const columns = [0, 1, 2, 4, 5, 6]; // Columns A, B, C and E, F, G
-
+      
       let servicePrice = 0;
       let cancellation = 'غير محدد';
-
+      
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
         if (row[columns[0]] === formData.area) {
@@ -3602,13 +3376,13 @@
           break;
         }
       }
-
+      
       // Supplier price + 20 dinars = part price
       const partPrice = formData.supplierPrice + 20;
       const total = servicePrice + partPrice;
-
+      
       const tbody = document.getElementById('mechResultBody');
-
+      
       tbody.innerHTML = `
         <tr>
           <td>سعر الخدمة</td>
@@ -3627,7 +3401,7 @@
           <td>${cancellation}</td>
         </tr>
       `;
-
+      
       const noteDiv = document.getElementById('mechNote');
       if (noteDiv) noteDiv.classList.add('hidden');
 
@@ -3638,166 +3412,207 @@
     function renderCarWashInterface() {
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
-        <div class="form-section">
+        <div class="form-section full-width">
           <h3 class="section-title">نوع الغسيل</h3>
-          <div class="btn-grid" style="grid-template-columns: repeat(4, 1fr);">
-            <button class="btn-option" data-wash="premium">غسيل ممتاز</button>
-            <button class="btn-option" data-wash="special">غسيل خصوصي</button>
-            <button class="btn-option" data-wash="ultra">غسيل ألترا</button>
-            <button class="btn-option" data-wash="all">عرض الكل</button>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <button id="bookNewAppointmentBtn" class="btn-primary" style="flex: 1;">📅 تحديد موعد جديد</button>
+            <button id="viewWashCardsBtn" class="btn-primary" style="flex: 1; background: #666; color: #fff;">📋 عرض الخدمات</button>
           </div>
         </div>
         
         <div id="washCardsSection" class="form-section full-width hidden">
           <h3 class="section-title" style="margin-bottom: 10px;">تفاصيل الخدمات</h3>
-          <div class="wash-cards-grid" id="washCardsGrid">
-          </div>
+          <div class="wash-cards-grid" id="washCardsGrid"></div>
         </div>
         
-        <div id="appointmentSection" class="form-section full-width">
-          <h3 class="section-title">بيانات الحجز</h3>
-          <div class="form-grid" style="margin-bottom: 12px;">
-             <div class="form-field">
-                <label>تاريخ الموعد</label>
-                <input type="date" id="appointmentDate" class="form-control">
-             </div>
-             <div class="form-field">
-                <label>الاسم</label>
-                <input type="text" id="customerName" class="form-control" placeholder="الاسم الكريم">
-             </div>
-             <div class="form-field">
-                <label>رقم الهاتف</label>
-                <input type="tel" id="customerPhone" class="form-control" placeholder="99999999">
-             </div>
-             <div class="form-field">
-                <label>المنطقة / العنوان</label>
-                <input type="text" id="areaDisplay" class="form-control" placeholder="المنطقة والقطعة" value="${formData.area || ''}">
-            </div>
-             <div class="form-field">
-                <label>طريقة الدفع</label>
-                <select id="paymentMethod" class="form-control">
-                   <option value="كاش / رابط">كاش / رابط</option>
-                   <option value="مدفوع مسبقاً">مدفوع مسبقاً</option>
-                </select>
-            </div>
+        <div id="appointmentTableSection" class="form-section full-width hidden">
+          <h3 class="section-title">جدول المواعيد المحجوزة</h3>
+          <div style="margin-bottom: 12px;">
+            <label style="color: #999; font-size: 13px;">اختر التاريخ:</label>
+            <input type="date" id="filterAppointmentDate" class="form-control" style="max-width: 250px; margin-top: 6px;">
           </div>
-
-          <div style="display:flex;gap:8px;">
-            <button id="bookAppointmentBtn" class="btn-primary">💾 تأكيد الحجز (حفظ في النظام)</button>
+          <div style="overflow-x: auto; width: 100%;">
+            <table class="data-table" id="appointmentsTable">
+              <thead>
+                <tr>
+                  <th>تاريخ الموعد</th>
+                  <th>الوقت</th>
+                  <th>رقم الطلب</th>
+                  <th>اسم العميل</th>
+                  <th>موقع العميل</th>
+                  <th>نوع الغسيل</th>
+                  <th>حالة الدفع</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="appointmentsTableBody"></tbody>
+            </table>
           </div>
-          <div id="availableSlots" style="margin-top: 12px;"></div>
         </div>
       `;
-
-      // Book Appointment button handler — Submit directly to SheetDB
-      document.getElementById('bookAppointmentBtn').onclick = async () => {
-        const date = document.getElementById('appointmentDate').value;
-        const name = document.getElementById('customerName').value;
-        const phone = document.getElementById('customerPhone').value;
-        const payment = document.getElementById('paymentMethod').value;
-        const area = document.getElementById('areaDisplay').value;
-        const washTypes = formData.selectedWashes || [];
-        const washTypeStr = washTypes.join(', ');
-
-        if (!date || !name || !phone) {
-          alert('الرجاء تعبئة جميع الحقول المطلوبة (التاريخ، الاسم، الهاتف)');
-          return;
-        }
-
-        const btn = document.getElementById('bookAppointmentBtn');
-        const originalText = btn.textContent;
-        btn.textContent = 'جاري إرسال الطلب...';
-        btn.disabled = true;
-
-        const payload = {
-          date: date,
-          time: new Date().toTimeString().split(' ')[0],
-          qrOrder: 'جديد',
-          customerName: name,
-          phone: phone,
-          location: area,
-          washType: washTypeStr,
-          payment: payment
-        };
-
-        try {
-          const result = await postToGoogleSheet(payload);
-          if (result.ok) {
-            alert('تم حجز الموعد بنجاح!');
-            // Reload appointments to show the new one
-            loadCarWashAppointments(date);
-            // Clear inputs
-            document.getElementById('customerName').value = '';
-            document.getElementById('customerPhone').value = '';
-          } else {
-            alert('حدث خطأ أثناء الحجز: ' + (result.error || result.reason));
-          }
-        } catch (e) {
-          console.error(e);
-          alert('خطأ في النظام');
-        } finally {
-          btn.textContent = originalText;
-          btn.disabled = false;
-        }
-      };
-
-      // Edit Appointment button (restore functionality)
-      const editBtn = document.createElement('button');
-      editBtn.id = 'editAppointmentBtn';
-      editBtn.className = 'btn-primary';
-      editBtn.style.marginLeft = '8px';
-      editBtn.style.minWidth = '140px';
-      editBtn.textContent = '✏️ تعديل الموعد';
-      editBtn.onclick = () => {
-        const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
-        const sheetName = 'WASH Sheet';
-        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/edit#gid=0`;
-        window.open(url, '_blank');
-      };
-      // insert edit button next to book button
-      const bookBtn = document.getElementById('bookAppointmentBtn');
-      if (bookBtn && bookBtn.parentNode) {
-        bookBtn.className = 'btn-primary';
-        bookBtn.style.minWidth = '140px';
-        bookBtn.parentNode.insertBefore(editBtn, bookBtn.nextSibling);
-      }
-
-      // initialize appointment date and load slots immediately (no need to click a wash)
-      (function initAppointments() {
-        const appointmentDate = document.getElementById('appointmentDate');
+      
+      // Modal Dialog for new appointment
+      const modal = document.createElement('div');
+      modal.id = 'carWashModal';
+      modal.style.cssText = `
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      `;
+      
+      modal.innerHTML = `
+        <div style="
+          background: #1a1a1a;
+          border: 2px solid #F2BC1B;
+          border-radius: 8px;
+          padding: 24px;
+          max-width: 600px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        ">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: #F2BC1B; margin: 0; font-size: 20px;">تحديد موعد جديد</h2>
+            <button id="closeModalBtn" style="
+              background: #333;
+              border: 1px solid #666;
+              color: #fff;
+              width: 32px;
+              height: 32px;
+              border-radius: 4px;
+              cursor: pointer;
+              font-size: 18px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">×</button>
+          </div>
+          
+          <div id="modalFormContainer" style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+              <label style="color: #999; font-size: 13px; display: block; margin-bottom: 6px;">تاريخ الموعد <span style="color: #ef4444;">*</span></label>
+              <input type="date" id="modalAppointmentDate" class="form-control" style="width: 100%;">
+            </div>
+            
+            <div>
+              <label style="color: #999; font-size: 13px; display: block; margin-bottom: 6px;">الوقت <span style="color: #ef4444;">*</span></label>
+              <input type="time" id="modalAppointmentTime" class="form-control" style="width: 100%;">
+            </div>
+            
+            <div>
+              <label style="color: #999; font-size: 13px; display: block; margin-bottom: 6px;">رقم الطلب</label>
+              <input type="text" id="modalQrOrder" class="form-control" placeholder="اترك فارغاً للرقم التلقائي">
+            </div>
+            
+            <div>
+              <label style="color: #999; font-size: 13px; display: block; margin-bottom: 6px;">اسم العميل <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="modalCustomerName" class="form-control" placeholder="أدخل اسم العميل">
+            </div>
+            
+            <div>
+              <label style="color: #999; font-size: 13px; display: block; margin-bottom: 6px;">موقع العميل <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="modalLocation" class="form-control" placeholder="أدخل موقع العميل">
+            </div>
+            
+            <div>
+              <label style="color: #999; font-size: 13px; display: block; margin-bottom: 6px;">نوع الغسيل <span style="color: #ef4444;">*</span></label>
+              <select id="modalWashType" class="form-control">
+                <option value="">-- اختر نوع الغسيل --</option>
+                <option value="ممتاز">⭐ غسيل ممتاز</option>
+                <option value="خصوصي">💎 غسيل خصوصي</option>
+                <option value="الترا">👑 غسيل ألترا</option>
+              </select>
+            </div>
+            
+            <div>
+              <label style="color: #999; font-size: 13px; display: block; margin-bottom: 6px;">حالة الدفع <span style="color: #ef4444;">*</span></label>
+              <select id="modalPaymentStatus" class="form-control">
+                <option value="">-- اختر حالة الدفع --</option>
+                <option value="نعم">✅ تم الدفع</option>
+                <option value="لا">❌ لم يتم الدفع</option>
+              </select>
+            </div>
+            
+            <div id="errorMessage" style="
+              background: #4a1a1a;
+              border: 1px solid #ef4444;
+              border-radius: 4px;
+              padding: 10px 12px;
+              font-size: 12px;
+              color: #fca5a5;
+              display: none;
+            "></div>
+            
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+              <button id="submitAppointmentBtn" class="btn-primary" style="flex: 1;">💾 حفظ الموعد</button>
+              <button id="cancelAppointmentBtn" class="btn-primary" style="flex: 1; background: #666; color: #fff;">إلغاء</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Event Listeners
+      document.getElementById('bookNewAppointmentBtn').onclick = () => {
+        document.getElementById('carWashModal').style.display = 'flex';
+        // Set minimum date to today
         const today = new Date().toISOString().split('T')[0];
-        appointmentDate.min = today;
-        if (!appointmentDate.value) appointmentDate.value = today;
-        loadCarWashAppointments(appointmentDate.value);
-        appointmentDate.onchange = () => loadCarWashAppointments(appointmentDate.value);
+        const dateInput = document.getElementById('modalAppointmentDate');
+        dateInput.min = today;
+        dateInput.value = today;
+        // Reset form
+        document.getElementById('modalAppointmentTime').value = '';
+        document.getElementById('modalCustomerName').value = '';
+        document.getElementById('modalLocation').value = '';
+        document.getElementById('modalWashType').value = '';
+        document.getElementById('modalPaymentStatus').value = '';
+        document.getElementById('errorMessage').style.display = 'none';
+      };
+      
+      document.getElementById('closeModalBtn').onclick = () => {
+        document.getElementById('carWashModal').style.display = 'none';
+      };
+      
+      document.getElementById('cancelAppointmentBtn').onclick = () => {
+        document.getElementById('carWashModal').style.display = 'none';
+      };
+      
+      document.getElementById('submitAppointmentBtn').onclick = () => {
+        saveCarWashAppointment();
+      };
+      
+      document.getElementById('viewWashCardsBtn').onclick = () => {
+        displayWashCards();
+      };
+      
+      // Initialize - load appointments table
+      (function initAppointmentTable() {
+        const today = new Date().toISOString().split('T')[0];
+        const filterInput = document.getElementById('filterAppointmentDate');
+        filterInput.min = '2020-01-01';
+        filterInput.value = today;
+        document.getElementById('appointmentTableSection').classList.remove('hidden');
+        loadCarWashAppointmentsForTable(today);
+        filterInput.onchange = () => loadCarWashAppointmentsForTable(filterInput.value);
       })();
-
-      document.querySelectorAll('[data-wash]').forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll('[data-wash]').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-
-          const washType = btn.dataset.wash;
-          handleWashTypeSelection(washType);
-        };
-      });
-
-      // show all wash types by default (populate the table/cards)
-      try { handleWashTypeSelection('all'); } catch (e) { }
     }
-
-    function handleWashTypeSelection(quality) {
+    
+    function displayWashCards() {
       const washCardsSection = document.getElementById('washCardsSection');
       const washCardsGrid = document.getElementById('washCardsGrid');
-
-      if (!quality) {
-        washCardsSection.classList.add('hidden');
-        // keep appointmentSection visible even if no wash selected
-        return;
-      }
-
+      
       washCardsGrid.innerHTML = '';
-
+      
       const washDetails = {
         premium: {
           name: '⭐ غسيل ممتاز',
@@ -3821,10 +3636,8 @@
           services: ['غسيل خارجي', 'التنظيف الداخلي', 'تلميع ديكورات السيارة الداخلية', 'غسيل مقاعد السيارة', 'تنظيف الأبواب', 'غسيل دبة السيارة', 'تنظيف لوحة القيادة']
         }
       };
-
-      const washTypes = quality === 'all' ? ['premium', 'special', 'ultra'] : [quality];
-
-      washTypes.forEach(type => {
+      
+      ['premium', 'special', 'ultra'].forEach(type => {
         const wash = washDetails[type];
         washCardsGrid.innerHTML += `
           <div class="wash-card-compact">
@@ -3838,29 +3651,264 @@
           </div>
         `;
       });
-
-      formData.selectedWashes = washTypes;
+      
       washCardsSection.classList.remove('hidden');
-
-      document.getElementById('appointmentSection').classList.remove('hidden');
-
-      const appointmentDate = document.getElementById('appointmentDate');
-
-      if (!appointmentDate.value) {
-        const today = new Date().toISOString().split('T')[0];
-        appointmentDate.min = today;
-        appointmentDate.value = today;
-        loadCarWashAppointments(today);
-      } else {
-        loadCarWashAppointments(appointmentDate.value);
+    }
+    
+    function saveCarWashAppointment() {
+      const date = document.getElementById('modalAppointmentDate').value;
+      const time = document.getElementById('modalAppointmentTime').value;
+      const qrOrder = document.getElementById('modalQrOrder').value;
+      const customerName = document.getElementById('modalCustomerName').value;
+      const location = document.getElementById('modalLocation').value;
+      const washType = document.getElementById('modalWashType').value;
+      const paymentStatus = document.getElementById('modalPaymentStatus').value;
+      const errorDiv = document.getElementById('errorMessage');
+      
+      // Validation
+      if (!date || !time || !customerName || !location || !washType || !paymentStatus) {
+        errorDiv.textContent = '❌ يرجى ملء جميع الحقول المطلوبة';
+        errorDiv.style.display = 'block';
+        return;
       }
-
-      appointmentDate.onchange = () => {
-        loadCarWashAppointments(appointmentDate.value);
+      
+      // Check if time is available
+      const hours = parseInt(time.split(':')[0]);
+      const mins = parseInt(time.split(':')[1]);
+      const timeMinutes = hours * 60 + mins;
+      
+      // Work hours: 10:30 AM (630) to 10:00 PM (1320)
+      if (timeMinutes < 630 || timeMinutes >= 1320) {
+        errorDiv.textContent = '❌ ساعات العمل من 10:30 صباحاً إلى 10:00 مساءً';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      
+      // Generate order number if not provided
+      const finalQrOrder = qrOrder || `ORD-${Date.now()}`;
+      
+      // Save to SheetDB
+      const payload = {
+        date: date,
+        time: time,
+        qrOrder: finalQrOrder,
+        customerName: customerName,
+        location: location,
+        washType: washType,
+        payment: paymentStatus
       };
+      
+      saveToSheetDB(payload);
+    }
+    
+    async function saveToSheetDB(data) {
+      try {
+        const sheetDbUrl = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
+        const response = await fetch(sheetDbUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: [data] })
+        });
+        
+        if (!response.ok) throw new Error('فشل الحفظ');
+        
+        // Close modal and reload appointments
+        document.getElementById('carWashModal').style.display = 'none';
+        const filterDate = document.getElementById('filterAppointmentDate').value;
+        loadCarWashAppointmentsForTable(filterDate);
+        
+        // Show success message
+        showToast('✅ تم حفظ الموعد بنجاح');
+      } catch (error) {
+        console.error('Error saving appointment:', error);
+        document.getElementById('errorMessage').textContent = '❌ خطأ في حفظ البيانات: ' + error.message;
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    }
+    
+    async function loadCarWashAppointmentsForTable(selectedDate) {
+      try {
+        const sheetDbUrl = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
+        const response = await fetch(sheetDbUrl);
+        
+        if (!response.ok) throw new Error('فشل التحميل');
+        
+        const data = await response.json();
+        const tbody = document.getElementById('appointmentsTableBody');
+        
+        // Filter by date
+        const filtered = (data.result || []).filter(apt => apt.date === selectedDate);
+        
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #999; padding: 20px;">لا توجد مواعيد في هذا التاريخ</td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = filtered.map((apt, idx) => `
+          <tr>
+            <td>${apt.date || '-'}</td>
+            <td>${apt.time || '-'}</td>
+            <td>${apt.qrOrder || '-'}</td>
+            <td>${apt.customerName || '-'}</td>
+            <td>${apt.location || '-'}</td>
+            <td>${apt.washType || '-'}</td>
+            <td>
+              ${apt.payment === 'نعم' ? '<span style="color: #10b981;">✅ تم</span>' : '<span style="color: #ef4444;">❌ لم يتم</span>'}
+            </td>
+            <td>
+              <div style="display: flex; gap: 4px;">
+                <button class="btn-option" style="padding: 4px 6px; font-size: 11px; flex: 1;" onclick="editCarWashAppointment(${idx}, '${selectedDate}')">✏️ تعديل</button>
+                <button class="btn-option" style="padding: 4px 6px; font-size: 11px; flex: 1; background: #8b3333; border-color: #ef4444;" onclick="deleteCarWashAppointment(${idx}, '${selectedDate}')">🗑️ حذف</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading appointments:', error);
+        document.getElementById('appointmentsTableBody').innerHTML = '<tr><td colspan="8" style="color: #f88; text-align: center; padding: 20px;">خطأ في تحميل البيانات</td></tr>';
+      }
+    }
+    
+    async function editCarWashAppointment(index, selectedDate) {
+      try {
+        const sheetDbUrl = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
+        const response = await fetch(sheetDbUrl);
+        if (!response.ok) throw new Error('فشل التحميل');
+        const data = await response.json();
+        const filtered = (data.result || []).filter(apt => apt.date === selectedDate);
+        
+        if (!filtered[index]) {
+          alert('لم يتم العثور على الموعد');
+          return;
+        }
+        
+        const appointment = filtered[index];
+        
+        // Populate modal with existing data
+        document.getElementById('modalAppointmentDate').value = appointment.date;
+        document.getElementById('modalAppointmentTime').value = appointment.time;
+        document.getElementById('modalQrOrder').value = appointment.qrOrder || '';
+        document.getElementById('modalCustomerName').value = appointment.customerName || '';
+        document.getElementById('modalLocation').value = appointment.location || '';
+        document.getElementById('modalWashType').value = appointment.washType || '';
+        document.getElementById('modalPaymentStatus').value = appointment.payment || '';
+        document.getElementById('errorMessage').style.display = 'none';
+        
+        // Show modal
+        document.getElementById('carWashModal').style.display = 'flex';
+        
+        // Override submit button to update instead of create
+        const submitBtn = document.getElementById('submitAppointmentBtn');
+        const originalOnClick = submitBtn.onclick;
+        
+        submitBtn.onclick = async () => {
+          const date = document.getElementById('modalAppointmentDate').value;
+          const time = document.getElementById('modalAppointmentTime').value;
+          const qrOrder = document.getElementById('modalQrOrder').value;
+          const customerName = document.getElementById('modalCustomerName').value;
+          const location = document.getElementById('modalLocation').value;
+          const washType = document.getElementById('modalWashType').value;
+          const paymentStatus = document.getElementById('modalPaymentStatus').value;
+          const errorDiv = document.getElementById('errorMessage');
+          
+          // Validation
+          if (!date || !time || !customerName || !location || !washType || !paymentStatus) {
+            errorDiv.textContent = '❌ يرجى ملء جميع الحقول المطلوبة';
+            errorDiv.style.display = 'block';
+            return;
+          }
+          
+          try {
+            const updateUrl = `https://sheetdb.io/api/v1/wvoh60e0yhry4/uuid/${appointment.id}`;
+            const updateResponse = await fetch(updateUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                data: {
+                  date: date,
+                  time: time,
+                  qrOrder: qrOrder,
+                  customerName: customerName,
+                  location: location,
+                  washType: washType,
+                  payment: paymentStatus
+                }
+              })
+            });
+            
+            if (!updateResponse.ok) throw new Error('فشل التحديث');
+            
+            document.getElementById('carWashModal').style.display = 'none';
+            loadCarWashAppointmentsForTable(selectedDate);
+            showToast('✅ تم تحديث الموعد بنجاح');
+            
+            // Restore original onclick
+            submitBtn.onclick = originalOnClick;
+          } catch (error) {
+            errorDiv.textContent = '❌ خطأ في تحديث البيانات: ' + error.message;
+            errorDiv.style.display = 'block';
+          }
+        };
+      } catch (error) {
+        alert('خطأ في تحميل الموعد: ' + error.message);
+      }
+    }
+    
+    window.deleteCarWashAppointment = async function(index, selectedDate) {
+      if (!confirm('هل أنت متأكد من حذف هذا الموعد؟')) return;
+      
+      try {
+        const sheetDbUrl = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
+        const response = await fetch(sheetDbUrl);
+        if (!response.ok) throw new Error('فشل التحميل');
+        const data = await response.json();
+        const filtered = (data.result || []).filter(apt => apt.date === selectedDate);
+        
+        if (!filtered[index]) {
+          alert('لم يتم العثور على الموعد');
+          return;
+        }
+        
+        const appointment = filtered[index];
+        const deleteUrl = `https://sheetdb.io/api/v1/wvoh60e0yhry4/uuid/${appointment.id}`;
+        const deleteResponse = await fetch(deleteUrl, { method: 'DELETE' });
+        
+        if (!deleteResponse.ok) throw new Error('فشل الحذف');
+        
+        loadCarWashAppointmentsForTable(selectedDate);
+        showToast('✅ تم حذف الموعد بنجاح');
+      } catch (error) {
+        alert('خطأ في حذف الموعد: ' + error.message);
+      }
+    };
+    
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 6px;
+        z-index: 3000;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
     }
 
-    window.copyWashDetails = async function (type) {
+    
+    // Copy wash details to clipboard
+    window.copyWashDetails = async function(type) {
       const washDetails = {
         premium: {
           name: 'غسيل ممتاز',
@@ -3884,7 +3932,7 @@
           services: ['غسيل خارجي', 'التنظيف الداخلي', 'تلميع ديكورات السيارة الداخلية', 'غسيل مقاعد السيارة', 'تنظيف الأبواب', 'غسيل دبة السيارة', 'تنظيف لوحة القيادة']
         }
       };
-
+      
       const wash = washDetails[type];
       const text = `
 ${wash.name}
@@ -3897,16 +3945,16 @@ ${wash.name}
 الخدمات المشمولة:
 ${wash.services.map(s => `• ${s}`).join('\n')}
       `.trim();
-
+      
       try {
         await navigator.clipboard.writeText(text);
-
+        
         const buttons = document.querySelectorAll('.copy-btn-small');
         buttons.forEach(btn => {
           if (btn.onclick && btn.onclick.toString().includes(type)) {
             btn.classList.add('success');
             btn.textContent = '✓ تم النسخ!';
-
+            
             setTimeout(() => {
               btn.classList.remove('success');
               btn.textContent = '📋 نسخ';
@@ -3918,522 +3966,186 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
     };
 
-    async function loadCarWashAppointments(selectedDate) {
-      try {
-        const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=WASH%20Sheet`;
-
-        const response = await fetch(csvUrl, {
-          mode: 'cors',
-          credentials: 'omit'
-        });
-        if (!response.ok) throw new Error('Failed to load');
-
-        const csvText = await response.text();
-        const rows = parseCSV(csvText);
-
-        carWashData = [];
-
-        // Detect header indices so renamed columns (Arabic/English) still map correctly.
-        const headerRow = rows[0] || [];
-        const headers = headerRow.map(h => (h || '').toString().toLowerCase());
-
-        // Prefer exact column headers (Arabic) if provided by user A..I, otherwise fallback to keyword search
-        const headerMap = {};
-        headers.forEach((h, i) => headerMap[h.trim()] = i);
-
-        function findHeader(...candidates) {
-          for (const c of candidates) {
-            const key = c.toString().toLowerCase().trim();
-            // exact match
-            for (const hh in headerMap) {
-              if (hh.toLowerCase().trim() === key) return headerMap[hh];
-            }
-            // substring match
-            for (const hh in headerMap) {
-              if (hh.toLowerCase().includes(key)) return headerMap[hh];
-            }
-          }
-          return -1;
-        }
-
-        const idx = {
-          timestamp: findHeader('timestamp', 'time stamp', 'timestamp', 'توقيت'),
-          date: findHeader('تاريخ تسجيل الطلب', 'تاريخ الطلب', 'date', 'تاريخ', 'التاريخ'),
-          time: findHeader('الوقت', 'time'),
-          qrOrder: findHeader('رقم الطلب', 'qr order', 'qr'),
-          location: findHeader('موقع العميل', 'location', 'موقع'),
-          customerName: findHeader('اسم العميل', 'customer name', 'customer'),
-          customerNumber: findHeader('رقم العميل', 'customer number', 'phone', 'رقم'),
-          washType: findHeader('نوع الغسيل', 'wash type', 'نوع'),
-          payment: findHeader('حاله الدفع', 'حالة الدفع', 'payment', 'نعم', 'لا')
-        };
-
-        // If the detected date header is actually the "order timestamp" (تاريخ تسجيل الطلب) or timestamp, prefer an appointment-date header if present,
-        // otherwise fall back to column B (index 1).
-        if (idx.date >= 0) {
-          const detectedHeader = (headerRow[idx.date] || '').toString().toLowerCase();
-          if (detectedHeader.includes('تاريخ تسجيل') || detectedHeader.includes('timestamp') || detectedHeader.includes('توقيت')) {
-            const alt = findHeader('تاريخ الموعد', 'appointment date', 'appointment', 'موعد');
-            if (alt >= 0) {
-              idx.date = alt;
-            } else {
-              idx.date = -1; // force fallback to default below (column B)
-            }
-          }
-        }
-
-        // Fallback to legacy indices if detection failed
-        const col = {
-          // Use column B as the default date column (index 1)
-          date: idx.date >= 0 ? idx.date : 1,
-          time: idx.time >= 0 ? idx.time : 2,
-          qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 3,
-          location: idx.location >= 0 ? idx.location : 4,
-          customerName: idx.customerName >= 0 ? idx.customerName : 5,
-          customerNumber: idx.customerNumber >= 0 ? idx.customerNumber : 6,
-          washType: idx.washType >= 0 ? idx.washType : 7,
-          payment: idx.payment >= 0 ? idx.payment : 8
-        };
-
-        for (let i = 1; i < rows.length; i++) {
-          const row = rows[i];
-          if (row[col.date] && row[col.time]) {
-            let parsedDate = (row[col.date] || '').toString().trim();
-            const dateObj = new Date(parsedDate);
-            if (!isNaN(dateObj.getTime())) {
-              const year = dateObj.getFullYear();
-              const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-              const day = String(dateObj.getDate()).padStart(2, '0');
-              parsedDate = `${year}-${month}-${day}`;
-            }
-
-            // helper: parse time like "10:00:00 PM", "10:00 PM", "22:00", or with seconds
-            function parseTimeString(s) {
-              s = (s || '').toString().trim();
-              if (!s) return '';
-              // capture hh:mm (ignore seconds)
-              const m = s.match(/(\d{1,2}):(\d{2})/);
-              if (m) {
-                let hh = parseInt(m[1], 10);
-                const mm = parseInt(m[2], 10);
-                // detect AM/PM (including Arabic م/ص or words)
-                const isPM = /\bpm\b|م(?![a-z])|مساء/i.test(s);
-                const isAM = /\bam\b|ص(?![a-z])|صباح/i.test(s);
-                if (isPM && hh !== 12) hh += 12;
-                if (isAM && hh === 12) hh = 0;
-                return `${hh}:${String(mm).padStart(2, '0')}`;
-              }
-              // fallback: try to parse as Date
-              const d = new Date('1970-01-01T' + s);
-              if (!isNaN(d.getTime())) return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
-              return s;
-            }
-
-            // helper: normalize phone (preserve as string, trim)
-            function normalizePhone(p) {
-              return (p || '').toString().trim();
-            }
-
-            // helper: normalize payment to Arabic نعم/لا
-            function normalizePayment(p) {
-              const v = (p || '').toString().toLowerCase();
-              if (!v) return '';
-              if (v.includes('نعم') || v.includes('yes') || v === 'y' || v.includes('paid') || v === 'true') return 'نعم';
-              if (v.includes('لا') || v.includes('no') || v === 'n' || v === 'false') return 'لا';
-              return p;
-            }
-
-            const formattedTime = parseTimeString(row[col.time]);
-            const phoneVal = normalizePhone(row[col.customerNumber]);
-            const paymentVal = normalizePayment(row[col.payment]);
-
-            carWashData.push({
-              date: parsedDate,
-              time: formattedTime,
-              qrOrder: (row[col.qrOrder] || '').toString().trim(),
-              customerName: (row[col.customerName] || '').toString().trim(),
-              phone: phoneVal,
-              location: (row[col.location] || '').toString().trim(),
-              washType: (row[col.washType] || '').toString().trim(),
-              payment: paymentVal
-            });
-          }
-        }
-
-        calculateAvailableSlots(selectedDate);
-
-      } catch (error) {
-        document.getElementById('availableSlots').innerHTML = `
-          <div class="error-box">خطأ في تحميل المواعيد. تأكد من صلاحيات الوصول للشيت</div>
-        `;
-      }
-    }
-
-    function calculateAvailableSlots(selectedDate) {
-      const availableSlots = document.getElementById('availableSlots');
-
-      const dateObj = new Date(selectedDate + 'T00:00:00');
-      const dayOfWeek = dateObj.toLocaleDateString('ar-EG', { weekday: 'long' });
-      const formattedDate = dateObj.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
-
-      const dayIndex = dateObj.getDay();
-      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
-      const days = Math.floor((dateObj - startOfYear) / (24 * 60 * 60 * 1000));
-      const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-
-      if (dayIndex === 5 && weekNumber % 2 === 1) {
-        availableSlots.innerHTML = `
-          <div class="error-box">
-            <strong>❌ مغلق يوم الجمعة</strong><br>
-            أقرب موعد متاح: يوم السبت
+    // Render Protection & Coverage Interface (الحمايه والتغيم)
+    function renderProtectionInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">الحمايه والتغيم</h3>
+          <div style="margin-bottom:8px;">
+            <div id="protectionCompanies" class="prot-logos-grid">
+              <img class="prot-logo active" data-prot-company="كارباث" src="https://d.top4top.io/p_3666wqicx0.jpg" alt="كارباث">
+              <img class="prot-logo" data-prot-company="ريفامب" src="https://e.top4top.io/p_36666j6tz1.jpg" alt="ريفامب">
+              <img class="prot-logo" data-prot-company="هيرووركس" src="https://f.top4top.io/p_36669y5gn2.jpg" alt="هيرووركس">
+            </div>
           </div>
-        `;
-        return;
-      }
-
-      const todayAppointments = carWashData.filter(apt => apt.date === selectedDate);
-      todayAppointments.sort((a, b) => {
-        const timeA = a.time.split(':').map(Number);
-        const timeB = b.time.split(':').map(Number);
-        return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
-      });
-
-      let html = `
-        <div style="background: #1a1a1a; border: 1px solid #F2BC1B; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
-          <div style="font-size: 13px; font-weight: 700; color: #F2BC1B;">${dayOfWeek}</div>
-          <div style="font-size: 12px; color: #999;">${formattedDate}</div>
+          <div id="protRegionSection" class="form-section hidden">
+            <h3 class="section-title">اختر المنطقة</h3>
+            <div class="form-field">
+              <input type="text" list="protRegionOptions" id="protRegionSelect" class="form-control" placeholder="اكتب أو اختر المنطقة">
+              <datalist id="protRegionOptions"></datalist>
+            </div>
+          </div>
+          <div id="protResult" class="data-table-container hidden">
+            <div class="table-header">نتيجة الحساب</div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead><tr><th>البيان</th><th>القيمة</th></tr></thead>
+                <tbody id="protResultBody"></tbody>
+              </table>
+            </div>
+            <div id="protNote" class="info-box hidden"></div>
+          </div>
+        </div>
+        <div id="protCompaniesCards" class="form-section full-width hidden">
+          <h3 class="section-title">شركات الحماية (من الشيت)</h3>
+          <div id="protCardsGrid" class="cards-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;"></div>
         </div>
       `;
 
-      const workStartMinutes = 630; // 10:30 AM
-      // Last allowed START time (آخر وصول) per wash type
-      const washLastArrival = {
-        premium: 20 * 60 + 30, // 20:30
-        special: 19 * 60 + 30, // 19:30
-        ultra: 18 * 60 + 30    // 18:30
-      };
-      const workEndMinutes = 1320;  // 10:00 PM (fallback, not used for per-wash limits)
-
-      const today = new Date();
-      const isToday = dateObj.getDate() === today.getDate() &&
-        dateObj.getMonth() === today.getMonth() &&
-        dateObj.getFullYear() === today.getFullYear();
-
-      let earliestAvailableTime = workStartMinutes;
-
-      if (isToday) {
-        const currentMinutes = today.getHours() * 60 + today.getMinutes();
-        const roundedMinutes = Math.ceil((currentMinutes + 30) / 5) * 5;
-        earliestAvailableTime = Math.max(earliestAvailableTime, roundedMinutes);
-      }
-
-      // Build list of appointments with their actual times
-      const appointments = [];
-      todayAppointments.forEach(apt => {
-        const timeParts = apt.time.split(':').map(Number);
-        const appointmentMinutes = timeParts[0] * 60 + timeParts[1];
-
-        let washDuration = 60;
-        const washType = apt.washType.toLowerCase();
-        if (washType.includes('خصوصي')) washDuration = 120;
-        else if (washType.includes('الترا')) washDuration = 180;
-
-        appointments.push({
-          start: appointmentMinutes,
-          duration: washDuration,
-          end: appointmentMinutes + washDuration + 30
-        });
-      });
-
-      // Sort appointments by start time
-      appointments.sort((a, b) => a.start - b.start);
-
-      const selectedWashes = formData.selectedWashes || [];
-      const washDurations = {
-        premium: 60,
-        special: 120,
-        ultra: 180
-      };
-
-      const travelTime = 30;
-
-      // Find all available time slots for each wash type
-      const availableTimeSlots = {};
-
-      selectedWashes.forEach(washType => {
-        const duration = washDurations[washType];
-        const totalDuration = duration + travelTime;
-        availableTimeSlots[washType] = [];
-
-        // Calculate end limit for this wash type (latest allowed START time)
-        const endLimit = washLastArrival[washType] || workEndMinutes;
-
-        // Check before first appointment
-        if (appointments.length > 0) {
-          const firstAppointmentStart = appointments[0].start;
-          const latestStartBeforeFirst = firstAppointmentStart - totalDuration;
-
-          if (earliestAvailableTime <= latestStartBeforeFirst) {
-            availableTimeSlots[washType].push({
-              start: earliestAvailableTime,
-              latestStart: latestStartBeforeFirst,
-              end: firstAppointmentStart
-            });
-          }
-        }
-
-        // Check gaps between appointments
-        for (let i = 0; i < appointments.length - 1; i++) {
-          const currentAppointmentEnd = appointments[i].end;
-          const nextAppointmentStart = appointments[i + 1].start;
-
-          const earliestStartInGap = Math.max(currentAppointmentEnd, earliestAvailableTime);
-          const latestStartInGap = nextAppointmentStart - totalDuration;
-
-          if (earliestStartInGap <= latestStartInGap && earliestStartInGap + totalDuration <= nextAppointmentStart) {
-            availableTimeSlots[washType].push({
-              start: earliestStartInGap,
-              latestStart: latestStartInGap,
-              end: nextAppointmentStart
-            });
-          }
-        }
-
-        // Check after last appointment (ensure start is <= endLimit)
-        if (appointments.length > 0) {
-          const lastAppointmentEnd = appointments[appointments.length - 1].end;
-          const earliestStartAfterLast = Math.max(lastAppointmentEnd, earliestAvailableTime);
-
-          if (earliestStartAfterLast <= endLimit) {
-            availableTimeSlots[washType].push({
-              start: earliestStartAfterLast,
-              latestStart: endLimit,
-              end: endLimit
-            });
-          }
-        } else {
-          // No appointments at all
-          if (earliestAvailableTime <= endLimit) {
-            availableTimeSlots[washType].push({
-              start: earliestAvailableTime,
-              latestStart: endLimit,
-              end: endLimit
-            });
-          }
-        }
-      });
-
-      // Check if any wash type has available slots
-      const hasAnyAvailable = Object.values(availableTimeSlots).some(slots => slots.length > 0);
-
-      if (!hasAnyAvailable) {
-        html += `
-          <div class="warning-box">
-            <strong>⚠️ لا يوجد وقت كافٍ لأي نوع غسيل محدد اليوم</strong><br>
-            ساعات العمل تنتهي الساعة 10:00 مساءً
-          </div>
-        `;
-
-        const tomorrow = new Date(dateObj);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowDay = tomorrow.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-        html += `
-          <div class="info-box" style="background: #1a4a2a; border-color: #10b981; margin-top: 10px;">
-            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">💡 اقتراح: ${tomorrowDay}</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">⭐ غسيل ممتاز: ابتداءً من 10:30 صباحاً</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل خصوصي: ابتداءً من 10:30 صباحاً</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ابتداءً من 10:30 صباحاً</div>
-          </div>
-        `;
-      } else {
-        html += `
-          <div class="info-box" style="background: #1a4a2a; border-color: #10b981;">
-            <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">✓ المواعيد المتاحة:</div>
-        `;
-
-        // Helper function to format time
-        const formatTimeSimple = (minutes) => {
-          const hours = Math.floor(minutes / 60);
-          const mins = minutes % 60;
-          const period = hours >= 12 ? 'مساءً' : 'صباحاً';
-          const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
-
-          if (mins === 0) {
-            return `${displayHours} ${period}`;
+      // Company selection (logos)
+      document.querySelectorAll('#protectionCompanies .prot-logo').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('#protectionCompanies .prot-logo').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const comp = btn.dataset.protCompany;
+          if (comp === 'كارباث') {
+            document.getElementById('protRegionSection').classList.remove('hidden');
+            document.getElementById('protResult').classList.add('hidden');
+            document.getElementById('protRegionSelect').value = '';
+            loadProtRegionOptions();
           } else {
-            return `${displayHours}:${mins.toString().padStart(2, '0')} ${period}`;
+            document.getElementById('protRegionSection').classList.add('hidden');
+            document.getElementById('protResult').classList.add('hidden');
+            document.getElementById('protRegionSelect').value = '';
+            renderProtectionComingSoon();
           }
         };
+      });
 
-        // Helper to format time range - show actual available window (earliest start -> latest allowed start)
-        const formatTimeRange = (slots, washDuration, washType) => {
-          if (!slots || slots.length === 0) return '';
-
-          let ranges = [];
-          slots.forEach(slot => {
-            const startTime = formatTimeSimple(slot.start);
-            // show latest allowed START time (slot.latestStart) as the window end
-            const endTime = formatTimeSimple(slot.latestStart);
-            ranges.push(`من ${startTime} إلى ${endTime}`);
-          });
-
-          return ranges.join(' • وأيضاً ');
-        };
-
-        if (availableTimeSlots.premium && availableTimeSlots.premium.length > 0) {
-          const timeRange = formatTimeRange(availableTimeSlots.premium, 60, 'premium');
-          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">⭐ غسيل ممتاز: ${timeRange}</div>`;
-        }
-
-        if (availableTimeSlots.special && availableTimeSlots.special.length > 0) {
-          const timeRange = formatTimeRange(availableTimeSlots.special, 120, 'special');
-          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل خصوصي: ${timeRange}</div>`;
-        }
-
-        if (availableTimeSlots.ultra && availableTimeSlots.ultra.length > 0) {
-          const timeRange = formatTimeRange(availableTimeSlots.ultra, 180, 'ultra');
-          html += `<div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ${timeRange}</div>`;
-        }
-
-        html += `</div>`;
-
-        const unavailableTypes = [];
-        if (selectedWashes.includes('premium') && availableTimeSlots.premium.length === 0) unavailableTypes.push('⭐ غسيل ممتاز');
-        if (selectedWashes.includes('special') && availableTimeSlots.special.length === 0) unavailableTypes.push('💎 غسيل خصوصي');
-        if (selectedWashes.includes('ultra') && availableTimeSlots.ultra.length === 0) unavailableTypes.push('👑 غسيل ألترا');
-
-        if (unavailableTypes.length > 0) {
-          html += `<div class="warning-box">
-            <div style="font-size: 12px; font-weight: 700; color: #fbbf24; margin-bottom: 4px;">⚠️ غير متوفر اليوم:</div>`;
-
-          unavailableTypes.forEach(type => {
-            html += `<div style="font-size: 11px; color: #fbbf24; margin: 2px 0;">${type}</div>`;
-          });
-
-          html += `</div>`;
-        }
+      function renderProtectionComingSoon() {
+        const notification = document.createElement('div');
+        notification.id = 'protectionNotification';
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #ef4444;
+          color: #fff;
+          padding: 10px 20px;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          z-index: 1000;
+          opacity: 1;
+          transition: opacity 1s;
+        `;
+        notification.textContent = 'قريباً...';
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          setTimeout(() => {
+            if (notification.parentNode) notification.parentNode.removeChild(notification);
+          }, 1000);
+        }, 3000);
       }
 
-      if (todayAppointments.length > 0) {
-        html += `<div style="margin-top: 12px; font-size: 12px; font-weight: 700; color: #F2BC1B; margin-bottom: 8px;">المواعيد المحجوزة:</div>`;
+      const protRegionSelect = document.getElementById('protRegionSelect');
+      protRegionSelect.oninput = () => {
+        const area = protRegionSelect.value.trim();
+        if (!area) {
+          document.getElementById('protResult').classList.add('hidden');
+          return;
+        }
+        const dest = 'شويخ';
+        const routes = getTowRoutes('portarage towtruk', 'normal');
+        const route = routes.find(r => r.from === area && r.to && r.to.includes(dest));
+        const tbody = document.getElementById('protResultBody');
+        const note = document.getElementById('protNote');
+        if (!route) {
+          tbody.innerHTML = '<tr><td colspan="2">لا يوجد سعر مُسجل لهذه المنطقة (تحقق من الشيت)</td></tr>';
+          document.getElementById('protResult').classList.remove('hidden');
+          if (note) note.classList.add('hidden');
+          return;
+        }
 
-        html += `
-          <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 5px; overflow: hidden;">
-            <div style="overflow-x: auto;">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th style="min-width: 80px;">الوقت</th>
-                    <th style="min-width: 100px;">الحالة</th>
-                    <th style="min-width: 80px;">نوع الغسيل</th>
-                    <th style="min-width: 80px;">رقم الطلب</th>
-                    <th style="min-width: 120px;">اسم العميل</th>
-                    <th style="min-width: 100px;">رقم الهاتف</th>
-                    <th style="min-width: 120px;">الموقع</th>
-                    <th style="min-width: 100px;">المدة</th>
-                    <th style="min-width: 90px;">الدفع</th>
-                  </tr>
-                </thead>
-                <tbody>
-        `;
+        const basePrice = parseFloat(route.price) || 0;
+        const routesFlat = getTowRoutes('portarage towtruk', 'flatbed');
+        const routeFlat = routesFlat.find(r => r.from === area && r.to && r.to.includes(dest));
+        const flatbedPrice = routeFlat ? (parseFloat(routeFlat.price) || 0) : null;
 
-        todayAppointments.forEach((apt) => {
-          const timeParts = apt.time.split(':').map(Number);
-          const hours = timeParts[0];
-          const minutes = timeParts[1];
-          const period = hours >= 12 ? 'مساءً' : 'صباحاً';
-          const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
-          const displayTime = `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+        const servicesHtml = `
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">حماية الطلاء (PPF)</h4>
+              <div>كبوت كامل: <strong>285 د.ك</strong></div>
+              <div>حماية كاملة للسيارة: <strong>620 د.ك</strong></div>
+              <div>حماية كاملة مطفي (مات): <strong>700 د.ك</strong></div>
+            </div>
 
-          let washDuration = 60;
-          const washType = apt.washType.toLowerCase();
-          if (washType.includes('خصوصي')) washDuration = 120;
-          else if (washType.includes('الترا')) washDuration = 180;
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">الباكجات (PPF + تظليل + حماية الزجاج الأمامي)</h4>
+              <div>كبوت كامل: <strong>410 د.ك</strong></div>
+              <div>حماية كاملة للسيارة: <strong>710 د.ك</strong></div>
+              <div>حماية كاملة مطفي (مات): <strong>810 د.ك</strong></div>
+            </div>
 
-          const startMinutes = timeParts[0] * 60 + timeParts[1];
-          const endMinutes = startMinutes + washDuration;
-          const endHours = Math.floor(endMinutes / 60);
-          const endMins = endMinutes % 60;
-          const endPeriod = endHours >= 12 ? 'مساءً' : 'صباحاً';
-          const endDisplayHours = endHours > 12 ? endHours - 12 : (endHours === 0 ? 12 : endHours);
-          const endDisplayTime = `${endDisplayHours}:${endMins.toString().padStart(2, '0')} ${endPeriod}`;
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">التظليل وحماية الزجاج الأمامي</h4>
+              <div>تظليل نانو سيراميك: <strong>155 د.ك</strong></div>
+              <div>حماية الزجاج الأمامي : <strong>60 د.ك</strong></div>
+            </div>
 
-          let orderStatus = '';
-          let statusColor = '';
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">تغليف فينيل</h4>
+              <div>تغليف كامل: <strong>920 د.ك</strong></div>
+              <div>ألوان وخامات خاصة حسب الطلب</div>
+            </div>
 
-          const selectedDate = document.getElementById('appointmentDate').value;
-          const today = new Date();
-          const todayStr = today.toISOString().split('T')[0];
-          const isToday = selectedDate === todayStr;
-
-          if (isToday) {
-            const currentMinutes = today.getHours() * 60 + today.getMinutes();
-            const minutesUntilStart = startMinutes - currentMinutes;
-            const minutesSinceEnd = currentMinutes - endMinutes;
-
-            if (minutesSinceEnd > 0) {
-              orderStatus = '✅ تم الانتهاء';
-              statusColor = '#10b981';
-            } else if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
-              orderStatus = '🔄 قيد التنفيذ';
-              statusColor = '#3b82f6';
-            } else if (minutesUntilStart <= 30 && minutesUntilStart > 0) {
-              orderStatus = '🚗 بالطريق';
-              statusColor = '#f59e0b';
-            } else if (minutesUntilStart > 0) {
-              orderStatus = '📅 محجوز';
-              statusColor = '#3b82f6';
-            } else {
-              orderStatus = '📋 محجوز';
-              statusColor = '#3b82f6';
-            }
-          } else {
-            const selectedDateObj = new Date(selectedDate + 'T00:00:00');
-            const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-            if (selectedDateObj < todayDate) {
-              orderStatus = '✅ تم الانتهاء';
-              statusColor = '#10b981';
-            } else {
-              orderStatus = '📅 محجوز';
-              statusColor = '#3b82f6';
-            }
-          }
-
-          const paymentVal = (apt.payment || '').toString().toLowerCase();
-          let paymentStatus = 'غير محدد';
-          if (paymentVal.includes('نعم') || paymentVal.includes('yes') || paymentVal === 'y' || paymentVal === 'true') {
-            paymentStatus = '✅ تم';
-          } else if (paymentVal.includes('لا') || paymentVal.includes('no') || paymentVal === 'n' || paymentVal === 'false') {
-            paymentStatus = '❌ لم يتم';
-          }
-
-          html += `
-            <tr>
-              <td style="font-weight: 600; color: #F2BC1B;">${displayTime}</td>
-              <td style="color: ${statusColor}; font-weight: 600;">${orderStatus}</td>
-              <td>${apt.washType}</td>
-              <td>${apt.qrOrder || '-'}</td>
-              <td>${apt.customerName || 'غير محدد'}</td>
-              <td style="direction: ltr; text-align: center;">${apt.phone || '-'}</td>
-              <td>${apt.location || 'غير محدد'}</td>
-              <td style="font-size: 10px; color: #999;">${displayTime} - ${endDisplayTime}<br>(${washDuration} دقيقة)</td>
-              <td>${paymentStatus}</td>
-            </tr>
-          `;
-        });
-
-        html += `
-                </tbody>
-              </table>
+            <div class="data-card">
+              <h4 style="margin:0 0 8px 0;">الصبغ القابل للإزالة (Peelable Paint)</h4>
+              <div>بلاك آوت كامل: <strong>320 د.ك</strong></div>
+              <div>الرنقات: <strong>140 د.ك</strong></div>
             </div>
           </div>
         `;
-      }
 
-      availableSlots.innerHTML = html;
+        const flatbedPriceStr = flatbedPrice !== null ? (flatbedPrice * 2).toFixed(2) : 'غير متوفر';
+        const importantHtml = `
+          <div class="prot-important">
+            ملاحظه رسوم النقل لا تشمل رسوم الخدمه أعلاه,
+            <br><br>١-رسوم النقل (الروحة والرده): 
+            <br style="line-height: 0.5;">
+            <div style="margin-right: 20px; margin-top: 4px;">
+              الونش العادي: ${(basePrice * 2).toFixed(2)} ${config.currency}
+              <br>الفل داون: ${flatbedPriceStr} ${config.currency}
+            </div>
+            <br>٢-يمكن للعميل الذهاب بنفسه للكراج ولكن يُشترط الدفع أولاً قبل إرسال الموقع.
+            <br><br><a href="https://maps.app.goo.gl/A9WwLj4PjiZcH68N8" target="_blank" style="color:#ffb3b3;text-decoration:underline;">لوكيشن كراج (كار باث)</a>
+          </div>
+        `;
+
+        const protResult = document.getElementById('protResult');
+        protResult.innerHTML = `
+          <div class="table-header">خيارات الحماية والتغيم</div>
+          <div style="padding:12px 16px; display:flex; flex-direction:column; gap:14px;">
+            <div class="services-wrap">${servicesHtml}</div>
+            <div class="note-wrap">${importantHtml}</div>
+          </div>
+        `;
+
+        protResult.style.maxHeight = 'none';
+        protResult.style.overflow = 'visible';
+
+        protResult.classList.remove('hidden');
+      };
+
+      setTimeout(() => {
+        renderProtectionCompaniesCards();
+      }, 200);
     }
 
     // Render Insurance Interface
@@ -4484,10 +4196,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         <div id="insuranceResults" class="hidden">
         </div>
       `;
-
+      
       const infoIcon = document.getElementById('insuranceInfoIcon');
       const infoBox = document.getElementById('insuranceInfoBox');
-
+      
       infoIcon.onclick = () => {
         if (infoBox.classList.contains('hidden')) {
           infoBox.classList.remove('hidden');
@@ -4497,19 +4209,19 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           infoIcon.style.background = '#3b82f6';
         }
       };
-
+      
       const searchInput = document.getElementById('insuranceSearch');
       let searchTimeout;
-
+      
       searchInput.oninput = () => {
         clearTimeout(searchTimeout);
-
+        
         const query = searchInput.value.trim();
-
+        
         if (query.length >= 1) {
           updateInsuranceSuggestions(query);
         }
-
+        
         searchTimeout = setTimeout(() => {
           if (query.length >= 2) {
             searchInsurance(query);
@@ -4519,7 +4231,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         }, 300);
       };
-
+      
     }
 
     // Render Protection & Coverage Interface (الحمايه والتغيم)
@@ -4604,7 +4316,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         `;
         notification.textContent = 'قريباً...';
         document.body.appendChild(notification);
-
+        
         // Fade out after 3 seconds
         setTimeout(() => {
           notification.style.opacity = '0';
@@ -4769,7 +4481,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const areaDatalist = document.getElementById('ringRegionOptions');
       const areaInput = document.getElementById('ringRegionSelect');
       const sheetName = 'portarage towtruk';
-      const cols = [6, 4, 3, 6, 1, 0];
+      const cols = [6,4,3, 6,1,0];
       if (!sheetsData[sheetName]) {
         areaDatalist.innerHTML = '<option value="">...جارٍ التحميل</option>';
         setTimeout(loadRingRegionOptions, 300);
@@ -4793,7 +4505,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const areaInput = document.getElementById('protRegionSelect');
       const sheetName = 'portarage towtruk';
       // Use columns for normal tow: from (index 6), price (4), cancel (3) and alternate (2,1,0)
-      const cols = [6, 4, 3, 6, 1, 0];
+      const cols = [6,4,3, 6,1,0];
       if (!sheetsData[sheetName]) {
         areaDatalist.innerHTML = '<option value="">...جارٍ التحميل</option>';
         // retry later
@@ -4828,12 +4540,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const headers = rows[0];
       const cards = [];
       for (let c = 0; c < headers.length; c += 2) {
-        const compName = (headers[c] || headers[c + 1] || '').toString().trim();
+        const compName = (headers[c] || headers[c+1] || '').toString().trim();
         if (!compName) continue;
         const features = [];
         for (let r = 1; r < rows.length; r++) {
           const left = rows[r][c] || '';
-          const right = rows[r][c + 1] || '';
+          const right = rows[r][c+1] || '';
           const txt = (left || right).toString().trim();
           if (txt) features.push(txt);
         }
@@ -4852,7 +4564,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       if (cards.length) wrapper.classList.remove('hidden');
       else wrapper.classList.add('hidden');
     }
-
+    
     function updateInsuranceSuggestions(query) {
       const datalist = document.getElementById('insuranceSuggestions');
       const insuranceSheets = [
@@ -4860,20 +4572,20 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         { name: 'تأمين صفينه VIP' },
         { name: 'تأمين إيلاف' }
       ];
-
+      
       let suggestions = new Set();
-
+      
       insuranceSheets.forEach(sheet => {
         if (!sheetsData[sheet.name]) return;
-
+        
         const rows = sheetsData[sheet.name];
         if (rows.length < 2) return;
-
+        
         const headers = rows[0];
-
+        
         let customerNameCol = -1;
         let plateNumberCol = -1;
-
+        
         for (let i = 0; i < headers.length; i++) {
           const header = (headers[i] || '').toLowerCase().trim();
           if (header.includes('customer') && header.includes('name')) {
@@ -4883,17 +4595,17 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             plateNumberCol = i;
           }
         }
-
+        
         for (let i = 1; i < rows.length && suggestions.size < 20; i++) {
           const row = rows[i];
-
+          
           if (customerNameCol !== -1 && row[customerNameCol]) {
             const customerName = (row[customerNameCol] || '').toString();
             if (customerName.toLowerCase().includes(query.toLowerCase())) {
               suggestions.add(customerName);
             }
           }
-
+          
           if (plateNumberCol !== -1 && row[plateNumberCol]) {
             const plateNumber = (row[plateNumberCol] || '').toString();
             if (plateNumber.toLowerCase().includes(query.toLowerCase())) {
@@ -4902,10 +4614,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         }
       });
-
+      
       datalist.innerHTML = Array.from(suggestions).slice(0, 15).map(s => `<option value="${s}">`).join('');
     }
-
+    
     function searchInsurance(query) {
       const resultsContainer = document.getElementById('insuranceResults');
       const insuranceSheets = [
@@ -4913,20 +4625,20 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         { name: 'تأمين صفينه VIP', displayName: 'تأمين صفينه VIP' },
         { name: 'تأمين إيلاف', displayName: 'تأمين إيلاف' }
       ];
-
+      
       let foundResults = [];
-
+      
       insuranceSheets.forEach(sheet => {
         if (!sheetsData[sheet.name]) return;
-
+        
         const rows = sheetsData[sheet.name];
         if (rows.length < 2) return;
-
+        
         const headers = rows[0];
-
+        
         let customerNameCol = -1;
         let plateNumberCol = -1;
-
+        
         for (let i = 0; i < headers.length; i++) {
           const header = (headers[i] || '').toLowerCase().trim();
           if (header.includes('customer') && header.includes('name')) {
@@ -4936,25 +4648,25 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             plateNumberCol = i;
           }
         }
-
+        
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
           let match = false;
-
+          
           if (customerNameCol !== -1 && row[customerNameCol]) {
             const customerName = (row[customerNameCol] || '').toString().toLowerCase();
             if (customerName.includes(query.toLowerCase())) {
               match = true;
             }
           }
-
+          
           if (plateNumberCol !== -1 && row[plateNumberCol]) {
             const plateNumber = (row[plateNumberCol] || '').toString().toLowerCase();
             if (plateNumber.includes(query.toLowerCase())) {
               match = true;
             }
           }
-
+          
           if (match) {
             // Check if row has any non-empty data
             const hasData = row.some(cell => cell && cell.toString().trim() !== '');
@@ -4968,7 +4680,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         }
       });
-
+      
       if (foundResults.length === 0) {
         resultsContainer.innerHTML = `
           <div class="form-section full-width">
@@ -4980,9 +4692,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         resultsContainer.classList.remove('hidden');
         return;
       }
-
+      
       let html = '';
-
+      
       foundResults.forEach((result, index) => {
         html += `
           <div class="data-table-container" style="margin-bottom: 15px; grid-column: 1 / -1;">
@@ -4992,7 +4704,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                 <thead>
                   <tr>
         `;
-
+        
         // Filter headers to show only those with data
         const columnsWithData = [];
         result.headers.forEach((header, idx) => {
@@ -5000,23 +4712,23 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             columnsWithData.push({ header, idx });
           }
         });
-
+        
         columnsWithData.forEach(col => {
           html += `<th style="white-space: nowrap; padding: 11px 16px;">${col.header}</th>`;
         });
-
+        
         html += `
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
         `;
-
+        
         columnsWithData.forEach(col => {
           const value = result.rowData[col.idx] || '-';
           html += `<td style="white-space: nowrap; padding: 10px 16px;">${value}</td>`;
         });
-
+        
         html += `
                   </tr>
                 </tbody>
@@ -5025,7 +4737,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           </div>
         `;
       });
-
+      
       resultsContainer.innerHTML = html;
       resultsContainer.classList.remove('hidden');
     }
@@ -5059,7 +4771,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           </div>
         </div>
       `;
-
+      
       loadAreaOptionsDatalist(sheetName, columns, () => {
         calculateServicePrice(sheetName, columns);
       });
@@ -5068,7 +4780,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     function loadAreaOptionsDatalist(sheetName, columns, callback) {
       const areaSelect = document.getElementById('areaSelect');
       const areaDatalist = document.getElementById('areaOptions');
-
+      
       // If the sheet data isn't loaded yet, show a loading option and retry a few times
       if (!sheetsData[sheetName]) {
         areaDatalist.innerHTML = '<option value="">...جارٍ التحميل</option>';
@@ -5090,10 +4802,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         return;
       }
-
+      
       const rows = sheetsData[sheetName];
       const areas = [];
-
+      
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
         columns.forEach((colIndex, idx) => {
@@ -5102,32 +4814,32 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         });
       }
-
+      
       const uniqueAreas = [...new Set(areas)].filter(Boolean);
       areaDatalist.innerHTML = uniqueAreas.map(area => `<option value="${area}">${area}</option>`).join('');
-
+      
       const newAreaSelect = areaSelect.cloneNode(true);
       areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
-
+      
       newAreaSelect.oninput = () => {
         formData.area = newAreaSelect.value.trim();
-
-        const resultSection = document.getElementById('serviceResultSection') ||
-          document.getElementById('tireResultSection') ||
-          document.getElementById('balanceResultSection') ||
-          document.getElementById('mechResultSection') ||
-          document.getElementById('fuelResultSection');
-
+        
+        const resultSection = document.getElementById('serviceResultSection') || 
+                             document.getElementById('tireResultSection') || 
+                             document.getElementById('balanceResultSection') ||
+                             document.getElementById('mechResultSection') ||
+                             document.getElementById('fuelResultSection');
+        
         if (!formData.area) {
           if (resultSection) {
             resultSection.classList.add('hidden');
           }
-
+          
           if (currentService === 'fuel') {
             document.querySelectorAll('[data-fuel]').forEach(btn => btn.classList.remove('active'));
             formData.fuelType = null;
           }
-
+          
           if (currentService === 'balance' && formData.tireSource === 'customer') {
             const tireCountInput = document.getElementById('tireCountInput');
             if (tireCountInput) {
@@ -5135,7 +4847,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               formData.tireCount = 0;
             }
           }
-
+          
           if (currentService === 'mechanical' && formData.mechanicalService === 'brakes') {
             document.querySelectorAll('[data-disk]').forEach(btn => {
               btn.classList.remove('active');
@@ -5145,10 +4857,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             });
             formData.diskTurning = 'no';
           }
-
+          
           return;
         }
-
+        
         if (formData.area && callback) {
           callback();
         }
@@ -5158,31 +4870,31 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     function calculateServicePrice(sheetName, columns) {
       const rows = sheetsData[sheetName];
       if (!rows || !formData.area) return;
-
+      
       let price = null;
       let cancellation = null;
-
+      
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
-
+        
         if (row[columns[0]] === formData.area) {
           price = row[columns[1]];
           cancellation = row[columns[2]];
           break;
         }
-
+        
         if (columns.length > 3 && row[columns[3]] === formData.area) {
           price = row[columns[4]];
           cancellation = row[columns[5]];
           break;
         }
       }
-
+      
       if (!price) {
         document.getElementById('serviceResultSection').classList.add('hidden');
         return;
       }
-
+      
       const tbody = document.getElementById('serviceResultBody');
       tbody.innerHTML = `
         <tr>
@@ -5194,68 +4906,54 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           <td>${cancellation ? parseFloat(cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}</td>
         </tr>
       `;
-
+      
       document.getElementById('serviceResultSection').classList.remove('hidden');
     }
 
+    // Option 1: Google Sheets Webhook (Apps Script) — leave empty to disable
+    const GOOGLE_SHEETS_WEBHOOK = '';
 
+    // Google Form submission using pre-filled link
+    const FORM_ID = 'e/1FAIpQLScQh0wzxb2oVHXTtPx-NZdbBX63IhaNuMLNag-rPeMdwQVKNw'; // Form ID from the sharing URL
+    const FORM_ACTION = `https://docs.google.com/forms/d/${FORM_ID}/viewform?usp=pp_url`; // Base URL with pp_url parameter
 
-    // -----------------------------------------------------------
-    //     CONFITUGRATION: SheetDB API (Direct Google Sheet Access)
-    // -----------------------------------------------------------
-    // رابط SheetDB للربط مع Google Sheets
-    const GOOGLE_SHEETS_WEBHOOK = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
+    // Map payload keys to Google Form entry ids (for pre-filled link parameters)
+    const entryMapping = {
+      date: 'entry.1589254434', // Date field
+      time: 'entry.1405698644', // Time field
+      qrOrder: 'entry.1649370181', // QR ORDER field
+      customerName: 'entry.1226088444', // Customer Name field
+      phone: 'entry.1698262844', // Customer Number field
+      location: 'entry.920891999', // Customer Location field
+      washType: 'entry.897996772', // Wash Type field
+      payment: 'entry.929707556' // Payment yes/no field
+    };
 
     /**
-     * Post booking payload to Google Sheets via SheetDB.
+     * Post booking payload to Google Sheets webhook.
+     * Expects the webhook to accept JSON and return HTTP 200 on success.
      */
     async function postToGoogleSheet(payload) {
-      if (!GOOGLE_SHEETS_WEBHOOK || GOOGLE_SHEETS_WEBHOOK.includes('ضع_الرابط_هنا')) {
-        alert('تنبيه: لم يتم وضع رابط API في الكود بعد.');
-        return { ok: false, reason: 'no-webhook' };
+      if (FORM_ACTION) {
+        // If FORM_ACTION set, submit to Google Form instead of Apps Script
+        return submitToGoogleForm(payload);
       }
 
-      // Map payload to Arabic Sheet Headers
-      // Captured headers: "تاريخ تسجيل الطلب","تاريخ الموعد","الوقت","رقم الطلب","موقع العميل","اسم العميل","رقم العميل","نوع الغسيل","حاله الدفع"
-      const now = new Date();
-      const timestamp = now.getFullYear() + '-' +
-        String(now.getMonth() + 1).padStart(2, '0') + '-' +
-        String(now.getDate()).padStart(2, '0') + ' ' +
-        String(now.getHours()).padStart(2, '0') + ':' +
-        String(now.getMinutes()).padStart(2, '0') + ':' +
-        String(now.getSeconds()).padStart(2, '0');
-
-      const sheetData = {
-        "تاريخ تسجيل الطلب": timestamp,
-        "تاريخ الموعد": payload.date,
-        "الوقت": payload.time,
-        "رقم الطلب": payload.qrOrder || "جديد",
-        "موقع العميل": payload.location,
-        "اسم العميل": payload.customerName,
-        "رقم العميل": payload.phone,
-        "نوع الغسيل": payload.washType,
-        "حاله الدفع": payload.payment
-      };
+      if (!GOOGLE_SHEETS_WEBHOOK) {
+        console.warn('No remote configured (GOOGLE_SHEETS_WEBHOOK or FORM_ACTION). Skipping remote push.');
+        return { ok: false, reason: 'no-remote' };
+      }
 
       try {
         const res = await fetch(GOOGLE_SHEETS_WEBHOOK, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(sheetData)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-
-        if (!res.ok) {
-          throw new Error(`SheetDB Error: ${res.status} ${res.statusText}`);
-        }
-
-        const result = await res.json();
-        return { ok: true, data: result };
-
+        return res;
       } catch (err) {
         console.error('postToGoogleSheet error', err);
-        return { ok: false, error: err };
+        throw err;
       }
     }
 
@@ -5281,7 +4979,5 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     // Load data on page load
     loadAllSheets();
   </script>
-  <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
-</body>
-
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
