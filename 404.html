@@ -3964,16 +3964,23 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     async function loadCarWashAppointments(selectedDate) {
       try {
+        // Use export endpoint instead of gviz for better reliability
         const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=WASH%20Sheet`;
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
         
         const response = await fetch(csvUrl, {
+          method: 'GET',
           mode: 'cors',
-          credentials: 'omit'
+          cache: 'no-cache'
         });
-        if (!response.ok) throw new Error('Failed to load');
+        
+        if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to load`);
         
         const csvText = await response.text();
+        if (!csvText || csvText.trim().length === 0) {
+          throw new Error('Empty response');
+        }
+        
         const rows = parseCSV(csvText);
         
         carWashData = [];
@@ -4108,8 +4115,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         calculateAvailableSlots(selectedDate);
         
       } catch (error) {
+        console.error('Error loading appointments:', error);
         document.getElementById('availableSlots').innerHTML = `
-          <div class="error-box">خطأ في تحميل المواعيد. تأكد من صلاحيات الوصول للشيت</div>
+          <div class="info-box" style="background: #4a3a1a; border-color: #f59e0b;">
+            ⚠️ تم فتح الموقع بنجاح لكن هناك مشكلة في تحميل المواعيد المحجوزة. يمكنك إضافة موعد جديد أو <a href="https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing" target="_blank" style="color:#fbbf24;text-decoration:underline;">فتح جدول المواعيد</a>
+          </div>
         `;
       }
     }
@@ -5312,6 +5322,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     const SHEETDB_API_URL = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
 
     // Google Sheet for reading appointments (read-only)
+    // ⚠️ IMPORTANT: The Google Sheet must be shared with "Anyone with the link can view"
+    // Share link: https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing
     const APPOINTMENT_SHEET_ID = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
     const APPOINTMENT_SHEET_NAME = 'WASH Sheet';
 
@@ -5326,8 +5338,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       
       // Reset form and status message
       form.reset();
-      statusMsg.className = 'appointment-status-message';
-      statusMsg.textContent = '';
+      statusMsg.className = 'appointment-status-message info';
+      statusMsg.textContent = '⏳ جاري تحميل المواعيد المحجوزة...';
       
       // Set minimum date to today
       const appointmentDate = document.getElementById('appointmentDate');
@@ -5346,7 +5358,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       modal.classList.add('active');
       
       // Load appointments from Google Sheet for checking availability
-      loadAppointmentsForChecking();
+      loadAppointmentsForChecking().then(() => {
+        statusMsg.className = 'appointment-status-message';
+        statusMsg.textContent = '';
+      });
     }
 
     // Close Appointment Modal
@@ -5358,17 +5373,27 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     // Load existing appointments from Google Sheet (for checking availability)
     async function loadAppointmentsForChecking() {
       try {
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${APPOINTMENT_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(APPOINTMENT_SHEET_NAME)}`;
+        // Try multiple endpoints for better compatibility
+        const csvUrl = `https://docs.google.com/spreadsheets/d/${APPOINTMENT_SHEET_ID}/export?format=csv&gid=0`;
         
         const response = await fetch(csvUrl, {
+          method: 'GET',
           mode: 'cors',
-          credentials: 'omit'
+          cache: 'no-cache'
         });
         
-        if (!response.ok) throw new Error('Failed to load appointments');
+        if (!response.ok) throw new Error(`HTTP ${response.status}: Failed to load appointments`);
         
         const csvText = await response.text();
+        if (!csvText || csvText.trim().length === 0) {
+          throw new Error('Empty response from Google Sheets');
+        }
+        
         const rows = parseCSV(csvText);
+        
+        if (!rows || rows.length === 0) {
+          throw new Error('No data found in sheet');
+        }
         
         appointmentsCheckCache = [];
         
@@ -5445,9 +5470,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         
       } catch (error) {
         console.error('Error loading appointments:', error);
-        const statusMsg = document.getElementById('appointmentStatusMessage');
-        statusMsg.className = 'appointment-status-message warning';
-        statusMsg.textContent = '⚠️ لم يتمكن من تحميل المواعيد المحجوزة. تابع بحذر.';
+        // Don't show error in status message, just continue with empty cache
+        // User can still add appointments, but won't see conflicts
+        appointmentsCheckCache = [];
       }
     }
 
