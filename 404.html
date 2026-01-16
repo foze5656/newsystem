@@ -3965,8 +3965,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     async function loadCarWashAppointments(selectedDate) {
       try {
-        // Get the spreadsheet data - try multiple methods
-        const sheetId = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+        // Get the mechanical appointments spreadsheet data
+        const sheetId = APPOINTMENT_SHEET_ID; // Use the mechanical sheet ID
         
         // Method 1: Try export with gid 0
         let csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
@@ -3991,16 +3991,18 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         }
         
         const csvText = await response.text();
+        console.log('Mechanical appointments CSV:', csvText.substring(0, 300));
+        
         if (!csvText || csvText.trim().length === 0) {
           throw new Error('Empty response');
         }
         
         const rows = parseCSV(csvText);
+        console.log('Mechanical parsed rows:', rows.length);
         
         carWashData = [];
         
-        // Parse data directly by column position
-        // Columns: A=date, B=time, C=qrOrder, D=customerName, E=location, F=washType, G=payment
+        // Parse mechanical data: A=تاريخ, B=وقت, C=رقم طلب, D=اسم, E=منطقة, F=نوع خدمة, G=الفنين
         for (let i = 1; i < rows.length; i++) {
           const row = rows[i];
           
@@ -4032,7 +4034,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               if (isPM && hours !== 12) hours += 12;
               if (isAM && hours === 12) hours = 0;
               
-              parsedTime = `${hours}:${String(minutes).padStart(2, '0')}`;
+              parsedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
             }
             
             carWashData.push({
@@ -4041,19 +4043,20 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               qrOrder: (row[2] || '').toString().trim(),
               customerName: (row[3] || '').toString().trim(),
               location: (row[4] || '').toString().trim(),
-              washType: (row[5] || '').toString().trim(),
-              payment: (row[6] || '').toString().trim()
+              serviceType: (row[5] || '').toString().trim(),
+              technician: (row[6] || '').toString().trim()
             });
           }
         }
         
+        console.log('Loaded mechanical appointments:', carWashData);
         calculateAvailableSlots(selectedDate);
         
       } catch (error) {
-        console.error('Error loading appointments:', error);
+        console.error('Error loading mechanical appointments:', error);
         document.getElementById('availableSlots').innerHTML = `
           <div class="info-box" style="background: #4a3a1a; border-color: #f59e0b;">
-            ⚠️ تم فتح الموقع بنجاح لكن هناك مشكلة في تحميل المواعيد المحجوزة. يمكنك إضافة موعد جديد أو <a href="https://docs.google.com/spreadsheets/d/1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc/edit?usp=sharing" target="_blank" style="color:#fbbf24;text-decoration:underline;">فتح جدول المواعيد</a>
+            ⚠️ تم فتح الموقع بنجاح لكن هناك مشكلة في تحميل المواعيد المحجوزة. يمكنك إضافة موعد جديد أو <a href="https://docs.google.com/spreadsheets/d/1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4/edit?usp=sharing" target="_blank" style="color:#fbbf24;text-decoration:underline;">فتح جدول المواعيد</a>
           </div>
         `;
       }
