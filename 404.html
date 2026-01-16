@@ -5451,15 +5451,19 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     // Save appointment to SheetDB
     async function saveAppointmentToSheetDB(appointmentData) {
       try {
+        // SheetDB expects field names that match the sheet columns
+        // Using Arabic header names if they exist in the sheet
         const payload = {
-          'A': appointmentData.date,           // تاريخ الموعد
-          'B': appointmentData.time,           // وقت الموعد
-          'C': appointmentData.qrOrder,        // رقم الطلب
-          'D': appointmentData.customerName,   // اسم العميل
-          'E': appointmentData.location,       // المنطقة
-          'F': appointmentData.washType,       // نوع الغسيل
-          'G': appointmentData.payment         // حالة الدفع
+          'تاريخ الموعد': appointmentData.date,
+          'وقت الموعد': appointmentData.time,
+          'رقم الطلب': appointmentData.qrOrder,
+          'اسم العميل': appointmentData.customerName,
+          'المنطقة': appointmentData.location,
+          'نوع الغسيل': appointmentData.washType,
+          'حالة الدفع': appointmentData.payment
         };
+
+        console.log('Sending to SheetDB:', JSON.stringify(payload));
 
         const response = await fetch(SHEETDB_API_URL, {
           method: 'POST',
@@ -5469,11 +5473,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           body: JSON.stringify(payload)
         });
 
+        const responseData = await response.json();
+        
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || 'Failed to save appointment');
+          console.error('SheetDB error:', responseData);
+          throw new Error(responseData.error || `HTTP ${response.status}: ${JSON.stringify(responseData)}`);
         }
 
+        console.log('Success response:', responseData);
         return { success: true };
       } catch (error) {
         console.error('Error saving appointment:', error);
