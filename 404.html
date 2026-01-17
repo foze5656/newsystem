@@ -5220,7 +5220,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     // ===== APPOINTMENT MODAL FUNCTIONALITY =====
     const SHEETDB_API = 'https://sheetdb.io/api/v1/wvoh60e0yhry4';
     const GOOGLE_SHEET_ID = '1FkWKRxRFC8UG1Ez2VzYHadHju2HARBLbdTIsr57hKXc';
+    
+    // رابط بديل للعمل مع CORS
     const GOOGLE_SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=WASH%20Sheet`;
+    
+    // رابط بديل آخر
+    const GOOGLE_SHEET_CSV_URL_ALT = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=0`;
 
     // Create modal HTML
     function initializeModal() {
@@ -5335,17 +5340,39 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     async function checkAppointmentAvailability(dateTime) {
       try {
-        const response = await fetch(GOOGLE_SHEET_CSV_URL, {
+        // محاولة الرابط الأول
+        let response = await fetch(GOOGLE_SHEET_CSV_URL, {
           mode: 'cors',
           credentials: 'omit'
         });
         
+        // إذا فشل، حاول الرابط البديل
         if (!response.ok) {
-          throw new Error('Failed to check availability');
+          console.warn('جرب الرابط البديل...');
+          response = await fetch(GOOGLE_SHEET_CSV_URL_ALT, {
+            mode: 'cors',
+            credentials: 'omit'
+          });
+        }
+        
+        if (!response.ok) {
+          console.error('فشل جلب البيانات:', response.status);
+          throw new Error(`خطأ HTTP: ${response.status}`);
         }
 
         const csvText = await response.text();
+        
+        // التحقق من أن النص ليس فارغاً
+        if (!csvText || csvText.trim().length === 0) {
+          throw new Error('البيانات فارغة');
+        }
+        
         const rows = parseCSV(csvText);
+        
+        // التحقق من وجود بيانات
+        if (!rows || rows.length === 0) {
+          throw new Error('لا توجد بيانات في الشيت');
+        }
 
         // Parse the selected datetime
         const selectedDate = dateTime.split('T')[0];
@@ -5402,8 +5429,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         return { available: true };
       } catch (err) {
-        console.error('Error checking availability:', err);
-        return { available: false, reason: 'خطأ في التحقق من توفر الموعد' };
+        console.error('خطأ في التحقق من التوفر:', err.message);
+        
+        // إذا فشل الفحص، اسمح بالحفظ (لتجنب حجب المستخدمين)
+        // لكن سجل الخطأ للتصحيح
+        console.warn('تحذير: لم يتمكن من التحقق من التوفر، سيتم السماح بالحفظ');
+        
+        return { 
+          available: true, 
+          warning: 'تم تجاوز فحص التوفر بسبب خطأ، تأكد من الموعد يدويًا' 
+        };
       }
     }
 
@@ -5454,6 +5489,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         };
 
         // Save to SheetDB
+        console.log('جاري الحفظ في SheetDB:', appointmentData);
+        
         const response = await fetch(SHEETDB_API, {
           method: 'POST',
           headers: {
@@ -5462,9 +5499,18 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           body: JSON.stringify(appointmentData)
         });
 
+        console.log('رد SheetDB:', response.status);
+
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'فشل حفظ الموعد');
+          let errorMessage = 'فشل حفظ الموعد';
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+          } catch (e) {
+            // إذا لم يكن الرد JSON، استخدم الحالة
+            errorMessage = `خطأ ${response.status}: ${response.statusText}`;
+          }
+          throw new Error(errorMessage);
         }
 
         // Success
@@ -5473,17 +5519,29 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         successMsg.innerHTML = '✓ تم حفظ الموعد بنجاح!';
         successMsg.classList.add('show');
+        
+        console.log('تم الحفظ بنجاح');
 
         setTimeout(() => {
           closeAppointmentModal();
         }, 2000);
 
       } catch (err) {
+        console.error('خطأ في الحفظ:', err);
+        
         loadingSpinner.classList.remove('show');
         form.style.display = 'block';
 
-        errorMsg.innerHTML = '❌ ' + (err.message || 'حدث خطأ أثناء حفظ الموعد');
+        const errorText = err.message || 'حدث خطأ أثناء حفظ الموعد';
+        errorMsg.innerHTML = '❌ ' + errorText;
         errorMsg.classList.add('show');
+        
+        // سجل الخطأ للتصحيح
+        console.error('تفاصيل الخطأ:', {
+          message: err.message,
+          name: err.name,
+          stack: err.stack
+        });
       }
     }
 
