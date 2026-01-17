@@ -5879,20 +5879,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
           
           if (url) {
-            // Open with back button in fullscreen iframe
-            const wrapper = document.getElementById('fullscreenIframeWrapper');
-            const container = document.getElementById('fullscreenIframeContainer');
-            
-            lastIframeState = {
-              url: url,
-              title: subType === 'individual' ? 'الاشتراك الفردي' : 'الاشتراك العائلي',
-              service: currentService,
-              formData: { ...formData }
-            };
-            
-            container.innerHTML = `<iframe src="${url}" title="${subType === 'individual' ? 'الاشتراك الفردي' : 'الاشتراك العائلي'}"></iframe>`;
-            wrapper.classList.remove('hidden');
-            document.getElementById('dashboardWrapper').style.display = 'none';
+            // Open in new window
+            window.open(url, '_blank');
           }
         };
       });
