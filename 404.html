@@ -2954,6 +2954,7 @@
                   <th>التاريخ</th>
                   <th>الوقت</th>
                   <th>رقم الطلب</th>
+                  <th>اسم العميل</th>
                   <th>المنطقة</th>
                   <th>نوع الخدمة</th>
                   <th>الفني</th>
@@ -4677,9 +4678,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         service: serviceVal,
         technician: techVal
       });
+      
+      console.log('Mechanical Row to Send:', row);
+      console.log('Service Value:', serviceVal);
+      console.log('Technician Value:', techVal);
 
       try {
         const res = await postToSheetDb(row, MECHANICAL_SHEETDB_URL);
+        console.log('SheetDB Response:', res.status, res.statusText);
         if (!res.ok) throw new Error('SheetDB request failed');
         setModalMessage(message, 'success', 'تم حفظ الموعد بنجاح.');
         await loadMechanicalAppointmentsData();
