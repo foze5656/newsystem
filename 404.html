@@ -956,6 +956,11 @@
     }
     .smart-assist-chip:hover { border-color:#F2BC1B; color:#fff; }
     .smart-assist-note { font-size:12px; color:#93c5fd; margin-top:8px; }
+    .smart-assist-qa { margin-top: 10px; }
+    .smart-assist-question { margin-bottom: 10px; }
+    .smart-assist-question label { display:block; color:#F2BC1B; font-size:12px; font-weight:800; margin-bottom:6px; }
+    .smart-assist-inline { display:flex; gap:8px; flex-wrap:wrap; }
+    .smart-assist-input { background:#151515; border:1px solid #333; border-radius:6px; color:#fff; padding:8px 10px; font-size:13px; min-width:180px; }
   </style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
@@ -4403,6 +4408,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             <textarea id="smartAssistInput" class="smart-assist-textarea" placeholder="اكتب طلبك بأي صيغة.. مثال: ابي ونش من السالمية الى الشويخ"></textarea>
             <div id="smartAssistSuggestions" class="smart-assist-suggestion"></div>
             <div id="smartAssistNote" class="smart-assist-note hidden"></div>
+            <div id="smartAssistQA" class="smart-assist-qa"></div>
             <div class="smart-assist-actions">
               <button id="smartAssistSend" class="btn-primary">تنفيذ الطلب</button>
               <button id="smartAssistCancel" class="btn-secondary">إلغاء</button>
@@ -4421,16 +4427,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.querySelector('#smartAssistSend').onclick = async () => {
         const text = (document.getElementById('smartAssistInput').value || '').trim();
         if (!text) return;
-        const result = detectIntent(text);
-        if (result.candidates && result.candidates.length > 1 && !result.intent) {
-          showAmbiguity(result.candidates, (chosen) => {
-            executeIntent({ intent: chosen.key, entities: result.entities });
-            close();
-          });
-        } else {
-          executeIntent(result);
-          close();
-        }
+        beginAssistFlow(text, close);
       };
     }
 
@@ -4553,6 +4550,142 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         chip.onclick = () => { onChoose && onChoose(c); note.classList.add('hidden'); box.innerHTML = ''; };
         box.appendChild(chip);
       });
+    }
+
+    function beginAssistFlow(text, closeModal) {
+      const result = detectIntent(text);
+      if (result.candidates && result.candidates.length > 1 && !result.intent) {
+        showAmbiguity(result.candidates, (chosen) => {
+          const intent = chosen.key;
+          const entities = result.entities || {};
+          ensureComplete(intent, entities, closeModal);
+        });
+        return;
+      }
+      ensureComplete(result.intent, result.entities || {}, closeModal);
+    }
+
+    function getMissingFields(intent, e) {
+      const fields = [];
+      const push = (name, type, opts, label, placeholder) => fields.push({ name, type, opts, label, placeholder });
+      switch (intent) {
+        case 'fuel':
+          if (!e.areaHint) push('areaHint', 'text', null, 'المنطقة', 'مثال: السالمية');
+          if (!e.fuelType) push('fuelType', 'chips', ['premium','special','ultra'], 'نوع البنزين', null);
+          break;
+        case 'carwash':
+          if (!e.washType) push('washType', 'chips', ['premium','special','ultra'], 'نوع الغسيل', null);
+          break;
+        case 'unlock':
+          if (!e.areaHint) push('areaHint', 'text', null, 'المنطقة', 'مثال: صباحية');
+          break;
+        case 'puncture':
+        case 'batteryInstall':
+        case 'batterySubscription':
+        case 'balance':
+        case 'mechanical_oilfilter':
+        case 'mechanical_inspection':
+        case 'mechanical_brakes':
+        case 'mechanical_wipers':
+        case 'mechanical_acgas':
+        case 'mechanical_coolant':
+        case 'mechanical_brakefluid':
+        case 'mechanical_transmission':
+          if (!e.areaHint) push('areaHint', 'text', null, 'المنطقة', 'مثال: الفروانية');
+          if (intent === 'mechanical_brakes' && !e.diskTurning) push('diskTurning', 'chips', ['no','yes'], 'مخرطة ديسكات؟', null);
+          if (intent === 'mechanical_oilfilter' && !e.oilSource) push('oilSource', 'chips', ['customer','ours'], 'مصدر الزيت', null);
+          break;
+        case 'tow':
+          if (!e.towType) push('towType', 'chips', ['normal','flatbed'], 'نوع الونش', null);
+          if (!e.from) push('from', 'text', null, 'من أين', 'مثال: السالمية');
+          if (!e.to) push('to', 'text', null, 'إلى أين', 'مثال: شويخ');
+          if (e.isLocked === undefined) push('isLocked', 'chips', ['no','yes'], 'ونش مسكر؟', null);
+          if (!e.extraCharges) push('extraCharges', 'chips', ['no','yes'], 'هل القير لا يعمل أو السيارة فيها حادث؟', null);
+          break;
+        case 'protection':
+          if (!e.areaHint) push('areaHint', 'text', null, 'المنطقة', 'مثال: السالمية');
+          break;
+        case 'ringRepair':
+          if (!e.areaHint) push('areaHint', 'text', null, 'المنطقة', 'مثال: السالمية');
+          break;
+        case 'insurance':
+          if (!e.query) push('query', 'text', null, 'نص البحث (رقم لوحة / اسم)', 'مثال: 12-3456');
+          break;
+        case 'annualSubscription':
+        default:
+          break;
+      }
+      return fields;
+    }
+
+    function renderQuestions(fields, e, intent, onReady) {
+      const qa = document.getElementById('smartAssistQA');
+      const note = document.getElementById('smartAssistNote');
+      if (!qa) return;
+      qa.innerHTML = '';
+      if (note) { note.classList.remove('hidden'); note.textContent = 'نحتاج معلومات بسيطة لإتمام طلبك:'; }
+      fields.forEach(f => {
+        const block = document.createElement('div');
+        block.className = 'smart-assist-question';
+        const label = document.createElement('label');
+        label.textContent = f.label || f.name;
+        const wrap = document.createElement('div');
+        wrap.className = 'smart-assist-inline';
+        block.appendChild(label);
+        block.appendChild(wrap);
+        if (f.type === 'chips') {
+          (f.opts || []).forEach(opt => {
+            const chip = document.createElement('div');
+            chip.className = 'smart-assist-chip';
+            chip.textContent = prettyOpt(intent, f.name, opt);
+            chip.onclick = () => { e[f.name] = opt; onReady(); };
+            wrap.appendChild(chip);
+          });
+        } else {
+          const input = document.createElement('input');
+          input.className = 'smart-assist-input';
+          input.placeholder = f.placeholder || '';
+          input.onchange = () => { e[f.name] = input.value.trim(); };
+          wrap.appendChild(input);
+        }
+        qa.appendChild(block);
+      });
+      // Add a continue button when there are text inputs
+      if (fields.some(f => f.type === 'text')) {
+        const cont = document.createElement('button');
+        cont.className = 'btn-primary';
+        cont.textContent = 'متابعة';
+        cont.style.marginTop = '8px';
+        cont.onclick = onReady;
+        qa.appendChild(cont);
+      }
+    }
+
+    function prettyOpt(intent, name, opt) {
+      const map = {
+        fuelType: { premium: 'ممتاز', special: 'خصوصي', ultra: 'ألترا' },
+        washType: { premium: 'غسيل ممتاز', special: 'غسيل خصوصي', ultra: 'غسيل ألترا' },
+        towType: { normal: 'ونش عادي', flatbed: 'ونش فل داون' },
+        isLocked: { yes: 'نعم', no: 'لا' },
+        extraCharges: { yes: 'نعم', no: 'لا' },
+        diskTurning: { yes: 'نعم', no: 'لا' },
+        oilSource: { customer: 'من عند العميل', ours: 'من عندنا' }
+      };
+      return (map[name] && map[name][opt]) ? map[name][opt] : opt;
+    }
+
+    function ensureComplete(intent, e, closeModal) {
+      const missing = getMissingFields(intent, e);
+      if (missing.length > 0) {
+        renderQuestions(missing, e, intent, () => ensureComplete(intent, e, closeModal));
+        return;
+      }
+      // Ready to execute
+      executeIntent({ intent, entities: e });
+      // Clear prompts and close
+      const qa = document.getElementById('smartAssistQA'); if (qa) qa.innerHTML = '';
+      const note = document.getElementById('smartAssistNote'); if (note) note.classList.add('hidden');
+      if (typeof closeModal === 'function') closeModal();
     }
 
     function mapServiceLabel(key) {
