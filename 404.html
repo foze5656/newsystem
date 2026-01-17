@@ -897,8 +897,6 @@
     <div class="service-submenu" id="staffSubmenu">
      <div class="service-item submenu-item" data-service="staff_centers"><span class="label">مراكز الطلبات</span>
      </div>
-     <div class="service-item submenu-item" data-service="staff_followup"><span class="label">متابعة الطلبات</span>
-     </div>
     </div>
     <div class="service-item" data-service="tow"><span class="icon">🚚</span> <span class="label">ونشات</span>
     </div>
@@ -1190,7 +1188,6 @@
           'ringRepair': 'تصليح الرنقات',
           'mechanical': 'خدمات ميكانيكية',
           'staff_centers': 'مراكز الطلبات',
-          'staff_followup': 'متابعة الطلبات',
           'carwash': 'غسيل السيارات',
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات'
@@ -1237,9 +1234,6 @@
             break;
           case 'staff_centers':
             renderStaffInterface();
-            break;
-          case 'staff_followup':
-            renderDriverFollowupInterface();
             break;
           case 'carwash':
             renderCarWashInterface();
@@ -4674,6 +4668,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     async function handleMechanicalSubmit() {
       const overlay = ensureMechanicalModal();
       const message = overlay.querySelector('#mechMessage');
+      const submitBtn = overlay.querySelector('#mechSubmit');
+      const cancelBtn = overlay.querySelector('#mechCancel');
       setModalMessage(message, '', '');
 
       const datetimeVal = overlay.querySelector('#mechDatetime').value;
@@ -4726,17 +4722,39 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       console.log('Expected Header:', window._mechAppointmentsHeader);
       console.log('========================================');
 
+      // Disable buttons and show loading state
+      submitBtn.disabled = true;
+      cancelBtn.disabled = true;
+      submitBtn.style.opacity = '0.6';
+      submitBtn.textContent = 'جاري الحفظ...';
+      
       try {
         const res = await postToSheetDb(row, MECHANICAL_SHEETDB_URL);
         console.log('SheetDB Response:', res.status, res.statusText);
         if (!res.ok) throw new Error('SheetDB request failed');
-        setModalMessage(message, 'success', 'تم حفظ الموعد بنجاح.');
+        
+        // Show loading message with spinner
+        setModalMessage(message, 'loading', '⏳ جاري التسجيل...');
+        
+        // Wait a moment to show the loading state
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Show success message with checkmark
+        setModalMessage(message, 'success', '✓ تم تسجيل الموعد بنجاح!');
+        
         await loadMechanicalAppointmentsData();
         await renderMechanicalAppointments();
-        setTimeout(() => overlay.classList.add('hidden'), 800);
+        
+        // Close modal after success
+        setTimeout(() => overlay.classList.add('hidden'), 1500);
       } catch (err) {
         console.error(err);
         setModalMessage(message, 'error', 'تعذر حفظ الموعد. تأكد من الاتصال وحاول مرة أخرى.');
+        // Re-enable buttons on error
+        submitBtn.disabled = false;
+        cancelBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.textContent = 'حفظ الموعد';
       }
     }
 
