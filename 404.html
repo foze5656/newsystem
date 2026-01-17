@@ -936,6 +936,8 @@
     </div>
     <div class="service-item" data-service="insurance"><span class="icon">🚧</span> <span class="label">تأمينات</span>
     </div>
+    <div class="service-item" data-service="annualSubscription"><span class="icon">📅</span> <span class="label">الاشتراك السنوي</span>
+    </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
     <header class="header-bar">
@@ -1190,7 +1192,8 @@
           'staff_centers': 'مراكز الطلبات',
           'carwash': 'غسيل السيارات',
           'protection': 'الحمايه والتغيم',
-          'insurance': 'تأمينات'
+          'insurance': 'تأمينات',
+          'annualSubscription': 'الاشتراك السنوي'
         };
         
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
@@ -1243,6 +1246,9 @@
             break;
           case 'insurance':
             renderInsuranceInterface();
+            break;
+          case 'annualSubscription':
+            renderAnnualSubscriptionInterface();
             break;
         }
       }
@@ -5669,6 +5675,231 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     // Load data on page load
     loadAllSheets();
+
+    // Render Annual Subscription Interface (الاشتراك السنوي)
+    function renderAnnualSubscriptionInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">الاشتراك السنوي</h3>
+          <div class="info-box" style="margin-bottom: 16px;">
+            اختر نوع الاشتراك المناسب للحصول على مزايا حصرية طوال السنة
+          </div>
+          
+          <div class="btn-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+            <button class="btn-option" data-subscription="individual" style="padding: 16px; text-align: center; line-height: 1.5;">
+              <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">🚗</div>
+              <div style="font-size: 14px; font-weight: 700;">الاشتراك الفردي</div>
+              <div style="font-size: 12px; color: #999; margin-top: 6px;">سيارة واحدة</div>
+            </button>
+            <button class="btn-option" data-subscription="family" style="padding: 16px; text-align: center; line-height: 1.5;">
+              <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">👨‍👩‍👧‍👦</div>
+              <div style="font-size: 14px; font-weight: 700;">الاشتراك العائلي</div>
+              <div style="font-size: 12px; color: #999; margin-top: 6px;">3 سيارات</div>
+            </button>
+          </div>
+          
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="btn-option" id="termsButton" style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <span>ℹ️</span>
+              <span>شروط وأحكام</span>
+            </button>
+            <button class="btn-option" id="detailsButton" style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <span>ℹ️</span>
+              <span>تفاصيل الاشتراك</span>
+            </button>
+          </div>
+        </div>
+        
+        <div id="termsModal" class="modal-overlay hidden">
+          <div class="modal" style="max-height: 80vh; overflow-y: auto;">
+            <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            <h3 style="color: #F2BC1B; text-align: center; margin-bottom: 16px;">شروط وأحكام الاشتراك السنوي</h3>
+            <div id="termsContent" style="color: #ddd; font-size: 13px; line-height: 1.6;">
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">1. مدة اشتراك العضوية</strong> - سنة كاملة.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">2. تفعيل الاشتراك</strong> - يتم تفعيل الاشتراك بعد ثلاث أيام عمل من شراء العضوية.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">3. صلاحية الاشتراك</strong> - يجب أن يكون الاشتراك صالح عند طلب الخدمة.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">4. دفتر السيارة</strong> - يجب أن يكون دفتر السيارة صالح.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">5. تسجيل البيانات</strong> - الاشتراك للسيارات التي تم تسجيل بياناتها فقط.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">6. الأمن والسلامة</strong> - أولويتنا أمن وسلامة موظفين الشركة، بحيث لا يمكن استخدام الاشتراك في أماكن مجهولة وخطرة.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">7. خدمة نقل المركبة</strong> - غير متاحة / لا يمكن استخدامها في حال وقوف السيارة امام منزل العميل.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">8. الخدمات المتاحة</strong> - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق الآتية:
+                <ul style="margin: 8px 0 0 0; padding-right: 20px;">
+                  <li>خدمات نقل السيارة</li>
+                  <li>خدمات شحن البطارية</li>
+                  <li>خدمات تصليح الإطار</li>
+                  <li>خدمات تزويد الوقود</li>
+                  <li>خدمات فتح قفل السيارة</li>
+                </ul>
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">9. حالات الطوارئ</strong> - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق المشمولة في الاشتراك في حالة الطوارئ فقط.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">10. عمر المركبة</strong> - يجب ألا يكون موديل المركبة أقدم من 15 سنة.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">11. النقل على السطحات</strong> - الاشتراك لا يشمل نقل المركبة على السطحات الفل داون.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">12. خدمات نقل السيارة</strong> - تشمل نقل السيارة في حالة العطل الميكانيكي أو الكهربائي ولجهة واحدة محددة، ولا يشمل نقل السيارة من والى محلات البيع أو المزاد أو المهرجانات أو السكراب.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">13. حوادث الاصطدام</strong> - خدمات نقل السيارة لا يشملها نقلها من حادث.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">14. أنواع المركبات</strong> - تقتصر الخدمات على مركبات السيدان والدفع الرباعي. ولا تشمل المركبات التجارية والشاحنات.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">15. خدمات الوقود</strong> - تستخدم فقط عند توقف السيارة على الطريق، ويتم دفع قيمة الوقود من قبل المشترك.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">16. تبديل الإطارات</strong> - خدمات تبديل الإطارات في حال توفر الإطار الاحتياطي فقط.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">17. الكوارث الطبيعية</strong> - لا يتم توفير الخدمات في حالة الكوارث الطبيعية والحوادث المرورية وانغماس المركبات في الماء أو الرمال.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">18. المنطقة الجغرافية</strong> - يتم توفير الخدمات فقط داخل حدود دولة الكويت.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">19. عدد الطلبات اليومية</strong> - للمشترك الحق بطلب خدمة واحدة في اليوم الواحد.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">20. تجديد الرخصة</strong> - اشتراكات تجديد الرخصة تشمل فقط السيارات الخاصة ولا تشمل نقل خاص (الوانيت) ولا نقل خاص (باص خاص).
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">21. صلاحية التراخيص</strong> - تجديد ترخيص المركبة يشمل فقط التراخيص المنتهية من تاريخ 12/3/2020 إلى تاريخ 16/8/2020.
+              </div>
+              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
+                <strong style="color: #F2BC1B;">22. سوء الاستخدام</strong> - للمشترك الحق في استخدام العضوية وفي حالة ثبوت سوء الاستخدام بصورة تتنافى مع شروط وأحكام البرنامج، يحق لشركة بورتراج للجر والمساعدة للمركبات على الطريق إلغاء الاشتراك.
+              </div>
+              <div style="margin-bottom: 12px;">
+                <strong style="color: #F2BC1B;">23. الامتثال للشروط</strong> - كمستخدم لخدمات شركة بورتراج للجر والمساعدة للمركبات على الطريق وبقبول هذا العرض، يوافق المشترك على الامتثال لشروط وأحكام شركة بورتراج للجر والمساعدة للمركبات على الطريق.
+              </div>
+            </div>
+            <button id="termsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+          </div>
+        </div>
+        
+        <div id="detailsModal" class="modal-overlay hidden">
+          <div class="modal">
+            <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            <h3 style="color: #F2BC1B; text-align: center; margin-bottom: 16px;">تفاصيل الاشتراك السنوي</h3>
+            <div style="color: #ddd; font-size: 13px; line-height: 1.8;">
+              <div style="background: #0f2a1a; border: 1px solid #10b981; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+                <h4 style="color: #10b981; margin: 0 0 8px 0; font-size: 14px;">الاشتراك السنوي - شركة بورتراج</h4>
+                <div style="margin-bottom: 10px;">
+                  <strong style="color: #10b981;">1. الاشتراك الفردي</strong> - لسيارة واحدة بقيمة <strong>15 د.ك</strong> لمدة سنة كاملة
+                </div>
+                <div>
+                  <strong style="color: #10b981;">2. الاشتراك العائلي</strong> - ل 3 سيارات بقيمة <strong>40 د.ك</strong> لمدة سنة كاملة
+                </div>
+              </div>
+              
+              <div style="background: #1a2a3a; border: 1px solid #3b82f6; border-radius: 8px; padding: 12px;">
+                <h4 style="color: #3b82f6; margin: 0 0 12px 0; font-size: 14px;">الخدمات المشمولة (5 خدمات على مدار السنة)</h4>
+                <ol style="margin: 0; padding-right: 20px;">
+                  <li style="margin-bottom: 10px;">
+                    <strong style="color: #93c5fd;">نقل السيارة (ونش/سطحة)</strong>
+                    <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">من الطريق العام فقط. لا يشمل النقل عند البيت أو داخل الفريج أو عند القراج أو عند الشاليه (هذه الحالات عليها تكلفة إضافية)</div>
+                  </li>
+                  <li style="margin-bottom: 10px;">
+                    <strong style="color: #93c5fd;">البنشر (الاطار)</strong>
+                    <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">يشمل تبديل السبير، الرقعة الأمريكية الخارجية، أو تعبئة الإطار بالهواء</div>
+                  </li>
+                  <li style="margin-bottom: 10px;">
+                    <strong style="color: #93c5fd;">شحن البطارية</strong>
+                    <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">خدمة شحن البطارية عند الحاجة</div>
+                  </li>
+                  <li style="margin-bottom: 10px;">
+                    <strong style="color: #93c5fd;">البنزين</strong>
+                    <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">نزودك بنزين بقيمة 1.5 د.ك من اختيارك. ما تدفع رسوم التوصيل - فقط رسوم البنزين (1.5 د.ك)</div>
+                  </li>
+                  <li style="margin-bottom: 0;">
+                    <strong style="color: #93c5fd;">فتح قفل الباب</strong>
+                    <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">إذا لا سمح الله انقفلت السيارة والمفتاح داخلها، نفتحها لك بدون أي رسوم</div>
+                  </li>
+                </ol>
+              </div>
+              
+              <div style="background: #2a1a0f; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px; margin-top: 12px;">
+                <strong style="color: #fbbf24;">⏰ ملاحظة مهمة:</strong>
+                <div style="font-size: 12px; color: #fde68a; margin-top: 6px;">
+                  الاشتراك يتفعل بعد الدفع ب 3 أيام عمل. كل 24 ساعة لك خدمة واحدة فقط.
+                </div>
+              </div>
+            </div>
+            <button id="detailsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+          </div>
+        </div>
+      `;
+
+      // Set up modal handlers
+      const termsModal = document.getElementById('termsModal');
+      const detailsModal = document.getElementById('detailsModal');
+      const termsBtn = document.getElementById('termsButton');
+      const detailsBtn = document.getElementById('detailsButton');
+      const termsCloseBtn = document.getElementById('termsCloseBtn');
+      const detailsCloseBtn = document.getElementById('detailsCloseBtn');
+      
+      termsBtn.onclick = () => termsModal.classList.remove('hidden');
+      detailsBtn.onclick = () => detailsModal.classList.remove('hidden');
+      termsCloseBtn.onclick = () => termsModal.classList.add('hidden');
+      detailsCloseBtn.onclick = () => detailsModal.classList.add('hidden');
+      
+      termsModal.onclick = (e) => { if (e.target === termsModal) termsModal.classList.add('hidden'); };
+      detailsModal.onclick = (e) => { if (e.target === detailsModal) detailsModal.classList.add('hidden'); };
+      
+      termsModal.querySelector('.modal-close').onclick = () => termsModal.classList.add('hidden');
+      detailsModal.querySelector('.modal-close').onclick = () => detailsModal.classList.add('hidden');
+
+      // Handle subscription selection
+      document.querySelectorAll('[data-subscription]').forEach(btn => {
+        btn.onclick = () => {
+          const subType = btn.dataset.subscription;
+          let url = '';
+          
+          if (subType === 'individual') {
+            url = 'https://subs-portarage.com/product/yamVB9PmR4';
+          } else if (subType === 'family') {
+            url = 'https://subs-portarage.com/product/oYvREz8MJE';
+          }
+          
+          if (url) {
+            // Open with back button in fullscreen iframe
+            const wrapper = document.getElementById('fullscreenIframeWrapper');
+            const container = document.getElementById('fullscreenIframeContainer');
+            
+            lastIframeState = {
+              url: url,
+              title: subType === 'individual' ? 'الاشتراك الفردي' : 'الاشتراك العائلي',
+              service: currentService,
+              formData: { ...formData }
+            };
+            
+            container.innerHTML = `<iframe src="${url}" title="${subType === 'individual' ? 'الاشتراك الفردي' : 'الاشتراك العائلي'}"></iframe>`;
+            wrapper.classList.remove('hidden');
+            document.getElementById('dashboardWrapper').style.display = 'none';
+          }
+        };
+      });
+    }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
