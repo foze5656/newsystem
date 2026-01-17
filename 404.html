@@ -3422,9 +3422,9 @@
       // rows: include header row; data starts from row index 1 (second row)
       const dataRows = rows.slice(1);
 
-      // build technicians list (column F -> index 5)
+      // build technicians list (column G -> index 6)
       const techs = new Set();
-      dataRows.forEach(r => { if (r[5]) techs.add(r[5]); });
+      dataRows.forEach(r => { if (r[6]) techs.add(r[6]); });
       techFilter.innerHTML = '<option value="">الكل</option>' + Array.from(techs).map(t => `<option value="${t}">${t}</option>`).join('');
 
       function filterAndRender() {
@@ -3434,12 +3434,12 @@
           const dateCell = parseCellDate(r[0]); // column A -> index 0 (التاريخ)
           if (!dateCell) return false;
           if (dateCell !== selectedDate) return false;
-          if (selectedTech && (r[5] || '') !== selectedTech) return false;
+          if (selectedTech && (r[6] || '') !== selectedTech) return false;
           return true;
         });
 
         if (filtered.length === 0) {
-          tableBody.innerHTML = '<tr><td colspan="6">لا توجد مواعيد لهذا التاريخ</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="7">لا توجد مواعيد لهذا التاريخ</td></tr>';
         } else {
           tableBody.innerHTML = filtered.map(r => `
             <tr>
@@ -3449,6 +3449,7 @@
               <td>${r[3] || '-'}</td>
               <td>${r[4] || '-'}</td>
               <td>${r[5] || '-'}</td>
+              <td>${r[6] || '-'}</td>
             </tr>
           `).join('');
         }
@@ -4577,13 +4578,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     function buildMechanicalSheetRow(payload) {
       const headerRow = window._mechAppointmentsHeader || [];
-      const dateHeader = pickHeader(headerRow, ['التاريخ', 'date'], 'التاريخ');
-      const timeHeader = pickHeader(headerRow, ['الوقت', 'time'], 'الوقت');
+      const dateHeader = pickHeader(headerRow, ['تاريخ الموعد', 'التاريخ', 'date'], 'تاريخ الموعد');
+      const timeHeader = pickHeader(headerRow, ['وقت الموعد', 'الوقت', 'time'], 'وقت الموعد');
       const orderHeader = pickHeader(headerRow, ['رقم الطلب', 'order'], 'رقم الطلب');
+      const customerHeader = pickHeader(headerRow, ['اسم العميل', 'customer'], 'اسم العميل');
       const areaHeader = pickHeader(headerRow, ['المنطقة', 'المنطقه', 'area'], 'المنطقة');
       const serviceHeader = pickHeader(headerRow, ['نوع الخدمة', 'service'], 'نوع الخدمة');
-      const techHeader = pickHeader(headerRow, ['الفني', 'الفنيين', 'technician'], 'الفني');
-      const customerHeader = pickHeader(headerRow, ['اسم العميل', 'customer'], 'اسم العميل');
+      const techHeader = pickHeader(headerRow, ['الفنيين', 'الفني', 'technician'], 'الفنيين');
 
       return {
         [dateHeader]: payload.date,
