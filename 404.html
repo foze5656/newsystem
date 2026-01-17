@@ -4463,8 +4463,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const paymentHeader = pickHeader(headerRow, ['حاله الدفع', 'حالة الدفع', 'payment'], 'حالة الدفع');
 
       return {
-        [dateHeader]: asSheetText(payload.date),
-        [timeHeader]: asSheetText(payload.time),
+        [dateHeader]: payload.date,
+        [timeHeader]: payload.time,
         [orderHeader]: payload.qrOrder,
         [nameHeader]: payload.customerName,
         [locationHeader]: payload.location,
