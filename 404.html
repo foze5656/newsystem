@@ -4593,7 +4593,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
       overlay.querySelector('.modal-close').onclick = closeOverlay;
       overlay.querySelector('#mechCancel').onclick = closeOverlay;
-      overlay.querySelector('#mechSubmit').onclick = handleMechanicalSubmit;
+      overlay.querySelector('#mechSubmit').onclick = async (e) => {
+        e.preventDefault();
+        await handleMechanicalSubmit();
+      };
 
       // Handle showing/hiding custom service field
       const serviceSelect = overlay.querySelector('#mechService');
@@ -4676,8 +4679,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.querySelector('#mechOrder').value = '';
       overlay.querySelector('#mechCustomer').value = '';
       overlay.querySelector('#mechArea').value = '';
-      overlay.querySelector('#mechCustomService').value = '';
-      overlay.querySelector('#mechCustomServiceField').classList.add('hidden');
       overlay.querySelector('#mechTechnician').value = 'يوسف و رحمه الله';
 
       setModalMessage(overlay.querySelector('#mechMessage'), '', '');
