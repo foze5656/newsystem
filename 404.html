@@ -3432,12 +3432,16 @@
       }
 
       // rows: include header row; data starts from row index 1 (second row)
-      const dataRows = rows.slice(1);
+      let dataRows = rows.slice(1);
 
-      // build technicians list (column G -> index 6)
-      const techs = new Set();
-      dataRows.forEach(r => { if (r[6]) techs.add(r[6]); });
-      techFilter.innerHTML = '<option value="">الكل</option>' + Array.from(techs).map(t => `<option value="${t}">${t}</option>`).join('');
+      const populateTechnicians = () => {
+        const techs = new Set();
+        dataRows.forEach(r => { if (r[6]) techs.add(r[6]); });
+        const current = techFilter.value;
+        techFilter.innerHTML = '<option value="">الكل</option>' + Array.from(techs).map(t => `<option value="${t}">${t}</option>`).join('');
+        if (current && techs.has(current)) techFilter.value = current;
+      };
+      populateTechnicians();
 
       function filterAndRender() {
         const selectedDate = dateInput.value;
@@ -3488,8 +3492,21 @@
         window.open('https://docs.google.com/spreadsheets/d/1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4/edit?usp=sharing', '_blank');
       };
 
+      const scheduleAutoRefresh = () => {
+        if (window._mechAutoRefreshTimer) clearInterval(window._mechAutoRefreshTimer);
+        window._mechAutoRefreshTimer = setInterval(async () => {
+          const updatedRows = await loadMechanicalAppointmentsData();
+          if (!updatedRows) return;
+          rows = updatedRows;
+          dataRows = rows.slice(1);
+          populateTechnicians();
+          filterAndRender();
+        }, 60000);
+      };
+
       section.classList.remove('hidden');
       filterAndRender();
+      scheduleAutoRefresh();
     }
 
     function calculateAlternatorPrice() {
@@ -4329,17 +4346,23 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     function normalizeDateStr(str) {
       if (!str) return '';
-      const d = new Date(str);
+      const cleaned = (str || '').toString().trim().replace(/^'+/, '');
+      const d = new Date(cleaned);
       if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
-      return (str || '').toString().split('T')[0];
+      return cleaned.split('T')[0];
     }
 
     function normalizeTimeStr(str) {
-      const m = (str || '').toString().match(/(\d{1,2}):(\d{2})/);
+      const m = (str || '').toString().trim().replace(/^'+/, '').match(/(\d{1,2}):(\d{2})/);
       if (!m) return '';
       const hh = String(parseInt(m[1], 10)).padStart(2, '0');
       const mm = String(parseInt(m[2], 10)).padStart(2, '0');
       return `${hh}:${mm}`;
+    }
+
+    function asSheetText(value) {
+      if (value === null || value === undefined) return '';
+      return `'${value}`;
     }
 
     async function postToSheetDb(row, apiUrl = SHEETDB_URL) {
@@ -4440,8 +4463,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const paymentHeader = pickHeader(headerRow, ['حاله الدفع', 'حالة الدفع', 'payment'], 'حالة الدفع');
 
       return {
-        [dateHeader]: payload.date,
-        [timeHeader]: payload.time,
+        [dateHeader]: asSheetText(payload.date),
+        [timeHeader]: asSheetText(payload.time),
         [orderHeader]: payload.qrOrder,
         [nameHeader]: payload.customerName,
         [locationHeader]: payload.location,
