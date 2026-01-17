@@ -3780,10 +3780,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         const idx = {
           timestamp: findHeader('timestamp', 'time stamp', 'timestamp', 'توقيت'),
-          date: findHeader('تاريخ تسجيل الطلب', 'تاريخ الطلب', 'date', 'تاريخ', 'التاريخ'),
-          time: findHeader('الوقت', 'time'),
+          date: findHeader('تاريخ الموعد', 'تاريخ تسجيل الطلب', 'تاريخ الطلب', 'date', 'تاريخ', 'التاريخ'),
+          time: findHeader('وقت الموعد', 'الوقت', 'time'),
           qrOrder: findHeader('رقم الطلب', 'qr order', 'qr'),
-          location: findHeader('موقع العميل', 'location', 'موقع'),
+          location: findHeader('المنطقة', 'المنطقه', 'موقع العميل', 'location', 'موقع'),
           customerName: findHeader('اسم العميل', 'customer name', 'customer'),
           customerNumber: findHeader('رقم العميل', 'customer number', 'phone', 'رقم'),
           washType: findHeader('نوع الغسيل', 'wash type', 'نوع'),
@@ -3806,15 +3806,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         // Fallback to legacy indices if detection failed
         const col = {
-          // Use column B as the default date column (index 1)
-          date: idx.date >= 0 ? idx.date : 1,
-          time: idx.time >= 0 ? idx.time : 2,
-          qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 3,
+          // Use correct columns: A=date, B=time, C=order, D=customer, E=location, F=washType, G=payment
+          date: idx.date >= 0 ? idx.date : 0,
+          time: idx.time >= 0 ? idx.time : 1,
+          qrOrder: idx.qrOrder >= 0 ? idx.qrOrder : 2,
+          customerName: idx.customerName >= 0 ? idx.customerName : 3,
           location: idx.location >= 0 ? idx.location : 4,
-          customerName: idx.customerName >= 0 ? idx.customerName : 5,
-          customerNumber: idx.customerNumber >= 0 ? idx.customerNumber : 6,
-          washType: idx.washType >= 0 ? idx.washType : 7,
-          payment: idx.payment >= 0 ? idx.payment : 8
+          washType: idx.washType >= 0 ? idx.washType : 5,
+          payment: idx.payment >= 0 ? idx.payment : 6,
+          customerNumber: idx.customerNumber >= 0 ? idx.customerNumber : 7
         };
 
         for (let i = 1; i < rows.length; i++) {
@@ -4409,10 +4409,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     function buildCarWashSheetRow(payload) {
       const headerRow = window._carWashHeaderRow || [];
       const dateHeader = pickHeader(headerRow, ['تاريخ الموعد', 'التاريخ', 'date'], 'تاريخ الموعد');
-      const timeHeader = pickHeader(headerRow, ['الوقت', 'time'], 'الوقت');
+      const timeHeader = pickHeader(headerRow, ['وقت الموعد', 'الوقت', 'time'], 'وقت الموعد');
       const orderHeader = pickHeader(headerRow, ['رقم الطلب', 'qr order', 'order'], 'رقم الطلب');
       const nameHeader = pickHeader(headerRow, ['اسم العميل', 'customer name'], 'اسم العميل');
-      const locationHeader = pickHeader(headerRow, ['موقع العميل', 'location', 'العنوان'], 'موقع العميل');
+      const locationHeader = pickHeader(headerRow, ['المنطقة', 'المنطقه', 'location', 'موقع العميل', 'العنوان'], 'المنطقة');
       const washTypeHeader = pickHeader(headerRow, ['نوع الغسيل', 'wash type'], 'نوع الغسيل');
       const paymentHeader = pickHeader(headerRow, ['حاله الدفع', 'حالة الدفع', 'payment'], 'حالة الدفع');
 
