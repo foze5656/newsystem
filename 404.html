@@ -3386,6 +3386,13 @@
         // store temporarily
         window._mechAppointmentsRaw = rows;
         window._mechAppointmentsHeader = rows[0] || [];
+        // DEBUG: Print header row to verify exact column names
+        console.log('=== MECHANICAL APPOINTMENTS HEADER ===');
+        console.log('Header Row:', window._mechAppointmentsHeader);
+        window._mechAppointmentsHeader.forEach((col, idx) => {
+          console.log(`Column ${idx} (${String.fromCharCode(65 + idx)}): "${col}"`);
+        });
+        console.log('=====================================');
         return rows;
       } catch (err) {
         console.error('Could not load mechanical appointments', err);
@@ -4598,6 +4605,23 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     function buildMechanicalSheetRow(payload) {
       // Build object with exact column names from header row
+      // Use the actual header names from the loaded sheet
+      const header = window._mechAppointmentsHeader || [];
+      
+      // If header is available, use it to build the row dynamically
+      if (header.length >= 7) {
+        const row = {};
+        row[header[0]] = payload.date;        // Column A: تاريخ الموعد
+        row[header[1]] = payload.time;        // Column B: وقت الموعد
+        row[header[2]] = payload.qrOrder;     // Column C: رقم الطلب
+        row[header[3]] = payload.customerName; // Column D: اسم العميل
+        row[header[4]] = payload.area;        // Column E: المنطقة
+        row[header[5]] = payload.service;     // Column F: نوع الخدمة
+        row[header[6]] = payload.technician;  // Column G: الفنيين
+        return row;
+      }
+      
+      // Fallback: use expected column names
       // Order: A=تاريخ الموعد, B=وقت الموعد, C=رقم الطلب, D=اسم العميل, E=المنطقة, F=نوع الخدمة, G=الفنيين
       return {
         'تاريخ الموعد': payload.date,
@@ -4610,7 +4634,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       };
     }
 
-    function openMechanicalModal() {
+    async function openMechanicalModal() {
+      // Ensure data is loaded to get header information
+      if (!window._mechAppointmentsHeader || window._mechAppointmentsHeader.length === 0) {
+        console.log('Loading mechanical appointments data to get header...');
+        await loadMechanicalAppointmentsData();
+      }
+      
       const overlay = ensureMechanicalModal();
       const datetimeInput = overlay.querySelector('#mechDatetime');
       datetimeInput.value = getRoundedNowIso();
@@ -4679,9 +4709,22 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         technician: techVal
       });
       
-      console.log('Mechanical Row to Send:', row);
-      console.log('Service Value:', serviceVal);
-      console.log('Technician Value:', techVal);
+      console.log('=== MECHANICAL APPOINTMENT SUBMISSION ===');
+      console.log('Raw Input Values:');
+      console.log('  - Date:', dateOnly);
+      console.log('  - Time:', timeOnly);
+      console.log('  - Order:', orderVal);
+      console.log('  - Customer:', customerVal);
+      console.log('  - Area:', areaVal);
+      console.log('  - Service:', serviceVal);
+      console.log('  - Technician:', techVal);
+      console.log('Row Object to Send:', row);
+      console.log('Row Object Keys:', Object.keys(row));
+      Object.keys(row).forEach(key => {
+        console.log(`  "${key}": "${row[key]}"`);
+      });
+      console.log('Expected Header:', window._mechAppointmentsHeader);
+      console.log('========================================');
 
       try {
         const res = await postToSheetDb(row, MECHANICAL_SHEETDB_URL);
