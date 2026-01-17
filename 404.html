@@ -4566,7 +4566,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                 <option value="ماي راديتر">ماي راديتر</option>
                 <option value="زيت بريك">زيت بريك</option>
                 <option value="زيت سكان">زيت سكان</option>
+                <option value="أخرى">أخرى</option>
               </select>
+            </div>
+            <div class="form-field hidden" id="mechServiceOtherField">
+              <label>حدد الخدمة الأخرى</label>
+              <input type="text" id="mechServiceOtherInput" class="form-control" placeholder="اكتب الخدمة المطلوبة" />
             </div>
             <div class="form-field">
               <label>الفنيين</label>
@@ -4592,6 +4597,21 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.querySelector('.modal-close').onclick = closeOverlay;
       overlay.querySelector('#mechCancel').onclick = closeOverlay;
       overlay.querySelector('#mechSubmit').onclick = handleMechanicalSubmit;
+
+      const serviceSelect = overlay.querySelector('#mechService');
+      const otherField = overlay.querySelector('#mechServiceOtherField');
+      const otherInput = overlay.querySelector('#mechServiceOtherInput');
+      const toggleOtherField = () => {
+        if (serviceSelect.value === 'أخرى') {
+          otherField.classList.remove('hidden');
+          otherInput.focus();
+        } else {
+          otherField.classList.add('hidden');
+          otherInput.value = '';
+        }
+      };
+      serviceSelect.onchange = toggleOtherField;
+      overlay._toggleMechOther = toggleOtherField;
 
       prepareDateTimeInput(overlay.querySelector('#mechDatetime'));
       return overlay;
@@ -4656,10 +4676,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const serviceSelect = overlay.querySelector('#mechService');
       serviceSelect.value = defaultService;
 
+      const otherInput = overlay.querySelector('#mechServiceOtherInput');
+
       overlay.querySelector('#mechOrder').value = '';
       overlay.querySelector('#mechCustomer').value = '';
       overlay.querySelector('#mechArea').value = '';
       overlay.querySelector('#mechTechnician').value = 'يوسف و رحمه الله';
+      if (overlay._toggleMechOther) overlay._toggleMechOther();
+      if (otherInput) otherInput.value = '';
 
       setModalMessage(overlay.querySelector('#mechMessage'), '', '');
       overlay.classList.remove('hidden');
@@ -4676,11 +4700,20 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const orderVal = (overlay.querySelector('#mechOrder').value || '').trim();
       const customerVal = (overlay.querySelector('#mechCustomer').value || '').trim();
       const areaVal = (overlay.querySelector('#mechArea').value || '').trim();
-      const serviceVal = overlay.querySelector('#mechService').value;
+      const serviceSelect = overlay.querySelector('#mechService');
+      const serviceVal = serviceSelect.value;
+      const otherServiceVal = (overlay.querySelector('#mechServiceOtherInput')?.value || '').trim();
       const techVal = overlay.querySelector('#mechTechnician').value;
+
+      const finalService = serviceVal === 'أخرى' ? otherServiceVal : serviceVal;
 
       if (!datetimeVal || !orderVal || !customerVal || !areaVal || !serviceVal || !techVal) {
         setModalMessage(message, 'error', 'يرجى تعبئة جميع الحقول المطلوبة.');
+        return;
+      }
+
+      if (serviceVal === 'أخرى' && !otherServiceVal) {
+        setModalMessage(message, 'error', 'يرجى كتابة نوع الخدمة الأخرى.');
         return;
       }
 
@@ -4701,7 +4734,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         qrOrder: orderVal,
         customerName: customerVal,
         area: areaVal,
-        service: serviceVal,
+        service: finalService,
         technician: techVal
       });
       
@@ -4712,7 +4745,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       console.log('  - Order:', orderVal);
       console.log('  - Customer:', customerVal);
       console.log('  - Area:', areaVal);
-      console.log('  - Service:', serviceVal);
+      console.log('  - Service:', finalService);
       console.log('  - Technician:', techVal);
       console.log('Row Object to Send:', row);
       console.log('Row Object Keys:', Object.keys(row));
