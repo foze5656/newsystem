@@ -4566,11 +4566,13 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                 <option value="ماي راديتر">ماي راديتر</option>
                 <option value="زيت بريك">زيت بريك</option>
                 <option value="زيت سكان">زيت سكان</option>
+                <option value="أخرى">أخرى</option>
               </select>
             </div>
-            <div class="form-field">
-              <label>الفنيين</label>
-              <select id="mechTechnician" class="form-control">
+            <div class="form-field hidden" id="mechCustomServiceField">
+              <label>الخدمة المخصصة</label>
+              <input type="text" id="mechCustomService" class="form-control" placeholder="اكتب الخدمة التي تريدها" />
+            </div>
                 <option value="يوسف و رحمه الله">يوسف و رحمه الله</option>
                 <option value="سيد و رامس">سيد و رامس</option>
                 <option value="محمد و علي">محمد و علي</option>
@@ -4592,6 +4594,21 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.querySelector('.modal-close').onclick = closeOverlay;
       overlay.querySelector('#mechCancel').onclick = closeOverlay;
       overlay.querySelector('#mechSubmit').onclick = handleMechanicalSubmit;
+
+      // Handle showing/hiding custom service field
+      const serviceSelect = overlay.querySelector('#mechService');
+      const customServiceField = overlay.querySelector('#mechCustomServiceField');
+      const customServiceInput = overlay.querySelector('#mechCustomService');
+      
+      serviceSelect.onchange = () => {
+        if (serviceSelect.value === 'أخرى') {
+          customServiceField.classList.remove('hidden');
+          customServiceInput.focus();
+        } else {
+          customServiceField.classList.add('hidden');
+          customServiceInput.value = '';
+        }
+      };
 
       prepareDateTimeInput(overlay.querySelector('#mechDatetime'));
       return overlay;
@@ -4659,6 +4676,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.querySelector('#mechOrder').value = '';
       overlay.querySelector('#mechCustomer').value = '';
       overlay.querySelector('#mechArea').value = '';
+      overlay.querySelector('#mechCustomService').value = '';
+      overlay.querySelector('#mechCustomServiceField').classList.add('hidden');
       overlay.querySelector('#mechTechnician').value = 'يوسف و رحمه الله';
 
       setModalMessage(overlay.querySelector('#mechMessage'), '', '');
@@ -4676,8 +4695,18 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const orderVal = (overlay.querySelector('#mechOrder').value || '').trim();
       const customerVal = (overlay.querySelector('#mechCustomer').value || '').trim();
       const areaVal = (overlay.querySelector('#mechArea').value || '').trim();
-      const serviceVal = overlay.querySelector('#mechService').value;
+      let serviceVal = overlay.querySelector('#mechService').value;
       const techVal = overlay.querySelector('#mechTechnician').value;
+
+      // If "أخرى" is selected, get the custom service value
+      if (serviceVal === 'أخرى') {
+        const customServiceVal = (overlay.querySelector('#mechCustomService').value || '').trim();
+        if (!customServiceVal) {
+          setModalMessage(message, 'error', 'يرجى كتابة الخدمة المخصصة.');
+          return;
+        }
+        serviceVal = customServiceVal;
+      }
 
       if (!datetimeVal || !orderVal || !customerVal || !areaVal || !serviceVal || !techVal) {
         setModalMessage(message, 'error', 'يرجى تعبئة جميع الحقول المطلوبة.');
