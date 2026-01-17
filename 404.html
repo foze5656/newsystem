@@ -3394,9 +3394,19 @@
 
     function parseCellDate(cell) {
       if (!cell) return null;
+      
+      // إذا كانت بصيغة YYYY-MM-DD بالفعل
+      if (typeof cell === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(cell)) {
+        return cell;
+      }
+      
+      // محاولة تحويلها إلى تاريخ
       const d = new Date(cell);
-      if (isNaN(d.getTime())) return null;
-      return d.toISOString().split('T')[0];
+      if (!isNaN(d.getTime())) {
+        return d.toISOString().split('T')[0];
+      }
+      
+      return null;
     }
 
     async function renderMechanicalAppointments() {
@@ -3431,9 +3441,18 @@
         const selectedDate = dateInput.value;
         const selectedTech = techFilter.value;
         const filtered = dataRows.filter(r => {
+          // Check if row has data (not empty)
+          if (!r[0] && !r[1] && !r[2]) return false;
+          
           const dateCell = parseCellDate(r[0]); // column A -> index 0 (التاريخ)
-          if (!dateCell) return false;
-          if (dateCell !== selectedDate) return false;
+          // If date parsing fails but row has data, still include it
+          if (!dateCell && r[0]) {
+            // If manually entered, try to compare as string
+            if ((r[0] || '').trim() !== selectedDate) return false;
+          } else if (dateCell && dateCell !== selectedDate) {
+            return false;
+          }
+          
           if (selectedTech && (r[6] || '') !== selectedTech) return false;
           return true;
         });
@@ -3443,7 +3462,7 @@
         } else {
           tableBody.innerHTML = filtered.map(r => `
             <tr>
-              <td>${parseCellDate(r[0]) || '-'}</td>
+              <td>${r[0] || '-'}</td>
               <td>${r[1] || '-'}</td>
               <td>${r[2] || '-'}</td>
               <td>${r[3] || '-'}</td>
@@ -4577,23 +4596,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     }
 
     function buildMechanicalSheetRow(payload) {
-      const headerRow = window._mechAppointmentsHeader || [];
-      const dateHeader = pickHeader(headerRow, ['تاريخ الموعد', 'التاريخ', 'date'], 'تاريخ الموعد');
-      const timeHeader = pickHeader(headerRow, ['وقت الموعد', 'الوقت', 'time'], 'وقت الموعد');
-      const orderHeader = pickHeader(headerRow, ['رقم الطلب', 'order'], 'رقم الطلب');
-      const customerHeader = pickHeader(headerRow, ['اسم العميل', 'customer'], 'اسم العميل');
-      const areaHeader = pickHeader(headerRow, ['المنطقة', 'المنطقه', 'area'], 'المنطقة');
-      const serviceHeader = pickHeader(headerRow, ['نوع الخدمة', 'service'], 'نوع الخدمة');
-      const techHeader = pickHeader(headerRow, ['الفنيين', 'الفني', 'technician'], 'الفنيين');
-
+      // Build object with exact column names from header row
+      // Order: A=تاريخ الموعد, B=وقت الموعد, C=رقم الطلب, D=اسم العميل, E=المنطقة, F=نوع الخدمة, G=الفنيين
       return {
-        [dateHeader]: payload.date,
-        [timeHeader]: payload.time,
-        [orderHeader]: payload.qrOrder,
-        [customerHeader]: payload.customerName,
-        [areaHeader]: payload.area,
-        [serviceHeader]: payload.service,
-        [techHeader]: payload.technician
+        'تاريخ الموعد': payload.date,
+        'وقت الموعد': payload.time,
+        'رقم الطلب': payload.qrOrder,
+        'اسم العميل': payload.customerName,
+        'المنطقة': payload.area,
+        'نوع الخدمة': payload.service,
+        'الفنيين': payload.technician
       };
     }
 
