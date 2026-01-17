@@ -884,6 +884,79 @@
     .prot-toast{ position:fixed; top:80px; right:40px; background:#F2BC1B; color:#000; padding:12px 16px; border-radius:10px; border:1px solid rgba(0,0,0,0.12); box-shadow:0 12px 40px rgba(0,0,0,0.6); display:none; z-index:1500; font-weight:700 }
   </style>
   <style>@view-transition { navigation: auto; }</style>
+  <style>
+    /* Smart Assist floating button and modal */
+    .smart-assist-btn {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #F2BC1B;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      border: 1px solid rgba(0,0,0,0.2);
+      z-index: 1200;
+      cursor: pointer;
+    }
+    .smart-assist-btn:hover { background: #d9a616; }
+
+    .smart-assist-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: none;
+      align-items: flex-start;
+      justify-content: flex-end;
+      z-index: 1300;
+      padding: 14px;
+    }
+    .smart-assist-overlay.show { display: flex; }
+    .smart-assist-modal {
+      background: #0f0f0f;
+      border: 1px solid #333;
+      border-radius: 10px;
+      width: min(520px, 96vw);
+      margin-top: 10px;
+      box-shadow: 0 16px 42px rgba(0,0,0,0.5);
+    }
+    .smart-assist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-bottom: 1px solid #222;
+      color: #F2BC1B;
+      font-weight: 800;
+    }
+    .smart-assist-body { padding: 12px; }
+    .smart-assist-textarea {
+      width: 100%;
+      min-height: 120px;
+      background: #151515;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      padding: 10px 12px;
+      resize: vertical;
+    }
+    .smart-assist-actions { display:flex; gap:8px; margin-top:10px; }
+    .smart-assist-actions .btn-primary { min-width: 120px; }
+    .smart-assist-suggestion {
+      display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;
+    }
+    .smart-assist-chip {
+      background:#2a2a2a; border:1px solid #404040; color:#ddd; padding:8px 10px; border-radius:16px; cursor:pointer; font-size:12px;
+    }
+    .smart-assist-chip:hover { border-color:#F2BC1B; color:#fff; }
+    .smart-assist-note { font-size:12px; color:#93c5fd; margin-top:8px; }
+  </style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
@@ -4307,6 +4380,312 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     const SHEETDB_URL = 'https://sheetdb.io/api/v1/wvoh60e0yhry4'; // Car Wash API
     const MECHANICAL_SHEETDB_URL = 'https://sheetdb.io/api/v1/jcvn1kw9zy7o7'; // Mechanical API
 
+    // Smart Assist: floating button + NLP intent mapping
+    function ensureSmartAssistUI() {
+      if (document.getElementById('smartAssistBtn')) return;
+      const btn = document.createElement('div');
+      btn.id = 'smartAssistBtn';
+      btn.className = 'smart-assist-btn';
+      btn.title = 'مساعد ذكي';
+      btn.textContent = '🤖';
+      document.body.appendChild(btn);
+
+      const overlay = document.createElement('div');
+      overlay.id = 'smartAssistOverlay';
+      overlay.className = 'smart-assist-overlay';
+      overlay.innerHTML = `
+        <div class="smart-assist-modal">
+          <div class="smart-assist-header">
+            <div>المساعد الذكي</div>
+            <button type="button" class="modal-close" style="background:transparent;border:none;color:#888;font-size:18px;cursor:pointer">×</button>
+          </div>
+          <div class="smart-assist-body">
+            <textarea id="smartAssistInput" class="smart-assist-textarea" placeholder="اكتب طلبك بأي صيغة.. مثال: ابي ونش من السالمية الى الشويخ"></textarea>
+            <div id="smartAssistSuggestions" class="smart-assist-suggestion"></div>
+            <div id="smartAssistNote" class="smart-assist-note hidden"></div>
+            <div class="smart-assist-actions">
+              <button id="smartAssistSend" class="btn-primary">تنفيذ الطلب</button>
+              <button id="smartAssistCancel" class="btn-secondary">إلغاء</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      const open = () => overlay.classList.add('show');
+      const close = () => overlay.classList.remove('show');
+      btn.onclick = open;
+      overlay.querySelector('.modal-close').onclick = close;
+      overlay.onclick = (e) => { if (e.target === overlay) close(); };
+      overlay.querySelector('#smartAssistCancel').onclick = close;
+      overlay.querySelector('#smartAssistSend').onclick = async () => {
+        const text = (document.getElementById('smartAssistInput').value || '').trim();
+        if (!text) return;
+        const result = detectIntent(text);
+        if (result.candidates && result.candidates.length > 1 && !result.intent) {
+          showAmbiguity(result.candidates, (chosen) => {
+            executeIntent({ intent: chosen.key, entities: result.entities });
+            close();
+          });
+        } else {
+          executeIntent(result);
+          close();
+        }
+      };
+    }
+
+    function normalizeText(t) {
+      return (t || '').toString().toLowerCase().replace(/[\u0640]/g, '').trim();
+    }
+
+    function detectIntent(rawText) {
+      const text = normalizeText(rawText);
+      const candidates = [];
+      const push = (key, score) => { candidates.push({ key, score }); };
+
+      // Keywords (Arabic + colloquial)
+      const hasAny = (...words) => words.some(w => text.includes(w));
+
+      // Tow
+      if (hasAny('ونش','سطحه','سحب','جر','رفع','transport')) push('tow', 9);
+      // Carwash
+      if (hasAny('غسيل','نظف','واش','مغسله')) push('carwash', 7);
+      // Fuel
+      if (hasAny('بنزين','وقود','تزويد','بنزينه')) push('fuel', 8);
+      // Unlock
+      if (hasAny('فتح','مفتاح','قفل','باب انقفل','mr.lock')) push('unlock', 9);
+      // Puncture / tires
+      if (hasAny('بنشر','تاير','تواير','اطار','سبير','رقعه')) push('puncture', 8);
+      // Battery
+      if (hasAny('بطاريه','بطارية')) push('batterySubscription', 6);
+      if (hasAny('تركيب بطاريه','تركيب بطارية')) push('batteryInstall', 8);
+      // Balance
+      if (hasAny('ميزان','تركيب التواير','تركيب تاير')) push('balance', 7);
+      // Mechanical services
+      if (hasAny('زيت','فلتر')) push('mechanical_oilfilter', 8);
+      if (hasAny('فحص','تشخيص')) push('mechanical_inspection', 7);
+      if (hasAny('سفايف','ديسكات','بريك')) push('mechanical_brakes', 7);
+      if (hasAny('مساحات')) push('mechanical_wipers', 7);
+      if (hasAny('غاز مكيف','فريون','مكيف')) push('mechanical_acgas', 7);
+      if (hasAny('راديتر','ماء راديتر','ماي راديتر')) push('mechanical_coolant', 7);
+      if (hasAny('زيت بريك')) push('mechanical_brakefluid', 7);
+      if (hasAny('زيت قير','سكان','قير')) push('mechanical_transmission', 7);
+      // Protection and insurance
+      if (hasAny('حمايه','ppf','تغيم','تظليل','زجاج')) push('protection', 6);
+      if (hasAny('تامين','تأمين')) push('insurance', 5);
+      // Annual subscription
+      if (hasAny('اشتراك','عضويه','الاشتراك السنوي','اشتراك سنوي')) push('annualSubscription', 7);
+      // Tire increase & sheet
+      if (hasAny('زياده تواير','زيادات','رفع سياره')) push('tireIncrease', 6);
+      if (hasAny('شيت','جدول تواير')) push('tireSheet', 5);
+      // Ring repair
+      if (hasAny('رنق','رنقات','تصليح رنق','كسر رنق')) push('ringRepair', 6);
+
+      // Entities extraction
+      const entities = extractEntities(text);
+
+      // Determine top intent
+      candidates.sort((a,b) => b.score - a.score);
+      const top = candidates[0];
+      // Ambiguity if close scores
+      if (candidates.length > 1 && top && candidates[1] && (top.score - candidates[1].score) <= 2) {
+        return { intent: null, candidates: candidates.slice(0,3), entities };
+      }
+      return { intent: top ? top.key : null, candidates, entities };
+    }
+
+    function extractEntities(text) {
+      const e = {};
+      // Fuel type
+      if (text.includes('ممتاز') || text.includes('premium')) e.fuelType = 'premium';
+      else if (text.includes('خصوصي') || text.includes('special')) e.fuelType = 'special';
+      else if (text.includes('الترا') || text.includes('ultra')) e.fuelType = 'ultra';
+
+      // Wash type
+      if (text.includes('غسيل ممتاز')) e.washType = 'premium';
+      else if (text.includes('غسيل خصوصي')) e.washType = 'special';
+      else if (text.includes('غسيل الترا') || text.includes('غسيل ألترا')) e.washType = 'ultra';
+
+      // Tow hints
+      if (text.includes('فل داون')) e.towType = 'flatbed';
+      if (text.includes('عادي')) e.towType = 'normal';
+      if (text.includes('مسكر')) e.isLocked = true;
+      if (text.includes('قير ما يتبوش') || text.includes('حادث')) e.extraCharges = 'yes';
+
+      // Attempt area inference by scanning known sheets for matching substrings later
+      e.areaHint = findAnyKnownAreaInText(text);
+
+      // From/To inference for tow (simple pattern)
+      const m = text.match(/من\s+([^\s]+)\s+الى\s+([^\s]+)/);
+      if (m) { e.from = m[1]; e.to = m[2]; }
+      return e;
+    }
+
+    function findAnyKnownAreaInText(text) {
+      const checkSheets = ['خدمات5','portarage towtruk','تركيب بطارية','ميزان وتركيب','خدمات ميكانيكية','خدمات ميكانيكية2','فتح قفل'];
+      for (const s of checkSheets) {
+        const rows = sheetsData[s];
+        if (!rows) continue;
+        for (let i = 2; i < rows.length; i++) {
+          const row = rows[i];
+          for (let c = 0; c < row.length; c++) {
+            const val = (row[c] || '').toString().trim();
+            if (!val) continue;
+            const v = normalizeText(val);
+            if (v && v.length >= 3 && text.includes(v)) return val;
+          }
+        }
+      }
+      return null;
+    }
+
+    function showAmbiguity(cands, onChoose) {
+      const note = document.getElementById('smartAssistNote');
+      const box = document.getElementById('smartAssistSuggestions');
+      if (!note || !box) return;
+      note.classList.remove('hidden');
+      note.textContent = 'هل تقصد …؟';
+      box.innerHTML = '';
+      cands.slice(0,3).forEach(c => {
+        const chip = document.createElement('div');
+        chip.className = 'smart-assist-chip';
+        chip.textContent = mapServiceLabel(c.key);
+        chip.onclick = () => { onChoose && onChoose(c); note.classList.add('hidden'); box.innerHTML = ''; };
+        box.appendChild(chip);
+      });
+    }
+
+    function mapServiceLabel(key) {
+      const labels = {
+        tow: 'ونشات', carwash: 'غسيل السيارات', fuel: 'خدمة بنزين', unlock: 'فتح قفل السيارة', puncture: 'بنشر',
+        batterySubscription: 'اشتراك بطارية', batteryInstall: 'تركيب بطارية', balance: 'ميزان وتركيب',
+        mechanical_oilfilter: 'زيت وفلتر', mechanical_inspection: 'فحص السيارة', mechanical_brakes: 'سفايف وديسكات',
+        mechanical_wipers: 'تبديل المساحات', mechanical_acgas: 'تعبئه غاز مكيف', mechanical_coolant: 'ماي راديتر',
+        mechanical_brakefluid: 'زيت بريك', mechanical_transmission: 'زيت سكان', protection: 'الحمايه والتغيم',
+        insurance: 'تأمينات', annualSubscription: 'الاشتراك السنوي', tireIncrease: 'زيادات التواير', tireSheet: 'شيت التواير', ringRepair: 'تصليح الرنقات'
+      };
+      return labels[key] || key;
+    }
+
+    function executeIntent(result) {
+      const key = result.intent;
+      const e = result.entities || {};
+      if (!key) return;
+      // Simulate service click
+      const svc = document.querySelector(`.service-item[data-service="${mapIntentToServiceKey(key)}"]`);
+      if (svc) svc.click();
+
+      // After render, prefill
+      setTimeout(() => {
+        try { prefillForService(key, e); } catch (err) { console.log('prefill error', err); }
+      }, 200);
+    }
+
+    function mapIntentToServiceKey(key) {
+      switch (key) {
+        case 'mechanical_oilfilter': return 'mechanical';
+        case 'mechanical_inspection': return 'mechanical';
+        case 'mechanical_brakes': return 'mechanical';
+        case 'mechanical_wipers': return 'mechanical';
+        case 'mechanical_acgas': return 'mechanical';
+        case 'mechanical_coolant': return 'mechanical';
+        case 'mechanical_brakefluid': return 'mechanical';
+        case 'mechanical_transmission': return 'mechanical';
+        default: return key;
+      }
+    }
+
+    function prefillForService(key, e) {
+      // Set area if inferred
+      if (e.areaHint) formData.area = e.areaHint;
+
+      if (key === 'fuel') {
+        // Show fuel UI and compute
+        if (e.areaHint) {
+          const areaInput = document.getElementById('areaSelect');
+          if (areaInput) areaInput.value = e.areaHint;
+        }
+        if (e.fuelType) {
+          const btn = document.querySelector(`[data-fuel="${e.fuelType}"]`);
+          if (btn) btn.click();
+        }
+      } else if (key === 'carwash') {
+        // Choose wash type
+        const type = e.washType || 'premium';
+        const btn = document.querySelector(`[data-wash="${type}"]`);
+        if (btn) btn.click();
+      } else if (key === 'unlock') {
+        // Default to بورتراج provider, set area
+        const prov = document.getElementById('lockProviderPortarage');
+        if (prov) prov.click();
+        const area = document.getElementById('lockAreaSelect');
+        if (area && e.areaHint) { area.value = e.areaHint; area.dispatchEvent(new Event('input')); }
+      } else if (key === 'puncture') {
+        const areaInput = document.getElementById('areaSelect');
+        if (areaInput && e.areaHint) { areaInput.value = e.areaHint; areaInput.dispatchEvent(new Event('input')); }
+      } else if (key === 'tow') {
+        // Default company بورتراج
+        const portarageBtn = document.querySelector('[data-company="بورتراج"]');
+        if (portarageBtn) portarageBtn.click();
+        // Tow type
+        if (e.towType) {
+          const towBtn = document.querySelector(`#towTypeButtons .btn-option[data-type="${e.towType}"]`);
+          if (towBtn) towBtn.click();
+        }
+        // From/To or areaHint
+        const fromSel = document.getElementById('fromSelect');
+        const toSel = document.getElementById('toSelect');
+        if (fromSel && e.from) { fromSel.value = e.from; fromSel.dispatchEvent(new Event('input')); }
+        if (toSel && e.to) { toSel.value = e.to; toSel.dispatchEvent(new Event('input')); }
+        // Extra flags
+        if (e.isLocked) {
+          const locked = document.getElementById('lockedCheckbox');
+          if (locked) { locked.checked = true; locked.dispatchEvent(new Event('change')); }
+        }
+        if (e.extraCharges === 'yes') {
+          const sel1 = document.getElementById('extraChargesSelect');
+          const sel2 = document.getElementById('flatbedPortarageExtraChargesSelect');
+          if (sel1) { sel1.value = 'yes'; sel1.dispatchEvent(new Event('change')); }
+          if (sel2) { sel2.value = 'yes'; sel2.dispatchEvent(new Event('change')); }
+        }
+      } else if (key === 'batteryInstall' || key === 'batterySubscription' || key === 'balance' || key === 'mechanical_oilfilter' || key === 'mechanical_inspection' || key === 'mechanical_brakes' || key === 'mechanical_wipers' || key === 'mechanical_acgas' || key === 'mechanical_coolant' || key === 'mechanical_brakefluid' || key === 'mechanical_transmission') {
+        // For mechanical variants, select appropriate subservice automatically
+        if (key.startsWith('mechanical_')) {
+          const map = {
+            mechanical_oilfilter: 'oilfilter', mechanical_inspection: 'inspection', mechanical_brakes: 'brakes',
+            mechanical_wipers: 'wipers', mechanical_acgas: 'acgas', mechanical_coolant: 'coolant',
+            mechanical_brakefluid: 'brakefluid', mechanical_transmission: 'transmission'
+          };
+          const target = map[key];
+          const btn = document.querySelector(`[data-mech="${target}"]`);
+          if (btn) btn.click();
+        }
+        const areaInput = document.getElementById('areaSelect');
+        if (areaInput && e.areaHint) { areaInput.value = e.areaHint; areaInput.dispatchEvent(new Event('input')); }
+      } else if (key === 'protection') {
+        // Choose default company and set region
+        const logo = document.querySelector('[data-prot-company="كارباث"]');
+        if (logo) logo.click();
+        const areaInput = document.getElementById('protRegionSelect');
+        if (areaInput && e.areaHint) { areaInput.value = e.areaHint; areaInput.dispatchEvent(new Event('input')); }
+      } else if (key === 'annualSubscription') {
+        // No prefill needed; user chooses plan
+      } else if (key === 'tireIncrease') {
+        // open external iframe already wired
+      } else if (key === 'tireSheet') {
+        // open external iframe already wired
+      } else if (key === 'ringRepair') {
+        const areaInput = document.getElementById('ringRegionSelect');
+        if (areaInput && e.areaHint) { areaInput.value = e.areaHint; areaInput.dispatchEvent(new Event('input')); }
+      } else if (key === 'insurance') {
+        // Put text in search box
+        const search = document.getElementById('insuranceSearch');
+        if (search) { search.value = e.areaHint || ''; search.dispatchEvent(new Event('input')); }
+      }
+    }
+
+    function initSmartAssist() { ensureSmartAssistUI(); }
+
     function pickHeader(headerRow, candidates, fallback) {
       const headers = (headerRow || []).map(h => (h || '').toString().toLowerCase().trim());
       for (const c of candidates) {
@@ -5675,6 +6054,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     // Load data on page load
     loadAllSheets();
+    // Initialize Smart Assist after basic load
+    initSmartAssist();
 
     // Render Annual Subscription Interface (الاشتراك السنوي)
     function renderAnnualSubscriptionInterface() {
