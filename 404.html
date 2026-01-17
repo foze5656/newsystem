@@ -4498,6 +4498,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     async function handleCarWashSubmit() {
       const overlay = ensureCarWashModal();
       const message = overlay.querySelector('#cwMessage');
+      const submitBtn = overlay.querySelector('#cwSubmit');
+      const cancelBtn = overlay.querySelector('#cwCancel');
       setModalMessage(message, '', '');
 
       const datetimeVal = overlay.querySelector('#cwDatetime').value;
@@ -4534,17 +4536,40 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       });
 
       try {
+        // Disable actions and show saving state
+        submitBtn.disabled = true;
+        cancelBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.style.opacity = '0.6';
+        submitBtn.textContent = 'جاري الحفظ...';
+
         const res = await postToSheetDb(row);
         if (!res.ok) throw new Error('SheetDB request failed');
-        setModalMessage(message, 'success', 'تم حفظ الموعد بنجاح.');
+
+        // Loading then success states to mirror mechanical flow
+        setModalMessage(message, 'loading', '⏳ جاري التسجيل...');
+        await new Promise(resolve => setTimeout(resolve, 800));
+        setModalMessage(message, 'success', '✓ تم حفظ الموعد بنجاح!');
+
         if (document.getElementById('appointmentDateTime')) {
           document.getElementById('appointmentDateTime').value = `${dateOnly}T${timeOnly}`;
         }
         await loadCarWashAppointments(dateOnly);
-        setTimeout(() => overlay.classList.add('hidden'), 800);
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+          // restore button text for next open
+          submitBtn.style.opacity = '1';
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+          cancelBtn.disabled = false;
+        }, 1500);
       } catch (err) {
         console.error(err);
         setModalMessage(message, 'error', 'تعذر حفظ الموعد. تأكد من الاتصال وحاول مرة أخرى.');
+        submitBtn.disabled = false;
+        cancelBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.textContent = '✅ حفظ الموعد';
       }
     }
 
