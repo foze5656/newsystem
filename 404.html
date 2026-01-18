@@ -930,6 +930,8 @@
     </div>
     <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمات ميكانيكية</span>
     </div>
+    <div class="service-item" data-service="groups"><span class="icon">👥</span> <span class="label">القروبات</span>
+    </div>
     <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
     </div>
     <div class="service-item" data-service="protection"><span class="icon">🛡️</span> <span class="label">الحمايه والتغيم</span>
@@ -1193,7 +1195,8 @@
           'carwash': 'غسيل السيارات',
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات',
-          'annualSubscription': 'الاشتراك السنوي'
+          'annualSubscription': 'الاشتراك السنوي',
+          'groups': 'القروبات'
         };
         
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
@@ -1234,6 +1237,9 @@
             break;
           case 'mechanical':
             renderMechanicalInterface();
+            break;
+          case 'groups':
+            renderGroupsInterface();
             break;
           case 'staff_centers':
             renderStaffInterface();
@@ -2857,11 +2863,8 @@
       contentArea.innerHTML = `
         <div class="form-section" id="mechTypeSection">
           <h3 class="section-title">نوع الخدمة</h3>
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-            <div style="flex:1"></div>
-            <button id="mechAppointmentsBtn" class="btn-option" style="padding:6px 10px;">المواعيد</button>
-          </div>
           <div class="btn-grid" style="grid-template-columns: repeat(5, 1fr);">
+            <button class="btn-option" id="mechAppointmentsBtn">المواعيد</button>
             <button class="btn-option" data-mech="inspection">فحص السيارة</button>
             <button class="btn-option" data-mech="brakes">سفايف وديسكات</button>
             <button class="btn-option" data-mech="oilfilter">زيت وفلتر</button>
@@ -5900,6 +5903,130 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         };
       });
+    }
+
+    // Render Groups Interface with category dropdown and auto-copy
+    function renderGroupsInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">القروبات</h3>
+          <div style="display:flex; gap:8px; align-items:center; justify-content:flex-end; margin-bottom:8px;">
+            <button id="openGroupsModalBtn" class="btn-option" style="padding:8px 12px;">اختر قروب</button>
+          </div>
+        </div>
+
+        <div id="groupsModal" class="modal-overlay hidden">
+          <div class="modal" style="max-height: 80vh; overflow-y: auto;">
+            <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            <h3 style="color: #F2BC1B; text-align: center; margin-bottom: 16px;">أي قروب تبي؟</h3>
+            <div style="color:#ddd; font-size:13px;">
+              <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
+                <label for="groupCategorySelect" style="color:#fff;">التصنيف</label>
+                <select id="groupCategorySelect" class="form-control" style="min-width: 220px;">
+                  <option value="أمريكي">أمريكي</option>
+                  <option value="ألماني">ألماني</option>
+                  <option value="ياباني">ياباني</option>
+                </select>
+              </div>
+              <div id="groupsList" style="display:flex; flex-direction:column; gap:8px;"></div>
+              <button id="groupsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Show modal immediately for quicker UX
+      const modal = document.getElementById('groupsModal');
+      const openBtn = document.getElementById('openGroupsModalBtn');
+      const closeBtn = document.getElementById('groupsCloseBtn');
+      const categorySelect = document.getElementById('groupCategorySelect');
+      const listEl = document.getElementById('groupsList');
+
+      const GROUPS = {
+        'أمريكي': [
+          'Port + Al Radwan Parts German & American',
+          'Port + American parts',
+          'Port + الأهلية',
+          'AUTO LAB (قطع غيار أمريكي الميلم)',
+          'Auto spare parts'
+        ],
+        'ألماني': [
+          'علم الدار ألمانية + port',
+          'ابو العيون قطع المانى Abdullah',
+          'Port + Car Brak German parts and Garage',
+          'Port + AL Jarah German parts',
+          'Port + Al Radwan Parts German & American'
+        ],
+        'ياباني': [
+          'Port + FK Parts',
+          'AUTO LAB (قطع غيار أمريكي الميلم)',
+          'Auto spare parts',
+          'Port + Al mish3al parts japan',
+          'برنس لقطع غيار نيسان وتويوتا اصلي',
+          'Port + حكيمي ياباني'
+        ]
+      };
+
+      function renderGroupItems(category) {
+        const items = GROUPS[category] || [];
+        listEl.innerHTML = items.map(name => `
+          <button class="btn-option" style="text-align:right;" data-group-name="${name}">${name}</button>
+        `).join('');
+        listEl.querySelectorAll('[data-group-name]').forEach(btn => {
+          btn.onclick = async () => {
+            await copyToClipboard(btn.dataset.groupName);
+            showToast('تم نسخ اسم القروب!');
+          };
+        });
+      }
+
+      categorySelect.onchange = () => renderGroupItems(categorySelect.value);
+      renderGroupItems(categorySelect.value);
+
+      openBtn.onclick = () => modal.classList.remove('hidden');
+      closeBtn.onclick = () => modal.classList.add('hidden');
+      modal.querySelector('.modal-close').onclick = () => modal.classList.add('hidden');
+      modal.onclick = (e) => { if (e.target === modal) modal.classList.add('hidden'); };
+
+      // open immediately
+      modal.classList.remove('hidden');
+    }
+
+    function showToast(message) {
+      let el = document.getElementById('globalToast');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'globalToast';
+        el.className = 'prot-toast';
+        document.body.appendChild(el);
+      }
+      el.textContent = message;
+      el.style.display = 'block';
+      el.style.opacity = '1';
+      setTimeout(() => {
+        el.style.opacity = '0';
+        setTimeout(() => { el.style.display = 'none'; }, 200);
+      }, 1800);
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+      } catch (e) {
+        console.warn('Clipboard copy failed', e);
+      }
     }
   </script>
   <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
