@@ -930,8 +930,6 @@
     </div>
     <div class="service-item" data-service="mechanical"><span class="icon">🔩</span> <span class="label">خدمات ميكانيكية</span>
     </div>
-    <div class="service-item" data-service="groups"><span class="icon">👥</span> <span class="label">القروبات</span>
-    </div>
     <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
     </div>
     <div class="service-item" data-service="protection"><span class="icon">🛡️</span> <span class="label">الحمايه والتغيم</span>
@@ -1195,8 +1193,7 @@
           'carwash': 'غسيل السيارات',
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات',
-          'annualSubscription': 'الاشتراك السنوي',
-          'groups': 'القروبات'
+          'annualSubscription': 'الاشتراك السنوي'
         };
         
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
@@ -1237,9 +1234,6 @@
             break;
           case 'mechanical':
             renderMechanicalInterface();
-            break;
-          case 'groups':
-            renderGroupsInterface();
             break;
           case 'staff_centers':
             renderStaffInterface();
@@ -2862,7 +2856,13 @@
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="form-section" id="mechTypeSection">
-          <h3 class="section-title">نوع الخدمة</h3>
+          <h3 class="section-title" style="display:flex; align-items:center; gap:8px;">
+            <span>نوع الخدمة</span>
+            <button id="groupsCircleBtn" title="القروبات" aria-label="القروبات"
+              style="width:28px; height:28px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:#0a0a0a; border:1px solid #333; color:#F2BC1B; font-size:14px; cursor:pointer;">
+              👥
+            </button>
+          </h3>
           <div class="btn-grid" style="grid-template-columns: repeat(5, 1fr);">
             <button class="btn-option" id="mechAppointmentsBtn">المواعيد</button>
             <button class="btn-option" data-mech="inspection">فحص السيارة</button>
@@ -3100,6 +3100,12 @@
           
           renderMechanicalAppointments();
         };
+      }
+
+      // Groups circle button opens groups modal without leaving mechanical UI
+      const groupsCircleBtn = document.getElementById('groupsCircleBtn');
+      if (groupsCircleBtn) {
+        groupsCircleBtn.onclick = () => openGroupsModal();
       }
     }
 
@@ -5903,6 +5909,88 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         };
       });
+    }
+
+    // Ensure and open the Groups Modal without replacing existing UI
+    function openGroupsModal() {
+      // If modal already exists, just show it
+      let modal = document.getElementById('groupsModal');
+      if (!modal) {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+          <div id="groupsModal" class="modal-overlay hidden">
+            <div class="modal" style="max-height: 80vh; overflow-y: auto;">
+              <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+              <h3 style="color: #F2BC1B; text-align: center; margin-bottom: 16px;">أي قروب تبي؟</h3>
+              <div style="color:#ddd; font-size:13px;">
+                <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
+                  <label for="groupCategorySelect" style="color:#fff;">التصنيف</label>
+                  <select id="groupCategorySelect" class="form-control" style="min-width: 220px;">
+                    <option value="أمريكي">أمريكي</option>
+                    <option value="ألماني">ألماني</option>
+                    <option value="ياباني">ياباني</option>
+                  </select>
+                </div>
+                <div id="groupsList" style="display:flex; flex-direction:column; gap:8px;"></div>
+                <button id="groupsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+              </div>
+            </div>
+          </div>`;
+        document.body.appendChild(wrapper.firstElementChild);
+        modal = document.getElementById('groupsModal');
+
+        // Bind close handlers
+        const closeBtn = document.getElementById('groupsCloseBtn');
+        const categorySelect = document.getElementById('groupCategorySelect');
+        const listEl = document.getElementById('groupsList');
+
+        const GROUPS = {
+          'أمريكي': [
+            'Port + Al Radwan Parts German & American',
+            'Port + American parts',
+            'Port + الأهلية',
+            'AUTO LAB (قطع غيار أمريكي الميلم)',
+            'Auto spare parts'
+          ],
+          'ألماني': [
+            'علم الدار ألمانية + port',
+            'ابو العيون قطع المانى Abdullah',
+            'Port + Car Brak German parts and Garage',
+            'Port + AL Jarah German parts',
+            'Port + Al Radwan Parts German & American'
+          ],
+          'ياباني': [
+            'Port + FK Parts',
+            'AUTO LAB (قطع غيار أمريكي الميلم)',
+            'Auto spare parts',
+            'Port + Al mish3al parts japan',
+            'برنس لقطع غيار نيسان وتويوتا اصلي',
+            'Port + حكيمي ياباني'
+          ]
+        };
+
+        function renderGroupItems(category) {
+          const items = GROUPS[category] || [];
+          listEl.innerHTML = items.map(name => `
+            <button class="btn-option" style="text-align:right;" data-group-name="${name}">${name}</button>
+          `).join('');
+          listEl.querySelectorAll('[data-group-name]').forEach(btn => {
+            btn.onclick = async () => {
+              await copyToClipboard(btn.dataset.groupName);
+              showToast('تم نسخ اسم القروب!');
+            };
+          });
+        }
+
+        categorySelect.onchange = () => renderGroupItems(categorySelect.value);
+        renderGroupItems(categorySelect.value);
+
+        closeBtn.onclick = () => modal.classList.add('hidden');
+        modal.querySelector('.modal-close').onclick = () => modal.classList.add('hidden');
+        modal.onclick = (e) => { if (e.target === modal) modal.classList.add('hidden'); };
+      }
+
+      modal.classList.remove('hidden');
     }
 
     // Render Groups Interface with category dropdown and auto-copy
