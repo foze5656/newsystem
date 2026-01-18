@@ -3400,6 +3400,14 @@
       }
     }
 
+    // Helper function to get local date in YYYY-MM-DD format (without UTC offset)
+    function getLocalDateString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     function parseCellDate(cell) {
       if (!cell) return null;
       
@@ -3411,7 +3419,8 @@
       // محاولة تحويلها إلى تاريخ
       const d = new Date(cell);
       if (!isNaN(d.getTime())) {
-        return d.toISOString().split('T')[0];
+        // Use local date instead of UTC (toISOString)
+        return getLocalDateString(d);
       }
       
       return null;
@@ -3423,10 +3432,10 @@
       const techFilter = document.getElementById('mechTechnicianFilter');
       const tableBody = document.querySelector('#mechAppointmentsTable tbody');
 
-      // default date = today
+      // default date = today (using local date, not UTC)
       if (!dateInput.value) {
         const today = new Date();
-        dateInput.value = today.toISOString().split('T')[0];
+        dateInput.value = getLocalDateString(today);
       }
 
       // load data
@@ -3633,7 +3642,7 @@
         const appointmentDateTime = document.getElementById('appointmentDateTime');
         if (!appointmentDateTime) return;
         prepareDateTimeInput(appointmentDateTime);
-        const dateOnly = (appointmentDateTime.value || '').split('T')[0] || new Date().toISOString().split('T')[0];
+        const dateOnly = (appointmentDateTime.value || '').split('T')[0] || getLocalDateString(new Date());
         loadCarWashAppointments(dateOnly);
         appointmentDateTime.onchange = () => {
           const selectedDate = (appointmentDateTime.value || '').split('T')[0];
@@ -3717,7 +3726,7 @@
       if (appointmentDateTime) {
         prepareDateTimeInput(appointmentDateTime);
         const selectedDate = (appointmentDateTime.value || '').split('T')[0];
-        const fallbackDate = new Date().toISOString().split('T')[0];
+        const fallbackDate = getLocalDateString(new Date());
         loadCarWashAppointments(selectedDate || fallbackDate);
         appointmentDateTime.onchange = () => {
           const dateOnly = (appointmentDateTime.value || '').split('T')[0];
@@ -4232,7 +4241,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           
           const selectedDate = (document.getElementById('appointmentDateTime')?.value || '').split('T')[0] || apt.date;
           const today = new Date();
-          const todayStr = today.toISOString().split('T')[0];
+          const todayStr = getLocalDateString(today);
           const isToday = selectedDate === todayStr;
           
           if (isToday) {
@@ -4326,9 +4335,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       now.setMinutes(roundedMinutes);
       now.setSeconds(0);
       now.setMilliseconds(0);
-      const offsetMs = now.getTimezoneOffset() * 60000;
-      const local = new Date(now.getTime() - offsetMs);
-      return local.toISOString().slice(0, 16);
+      
+      // Format as YYYY-MM-DDTHH:MM using local time
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes_str = String(now.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes_str}`;
     }
 
     function blockManualInput(input) {
@@ -4354,7 +4368,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       if (!str) return '';
       const cleaned = (str || '').toString().trim().replace(/^'+/, '');
       const d = new Date(cleaned);
-      if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+      if (!isNaN(d.getTime())) return getLocalDateString(d);
       return cleaned.split('T')[0];
     }
 
