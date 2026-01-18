@@ -2859,8 +2859,9 @@
           <h3 class="section-title" style="display:flex; align-items:center; gap:8px;">
             <span>نوع الخدمة</span>
             <button id="groupsCircleBtn" title="القروبات" aria-label="القروبات"
-              style="width:28px; height:28px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:#0a0a0a; border:1px solid #333; color:#F2BC1B; font-size:14px; cursor:pointer;">
-              👥
+              style="height:28px; border-radius:16px; display:inline-flex; align-items:center; justify-content:center; background:#0a0a0a; border:1px solid #333; color:#F2BC1B; font-size:14px; cursor:pointer; padding:0 10px; gap:6px;">
+              <span>👥</span>
+              <span style="color:#F2BC1B;">اسماء القروبات</span>
             </button>
           </h3>
           <div class="btn-grid" style="grid-template-columns: repeat(5, 1fr);">
@@ -5931,6 +5932,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                     <option value="ياباني">ياباني</option>
                   </select>
                 </div>
+                <div id="groupsHeader" style="color:#bbb; font-size:12px; margin: 6px 0 10px 0;">اسماء القروبات</div>
                 <div id="groupsList" style="display:flex; flex-direction:column; gap:8px;"></div>
                 <button id="groupsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
               </div>
@@ -5948,28 +5950,32 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           'أمريكي': [
             'Port + Al Radwan Parts German & American',
             'Port + American parts',
-            'Port + الأهلية',
+            'Port+الاهلية',
             'AUTO LAB (قطع غيار أمريكي الميلم)',
             'Auto spare parts'
           ],
           'ألماني': [
-            'علم الدار ألمانية + port',
-            'ابو العيون قطع المانى Abdullah',
-            'Port + Car Brak German parts and Garage',
-            'Port + AL Jarah German parts',
-            'Port + Al Radwan Parts German & American'
+            'german group :',
+            '2- ‏علم الدار ألمانية+port ',
+            '3-ابو العيون قطع المانى Abdullah ',
+            '3-Port + Car Brak German parts and Garage',
+            '4- Port+AL Jarah German partsقرووبger',
+            '5- Port + Al Radwan Parts German & American',
+            '6- Auto spare parts'
           ],
           'ياباني': [
-            'Port + FK Parts',
+            'Port+FK Parts',
             'AUTO LAB (قطع غيار أمريكي الميلم)',
             'Auto spare parts',
             'Port + Al mish3al parts japan',
-            'برنس لقطع غيار نيسان وتويوتا اصلي',
-            'Port + حكيمي ياباني'
+            'برنس لقطع غيار نيسان وتويوتا اصلي|',
+            'Port+ ‏  حكيمي ياباني'
           ]
         };
 
         function renderGroupItems(category) {
+          const header = document.getElementById('groupsHeader');
+          if (header) header.textContent = category === 'ألماني' ? 'اسماء القروبات — german group :' : 'اسماء القروبات';
           const items = GROUPS[category] || [];
           listEl.innerHTML = items.map(name => `
             <button class="btn-option" style="text-align:right;" data-group-name="${name}">${name}</button>
@@ -6017,6 +6023,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                   <option value="ياباني">ياباني</option>
                 </select>
               </div>
+              <div id="groupsHeader" style="color:#bbb; font-size:12px; margin: 6px 0 10px 0;">اسماء القروبات</div>
               <div id="groupsList" style="display:flex; flex-direction:column; gap:8px;"></div>
               <button id="groupsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
             </div>
@@ -6035,28 +6042,32 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         'أمريكي': [
           'Port + Al Radwan Parts German & American',
           'Port + American parts',
-          'Port + الأهلية',
+          'Port+الاهلية',
           'AUTO LAB (قطع غيار أمريكي الميلم)',
           'Auto spare parts'
         ],
         'ألماني': [
-          'علم الدار ألمانية + port',
-          'ابو العيون قطع المانى Abdullah',
-          'Port + Car Brak German parts and Garage',
-          'Port + AL Jarah German parts',
-          'Port + Al Radwan Parts German & American'
+          'german group :',
+          '2- ‏علم الدار ألمانية+port ',
+          '3-ابو العيون قطع المانى Abdullah ',
+          '3-Port + Car Brak German parts and Garage',
+          '4- Port+AL Jarah German partsقرووبger',
+          '5- Port + Al Radwan Parts German & American',
+          '6- Auto spare parts'
         ],
         'ياباني': [
-          'Port + FK Parts',
+          'Port+FK Parts',
           'AUTO LAB (قطع غيار أمريكي الميلم)',
           'Auto spare parts',
           'Port + Al mish3al parts japan',
-          'برنس لقطع غيار نيسان وتويوتا اصلي',
-          'Port + حكيمي ياباني'
+          'برنس لقطع غيار نيسان وتويوتا اصلي|',
+          'Port+ ‏  حكيمي ياباني'
         ]
       };
 
       function renderGroupItems(category) {
+        const header = document.getElementById('groupsHeader');
+        if (header) header.textContent = category === 'ألماني' ? 'اسماء القروبات — german group :' : 'اسماء القروبات';
         const items = GROUPS[category] || [];
         listEl.innerHTML = items.map(name => `
           <button class="btn-option" style="text-align:right;" data-group-name="${name}">${name}</button>
