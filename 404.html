@@ -5935,6 +5935,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                 <div id="groupsHeader" style="color:#bbb; font-size:12px; margin: 6px 0 10px 0;">اسماء القروبات</div>
                 <div id="groupsList" style="display:flex; flex-direction:column; gap:8px;"></div>
                 <button id="groupsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+                <div id="groupsToast" style="display:none; text-align:center; color:#10b981; font-weight:700; margin-top:8px;">تم النسخ بنجاح</div>
               </div>
             </div>
           </div>`;
@@ -5955,13 +5956,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             'Auto spare parts'
           ],
           'ألماني': [
-            'german group :',
-            '2- ‏علم الدار ألمانية+port ',
-            '3-ابو العيون قطع المانى Abdullah ',
-            '3-Port + Car Brak German parts and Garage',
-            '4- Port+AL Jarah German partsقرووبger',
-            '5- Port + Al Radwan Parts German & American',
-            '6- Auto spare parts'
+            '‏علم الدار ألمانية+port',
+            'ابو العيون قطع المانى Abdullah',
+            'Port + Car Brak German parts and Garage',
+            'Port+AL Jarah German partsقرووبger',
+            'Port + Al Radwan Parts German & American',
+            'Auto spare parts'
           ],
           'ياباني': [
             'Port+FK Parts',
@@ -5975,15 +5975,24 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         function renderGroupItems(category) {
           const header = document.getElementById('groupsHeader');
-          if (header) header.textContent = category === 'ألماني' ? 'اسماء القروبات — german group :' : 'اسماء القروبات';
+          if (header) header.textContent = 'اسماء القروبات';
           const items = GROUPS[category] || [];
-          listEl.innerHTML = items.map(name => `
-            <button class="btn-option" style="text-align:right;" data-group-name="${name}">${name}</button>
+          listEl.innerHTML = items.map((name, idx) => `
+            <button class="btn-option" style="text-align:right;" data-group-name="${name}">${idx + 1}- ${name}</button>
           `).join('');
+          const toastEl = document.getElementById('groupsToast');
           listEl.querySelectorAll('[data-group-name]').forEach(btn => {
             btn.onclick = async () => {
               await copyToClipboard(btn.dataset.groupName);
-              showToast('تم نسخ اسم القروب!');
+              if (toastEl) {
+                toastEl.textContent = 'تم النسخ بنجاح';
+                toastEl.style.display = 'block';
+                toastEl.style.opacity = '1';
+                setTimeout(() => {
+                  toastEl.style.opacity = '0';
+                  setTimeout(() => { toastEl.style.display = 'none'; }, 200);
+                }, 1500);
+              }
             };
           });
         }
@@ -6026,6 +6035,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               <div id="groupsHeader" style="color:#bbb; font-size:12px; margin: 6px 0 10px 0;">اسماء القروبات</div>
               <div id="groupsList" style="display:flex; flex-direction:column; gap:8px;"></div>
               <button id="groupsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+              <div id="groupsToast" style="display:none; text-align:center; color:#10b981; font-weight:700; margin-top:8px;">تم النسخ بنجاح</div>
             </div>
           </div>
         </div>
@@ -6047,13 +6057,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           'Auto spare parts'
         ],
         'ألماني': [
-          'german group :',
-          '2- ‏علم الدار ألمانية+port ',
-          '3-ابو العيون قطع المانى Abdullah ',
-          '3-Port + Car Brak German parts and Garage',
-          '4- Port+AL Jarah German partsقرووبger',
-          '5- Port + Al Radwan Parts German & American',
-          '6- Auto spare parts'
+          '‏علم الدار ألمانية+port',
+          'ابو العيون قطع المانى Abdullah',
+          'Port + Car Brak German parts and Garage',
+          'Port+AL Jarah German partsقرووبger',
+          'Port + Al Radwan Parts German & American',
+          'Auto spare parts'
         ],
         'ياباني': [
           'Port+FK Parts',
@@ -6067,15 +6076,24 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
       function renderGroupItems(category) {
         const header = document.getElementById('groupsHeader');
-        if (header) header.textContent = category === 'ألماني' ? 'اسماء القروبات — german group :' : 'اسماء القروبات';
+        if (header) header.textContent = 'اسماء القروبات';
         const items = GROUPS[category] || [];
-        listEl.innerHTML = items.map(name => `
-          <button class="btn-option" style="text-align:right;" data-group-name="${name}">${name}</button>
+        listEl.innerHTML = items.map((name, idx) => `
+          <button class="btn-option" style="text-align:right;" data-group-name="${name}">${idx + 1}- ${name}</button>
         `).join('');
+        const toastEl = document.getElementById('groupsToast');
         listEl.querySelectorAll('[data-group-name]').forEach(btn => {
           btn.onclick = async () => {
             await copyToClipboard(btn.dataset.groupName);
-            showToast('تم نسخ اسم القروب!');
+            if (toastEl) {
+              toastEl.textContent = 'تم النسخ بنجاح';
+              toastEl.style.display = 'block';
+              toastEl.style.opacity = '1';
+              setTimeout(() => {
+                toastEl.style.opacity = '0';
+                setTimeout(() => { toastEl.style.display = 'none'; }, 200);
+              }, 1500);
+            }
           };
         });
       }
