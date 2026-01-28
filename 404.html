@@ -871,6 +871,115 @@
       transform: translateY(-1px);
     }
     
+    /* Logout Confirmation Modal */
+    .logout-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    .logout-modal {
+      background: linear-gradient(145deg, #1a1a1a 0%, #262626 100%);
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 35px 40px;
+      width: 420px;
+      max-width: 90%;
+      box-shadow: 0 20px 60px rgba(239, 68, 68, 0.3),
+                  0 0 100px rgba(239, 68, 68, 0.1);
+      animation: slideIn 0.3s ease;
+      text-align: center;
+    }
+    
+    .logout-modal-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+    
+    .logout-modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ef4444;
+      margin: 0 0 12px 0;
+      text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+    }
+    
+    .logout-modal-message {
+      font-size: 15px;
+      color: #ccc;
+      margin: 0 0 30px 0;
+      line-height: 1.6;
+    }
+    
+    .logout-modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    
+    .logout-modal-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .logout-modal-btn-confirm {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #fff;
+    }
+    
+    .logout-modal-btn-confirm:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+    }
+    
+    .logout-modal-btn-cancel {
+      background: #262626;
+      color: #F2BC1B;
+      border: 2px solid #404040;
+    }
+    
+    .logout-modal-btn-cancel:hover {
+      background: #333;
+      border-color: #F2BC1B;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(242, 188, 27, 0.2);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
     /* Responsive */
     @media (max-width: 768px) {
       .login-box {
@@ -880,6 +989,19 @@
       
       .login-header h1 {
         font-size: 24px;
+      }
+      
+      .logout-modal {
+        padding: 25px 20px;
+        width: 90%;
+      }
+      
+      .logout-modal-icon {
+        font-size: 48px;
+      }
+      
+      .logout-modal-title {
+        font-size: 20px;
       }
     }
     
@@ -1288,6 +1410,22 @@
     </div>
   </div>
   
+  <!-- Logout Confirmation Modal -->
+  <div id="logoutModal" class="logout-modal-overlay hidden">
+    <div class="logout-modal">
+      <div class="logout-modal-icon">⚠️</div>
+      <h2 class="logout-modal-title">تسجيل الخروج</h2>
+      <p class="logout-modal-message">
+        هل أنت متأكد من رغبتك في تسجيل الخروج من النظام؟<br>
+        سيتم مسح جلسة الدخول الحالية.
+      </p>
+      <div class="logout-modal-buttons">
+        <button id="logoutCancel" class="logout-modal-btn logout-modal-btn-cancel">إلغاء</button>
+        <button id="logoutConfirm" class="logout-modal-btn logout-modal-btn-confirm">تسجيل الخروج</button>
+      </div>
+    </div>
+  </div>
+  
   <div class="dashboard-wrapper" id="dashboardWrapper"><!-- Sidebar -->
    <aside class="sidebar" id="sidebar">
     <div class="logo-section"><img src="https://i.top4top.io/p_35860o72q1.png" alt="Logo">
@@ -1489,13 +1627,29 @@
         }
       });
       
+      // Logout button - show custom modal
       logoutButton.addEventListener('click', () => {
-        if (confirm('هل تريد تسجيل الخروج؟')) {
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('rememberMe');
-          localStorage.removeItem('currentUser');
-          isAuthenticated = false;
-          showLogin();
+        document.getElementById('logoutModal').classList.remove('hidden');
+      });
+      
+      // Logout modal handlers
+      document.getElementById('logoutCancel').addEventListener('click', () => {
+        document.getElementById('logoutModal').classList.add('hidden');
+      });
+      
+      document.getElementById('logoutConfirm').addEventListener('click', () => {
+        document.getElementById('logoutModal').classList.add('hidden');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('rememberMe');
+        localStorage.removeItem('currentUser');
+        isAuthenticated = false;
+        showLogin();
+      });
+      
+      // Close modal when clicking outside
+      document.getElementById('logoutModal').addEventListener('click', (e) => {
+        if (e.target.id === 'logoutModal') {
+          document.getElementById('logoutModal').classList.add('hidden');
         }
       });
     })();
