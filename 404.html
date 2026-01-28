@@ -1911,7 +1911,7 @@
             renderLockInterface();
             break;
           case 'tireSheet':
-            openFullscreenIframe('/Users/fawzidames/tire-search.html', 'شيت التواير');
+            renderTireSheetInterface();
             break;
           case 'tireIncrease':
             openFullscreenIframe('https://portaragetiers.netlify.app/', 'زيادات التواير');
@@ -6392,6 +6392,425 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     // Load data on page load
     loadAllSheets();
+
+    // Render Tire Sheet Interface (شيت التواير)
+    function renderTireSheetInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <style>
+          .tire-search-container { padding: 0; }
+          .tire-loader {
+            border: 3px solid #333;
+            border-top: 3px solid #F2BC1B;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: tireSpin 1s linear infinite;
+          }
+          @keyframes tireSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          .tire-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(242, 188, 27, 0.3);
+            z-index: 1000;
+            animation: tireSlideUp 0.3s ease-out;
+            font-weight: bold;
+            font-size: 14px;
+          }
+          @keyframes tireSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .tire-suggestions {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            left: 0;
+            background: #1a1a1a;
+            border: 2px solid #F2BC1B;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 8px 25px rgba(242, 188, 27, 0.2);
+          }
+          .tire-suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            color: #F2BC1B;
+            border-bottom: 1px solid #333;
+            transition: all 0.2s;
+            font-size: 14px;
+          }
+          .tire-suggestion-item:hover {
+            background: rgba(242, 188, 27, 0.1);
+          }
+          .tire-info-btn {
+            background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%);
+            color: #000;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.2s;
+            border: 1px solid #F2BC1B;
+            margin-right: 8px;
+          }
+          .tire-info-btn:hover {
+            transform: scale(1.1);
+          }
+          .tire-info-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+          }
+          .tire-info-content {
+            background: linear-gradient(145deg, #1a1a1a 0%, #262626 100%);
+            border: 2px solid #F2BC1B;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(242, 188, 27, 0.2);
+          }
+          .tire-info-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #F2BC1B;
+            color: #000;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
+            border: none;
+            transition: all 0.2s;
+          }
+          .tire-info-section {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #0f0f0f;
+            border-radius: 8px;
+            border-right: 4px solid #F2BC1B;
+          }
+          .tire-info-title {
+            color: #F2BC1B;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 8px;
+          }
+        </style>
+        
+        <div class="form-section full-width">
+          <h3 class="section-title">🔍 بحث الإطارات</h3>
+        </div>
+        
+        <div id="tireInitialLoading" class="form-section full-width" style="text-align: center;">
+          <div style="padding: 20px;">
+            <div class="tire-loader" style="margin: 0 auto 12px;"></div>
+            <p style="color: #F2BC1B; font-weight: bold;">جاري تحميل البيانات...</p>
+          </div>
+        </div>
+        
+        <div id="tireSearchBox" class="form-section full-width hidden">
+          <div style="display: flex; gap: 8px; align-items: flex-start; margin-bottom: 12px;">
+            <div style="flex: 1; position: relative;">
+              <input type="text" id="tireSearchInput" placeholder="أدخل مقاس الإطار (مثال: 215/55R17)" 
+                class="form-control" style="width: 100%; position: relative; z-index: 10;">
+              <div id="tireSuggestionsDropdown" class="tire-suggestions hidden"></div>
+            </div>
+            <button id="tireSearchButton" class="btn-primary">🔍 بحث</button>
+          </div>
+        </div>
+        
+        <div id="tireBrandFilterContainer" class="form-section full-width hidden">
+          <div style="cursor: pointer; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;" id="tireFilterToggle">
+            <span style="font-weight: 700; color: #F2BC1B;">🏷️ الماركة</span>
+            <span style="color: #F2BC1B;">▼</span>
+          </div>
+          <div id="tireFilterContent" class="hidden" style="padding: 12px 0;">
+            <div id="tireBrandCheckboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;"></div>
+          </div>
+        </div>
+        
+        <div id="tireResultsContainer" class="form-section full-width hidden">
+          <div style="background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%); padding: 12px; border-radius: 6px 6px 0 0; margin: -10px -10px 0 -10px;">
+            <h3 style="color: #000; margin: 0; font-size: 16px; font-weight: 700;">📊 النتائج</h3>
+            <p id="tireResultsCount" style="color: #000; margin: 4px 0 0 0; font-size: 13px;"></p>
+          </div>
+          <div style="overflow-x: auto; margin-top: 0;">
+            <table class="data-table" style="width: 100%; font-size: 13px;">
+              <thead>
+                <tr style="background: #262626;">
+                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">الماركة</th>
+                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">المقاس</th>
+                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">النقشة</th>
+                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">البلد</th>
+                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">السنة</th>
+                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">السعر</th>
+                  <th class="px-4 py-2 text-center border-b" style="border-color: #333; color: #F2BC1B;">نسخ</th>
+                </tr>
+              </thead>
+              <tbody id="tireResultsBody" style="color: #F2BC1B;"></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="tireNoResults" class="form-section full-width hidden" style="text-align: center; padding: 20px;">
+          <p style="color: #F2BC1B; font-size: 16px;">❌ لا توجد نتائج لهذا المقاس</p>
+        </div>
+      `;
+      
+      // Initialize tire search
+      initializeTireSearch();
+    }
+    
+    function initializeTireSearch() {
+      // Data
+      let allTireData = [], allTireSizes = new Set(), currentTireResults = [];
+      
+      const TIRE_SHEET_ID = '1_ml2uiVRXrltZ4ef1PKSgNSO_4SMtXKn20JSajVEDu8';
+      const TIRE_SHEET_TABS = ['Berlin Tires', 'FTC', 'Babtain Tires', 'YOKOHAMA TIRE', 'Al TERRA TIRE (By YOKOHAMA)', 'MICHELIN , BFGOODRICH', 'AL Ghanim Group China', 'AL Ghanim Group Korea', 'AL Ghanim Group SUMITOMO', 'Pirelli Retail price list', 'Firestone Tires', 'UltraForce Tires', 'فرج حولي'];
+      
+      const brandTranslations = {
+        'MICHELIN': 'ميشلان', 'BRIDGESTONE': 'بريدجستون', 'GOODYEAR': 'جوديير',
+        'CONTINENTAL': 'كونتيننتال', 'PIRELLI': 'بيريللي', 'DUNLOP': 'دنلوب',
+        'YOKOHAMA': 'يوكوهاما', 'HANKOOK': 'هانكوك', 'KUMHO': 'كومهو', 'TOYO': 'تويو'
+      };
+      
+      const speedRatings = {
+        'S': { speed: '180', description: 'سيارات اقتصادية' },
+        'T': { speed: '190', description: 'سيارات متوسطة' },
+        'H': { speed: '210', description: 'سيارات عالية الأداء' }
+      };
+      
+      function extractTireSize(sizeText) {
+        if (!sizeText) return null;
+        let processedText = sizeText.toString().replace(/(\d{3})\/(\d{2})\/(\d{2})/g, '$1/$2R$3');
+        const normalMatch = processedText.replace(/\s+/g, '').match(/(LT)?\d{3}\/\d{2}[A-Z\-]*\d{2}/i);
+        return normalMatch ? normalMatch[0].toUpperCase() : null;
+      }
+      
+      function isRunFlat(text) {
+        if (!text) return false;
+        const upperText = text.toString().toUpperCase().replace(/\s+/g, '');
+        return upperText.includes('RF') || upperText.includes('RUNFLAT');
+      }
+      
+      function extractPattern(sizeText, patternColumn) {
+        let pattern = '';
+        if (patternColumn && patternColumn.toString().trim()) {
+          pattern = patternColumn.toString().trim();
+        }
+        if (isRunFlat(sizeText) || isRunFlat(patternColumn)) {
+          pattern = pattern ? `${pattern} (رن فلات)` : '(رن فلات)';
+        }
+        return pattern;
+      }
+      
+      function showTireToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'tire-toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+      }
+      
+      async function loadTireSheetTab(sheetId, tabName) {
+        try {
+          const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${encodeURIComponent(tabName)}&tqx=out:json`;
+          const response = await fetch(url);
+          const text = await response.text();
+          const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/);
+          if (!jsonMatch) return [];
+          
+          const data = JSON.parse(jsonMatch[1]);
+          const sheetData = [];
+          if (data.table && data.table.rows) {
+            for (let i = 0; i < data.table.rows.length; i++) {
+              const row = data.table.rows[i];
+              if (row.c && row.c.length >= 2) {
+                const brand = row.c[0]?.v || row.c[0]?.f || '';
+                const tireSize = row.c[1]?.v || row.c[1]?.f || '';
+                const pattern = row.c[2]?.v || row.c[2]?.f || '';
+                const year = row.c[3]?.v || row.c[3]?.f || '';
+                const price = row.c[5]?.v || row.c[5]?.f || row.c[4]?.v || row.c[4]?.f || '';
+                const origin = row.c[6]?.v || row.c[6]?.f || '';
+                
+                if (brand && brand.toString().toUpperCase() === 'BRAND') continue;
+                const normalizedSize = extractTireSize(tireSize);
+                if (normalizedSize && price && price.toString().trim()) {
+                  allTireSizes.add(normalizedSize);
+                  sheetData.push({
+                    brand: brand ? brand.toString().trim() : '',
+                    tireSize: normalizedSize,
+                    originalSize: tireSize,
+                    pattern: extractPattern(tireSize, pattern),
+                    year: year ? year.toString().trim() : '',
+                    price: price.toString().trim(),
+                    origin: origin ? origin.toString().trim() : '',
+                    sheetTab: tabName
+                  });
+                }
+              }
+            }
+          }
+          return sheetData;
+        } catch (error) {
+          return [];
+        }
+      }
+      
+      async function loadAllTireData() {
+        try {
+          allTireData = [];
+          allTireSizes.clear();
+          const loadPromises = TIRE_SHEET_TABS.map(tabName => loadTireSheetTab(TIRE_SHEET_ID, tabName));
+          const results = await Promise.all(loadPromises);
+          results.forEach(tabData => {
+            if (tabData.length > 0) allTireData = allTireData.concat(tabData);
+          });
+          
+          document.getElementById('tireInitialLoading').classList.add('hidden');
+          document.getElementById('tireSearchBox').classList.remove('hidden');
+        } catch (error) {
+          console.error('Error loading tire data:', error);
+        }
+      }
+      
+      function searchTires(searchSize) {
+        const normalizedSearch = extractTireSize(searchSize);
+        if (!normalizedSearch) return [];
+        const results = allTireData.filter(item => item.tireSize === normalizedSearch);
+        const uniqueResults = [];
+        const seen = new Set();
+        for (const result of results) {
+          const key = `${result.brand}|${result.tireSize}|${result.pattern}|${result.year}|${result.price}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            uniqueResults.push(result);
+          }
+        }
+        return uniqueResults;
+      }
+      
+      function displayTireResults(results) {
+        const tbody = document.getElementById('tireResultsBody');
+        tbody.innerHTML = '';
+        
+        const sortedResults = [...results].sort((a, b) => (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0));
+        
+        sortedResults.forEach((result, index) => {
+          const row = document.createElement('tr');
+          row.style.background = index % 2 === 0 ? '#1a1a1a' : '#0f0f0f';
+          
+          const brandArabic = brandTranslations[result.brand?.toUpperCase()] || result.brand;
+          const isLT = result.tireSize.startsWith('LT');
+          const displaySize = isLT ? `${result.tireSize} (ربع)` : result.tireSize;
+          
+          row.innerHTML = `
+            <td class="px-4 py-2 border-b" style="border-color: #333;">${result.brand ? brandArabic : '<span style="color: #999;">-</span>'}</td>
+            <td class="px-4 py-2 border-b font-bold" style="border-color: #333;"><button class="tire-info-btn" onclick="alert('${displaySize}')">i</button> ${displaySize}</td>
+            <td class="px-4 py-2 border-b" style="border-color: #333; font-size: 12px;">${result.pattern}</td>
+            <td class="px-4 py-2 border-b" style="border-color: #333;"><select class="form-control" style="font-size: 12px; padding: 4px 6px;"><option>اختر</option><option>صيني 🇨🇳</option><option>تايلندي 🇹🇭</option><option>ياباني 🇯🇵</option></select></td>
+            <td class="px-4 py-2 border-b" style="border-color: #333;"><select class="form-control" style="font-size: 12px; padding: 4px 6px;"><option>اختر</option><option ${result.year === '2024' ? 'selected' : ''}>2024</option><option ${result.year === '2025' ? 'selected' : ''}>2025</option><option ${result.year === '2026' ? 'selected' : ''}>2026</option></select></td>
+            <td class="px-4 py-2 border-b font-bold" style="border-color: #333;">${result.price}</td>
+            <td class="px-4 py-2 border-b text-center" style="border-color: #333;">
+              <button class="btn-option" style="padding: 4px 8px; font-size: 12px;">نسخ</button>
+            </td>
+          `;
+          
+          const copyBtn = row.querySelector('.btn-option');
+          copyBtn.addEventListener('click', () => {
+            const countrySelect = row.querySelector('select:nth-of-type(1)');
+            const yearSelect = row.querySelector('select:nth-of-type(2)');
+            const country = countrySelect.value;
+            const year = yearSelect.value;
+            
+            if (country === 'اختر' || year === 'اختر') {
+              showTireToast('⚠️ اختر البلد والسنة');
+              return;
+            }
+            
+            const copyText = `${brandArabic} ${displaySize} ${country} سنة ${year}. سعر ${result.price} د.ك`;
+            const textArea = document.createElement('textarea');
+            textArea.value = copyText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showTireToast('✅ تم النسخ!');
+          });
+          
+          tbody.appendChild(row);
+        });
+        
+        document.getElementById('tireResultsCount').textContent = `✅ ${results.length} نتيجة`;
+        document.getElementById('tireResultsContainer').classList.remove('hidden');
+        document.getElementById('tireNoResults').classList.add('hidden');
+      }
+      
+      async function performTireSearch() {
+        const searchInput = document.getElementById('tireSearchInput').value.trim();
+        if (!searchInput) {
+          document.getElementById('tireResultsContainer').classList.add('hidden');
+          document.getElementById('tireNoResults').classList.add('hidden');
+          return;
+        }
+        
+        currentTireResults = searchTires(searchInput);
+        if (currentTireResults.length > 0) {
+          displayTireResults(currentTireResults);
+        } else {
+          document.getElementById('tireResultsContainer').classList.add('hidden');
+          document.getElementById('tireNoResults').classList.remove('hidden');
+        }
+      }
+      
+      // Event listeners
+      document.getElementById('tireSearchButton').addEventListener('click', performTireSearch);
+      document.getElementById('tireSearchInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performTireSearch();
+      });
+      
+      document.getElementById('tireFilterToggle').addEventListener('click', () => {
+        const filterContent = document.getElementById('tireFilterContent');
+        filterContent.classList.toggle('hidden');
+      });
+      
+      // Load data
+      loadAllTireData();
+    }
 
     // Render Annual Subscription Interface (الاشتراك السنوي)
     function renderAnnualSubscriptionInterface() {
