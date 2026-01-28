@@ -6559,6 +6559,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             <span style="color: #F2BC1B;">▼</span>
           </div>
           <div id="tireFilterContent" class="hidden" style="padding: 12px 0;">
+            <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
+              <input type="checkbox" id="selectAllBrands" style="margin-right: 8px;">
+              <span style="color: #F2BC1B; font-weight: bold;">اختر الكل</span>
+            </label>
             <div id="tireBrandCheckboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;"></div>
           </div>
         </div>
@@ -6589,6 +6593,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         <div id="tireNoResults" class="form-section full-width hidden" style="text-align: center; padding: 20px;">
           <p style="color: #F2BC1B; font-size: 16px;">❌ لا توجد نتائج لهذا المقاس</p>
         </div>
+
+        <div id="tireInfoModal" class="tire-info-modal hidden">
+          <div class="tire-info-content">
+            <button class="tire-info-close" onclick="document.getElementById('tireInfoModal').classList.add('hidden')">×</button>
+            <h2 id="tireInfoTitle" style="color: #F2BC1B; margin-bottom: 16px; text-align: center;"></h2>
+            <div id="tireInfoBody"></div>
+          </div>
+        </div>
       `;
       
       // Initialize tire search
@@ -6596,24 +6608,43 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     }
     
     function initializeTireSearch() {
-      // Data
       let allTireData = [], allTireSizes = new Set(), currentTireResults = [];
+      let selectedBrands = new Set();
       
       const TIRE_SHEET_ID = '1_ml2uiVRXrltZ4ef1PKSgNSO_4SMtXKn20JSajVEDu8';
       const TIRE_SHEET_TABS = ['Berlin Tires', 'FTC', 'Babtain Tires', 'YOKOHAMA TIRE', 'Al TERRA TIRE (By YOKOHAMA)', 'MICHELIN , BFGOODRICH', 'AL Ghanim Group China', 'AL Ghanim Group Korea', 'AL Ghanim Group SUMITOMO', 'Pirelli Retail price list', 'Firestone Tires', 'UltraForce Tires', 'فرج حولي'];
       
       const brandTranslations = {
-        'MICHELIN': 'ميشلان', 'BRIDGESTONE': 'بريدجستون', 'GOODYEAR': 'جوديير',
-        'CONTINENTAL': 'كونتيننتال', 'PIRELLI': 'بيريللي', 'DUNLOP': 'دنلوب',
-        'YOKOHAMA': 'يوكوهاما', 'HANKOOK': 'هانكوك', 'KUMHO': 'كومهو', 'TOYO': 'تويو'
+        'MICHELIN': 'ميشلان', 'BRIDGESTONE': 'بريدجستون', 'GOODYEAR': 'جوديير', 'CONTINENTAL': 'كونتيننتال',
+        'PIRELLI': 'بيريللي', 'DUNLOP': 'دنلوب', 'YOKOHAMA': 'يوكوهاما', 'HANKOOK': 'هانكوك', 'KUMHO': 'كومهو',
+        'TOYO': 'تويو', 'FALKEN': 'فالكن', 'NITTO': 'نيتو', 'BBS': 'بي بي اس', 'MAXXIS': 'ماكسيس', 'NEXEN': 'نيكسن',
+        'FIREMAX': 'فاير ماكس', 'COOPER': 'كوبر', 'GENERAL': 'جنرال', 'VREDESTEIN': 'فريدشتاين', 'APLUS': 'ايه بلاس',
+        'RUNWAY': 'رانواي', 'TRIANGLE': 'تراينجل', 'ACCELERA': 'أكسيليرا', 'SONAR': 'سونار', 'KENDA': 'كيندا'
+      };
+      
+      const countryTranslations = {
+        'CHINA': 'صيني 🇨🇳', 'THAILAND': 'تايلندي 🇹🇭', 'JAPAN': 'ياباني 🇯🇵', 'KOREA': 'كوري 🇰🇷',
+        'INDONESIA': 'إندونيسي 🇮🇩', 'MALAYSIA': 'ماليزي 🇲🇾', 'VIETNAM': 'فيتنامي 🇻🇳'
       };
       
       const speedRatings = {
         'S': { speed: '180', description: 'سيارات اقتصادية' },
         'T': { speed: '190', description: 'سيارات متوسطة' },
-        'H': { speed: '210', description: 'سيارات عالية الأداء' }
+        'H': { speed: '210', description: 'سيارات عالية الأداء' },
+        'V': { speed: '240', description: 'سيارات أداء عالي جداً' },
+        'W': { speed: '270', description: 'سيارات فيراري ولامبورجيني' },
+        'Y': { speed: '300', description: 'سيارات سباق' }
       };
       
+      const carBrandCodes = {
+        'BMW': 'بي إم دبليو', 'AUDI': 'أودي', 'BENZ': 'مرسيدس بنز', 'PORSCHE': 'بورشه', 'VOLKSWAGEN': 'فولكس واجن',
+        'SKODA': 'سكودا', 'FORD': 'فورد', 'CHEVROLET': 'شيفروليه', 'GMC': 'جي إم سي', 'TOYOTA': 'تويوتا',
+        'LEXUS': 'لكزس', 'HONDA': 'هوندا', 'ACURA': 'أكورا', 'NISSAN': 'نيسان', 'INFINITI': 'إنفيينتي',
+        'MAZDA': 'مازدا', 'SUZUKI': 'سوزوكي', 'MITSUBISHI': 'ميتسوبيشي', 'SUBARU': 'سوبارو', 'DAIHATSU': 'داياتسو',
+        'JAGUAR': 'جاغوار', 'LAND ROVER': 'لاند روفر', 'RANGE ROVER': 'رينج روفر', 'VOLVO': 'فولفو', 'POLESTAR': 'بول ستار',
+        'BUICK': 'بويك', 'CADILLAC': 'كاديلاك', 'HUMMER': 'هامر', 'JEEP': 'جيب', 'CHRYSLER': 'كرايسلر'
+      };
+
       function extractTireSize(sizeText) {
         if (!sizeText) return null;
         let processedText = sizeText.toString().replace(/(\d{3})\/(\d{2})\/(\d{2})/g, '$1/$2R$3');
@@ -6624,7 +6655,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       function isRunFlat(text) {
         if (!text) return false;
         const upperText = text.toString().toUpperCase().replace(/\s+/g, '');
-        return upperText.includes('RF') || upperText.includes('RUNFLAT');
+        return upperText.includes('RF') || upperText.includes('RUNFLAT') || upperText.includes('RFT');
+      }
+      
+      function isLightTruck(sizeText) {
+        if (!sizeText) return false;
+        return sizeText.toString().toUpperCase().startsWith('LT');
       }
       
       function extractPattern(sizeText, patternColumn) {
@@ -6638,12 +6674,80 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         return pattern;
       }
       
+      function extractSpeedAndLoadIndex(sizeText) {
+        if (!sizeText) return { speed: '', loadIndex: '' };
+        const match = sizeText.toString().match(/([A-Z])(\d{2,3})$/i);
+        return {
+          speed: match ? match[1].toUpperCase() : '',
+          loadIndex: match ? match[2] : ''
+        };
+      }
+
       function showTireToast(message) {
         const toast = document.createElement('div');
         toast.className = 'tire-toast';
         toast.textContent = message;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2000);
+      }
+
+      function showTireInfo(tireSize, brand, pattern) {
+        const modal = document.getElementById('tireInfoModal');
+        const speedLoad = extractSpeedAndLoadIndex(tireSize);
+        const speedInfo = speedRatings[speedLoad.speed];
+        
+        document.getElementById('tireInfoTitle').textContent = tireSize;
+        
+        let infoHtml = `
+          <div class="tire-info-section">
+            <div class="tire-info-title">الماركة</div>
+            <div style="color: #F2BC1B;">${brand}</div>
+          </div>
+          <div class="tire-info-section">
+            <div class="tire-info-title">النقشة</div>
+            <div style="color: #F2BC1B;">${pattern || 'غير محدد'}</div>
+          </div>
+        `;
+        
+        if (speedLoad.speed && speedInfo) {
+          infoHtml += `
+            <div class="tire-info-section">
+              <div class="tire-info-title">تصنيف السرعة: ${speedLoad.speed}</div>
+              <div style="color: #bbb;">السرعة القصوى: ${speedInfo.speed} كم/س</div>
+              <div style="color: #bbb;">${speedInfo.description}</div>
+            </div>
+          `;
+        }
+        
+        if (speedLoad.loadIndex) {
+          infoHtml += `
+            <div class="tire-info-section">
+              <div class="tire-info-title">رقم الحمولة</div>
+              <div style="color: #F2BC1B;">${speedLoad.loadIndex}</div>
+            </div>
+          `;
+        }
+        
+        if (isRunFlat(tireSize) || isRunFlat(pattern)) {
+          infoHtml += `
+            <div class="tire-info-section" style="border-right-color: #10b981;">
+              <div class="tire-info-title" style="color: #10b981;">🛡️ رن فلات (Run Flat)</div>
+              <div style="color: #bbb;">يمكن للإطار العمل بعد انثقابه</div>
+            </div>
+          `;
+        }
+        
+        if (isLightTruck(tireSize)) {
+          infoHtml += `
+            <div class="tire-info-section" style="border-right-color: #f59e0b;">
+              <div class="tire-info-title" style="color: #f59e0b;">🚙 إطار جديد</div>
+              <div style="color: #bbb;">مخصص للشاحنات الخفيفة</div>
+            </div>
+          `;
+        }
+        
+        document.getElementById('tireInfoBody').innerHTML = infoHtml;
+        modal.classList.remove('hidden');
       }
       
       async function loadTireSheetTab(sheetId, tabName) {
@@ -6701,17 +6805,63 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             if (tabData.length > 0) allTireData = allTireData.concat(tabData);
           });
           
+          // Populate brand filters
+          const brands = [...new Set(allTireData.map(item => item.brand))].filter(b => b);
+          const checkboxContainer = document.getElementById('tireBrandCheckboxes');
+          checkboxContainer.innerHTML = brands.map(brand => `
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="checkbox" class="tire-brand-filter" value="${brand}" style="margin-right: 8px;">
+              <span style="color: #F2BC1B;">${brandTranslations[brand?.toUpperCase()] || brand}</span>
+            </label>
+          `).join('');
+          
+          // Handle select all
+          document.getElementById('selectAllBrands').addEventListener('change', (e) => {
+            document.querySelectorAll('.tire-brand-filter').forEach(cb => {
+              cb.checked = e.target.checked;
+              if (e.target.checked) {
+                selectedBrands.add(cb.value);
+              } else {
+                selectedBrands.delete(cb.value);
+              }
+            });
+          });
+          
+          document.querySelectorAll('.tire-brand-filter').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+              if (e.target.checked) {
+                selectedBrands.add(e.target.value);
+              } else {
+                selectedBrands.delete(e.target.value);
+              }
+              updateSelectAllState();
+            });
+          });
+          
           document.getElementById('tireInitialLoading').classList.add('hidden');
           document.getElementById('tireSearchBox').classList.remove('hidden');
+          document.getElementById('tireBrandFilterContainer').classList.remove('hidden');
         } catch (error) {
           console.error('Error loading tire data:', error);
         }
       }
       
+      function updateSelectAllState() {
+        const allCheckboxes = document.querySelectorAll('.tire-brand-filter');
+        const checkedCount = document.querySelectorAll('.tire-brand-filter:checked').length;
+        document.getElementById('selectAllBrands').checked = checkedCount === allCheckboxes.length && allCheckboxes.length > 0;
+      }
+      
       function searchTires(searchSize) {
         const normalizedSearch = extractTireSize(searchSize);
         if (!normalizedSearch) return [];
-        const results = allTireData.filter(item => item.tireSize === normalizedSearch);
+        let results = allTireData.filter(item => item.tireSize === normalizedSearch);
+        
+        // Apply brand filter if any brands are selected
+        if (selectedBrands.size > 0) {
+          results = results.filter(item => selectedBrands.has(item.brand));
+        }
+        
         const uniqueResults = [];
         const seen = new Set();
         for (const result of results) {
@@ -6740,20 +6890,23 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           
           row.innerHTML = `
             <td class="px-4 py-2 border-b" style="border-color: #333;">${result.brand ? brandArabic : '<span style="color: #999;">-</span>'}</td>
-            <td class="px-4 py-2 border-b font-bold" style="border-color: #333;"><button class="tire-info-btn" onclick="alert('${displaySize}')">i</button> ${displaySize}</td>
+            <td class="px-4 py-2 border-b font-bold" style="border-color: #333;"><button class="tire-info-btn">i</button> ${displaySize}</td>
             <td class="px-4 py-2 border-b" style="border-color: #333; font-size: 12px;">${result.pattern}</td>
-            <td class="px-4 py-2 border-b" style="border-color: #333;"><select class="form-control" style="font-size: 12px; padding: 4px 6px;"><option>اختر</option><option>صيني 🇨🇳</option><option>تايلندي 🇹🇭</option><option>ياباني 🇯🇵</option></select></td>
-            <td class="px-4 py-2 border-b" style="border-color: #333;"><select class="form-control" style="font-size: 12px; padding: 4px 6px;"><option>اختر</option><option ${result.year === '2024' ? 'selected' : ''}>2024</option><option ${result.year === '2025' ? 'selected' : ''}>2025</option><option ${result.year === '2026' ? 'selected' : ''}>2026</option></select></td>
+            <td class="px-4 py-2 border-b" style="border-color: #333;"><select class="tire-country-select form-control" style="font-size: 12px; padding: 4px 6px;"><option>اختر</option><option>صيني 🇨🇳</option><option>تايلندي 🇹🇭</option><option>ياباني 🇯🇵</option></select></td>
+            <td class="px-4 py-2 border-b" style="border-color: #333;"><select class="tire-year-select form-control" style="font-size: 12px; padding: 4px 6px;"><option>اختر</option><option ${result.year === '2024' ? 'selected' : ''}>2024</option><option ${result.year === '2025' ? 'selected' : ''}>2025</option><option ${result.year === '2026' ? 'selected' : ''}>2026</option></select></td>
             <td class="px-4 py-2 border-b font-bold" style="border-color: #333;">${result.price}</td>
             <td class="px-4 py-2 border-b text-center" style="border-color: #333;">
-              <button class="btn-option" style="padding: 4px 8px; font-size: 12px;">نسخ</button>
+              <button class="tire-copy-btn btn-option" style="padding: 4px 8px; font-size: 12px;">نسخ</button>
             </td>
           `;
           
-          const copyBtn = row.querySelector('.btn-option');
+          const infoBtn = row.querySelector('.tire-info-btn');
+          infoBtn.addEventListener('click', () => showTireInfo(displaySize, brandArabic, result.pattern));
+          
+          const copyBtn = row.querySelector('.tire-copy-btn');
           copyBtn.addEventListener('click', () => {
-            const countrySelect = row.querySelector('select:nth-of-type(1)');
-            const yearSelect = row.querySelector('select:nth-of-type(2)');
+            const countrySelect = row.querySelector('.tire-country-select');
+            const yearSelect = row.querySelector('.tire-year-select');
             const country = countrySelect.value;
             const year = yearSelect.value;
             
@@ -6780,6 +6933,37 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         document.getElementById('tireNoResults').classList.add('hidden');
       }
       
+      function updateSuggestions(searchText) {
+        const dropdown = document.getElementById('tireSuggestionsDropdown');
+        if (!searchText.trim()) {
+          dropdown.classList.add('hidden');
+          return;
+        }
+        
+        const suggestions = Array.from(allTireSizes)
+          .filter(size => size.includes(searchText.toUpperCase()))
+          .sort()
+          .slice(0, 10);
+        
+        if (suggestions.length > 0) {
+          dropdown.innerHTML = suggestions.map(size => `
+            <div class="tire-suggestion-item">${size}</div>
+          `).join('');
+          
+          dropdown.querySelectorAll('.tire-suggestion-item').forEach(item => {
+            item.addEventListener('click', () => {
+              document.getElementById('tireSearchInput').value = item.textContent;
+              dropdown.classList.add('hidden');
+              performTireSearch();
+            });
+          });
+          
+          dropdown.classList.remove('hidden');
+        } else {
+          dropdown.classList.add('hidden');
+        }
+      }
+      
       async function performTireSearch() {
         const searchInput = document.getElementById('tireSearchInput').value.trim();
         if (!searchInput) {
@@ -6803,9 +6987,20 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         if (e.key === 'Enter') performTireSearch();
       });
       
+      document.getElementById('tireSearchInput').addEventListener('input', (e) => {
+        updateSuggestions(e.target.value);
+      });
+      
       document.getElementById('tireFilterToggle').addEventListener('click', () => {
         const filterContent = document.getElementById('tireFilterContent');
         filterContent.classList.toggle('hidden');
+      });
+      
+      // Close modal
+      document.getElementById('tireInfoModal').addEventListener('click', (e) => {
+        if (e.target.id === 'tireInfoModal') {
+          e.target.classList.add('hidden');
+        }
       });
       
       // Load data
