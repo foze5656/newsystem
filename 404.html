@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بحث الإطارات</title>
+  <title>بحث التواير</title>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -229,22 +229,22 @@
    </div>
    <div class="min-h-full py-8 px-4">
     <div class="max-w-6xl mx-auto"><!-- Header -->
-     <div class="text-center mb-8"><img src="https://i.top4top.io/p_35860o72q1.png" alt="بحث الإطارات" class="mx-auto mb-4" style="max-width: 500px; width: 100%; height: auto;" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
+     <div class="text-center mb-8"><img src="https://i.top4top.io/p_35860o72q1.png" alt="بحث التواير" class="mx-auto mb-4" style="max-width: 500px; width: 100%; height: auto;" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
       <div id="fallbackTitle" style="display: none;">
-       <h1 class="text-4xl font-bold mb-2" style="color: #FFD700;">بحث الإطارات</h1>
-       <p style="color: #FFD700;">ابحث عن الإطار المناس�� ��سب المقاس</p>
+       <h1 class="text-4xl font-bold mb-2" style="color: #FFD700;">بحث التواير</h1>
+       <p style="color: #FFD700;">ابحث عن التاير المناسب حسب المقاس</p>
       </div>
      </div><!-- Loading Screen -->
      <div id="initialLoading" class="rounded-lg shadow-2xl p-12 mb-8 border-2 text-center" style="background: #1a1a1a; border-color: #FFD700;">
       <div class="flex flex-col items-center gap-4">
        <div class="loader"></div>
        <p class="text-xl font-bold" style="color: #FFD700;">جاري تحميل البيانات...</p>
-       <p class="text-sm" style="color: #FFD700; opacity: 0.8;">الرجا�� الانتظار</p>
+       <p class="text-sm" style="color: #FFD700; opacity: 0.8;">الرجاء الانتظار</p>
       </div>
      </div><!-- Search Box -->
      <div id="searchBox" class="hidden rounded-lg shadow-2xl p-6 mb-8 border-2 relative" style="background: #1a1a1a; border-color: #FFD700;">
       <div class="flex gap-4 relative">
-       <div class="flex-1 relative"><input type="text" id="searchInput" placeholder="��دخل مقاس الإطار (مثال: 215/55R17)" class="w-full px-4 py-3 rounded-lg text-lg border-2 focus:outline-none" style="background-color: #000000; color: #e5e5e5; border-color: #FFD700;" autocomplete="off">
+       <div class="flex-1 relative"><input type="text" id="searchInput" placeholder="ءدخل مقاس التاير (مثال: 215/55R17)" class="w-full px-4 py-3 rounded-lg text-lg border-2 focus:outline-none" style="background-color: #000000; color: #e5e5e5; border-color: #FFD700;" autocomplete="off">
         <div id="suggestionsDropdown" class="suggestions-dropdown hidden"></div>
        </div><button id="searchButton" class="px-8 py-3 rounded-lg font-bold text-black text-lg hover:opacity-90 transition-opacity" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);"> بحث </button>
       </div>
@@ -295,7 +295,7 @@
    </div>
   </div>
   <script>
-        // مصفوفة عامة لتخزين معلومات الإطارات
+        // مصفوفة عامة لتخزين معلومات التواير
         window.tireInfoData = [];
         
         // دالة ��امة لعرض نافذة المعلومات
@@ -317,7 +317,7 @@
             
             let content = '<div class="info-modal-content">';
             content += '<div class="info-close" onclick="this.closest(\'.info-modal\').remove()">×</div>';
-            content += '<h2 class="text-2xl font-bold mb-4" style="color: #ffffff;">معلومات التا��ر</h2>';
+            content += '<h2 class="text-2xl font-bold mb-4" style="color: #ffffff;">معلومات التاير</h2>';
             
             // بداية الجدول
             content += '<table class="info-table">';
@@ -356,7 +356,7 @@
             
             // رن فلات
             if (info && info.isRunFlat) {
-                content += '<tr><td>تقنية خاصة</td><td>��ن فلات (Run Flat)</td></tr>';
+                content += '<tr><td>تقنية خاصة</td><td>رن فلات (Run Flat)</td></tr>';
             }
             
             content += '</table>';
@@ -382,11 +382,11 @@
             'PIRELLI': 'بيريللي',
             'DUNLOP': 'دنلوب',
             'YOKOHAMA': 'يوكوهاما',
-            'YOKOHAMA AI TERRA TIRE': 'يوك��هاما حجري(جميع التضاريس)',
+            'YOKOHAMA AI TERRA TIRE': 'يوكاهاما حجري(جميع التضاريس)',
             'AI TERRA TIRE': 'يوكوهاما حجري(جميع التضاريس)',
             'HANKOOK': 'هانكوك',
             'KUMHO': 'كومهو',
-            'TOYO': 'توي��',
+            'TOYO': 'تويو',
             'FALKEN': 'فالكن',
             'NEXEN': 'نيكسن',
             'MAXXIS': 'ماكسس',
@@ -395,8 +395,8 @@
             'MAYRUN': 'مايرن',
             'ZETUM': 'زيتوم',
             'APOLLO': 'أبولو',
-            'KINFOREST': 'كي����وريست',
-            'ROADSTONE': 'رودس����ن',
+            'KINFOREST': 'كين فورست',
+            'ROADSTONE': 'رودستون',
             'SUMITOMO': 'سوميتومو',
             'FIRESTONE': 'فايرستون',
             'ULTRAFORCE': 'ألترا فورس'
@@ -405,19 +405,19 @@
         // جدول تحويل الدول من الإنجليزي إلى العربي
         const countryTranslations = {
             'CHINA': 'صيني 🇨🇳',
-            'THAILAND': 'تايلندي 🇹��',
+            'THAILAND': 'تايلندي 🇹🇭',
             'JAPAN': 'ياباني 🇯🇵',
             'POLAND': 'بولندي 🇵🇱',
             'EUROPE': 'أوروبي 🇪🇺',
             'FRANCE': 'فرنسي 🇫🇷',
             'SOUTH KOREA': 'كوري 🇰🇷',
-            'KOREA': '��وري 🇰🇷',
+            'KOREA': 'كوري 🇰🇷',
             'UNITED STATES': 'أمريكي 🇺🇸',
             'USA': 'أمريكي 🇺🇸',
             'PHILIPPINES': 'فلبيني 🇵🇭',
             'INDONESIA': 'اندونيسي 🇮🇩',
             'INDIA': 'هندي 🇮🇳',
-            'GERMANY': 'ألماني ������',
+            'GERMANY': 'ألماني 🇩🇪',
             'SOUTH AFRICA': 'جنوب أفريقيا 🇿🇦',
             'CANADA': 'كندي 🇨🇦',
             'MALAYSIA': 'ماليزي 🇲🇾',
@@ -426,7 +426,7 @@
             'BRAZIL': 'برازيلي 🇧🇷',
             'ITALY': 'إيطالي 🇮🇹',
             'SPAIN': 'إسباني 🇪🇸',
-            'TURKEY': 'ترك�� 🇹🇷',
+            'TURKEY': 'تركي 🇹🇷',
             'MEXICO': 'مكسيكي 🇲🇽',
             'UK': 'بريطاني 🇬🇧',
             'UNITED KINGDOM': 'بريطاني 🇬🇧',
@@ -434,16 +434,13 @@
             'CZECH REPUBLIC': 'تشيكي 🇨🇿',
             'SLOVAKIA': 'سلوفاكي 🇸🇰',
             'HUNGARY': 'مجري 🇭🇺',
-            'ROMANIA': 'روماني ��🇴',
+            'ROMANIA': 'روماني 🇷🇴',
             'ARGENTINA': 'أرجنتيني 🇦🇷',
             'AUSTRALIA': 'أسترالي 🇦🇺',
-            'NEW ZEALAND': 'نيوزيلن����ي 🇳🇿',
             'SERBIA': 'صربي 🇷🇸',
-            'PORTUGAL': 'برتغالي ���🇹',
-            'SLOVENIA': 'سلوفيني ���🇮'
+            'PORTUGAL': 'برتغالي 🇵🇹'
         };
         
-        // قائمة الدول المتاحة للاختيار
         const availableCountries = [
             'صيني 🇨🇳',
             'تايلندي 🇹🇭',
@@ -459,14 +456,14 @@
             'ألماني 🇩🇪',
             'جنوب أفريقيا 🇿🇦',
             'كندي 🇨🇦',
-            'ماليز�� 🇲🇾',
+            'ماليزي 🇲🇾',
             'فيتنامي 🇻🇳',
             'تايواني 🇹🇼',
             'برازيلي 🇧🇷',
             'إيطالي 🇮🇹',
             'إسباني 🇪🇸',
             'تركي 🇹🇷',
-            'مكسيكي 🇲��',
+            'مكسيكي 🇲🇽',
             'بريطاني 🇬🇧',
             'روسي 🇷🇺',
             'تشيكي 🇨🇿',
@@ -474,7 +471,7 @@
             'مجري 🇭🇺',
             'روماني 🇷🇴',
             'أرجنتيني 🇦🇷',
-            'أ��ترالي 🇦🇺',
+            'أسترالي 🇦🇺',
             'نيوزيلندي 🇳🇿',
             'صربي 🇷🇸',
             'برتغالي 🇵🇹',
@@ -486,12 +483,12 @@
         
         // جدول السرعات
         const speedRatings = {
-            'S': { speed: '180', description: 'س��ارات اقتصادية وعائلية' },
-            'T': { speed: '190', description: 'سيارات سيدان متوسطة الحجم' },
-            'H': { speed: '210', description: 'سيارات سبورت وسيدان كبيرة' },
-            'V': { speed: '240', description: 'سيارات عالية الأداء' },
-            'W': { speed: '270', description: 'سيارات رياضية متقدمة' },
-            'Y': { speed: '300', description: 'سيارات سوبر س��ورت' }
+            'S': { speed: '180', description: '' },
+            'T': { speed: '190', description: '' },
+            'H': { speed: '210', description: '' },
+            'V': { speed: '240', description: '' },
+            'W': { speed: '270', description: '' },
+            'Y': { speed: '300', description: '' }
         };
         
         // جدول رموز الشركات
@@ -534,7 +531,7 @@
         };
 
         // معرف الملف وأسماء ��لتبويبات
-        const SHEET_ID = '1_ml2uiVRXrltZ4ef1PKSgNSO_4SMtXKn20JSajVEDu8';
+        const SHEET_ID = '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk';
         const SHEET_TABS = [
             'Berlin Tires',
             'FTC',
@@ -555,7 +552,7 @@
         const companyNames = {
             'Berlin Tires': 'برلين',
             'FTC': 'FTC',
-            'Babtain Tires': 'البا��طين',
+            'Babtain Tires': 'البابطين',
             'YOKOHAMA TIRE': 'يوكاهما الساير',
             'Al TERRA TIRE (By YOKOHAMA)': 'يوكاهما الساير',
             'MICHELIN , BFGOODRICH': 'الشايع والصقر',
@@ -573,8 +570,8 @@
         let currentSearchResults = [];
 
         const defaultConfig = {
-            site_title: 'بحث الإطارات',
-            search_placeholder: 'أدخل مقاس الإطار (مثال: 215/55R17)',
+            site_title: 'بحث التواير',
+            search_placeholder: 'أدخل مقاس التاير (مثال: 215/55R17)',
             search_button_text: 'بحث',
             copy_button_text: 'نسخ'
         };
@@ -1061,7 +1058,7 @@
                 const isRF = isRunFlat(result.originalSize) || isRunFlat(result.pattern);
                 const displaySize = isLT ? `${result.tireSize} (ربع حجري)` : result.tireSize;
                 
-                // استخراج معلومات الإطار
+                // استخراج معلومات التاير
                 const tireInfo = extractTireInfo(result.originalSize || result.tireSize);
                 
                 // حفظ المعلومات في المصفوفة العامة
@@ -1083,7 +1080,7 @@
                 
                 // زر المعلومات يظهر فقط إذا كان هناك معلومات إضافية
                 const infoButton = hasAdditionalInfo 
-                    ? `<button class="info-btn ml-2" onclick="window.showInfoModal(${index})" title="معلومات الإطار">i</button>`
+                    ? `<button class="info-btn ml-2" onclick="window.showInfoModal(${index})" title="معلومات التاير">i</button>`
                     : '';
                 
                 // جميع الخلايا تعرض اسم الشركة
@@ -1136,7 +1133,7 @@
                         
                         // التحقق من إدخال الماركة
                         if (!finalBrand) {
-                            showToast('⚠️ الرجاء إدخال اسم ا��ماركة أولاً');
+                            showToast('⚠️ الرجاء إدخال اسم الماركة أولاً');
                             if (brandInput) {
                                 brandInput.style.borderColor = '#EF4444';
                                 brandInput.focus();
@@ -1162,7 +1159,7 @@
                     }
                     
                     if (!selectedYear) {
-                        showToast('⚠️ الرجاء اخت��ار السنة أولاً');
+                        showToast('⚠️ الرجاء اختيار السنة أولاً');
                         document.getElementById(yearSelectId).style.borderColor = '#EF4444';
                         setTimeout(() => {
                             document.getElementById(yearSelectId).style.borderColor = '#FFD700';
@@ -1170,7 +1167,7 @@
                         return;
                     }
                     
-                    // إضافة معلومات إضافية للماركة (رن فل��ت أو ربع حجري)
+                    // إضافة معلومات إضافية للماركة (رن فللات أو ربع حجري)
                     let brandInfo = '';
                     if (isRF && isLT) {
                         brandInfo = ' (رن فلات - ربع حجري)';
