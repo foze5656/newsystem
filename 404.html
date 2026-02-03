@@ -184,7 +184,7 @@
     <div class="inline-flex items-center gap-3 mb-4">
      <svg class="w-14 h-14 text-blue-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
      </svg>
-     <h1 id="pageTitle" class="text-4xl md:text-5xl font-bold text-white">محلل بيانات السيارات المتقدم</h1>
+     <h1 id="pageTitle" class="text-4xl md:text-5xl font-bold text-white">محلل ��يان��ت السيارات المتقدم</h1>
     </div>
     <p class="text-blue-200 text-lg">قم برفع ملف Excel لتحليل وعرض بيانات آلاف السيارات ��فلترة متقدمة</p>
    </header><!-- System Status -->
@@ -264,25 +264,22 @@
         <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
         </svg> الرسم البياني التفاعلي</h2><span id="chartCount" class="badge bg-blue-100 text-blue-700"></span>
       </div><!-- Filters Row -->
-      <div class="flex flex-wrap gap-3 items-center"><label class="font-semibold text-gray-700">الكمية:</label> <button class="filter-btn active px-4 py-2 rounded-lg border-2 border-blue-500 font-semibold text-sm" data-filter="all"> الكل </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="less50"> &lt; 50 </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more50"> ≥ 50 </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more100"> ≥ 100 </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more500"> ≥ 500 </button>
+      <div class="flex flex-wrap gap-3 items-center"><label class="font-semibold text-gray-700">الكمية:</label> <button class="filter-btn active px-4 py-2 rounded-lg border-2 border-blue-500 font-semibold text-sm" data-filter="all"> الكل </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="less50"> &lt; 50 </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more50"> ��� 50 </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more100"> ≥ 100 </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more500"> ≥ 500 </button>
       </div><!-- Search and Model Filter -->
       <div class="grid md:grid-cols-2 gap-4">
        <div><label class="block font-semibold text-gray-700 mb-2">🔍 بحث بالشركة أو الموديل:</label> <input type="text" id="searchBox" placeholder="ابحث عن شركة أو موديل..." class="search-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all">
        </div>
        <div><label class="block font-semibold text-gray-700 mb-2">🚗 فلترة حسب الشركة:</label> <select id="makeFilter" class="select-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all"> <option value="">جميع الشركات</option> </select>
        </div>
-      </div><!-- Year Filter -->
+      </div><!-- Year Range Filter -->
       <div><label class="block font-semibold text-gray-700 mb-2">📅 فلترة حسب السنوات:</label>
-       <div class="relative">
-        <div id="yearMultiSelect" class="border-2 border-gray-300 rounded-lg p-3 min-h-[50px] cursor-pointer hover:border-blue-400 transition-all bg-white"><span class="text-gray-400">جميع السنوات</span>
+       <div class="grid md:grid-cols-2 gap-4">
+        <div><label class="block text-sm text-gray-600 mb-1">من سنة:</label> <select id="yearFrom" class="select-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all"> <option value="">الكل</option> </select>
         </div>
-        <div id="yearDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-2xl max-h-80 overflow-y-auto">
-         <div class="p-3 border-b bg-gray-50 sticky top-0 flex gap-2"><button id="selectAllYears" class="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold text-sm transition-all">اختيار الكل</button> <button id="clearAllYears" class="flex-1 px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-semibold text-sm transition-all">إلغاء الكل</button>
-         </div>
-         <div id="yearList" class="p-3 grid grid-cols-4 md:grid-cols-6 gap-2"></div>
+        <div><label class="block text-sm text-gray-600 mb-1">إلى سنة:</label> <select id="yearTo" class="select-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all"> <option value="">الكل</option> </select>
         </div>
        </div>
-       <p class="text-sm text-gray-500 mt-2">💡 اختر سنوات محددة أو اترك الكل محدد</p>
+       <p class="text-sm text-gray-500 mt-2">💡 اختر نطاق السنوات المطلوب</p>
       </div><!-- Specific Model Selection -->
       <div><label class="block font-semibold text-gray-700 mb-2">📋 اختيار موديلات محددة (اختياري):</label>
        <div class="relative">
@@ -295,6 +292,26 @@
         </div>
        </div>
        <p class="text-sm text-gray-500 mt-2">💡 اترك فارغاً لعرض جميع الموديلات</p>
+      </div><!-- Merge Models Section -->
+      <div class="glass-card bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-5 border-2 border-purple-200">
+       <h3 class="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+        </svg> دمج موديلات متشابهة</h3>
+       <p class="text-sm text-purple-700 mb-4">اختر موديلين لدمجهما تحت اسم واحد في الرسم البياني</p>
+       <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div><label class="block text-sm font-semibold text-purple-700 mb-2">الموديل الأول:</label> <select id="mergeModel1" class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:outline-none focus:border-purple-500 transition-all bg-white"> <option value="">اختر الموديل الأول...</option> </select>
+        </div>
+        <div><label class="block text-sm font-semibold text-purple-700 mb-2">الموديل الثاني:</label> <select id="mergeModel2" class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:outline-none focus:border-purple-500 transition-all bg-white"> <option value="">اختر الموديل الثاني...</option> </select>
+        </div>
+       </div>
+       <div class="mb-4"><label class="block text-sm font-semibold text-purple-700 mb-2">اسم الموديل المدمج:</label> <input type="text" id="mergedName" placeholder="مثال: كامري الكل" class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:outline-none focus:border-purple-500 transition-all">
+       </div><button id="mergeBtn" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"> <span class="flex items-center justify-center gap-2">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+         </svg> دمج الموديلات </span> </button>
+       <div id="mergedList" class="mt-4 hidden">
+        <h4 class="font-bold text-purple-800 mb-2">الموديلات المدمجة:</h4>
+        <div id="mergedItems" class="space-y-2"></div>
+       </div>
       </div>
      </div>
      <div class="chart-container relative">
@@ -343,6 +360,7 @@
         let selectedModels = new Set();
         let selectedYears = new Set();
         let allModels = [];
+        let mergedModels = []; // Array of {name: string, models: [key1, key2]}
 
         // Element SDK Integration
         async function initElementSdk() {
@@ -478,7 +496,8 @@
 
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = `toast px-6 py-4 rounded-xl shadow-2xl ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'} text-white font-bold`;
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            toast.className = `toast px-6 py-4 rounded-xl shadow-2xl ${bgColor} text-white font-bold`;
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
@@ -652,11 +671,10 @@
             })).sort((a, b) => b.total - a.total);
 
             populateModelList(allModels);
+            populateMergeSelects();
 
-            // Initialize year filter with all years selected
-            selectedYears = new Set(processedData.years);
-            populateYearList();
-            updateSelectedYearsDisplay();
+            // Initialize year range filters
+            populateYearRangeFilters();
 
             buildTable();
             buildChart();
@@ -664,81 +682,31 @@
             resultsSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Year multi-select
-        const yearMultiSelect = document.getElementById('yearMultiSelect');
-        const yearDropdown = document.getElementById('yearDropdown');
-        const selectAllYearsBtn = document.getElementById('selectAllYears');
-        const clearAllYearsBtn = document.getElementById('clearAllYears');
-
-        yearMultiSelect.addEventListener('click', (e) => {
-            e.stopPropagation();
-            yearDropdown.classList.toggle('hidden');
-        });
-
-        selectAllYearsBtn.addEventListener('click', () => {
-            selectedYears = new Set(processedData.years);
-            populateYearList();
-            updateSelectedYearsDisplay();
-            buildChart();
-        });
-
-        clearAllYearsBtn.addEventListener('click', () => {
-            selectedYears.clear();
-            populateYearList();
-            updateSelectedYearsDisplay();
-            buildChart();
-        });
-
-        function populateYearList() {
-            const yearList = document.getElementById('yearList');
-            yearList.innerHTML = '';
-
+        function populateYearRangeFilters() {
+            const yearFrom = document.getElementById('yearFrom');
+            const yearTo = document.getElementById('yearTo');
+            
+            yearFrom.innerHTML = '<option value="">الكل</option>';
+            yearTo.innerHTML = '<option value="">الكل</option>';
+            
             processedData.years.forEach(year => {
-                const div = document.createElement('div');
-                div.className = 'flex items-center justify-center';
+                const option1 = document.createElement('option');
+                option1.value = year;
+                option1.textContent = year;
+                yearFrom.appendChild(option1);
                 
-                const label = document.createElement('label');
-                label.className = 'flex items-center gap-2 px-3 py-2 hover:bg-blue-50 rounded cursor-pointer transition-all text-sm font-semibold';
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500';
-                checkbox.checked = selectedYears.has(year);
-                checkbox.id = `year-${year}`;
-                
-                checkbox.addEventListener('change', () => {
-                    if (checkbox.checked) {
-                        selectedYears.add(year);
-                    } else {
-                        selectedYears.delete(year);
-                    }
-                    updateSelectedYearsDisplay();
-                    buildChart();
-                });
-                
-                const span = document.createElement('span');
-                span.textContent = year;
-                
-                label.appendChild(checkbox);
-                label.appendChild(span);
-                div.appendChild(label);
-                yearList.appendChild(div);
+                const option2 = document.createElement('option');
+                option2.value = year;
+                option2.textContent = year;
+                yearTo.appendChild(option2);
             });
         }
 
-        function updateSelectedYearsDisplay() {
-            if (selectedYears.size === 0) {
-                yearMultiSelect.innerHTML = '<span class="text-red-500 font-semibold">⚠️ لم يتم اختيار أي سنة</span>';
-            } else if (selectedYears.size === processedData.years.length) {
-                yearMultiSelect.innerHTML = '<span class="text-green-600 font-semibold">✓ جميع السنوات محددة</span>';
-            } else {
-                const sortedYears = Array.from(selectedYears).sort((a, b) => a - b);
-                const displayYears = sortedYears.length > 10 
-                    ? `${sortedYears.slice(0, 10).join(', ')}... (+${sortedYears.length - 10})`
-                    : sortedYears.join(', ');
-                yearMultiSelect.innerHTML = `<div class="text-blue-700 font-semibold">${selectedYears.size} سنة: ${displayYears}</div>`;
-            }
-        }
+        // Year range filter event listeners
+        document.getElementById('yearFrom').addEventListener('change', buildChart);
+        document.getElementById('yearTo').addEventListener('change', buildChart);
+
+
 
         // Model multi-select
         const modelMultiSelect = document.getElementById('modelMultiSelect');
@@ -751,9 +719,6 @@
         });
 
         document.addEventListener('click', (e) => {
-            if (!yearDropdown.contains(e.target) && !yearMultiSelect.contains(e.target)) {
-                yearDropdown.classList.add('hidden');
-            }
             if (!modelDropdown.contains(e.target) && !modelMultiSelect.contains(e.target)) {
                 modelDropdown.classList.add('hidden');
             }
@@ -763,9 +728,112 @@
             e.stopPropagation();
         });
 
-        yearDropdown.addEventListener('click', (e) => {
-            e.stopPropagation();
+        // Merge models functionality
+        function populateMergeSelects() {
+            const select1 = document.getElementById('mergeModel1');
+            const select2 = document.getElementById('mergeModel2');
+            
+            select1.innerHTML = '<option value="">اختر الموديل الأول...</option>';
+            select2.innerHTML = '<option value="">اختر الموديل الثاني...</option>';
+            
+            allModels.forEach(model => {
+                const option1 = document.createElement('option');
+                option1.value = model.key;
+                option1.textContent = `${model.make} - ${model.model}`;
+                select1.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = model.key;
+                option2.textContent = `${model.make} - ${model.model}`;
+                select2.appendChild(option2);
+            });
+        }
+
+        document.getElementById('mergeBtn').addEventListener('click', () => {
+            const model1 = document.getElementById('mergeModel1').value;
+            const model2 = document.getElementById('mergeModel2').value;
+            const mergedName = document.getElementById('mergedName').value.trim();
+
+            if (!model1 || !model2) {
+                showToast('⚠️ يرجى اختيار موديلين', 'error');
+                return;
+            }
+
+            if (model1 === model2) {
+                showToast('⚠️ يجب اختيار موديلين مختلفين', 'error');
+                return;
+            }
+
+            if (!mergedName) {
+                showToast('⚠️ يرجى إدخال اسم للموديل المدمج', 'error');
+                return;
+            }
+
+            // Check if models are already merged
+            const alreadyMerged = mergedModels.some(m => 
+                m.models.includes(model1) || m.models.includes(model2)
+            );
+
+            if (alreadyMerged) {
+                showToast('⚠️ أحد الموديلات مدموج مسبقاً', 'error');
+                return;
+            }
+
+            mergedModels.push({
+                name: mergedName,
+                models: [model1, model2]
+            });
+
+            updateMergedList();
+            buildChart();
+            showToast('✓ تم دمج الموديلات بنجاح!');
+
+            // Reset form
+            document.getElementById('mergeModel1').value = '';
+            document.getElementById('mergeModel2').value = '';
+            document.getElementById('mergedName').value = '';
         });
+
+        function updateMergedList() {
+            const mergedList = document.getElementById('mergedList');
+            const mergedItems = document.getElementById('mergedItems');
+
+            if (mergedModels.length === 0) {
+                mergedList.classList.add('hidden');
+                return;
+            }
+
+            mergedList.classList.remove('hidden');
+            mergedItems.innerHTML = '';
+
+            mergedModels.forEach((merged, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between bg-white rounded-lg p-3 border-2 border-purple-200';
+                
+                const info = document.createElement('div');
+                info.innerHTML = `
+                    <p class="font-bold text-purple-800">${merged.name}</p>
+                    <p class="text-sm text-purple-600">${merged.models.map(k => {
+                        const parts = k.split('|');
+                        return `${parts[0]} - ${parts[1]}`;
+                    }).join(' + ')}</p>
+                `;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-all';
+                deleteBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+                deleteBtn.onclick = () => {
+                    mergedModels.splice(index, 1);
+                    updateMergedList();
+                    buildChart();
+                    showToast('✓ تم حذف الدمج');
+                };
+                
+                div.appendChild(info);
+                div.appendChild(deleteBtn);
+                mergedItems.appendChild(div);
+            });
+        }
 
         modelSearchBox.addEventListener('input', () => {
             const searchTerm = modelSearchBox.value.toLowerCase();
@@ -898,9 +966,17 @@
         }
 
         function getFilteredYears() {
-            return selectedYears.size > 0 
-                ? processedData.years.filter(y => selectedYears.has(y))
-                : processedData.years;
+            const yearFrom = document.getElementById('yearFrom').value;
+            const yearTo = document.getElementById('yearTo').value;
+            
+            if (!yearFrom && !yearTo) {
+                return processedData.years;
+            }
+            
+            const from = yearFrom ? parseInt(yearFrom) : processedData.years[0];
+            const to = yearTo ? parseInt(yearTo) : processedData.years[processedData.years.length - 1];
+            
+            return processedData.years.filter(y => y >= from && y <= to);
         }
 
         function buildChart() {
@@ -922,6 +998,48 @@
                 const filteredTotal = displayYears.reduce((sum, year) => sum + (car.years[year] || 0), 0);
                 return { ...car, filteredTotal };
             }).filter(car => car.filteredTotal > 0);
+
+            // Apply merging
+            const mergedData = [];
+            const usedKeys = new Set();
+
+            mergedModels.forEach(merged => {
+                const combinedCar = {
+                    make: merged.name.split(' ')[0] || 'مدمج',
+                    model: merged.name,
+                    years: {},
+                    filteredTotal: 0,
+                    isMerged: true
+                };
+
+                merged.models.forEach(modelKey => {
+                    usedKeys.add(modelKey);
+                    const car = processedData.cars[modelKey];
+                    if (car) {
+                        displayYears.forEach(year => {
+                            if (!combinedCar.years[year]) {
+                                combinedCar.years[year] = 0;
+                            }
+                            combinedCar.years[year] += (car.years[year] || 0);
+                        });
+                    }
+                });
+
+                combinedCar.filteredTotal = Object.values(combinedCar.years).reduce((a, b) => a + b, 0);
+                if (combinedCar.filteredTotal > 0) {
+                    mergedData.push(combinedCar);
+                }
+            });
+
+            // Add non-merged cars
+            chartData.forEach(car => {
+                const key = `${car.make}|${car.model}`;
+                if (!usedKeys.has(key)) {
+                    mergedData.push(car);
+                }
+            });
+
+            chartData = mergedData;
 
             // Apply filters based on filtered totals
             if (activeFilter === 'less50') {
@@ -1274,5 +1392,5 @@
         // Initialize
         initElementSdk();
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c80ce0ae40bce99',t:'MTc3MDEwOTkyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c80e16c71b7ce99',t:'MTc3MDExMDcyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
