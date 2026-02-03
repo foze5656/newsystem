@@ -342,6 +342,24 @@
                         </div>
                     </div>
 
+                    <!-- Year Filter -->
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-2">📅 فلترة حسب السنوات:</label>
+                        <div class="relative">
+                            <div id="yearMultiSelect" class="border-2 border-gray-300 rounded-lg p-3 min-h-[50px] cursor-pointer hover:border-blue-400 transition-all bg-white">
+                                <span class="text-gray-400">جميع السنوات</span>
+                            </div>
+                            <div id="yearDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-2xl max-h-80 overflow-y-auto">
+                                <div class="p-3 border-b bg-gray-50 sticky top-0 flex gap-2">
+                                    <button id="selectAllYears" class="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-semibold text-sm transition-all">اختيار الكل</button>
+                                    <button id="clearAllYears" class="flex-1 px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 font-semibold text-sm transition-all">إلغاء الكل</button>
+                                </div>
+                                <div id="yearList" class="p-3 grid grid-cols-4 md:grid-cols-6 gap-2"></div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">💡 اختر سنوات محددة أو اترك الكل محدد</p>
+                    </div>
+
                     <!-- Specific Model Selection -->
                     <div>
                         <label class="block font-semibold text-gray-700 mb-2">📋 اختيار موديلات محددة (اختياري):</label>
@@ -413,6 +431,7 @@
         let processedData = null;
         let carChart = null;
         let selectedModels = new Set();
+        let selectedYears = new Set();
         let allModels = [];
 
         // Element SDK Integration
@@ -567,7 +586,6 @@
             processBtn.disabled = true;
             processBtn.innerHTML = '<span class="flex items-center justify-center gap-3"><div class="spinner"></div>جاري المعالجة...</span>';
 
-            // Add small delay for UX
             await new Promise(resolve => setTimeout(resolve, 300));
 
             try {
@@ -616,7 +634,7 @@
                         });
                         
                         if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
-                            reject(new Error('الملف لا يحتوي على أي صفحا��'));
+                            reject(new Error('الملف لا يحتوي على أي صفحات'));
                             return;
                         }
                         
@@ -715,7 +733,7 @@
                 makeFilter.appendChild(option);
             });
 
-            // Prepare all models for selection
+            // Prepare all models
             allModels = Object.values(processedData.cars).map(car => ({
                 key: `${car.make}|${car.model}`,
                 make: car.make,
@@ -725,10 +743,91 @@
 
             populateModelList(allModels);
 
+            // Initialize year filter with all years selected
+            selectedYears = new Set(processedData.years);
+            populateYearList();
+            updateSelectedYearsDisplay();
+
             buildTable();
             buildChart();
 
             resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Year multi-select
+        const yearMultiSelect = document.getElementById('yearMultiSelect');
+        const yearDropdown = document.getElementById('yearDropdown');
+        const selectAllYearsBtn = document.getElementById('selectAllYears');
+        const clearAllYearsBtn = document.getElementById('clearAllYears');
+
+        yearMultiSelect.addEventListener('click', (e) => {
+            e.stopPropagation();
+            yearDropdown.classList.toggle('hidden');
+        });
+
+        selectAllYearsBtn.addEventListener('click', () => {
+            selectedYears = new Set(processedData.years);
+            populateYearList();
+            updateSelectedYearsDisplay();
+            buildChart();
+        });
+
+        clearAllYearsBtn.addEventListener('click', () => {
+            selectedYears.clear();
+            populateYearList();
+            updateSelectedYearsDisplay();
+            buildChart();
+        });
+
+        function populateYearList() {
+            const yearList = document.getElementById('yearList');
+            yearList.innerHTML = '';
+
+            processedData.years.forEach(year => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-center';
+                
+                const label = document.createElement('label');
+                label.className = 'flex items-center gap-2 px-3 py-2 hover:bg-blue-50 rounded cursor-pointer transition-all text-sm font-semibold';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500';
+                checkbox.checked = selectedYears.has(year);
+                checkbox.id = `year-${year}`;
+                
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        selectedYears.add(year);
+                    } else {
+                        selectedYears.delete(year);
+                    }
+                    updateSelectedYearsDisplay();
+                    buildChart();
+                });
+                
+                const span = document.createElement('span');
+                span.textContent = year;
+                
+                label.appendChild(checkbox);
+                label.appendChild(span);
+                div.appendChild(label);
+                yearList.appendChild(div);
+            });
+        }
+
+        function updateSelectedYearsDisplay() {
+            if (selectedYears.size === 0) {
+                yearMultiSelect.innerHTML = '<span class="text-red-500 font-semibold">⚠️ لم يتم اختيار أي سنة</span>';
+            } else if (selectedYears.size === processedData.years.length) {
+                yearMultiSelect.innerHTML = '<span class="text-green-600 font-semibold">✓ جميع السنوات محددة</span>';
+            } else {
+                const sortedYears = Array.from(selectedYears).sort((a, b) => a - b);
+                const displayYears = sortedYears.length > 10 
+                    ? `${sortedYears.slice(0, 10).join(', ')}... (+${sortedYears.length - 10})`
+                    : sortedYears.join(', ');
+                yearMultiSelect.innerHTML = `<div class="text-blue-700 font-semibold">${selectedYears.size} سنة: ${displayYears}</div>`;
+            }
         }
 
         // Model multi-select
@@ -741,11 +840,20 @@
             modelDropdown.classList.toggle('hidden');
         });
 
-        document.addEventListener('click', () => {
-            modelDropdown.classList.add('hidden');
+        document.addEventListener('click', (e) => {
+            if (!yearDropdown.contains(e.target) && !yearMultiSelect.contains(e.target)) {
+                yearDropdown.classList.add('hidden');
+            }
+            if (!modelDropdown.contains(e.target) && !modelMultiSelect.contains(e.target)) {
+                modelDropdown.classList.add('hidden');
+            }
         });
 
         modelDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        yearDropdown.addEventListener('click', (e) => {
             e.stopPropagation();
         });
 
@@ -816,410 +924,4 @@
             const headerRow = document.getElementById('tableHeader');
             const tableBody = document.getElementById('tableBody');
 
-            headerRow.innerHTML = '';
-            tableBody.innerHTML = '';
-
-            const headers = ['الشركة', 'الموديل', ...processedData.years, 'الإجمالي'];
-            headers.forEach(header => {
-                const th = document.createElement('th');
-                th.className = 'px-4 py-4 text-white font-bold text-right border-b-2 border-blue-400';
-                th.textContent = header;
-                headerRow.appendChild(th);
-            });
-
-            const sortedCars = Object.values(processedData.cars).sort((a, b) => b.total - a.total);
-
-            sortedCars.forEach(car => {
-                const tr = document.createElement('tr');
-                tr.className = 'border-b border-gray-200';
-
-                const tdMake = document.createElement('td');
-                tdMake.className = 'px-4 py-3 font-bold text-gray-800';
-                tdMake.textContent = car.make;
-                tr.appendChild(tdMake);
-
-                const tdModel = document.createElement('td');
-                tdModel.className = 'px-4 py-3 text-gray-700 font-semibold';
-                tdModel.textContent = car.model;
-                tr.appendChild(tdModel);
-
-                processedData.years.forEach(year => {
-                    const td = document.createElement('td');
-                    td.className = 'px-4 py-3 text-center text-gray-600';
-                    const value = car.years[year] || 0;
-                    td.textContent = value > 0 ? Math.round(value).toLocaleString('ar-EG') : '-';
-                    tr.appendChild(td);
-                });
-
-                const tdTotal = document.createElement('td');
-                tdTotal.className = 'px-4 py-3 text-center font-bold text-blue-600 bg-blue-50';
-                tdTotal.textContent = Math.round(car.total).toLocaleString('ar-EG');
-                tr.appendChild(tdTotal);
-
-                tableBody.appendChild(tr);
-            });
-
-            document.getElementById('tableCount').textContent = `${sortedCars.length} موديل`;
-        }
-
-        function buildChart() {
-            const ctx = document.getElementById('carChart');
-            if (!ctx) return;
-
-            const chartLoading = document.getElementById('chartLoading');
-            chartLoading.classList.remove('hidden');
-
-            setTimeout(() => {
-                const chartType = document.querySelector('.chart-type-btn.active').dataset.type;
-                const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-                const selectedMake = document.getElementById('makeFilter').value;
-                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
-
-                let chartData = Object.values(processedData.cars);
-
-                // Apply filters
-                if (activeFilter === 'less50') {
-                    chartData = chartData.filter(car => car.total < 50);
-                } else if (activeFilter === 'more50') {
-                    chartData = chartData.filter(car => car.total >= 50);
-                } else if (activeFilter === 'more100') {
-                    chartData = chartData.filter(car => car.total >= 100);
-                } else if (activeFilter === 'more500') {
-                    chartData = chartData.filter(car => car.total >= 500);
-                }
-
-                if (selectedMake) {
-                    chartData = chartData.filter(car => car.make === selectedMake);
-                }
-
-                if (searchTerm) {
-                    chartData = chartData.filter(car => 
-                        car.make.toLowerCase().includes(searchTerm) || 
-                        car.model.toLowerCase().includes(searchTerm)
-                    );
-                }
-
-                if (selectedModels.size > 0) {
-                    chartData = chartData.filter(car => {
-                        const key = `${car.make}|${car.model}`;
-                        return selectedModels.has(key);
-                    });
-                }
-
-                chartData = chartData.sort((a, b) => b.total - a.total).slice(0, 20);
-
-                if (chartType === 'total') {
-                    buildTotalChart(chartData);
-                } else if (chartType === 'years') {
-                    buildYearsChart(chartData);
-                } else if (chartType === 'comparison') {
-                    buildComparisonView(chartData);
-                }
-
-                document.getElementById('chartCount').textContent = `${chartData.length} موديل معروض`;
-                chartLoading.classList.add('hidden');
-            }, 100);
-        }
-
-        function buildTotalChart(chartData) {
-            const ctx = document.getElementById('carChart');
-            const labels = chartData.map(car => `${car.make} - ${car.model}`);
-            const data = chartData.map(car => car.total);
-
-            const colors = data.map((_, i) => {
-                const hue = (i * 30) % 360;
-                return `hsla(${hue}, 75%, 60%, 0.85)`;
-            });
-
-            if (carChart) {
-                carChart.destroy();
-            }
-
-            carChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: 'إجمالي السيارات',
-                        data,
-                        backgroundColor: colors,
-                        borderColor: colors.map(c => c.replace('0.85', '1')),
-                        borderWidth: 2,
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            rtl: true,
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            padding: 12,
-                            callbacks: {
-                                label: (context) => `الإجمالي: ${Math.round(context.raw).toLocaleString('ar-EG')}`
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.08)' },
-                            ticks: {
-                                font: { size: 12, weight: 'bold' },
-                                callback: (value) => Math.round(value).toLocaleString('ar-EG')
-                            }
-                        },
-                        y: {
-                            grid: { display: false },
-                            ticks: { font: { size: 11 } }
-                        }
-                    }
-                }
-            });
-
-            document.getElementById('carDetails').classList.add('hidden');
-        }
-
-        function buildYearsChart(chartData) {
-            const ctx = document.getElementById('carChart');
-            
-            // Prepare datasets for each car
-            const datasets = chartData.map((car, index) => {
-                const hue = (index * 30) % 360;
-                const color = `hsla(${hue}, 75%, 60%, 0.85)`;
-                
-                const yearData = processedData.years.map(year => car.years[year] || 0);
-                
-                return {
-                    label: `${car.make} - ${car.model}`,
-                    data: yearData,
-                    backgroundColor: color,
-                    borderColor: color.replace('0.85', '1'),
-                    borderWidth: 2,
-                    borderRadius: 6
-                };
-            });
-
-            if (carChart) {
-                carChart.destroy();
-            }
-
-            carChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: processedData.years,
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            rtl: true,
-                            labels: {
-                                font: { size: 11, weight: 'bold' },
-                                padding: 15,
-                                usePointStyle: true
-                            }
-                        },
-                        tooltip: {
-                            rtl: true,
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleFont: { size: 13, weight: 'bold' },
-                            bodyFont: { size: 12 },
-                            padding: 12,
-                            callbacks: {
-                                label: (context) => `${context.dataset.label}: ${Math.round(context.raw).toLocaleString('ar-EG')}`
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            stacked: false,
-                            grid: { display: false },
-                            ticks: { font: { size: 11, weight: 'bold' } }
-                        },
-                        y: {
-                            stacked: false,
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.08)' },
-                            ticks: {
-                                font: { size: 11 },
-                                callback: (value) => Math.round(value).toLocaleString('ar-EG')
-                            }
-                        }
-                    }
-                }
-            });
-
-            document.getElementById('carDetails').classList.add('hidden');
-        }
-
-        function buildComparisonView(chartData) {
-            const carDetails = document.getElementById('carDetails');
-            carDetails.innerHTML = '';
-            carDetails.classList.remove('hidden');
-
-            if (carChart) {
-                carChart.destroy();
-                carChart = null;
-            }
-
-            document.getElementById('carChart').style.display = 'none';
-
-            chartData.forEach((car, index) => {
-                const yearEntries = Object.entries(car.years).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
-                const years = yearEntries.map(e => e[0]);
-                const values = yearEntries.map(e => e[1]);
-                
-                const maxYear = yearEntries.reduce((max, curr) => curr[1] > max[1] ? curr : max, yearEntries[0]);
-                const minYear = yearEntries.reduce((min, curr) => curr[1] < min[1] ? curr : min, yearEntries[0]);
-
-                const hue = (index * 30) % 360;
-                const color = `hsla(${hue}, 75%, 60%, 1)`;
-
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'glass-card rounded-2xl p-6 slide-in';
-                cardDiv.style.animationDelay = `${index * 0.1}s`;
-                
-                cardDiv.innerHTML = `
-                    <div class="mb-5">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-3">
-                            <span class="w-4 h-4 rounded-full" style="background: ${color}"></span>
-                            ${car.make} - ${car.model}
-                        </h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 text-center">
-                                <p class="text-3xl font-bold text-blue-600">${Math.round(car.total).toLocaleString('ar-EG')}</p>
-                                <p class="text-sm text-gray-600 font-semibold mt-1">الإجمالي</p>
-                            </div>
-                            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 text-center">
-                                <p class="text-3xl font-bold text-green-600">${maxYear[0]}</p>
-                                <p class="text-sm text-gray-600 font-semibold mt-1">أكثر سنة</p>
-                                <p class="text-xs text-green-600 font-bold">${Math.round(maxYear[1]).toLocaleString('ar-EG')} سيارة</p>
-                            </div>
-                            <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 text-center">
-                                <p class="text-3xl font-bold text-orange-600">${minYear[0]}</p>
-                                <p class="text-sm text-gray-600 font-semibold mt-1">أقل سنة</p>
-                                <p class="text-xs text-orange-600 font-bold">${Math.round(minYear[1]).toLocaleString('ar-EG')} سيارة</p>
-                            </div>
-                            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 text-center">
-                                <p class="text-3xl font-bold text-purple-600">${years.length}</p>
-                                <p class="text-sm text-gray-600 font-semibold mt-1">عدد السنوات</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mini-chart-container">
-                        <canvas id="miniChart${index}"></canvas>
-                    </div>
-                `;
-
-                carDetails.appendChild(cardDiv);
-
-                // Create mini chart for this car
-                setTimeout(() => {
-                    const miniCtx = document.getElementById(`miniChart${index}`);
-                    if (!miniCtx) return;
-
-                    new Chart(miniCtx, {
-                        type: 'line',
-                        data: {
-                            labels: years,
-                            datasets: [{
-                                label: 'عدد السيارات',
-                                data: values,
-                                borderColor: color,
-                                backgroundColor: color.replace('1)', '0.2)'),
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 5,
-                                pointHoverRadius: 7,
-                                pointBackgroundColor: color,
-                                pointBorderColor: '#fff',
-                                pointBorderWidth: 2
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    rtl: true,
-                                    backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                                    titleFont: { size: 14, weight: 'bold' },
-                                    bodyFont: { size: 13 },
-                                    padding: 12,
-                                    callbacks: {
-                                        title: (items) => `سنة ${items[0].label}`,
-                                        label: (context) => `العدد: ${Math.round(context.raw).toLocaleString('ar-EG')} سيارة`
-                                    }
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { 
-                                        font: { size: 12, weight: 'bold' },
-                                        color: '#374151'
-                                    }
-                                },
-                                y: {
-                                    beginAtZero: true,
-                                    grid: { color: 'rgba(0,0,0,0.08)' },
-                                    ticks: {
-                                        font: { size: 11 },
-                                        callback: (value) => Math.round(value).toLocaleString('ar-EG')
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }, 50);
-            });
-
-            document.getElementById('carChart').style.display = 'block';
-        }
-
-        // Event listeners for filters
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                buildChart();
-            });
-        });
-
-        document.getElementById('searchBox').addEventListener('input', () => {
-            buildChart();
-        });
-
-        document.getElementById('makeFilter').addEventListener('change', () => {
-            buildChart();
-        });
-
-        // Chart type selector
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.chart-type-btn')) {
-                const btn = e.target.closest('.chart-type-btn');
-                document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                if (processedData) {
-                    buildChart();
-                }
-            }
-        });
-
-        // Initialize
-        initElementSdk();
-    </script>
-</body>
-</html>
+            header
