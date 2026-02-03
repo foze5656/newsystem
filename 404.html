@@ -1,15 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محلل بيانات السيارات المتقدم</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/_sdk/element_sdk.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>محلل بيانات السيارات المتقدم</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
         body {
             box-sizing: border-box;
             font-family: 'Cairo', sans-serif;
@@ -168,208 +168,138 @@
             transform: translate(-50%, -50%);
         }
     </style>
-</head>
-<body class="h-full gradient-bg">
-    <div id="app" class="h-full overflow-auto">
-        <!-- Header -->
-        <header class="text-center py-8 px-4 fade-in">
-            <div class="inline-flex items-center gap-3 mb-4">
-                <svg class="w-14 h-14 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
-                <h1 id="pageTitle" class="text-4xl md:text-5xl font-bold text-white">محلل بيانات السيارات المتقدم</h1>
-            </div>
-            <p class="text-blue-200 text-lg">قم برفع ملف Excel لتحليل وعرض بيانات آلاف السيارات بفلترة متقدمة</p>
-        </header>
-
-        <!-- System Status -->
-        <div id="systemStatus" class="max-w-2xl mx-auto mb-6 px-4 slide-in">
-            <div class="glass-card rounded-xl p-4 flex items-center gap-3 pulse-success">
-                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span class="text-green-700 font-semibold">✓ النظام جاهز - يدعم معالجة أكثر من 19,000 صف</span>
-            </div>
-        </div>
-
-        <!-- Upload Section -->
-        <div class="max-w-2xl mx-auto mb-8 px-4 fade-in">
-            <div class="glass-card rounded-2xl p-6">
-                <div id="uploadZone" class="upload-zone rounded-xl p-10 text-center cursor-pointer">
-                    <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden">
-                    <svg class="w-20 h-20 mx-auto text-blue-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                    <p id="uploadText" class="text-2xl font-bold text-gray-700 mb-2">رفع ملف Excel</p>
-                    <p class="text-gray-500 text-lg">اسحب الملف هنا أو اضغط للاختيار</p>
-                    <p class="text-sm text-gray-400 mt-3">يدعم .xlsx و .xls - حتى 19,000+ صف</p>
-                </div>
-                
-                <div id="fileInfo" class="hidden mt-5 p-5 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border-2 border-blue-200">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-4">
-                            <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <div>
-                                <p id="fileName" class="font-bold text-gray-800 text-lg"></p>
-                                <p id="fileSize" class="text-sm text-gray-600"></p>
-                            </div>
-                        </div>
-                        <button id="clearFile" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-3 rounded-lg transition-all">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <button id="processBtn" class="btn-primary w-full mt-6 py-5 px-6 rounded-xl text-white font-bold text-xl disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                    <span class="flex items-center justify-center gap-3">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                        بدء التحليل المتقدم
-                    </span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Error Message -->
-        <div id="errorMessage" class="hidden max-w-2xl mx-auto mb-6 px-4">
-            <div class="bg-red-50 border-r-4 border-red-500 rounded-xl p-5 flex items-start gap-3 shadow-lg">
-                <svg class="w-7 h-7 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <div>
-                    <p class="font-bold text-red-800 text-lg">خطأ</p>
-                    <p id="errorText" class="text-red-600"></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Results Section -->
-        <div id="resultsSection" class="hidden max-w-7xl mx-auto px-4 pb-8">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 fade-in">
-                <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
-                    <p class="text-4xl font-bold text-blue-600 mb-1" id="totalRows">0</p>
-                    <p class="text-gray-600 font-semibold">الصفوف</p>
-                </div>
-                <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
-                    <p class="text-4xl font-bold text-purple-600 mb-1" id="totalMakes">0</p>
-                    <p class="text-gray-600 font-semibold">الشركات</p>
-                </div>
-                <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
-                    <p class="text-4xl font-bold text-green-600 mb-1" id="totalModels">0</p>
-                    <p class="text-gray-600 font-semibold">الموديلات</p>
-                </div>
-                <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
-                    <p class="text-4xl font-bold text-orange-600 mb-1" id="totalYears">0</p>
-                    <p class="text-gray-600 font-semibold">السنوات</p>
-                </div>
-                <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
-                    <p class="text-4xl font-bold text-red-600 mb-1" id="totalCars">0</p>
-                    <p class="text-gray-600 font-semibold">الإجمالي</p>
-                </div>
-            </div>
-
-            <!-- Chart Section -->
-            <div class="glass-card rounded-2xl p-6 mb-8 fade-in">
-                <div class="flex flex-col gap-4 mb-6">
-                    <div class="flex items-center justify-between flex-wrap gap-3">
-                        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
-                            الرسم البياني التفاعلي
-                        </h2>
-                        <span id="chartCount" class="badge bg-blue-100 text-blue-700"></span>
-                    </div>
-
-                    <!-- Filters Row -->
-                    <div class="flex flex-wrap gap-3 items-center">
-                        <label class="font-semibold text-gray-700">الكمية:</label>
-                        <button class="filter-btn active px-4 py-2 rounded-lg border-2 border-blue-500 font-semibold text-sm" data-filter="all">
-                            الكل
-                        </button>
-                        <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="less50">
-                            &lt; 50
-                        </button>
-                        <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more50">
-                            ≥ 50
-                        </button>
-                        <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more100">
-                            ≥ 100
-                        </button>
-                        <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more500">
-                            ≥ 500
-                        </button>
-                    </div>
-
-                    <!-- Search and Model Filter -->
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-semibold text-gray-700 mb-2">🔍 بحث بالشركة أو الموديل:</label>
-                            <input type="text" id="searchBox" placeholder="ابحث عن شركة أو موديل..." class="search-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="block font-semibold text-gray-700 mb-2">🚗 فلترة حسب الشركة:</label>
-                            <select id="makeFilter" class="select-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all">
-                                <option value="">جميع الشركات</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Specific Model Selection -->
-                    <div>
-                        <label class="block font-semibold text-gray-700 mb-2">📋 اختيار موديلات محددة (اختياري):</label>
-                        <div class="relative">
-                            <div id="modelMultiSelect" class="border-2 border-gray-300 rounded-lg p-3 min-h-[50px] cursor-pointer hover:border-blue-400 transition-all bg-white">
-                                <span class="text-gray-400">اضغط لاختيار موديلات محددة...</span>
-                            </div>
-                            <div id="modelDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-2xl max-h-64 overflow-y-auto">
-                                <div class="p-3 border-b bg-gray-50 sticky top-0">
-                                    <input type="text" id="modelSearchBox" placeholder="بحث في الموديلات..." class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
-                                </div>
-                                <div id="modelList" class="p-2"></div>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-2">💡 اترك فارغاً لعرض جميع الموديلات</p>
-                    </div>
-                </div>
-
-                <div class="chart-container relative">
-                    <div id="chartLoading" class="chart-loading hidden">
-                        <div class="spinner"></div>
-                        <p class="text-gray-600 mt-3 font-semibold">جاري تحديث الرسم البياني...</p>
-                    </div>
-                    <canvas id="carChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Data Table -->
-            <div class="glass-card rounded-2xl p-6 fade-in">
-                <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
-                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                        </svg>
-                        جدول البيانات التفصيلي
-                    </h2>
-                    <span id="tableCount" class="badge bg-green-100 text-green-700"></span>
-                </div>
-                <div class="overflow-x-auto rounded-lg" style="max-height: 600px;">
-                    <table id="dataTable" class="data-table w-full border-collapse">
-                        <thead>
-                            <tr id="tableHeader"></tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full gradient-bg">
+  <div id="app" class="h-full overflow-auto"><!-- Header -->
+   <header class="text-center py-8 px-4 fade-in">
+    <div class="inline-flex items-center gap-3 mb-4">
+     <svg class="w-14 h-14 text-blue-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+     </svg>
+     <h1 id="pageTitle" class="text-4xl md:text-5xl font-bold text-white">محلل بيانات السيارات المتقدم</h1>
     </div>
-
-    <script>
+    <p class="text-blue-200 text-lg">قم برفع ملف Excel لتحليل وعرض بيانات آلاف السيارات بفلترة متقدمة</p>
+   </header><!-- System Status -->
+   <div id="systemStatus" class="max-w-2xl mx-auto mb-6 px-4 slide-in">
+    <div class="glass-card rounded-xl p-4 flex items-center gap-3 pulse-success">
+     <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div><span class="text-green-700 font-semibold">✓ النظام جاهز - يدعم معالجة أكثر من 19,000 صف</span>
+    </div>
+   </div><!-- Upload Section -->
+   <div class="max-w-2xl mx-auto mb-8 px-4 fade-in">
+    <div class="glass-card rounded-2xl p-6">
+     <div id="uploadZone" class="upload-zone rounded-xl p-10 text-center cursor-pointer"><input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden">
+      <svg class="w-20 h-20 mx-auto text-blue-500 mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+      </svg>
+      <p id="uploadText" class="text-2xl font-bold text-gray-700 mb-2">رفع ملف Excel</p>
+      <p class="text-gray-500 text-lg">اسحب الملف هنا أو اضغط للاختيار</p>
+      <p class="text-sm text-gray-400 mt-3">يدعم .xlsx و .xls - حتى 19,000+ صف</p>
+     </div>
+     <div id="fileInfo" class="hidden mt-5 p-5 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl border-2 border-blue-200">
+      <div class="flex items-center justify-between">
+       <div class="flex items-center gap-4">
+        <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div>
+         <p id="fileName" class="font-bold text-gray-800 text-lg"></p>
+         <p id="fileSize" class="text-sm text-gray-600"></p>
+        </div>
+       </div><button id="clearFile" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-3 rounded-lg transition-all">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg></button>
+      </div>
+     </div><button id="processBtn" class="btn-primary w-full mt-6 py-5 px-6 rounded-xl text-white font-bold text-xl disabled:opacity-50 disabled:cursor-not-allowed" disabled> <span class="flex items-center justify-center gap-3">
+       <svg class="w-7 h-7" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+       </svg> بدء التحليل المتقدم </span> </button>
+    </div>
+   </div><!-- Error Message -->
+   <div id="errorMessage" class="hidden max-w-2xl mx-auto mb-6 px-4">
+    <div class="bg-red-50 border-r-4 border-red-500 rounded-xl p-5 flex items-start gap-3 shadow-lg">
+     <svg class="w-7 h-7 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+     </svg>
+     <div>
+      <p class="font-bold text-red-800 text-lg">خطأ</p>
+      <p id="errorText" class="text-red-600"></p>
+     </div>
+    </div>
+   </div><!-- Results Section -->
+   <div id="resultsSection" class="hidden max-w-7xl mx-auto px-4 pb-8"><!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 fade-in">
+     <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
+      <p class="text-4xl font-bold text-blue-600 mb-1" id="totalRows">0</p>
+      <p class="text-gray-600 font-semibold">الصفوف</p>
+     </div>
+     <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
+      <p class="text-4xl font-bold text-purple-600 mb-1" id="totalMakes">0</p>
+      <p class="text-gray-600 font-semibold">الشركات</p>
+     </div>
+     <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
+      <p class="text-4xl font-bold text-green-600 mb-1" id="totalModels">0</p>
+      <p class="text-gray-600 font-semibold">الموديلات</p>
+     </div>
+     <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
+      <p class="text-4xl font-bold text-orange-600 mb-1" id="totalYears">0</p>
+      <p class="text-gray-600 font-semibold">السنوات</p>
+     </div>
+     <div class="glass-card rounded-xl p-5 text-center transform hover:scale-105 transition-transform">
+      <p class="text-4xl font-bold text-red-600 mb-1" id="totalCars">0</p>
+      <p class="text-gray-600 font-semibold">الإجمالي</p>
+     </div>
+    </div><!-- Chart Section -->
+    <div class="glass-card rounded-2xl p-6 mb-8 fade-in">
+     <div class="flex flex-col gap-4 mb-6">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+       <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg> الرسم البياني التفاعلي</h2><span id="chartCount" class="badge bg-blue-100 text-blue-700"></span>
+      </div><!-- Filters Row -->
+      <div class="flex flex-wrap gap-3 items-center"><label class="font-semibold text-gray-700">الكمية:</label> <button class="filter-btn active px-4 py-2 rounded-lg border-2 border-blue-500 font-semibold text-sm" data-filter="all"> الكل </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="less50"> &lt; 50 </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more50"> ≥ 50 </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more100"> ≥ 100 </button> <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more500"> ≥ 500 </button>
+      </div><!-- Search and Model Filter -->
+      <div class="grid md:grid-cols-2 gap-4">
+       <div><label class="block font-semibold text-gray-700 mb-2">🔍 بحث بالشركة أو الموديل:</label> <input type="text" id="searchBox" placeholder="ابحث عن شركة أو موديل..." class="search-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all">
+       </div>
+       <div><label class="block font-semibold text-gray-700 mb-2">🚗 فلترة حسب الشركة:</label> <select id="makeFilter" class="select-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all"> <option value="">جميع الشركات</option> </select>
+       </div>
+      </div><!-- Specific Model Selection -->
+      <div><label class="block font-semibold text-gray-700 mb-2">📋 اختيار موديلات محددة (اختياري):</label>
+       <div class="relative">
+        <div id="modelMultiSelect" class="border-2 border-gray-300 rounded-lg p-3 min-h-[50px] cursor-pointer hover:border-blue-400 transition-all bg-white"><span class="text-gray-400">اضغط لاختيار موديلات محددة...</span>
+        </div>
+        <div id="modelDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-2xl max-h-64 overflow-y-auto">
+         <div class="p-3 border-b bg-gray-50 sticky top-0"><input type="text" id="modelSearchBox" placeholder="بحث في الموديلات..." class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+         </div>
+         <div id="modelList" class="p-2"></div>
+        </div>
+       </div>
+       <p class="text-sm text-gray-500 mt-2">💡 اترك فارغاً لعرض جميع الموديلات</p>
+      </div>
+     </div>
+     <div class="chart-container relative">
+      <div id="chartLoading" class="chart-loading hidden">
+       <div class="spinner"></div>
+       <p class="text-gray-600 mt-3 font-semibold">جاري تحديث الرسم البياني...</p>
+      </div>
+      <canvas id="carChart"></canvas>
+     </div>
+    </div><!-- Data Table -->
+    <div class="glass-card rounded-2xl p-6 fade-in">
+     <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+       <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+       </svg> جدول البيانات التفصيلي</h2><span id="tableCount" class="badge bg-green-100 text-green-700"></span>
+     </div>
+     <div class="overflow-x-auto rounded-lg" style="max-height: 600px;">
+      <table id="dataTable" class="data-table w-full border-collapse">
+       <thead>
+        <tr id="tableHeader"></tr>
+       </thead>
+       <tbody id="tableBody"></tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
         // Configuration
         const defaultConfig = {
             page_title: 'محلل بيانات السيارات المتقدم',
@@ -549,4 +479,416 @@
                 
                 if (!data || data.length === 0) {
                     showError('الملف فارغ أو لا يحتوي على بيانات صالحة');
-      
+                    resetProcessButton();
+                    return;
+                }
+
+                processedData = processData(data);
+                
+                if (Object.keys(processedData.cars).length === 0) {
+                    showError('لم يتم العثور على بيانات صالحة. تأكد من أن الملف يحتوي على بيانات في الأعمدة A-D');
+                    resetProcessButton();
+                    return;
+                }
+
+                displayResults();
+                showToast(config.success_message || defaultConfig.success_message);
+                hideError();
+            } catch (error) {
+                showError('حدث خطأ أثناء قراءة الملف: ' + error.message);
+            }
+
+            resetProcessButton();
+        }
+
+        function resetProcessButton() {
+            processBtn.disabled = false;
+            processBtn.innerHTML = '<span class="flex items-center justify-center gap-3"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>بدء التحليل المتقدم</span>';
+        }
+
+        function readExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
+                        resolve(jsonData);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = () => reject(new Error('فشل في قراءة الملف'));
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function processData(rawData) {
+            const cars = {};
+            const years = new Set();
+            const makes = new Set();
+            let totalCount = 0;
+            let validRows = 0;
+
+            rawData.forEach((row, index) => {
+                let carMake = String(row[0] || '').trim();
+                let carModel = String(row[1] || '').trim();
+                let year = row[2];
+                let count = row[3];
+
+                if (!carMake) carMake = 'غير محدد';
+                if (!carModel) carModel = 'غير محدد';
+
+                if (year === '' || year === null || year === undefined) return;
+                
+                year = parseInt(year);
+                if (isNaN(year)) return;
+
+                count = parseFloat(count);
+                if (isNaN(count) || count === 0) return;
+
+                validRows++;
+
+                const key = `${carMake}|${carModel}`;
+                
+                if (!cars[key]) {
+                    cars[key] = {
+                        make: carMake,
+                        model: carModel,
+                        years: {},
+                        total: 0
+                    };
+                }
+
+                if (!cars[key].years[year]) {
+                    cars[key].years[year] = 0;
+                }
+
+                cars[key].years[year] += count;
+                cars[key].total += count;
+                years.add(year);
+                makes.add(carMake);
+                totalCount += count;
+            });
+
+            return {
+                cars,
+                years: Array.from(years).sort((a, b) => a - b),
+                makes: Array.from(makes).sort(),
+                totalCount,
+                validRows
+            };
+        }
+
+        function displayResults() {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.classList.remove('hidden');
+
+            // Update stats
+            document.getElementById('totalRows').textContent = processedData.validRows.toLocaleString('ar-EG');
+            document.getElementById('totalMakes').textContent = processedData.makes.length.toLocaleString('ar-EG');
+            document.getElementById('totalModels').textContent = Object.keys(processedData.cars).length.toLocaleString('ar-EG');
+            document.getElementById('totalYears').textContent = processedData.years.length.toLocaleString('ar-EG');
+            document.getElementById('totalCars').textContent = Math.round(processedData.totalCount).toLocaleString('ar-EG');
+
+            // Populate make filter
+            const makeFilter = document.getElementById('makeFilter');
+            makeFilter.innerHTML = '<option value="">جميع الشركات</option>';
+            processedData.makes.forEach(make => {
+                const option = document.createElement('option');
+                option.value = make;
+                option.textContent = make;
+                makeFilter.appendChild(option);
+            });
+
+            // Prepare all models for selection
+            allModels = Object.values(processedData.cars).map(car => ({
+                key: `${car.make}|${car.model}`,
+                make: car.make,
+                model: car.model,
+                total: car.total
+            })).sort((a, b) => b.total - a.total);
+
+            populateModelList(allModels);
+
+            buildTable();
+            buildChart();
+
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Model multi-select
+        const modelMultiSelect = document.getElementById('modelMultiSelect');
+        const modelDropdown = document.getElementById('modelDropdown');
+        const modelSearchBox = document.getElementById('modelSearchBox');
+
+        modelMultiSelect.addEventListener('click', (e) => {
+            e.stopPropagation();
+            modelDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', () => {
+            modelDropdown.classList.add('hidden');
+        });
+
+        modelDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        modelSearchBox.addEventListener('input', () => {
+            const searchTerm = modelSearchBox.value.toLowerCase();
+            const filtered = allModels.filter(m => 
+                m.make.toLowerCase().includes(searchTerm) || 
+                m.model.toLowerCase().includes(searchTerm)
+            );
+            populateModelList(filtered);
+        });
+
+        function populateModelList(models) {
+            const modelList = document.getElementById('modelList');
+            modelList.innerHTML = '';
+
+            if (models.length === 0) {
+                modelList.innerHTML = '<p class="p-3 text-gray-500 text-center">لا توجد نتائج</p>';
+                return;
+            }
+
+            models.forEach(model => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-2 p-2 hover:bg-blue-50 rounded cursor-pointer transition-colors';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500';
+                checkbox.checked = selectedModels.has(model.key);
+                checkbox.id = `model-${model.key}`;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `model-${model.key}`;
+                label.className = 'flex-1 cursor-pointer text-sm';
+                label.innerHTML = `<strong>${model.make}</strong> - ${model.model} <span class="text-gray-500">(${Math.round(model.total).toLocaleString('ar-EG')})</span>`;
+                
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        selectedModels.add(model.key);
+                    } else {
+                        selectedModels.delete(model.key);
+                    }
+                    updateSelectedModelsDisplay();
+                    buildChart();
+                });
+                
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                modelList.appendChild(div);
+            });
+        }
+
+        function updateSelectedModelsDisplay() {
+            if (selectedModels.size === 0) {
+                modelMultiSelect.innerHTML = '<span class="text-gray-400">اضغط لاختيار موديلات محددة...</span>';
+            } else {
+                const selected = Array.from(selectedModels).map(key => {
+                    const parts = key.split('|');
+                    return `${parts[0]} - ${parts[1]}`;
+                });
+                modelMultiSelect.innerHTML = `<div class="flex flex-wrap gap-2">${selected.map(s => 
+                    `<span class="badge bg-blue-100 text-blue-700">${s}</span>`
+                ).join('')}</div>`;
+            }
+        }
+
+        function buildTable() {
+            const headerRow = document.getElementById('tableHeader');
+            const tableBody = document.getElementById('tableBody');
+
+            headerRow.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            const headers = ['الشركة', 'الموديل', ...processedData.years, 'الإجمالي'];
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.className = 'px-4 py-4 text-white font-bold text-right border-b-2 border-blue-400';
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+
+            const sortedCars = Object.values(processedData.cars).sort((a, b) => b.total - a.total);
+
+            sortedCars.forEach(car => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-200';
+
+                const tdMake = document.createElement('td');
+                tdMake.className = 'px-4 py-3 font-bold text-gray-800';
+                tdMake.textContent = car.make;
+                tr.appendChild(tdMake);
+
+                const tdModel = document.createElement('td');
+                tdModel.className = 'px-4 py-3 text-gray-700 font-semibold';
+                tdModel.textContent = car.model;
+                tr.appendChild(tdModel);
+
+                processedData.years.forEach(year => {
+                    const td = document.createElement('td');
+                    td.className = 'px-4 py-3 text-center text-gray-600';
+                    const value = car.years[year] || 0;
+                    td.textContent = value > 0 ? Math.round(value).toLocaleString('ar-EG') : '-';
+                    tr.appendChild(td);
+                });
+
+                const tdTotal = document.createElement('td');
+                tdTotal.className = 'px-4 py-3 text-center font-bold text-blue-600 bg-blue-50';
+                tdTotal.textContent = Math.round(car.total).toLocaleString('ar-EG');
+                tr.appendChild(tdTotal);
+
+                tableBody.appendChild(tr);
+            });
+
+            document.getElementById('tableCount').textContent = `${sortedCars.length} موديل`;
+        }
+
+        function buildChart() {
+            const ctx = document.getElementById('carChart');
+            if (!ctx) return;
+
+            const chartLoading = document.getElementById('chartLoading');
+            chartLoading.classList.remove('hidden');
+
+            setTimeout(() => {
+                const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+                const selectedMake = document.getElementById('makeFilter').value;
+                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+
+                let chartData = Object.values(processedData.cars);
+
+                // Apply quantity filter
+                if (activeFilter === 'less50') {
+                    chartData = chartData.filter(car => car.total < 50);
+                } else if (activeFilter === 'more50') {
+                    chartData = chartData.filter(car => car.total >= 50);
+                } else if (activeFilter === 'more100') {
+                    chartData = chartData.filter(car => car.total >= 100);
+                } else if (activeFilter === 'more500') {
+                    chartData = chartData.filter(car => car.total >= 500);
+                }
+
+                // Apply make filter
+                if (selectedMake) {
+                    chartData = chartData.filter(car => car.make === selectedMake);
+                }
+
+                // Apply search filter
+                if (searchTerm) {
+                    chartData = chartData.filter(car => 
+                        car.make.toLowerCase().includes(searchTerm) || 
+                        car.model.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                // Apply specific model selection
+                if (selectedModels.size > 0) {
+                    chartData = chartData.filter(car => {
+                        const key = `${car.make}|${car.model}`;
+                        return selectedModels.has(key);
+                    });
+                }
+
+                chartData = chartData.sort((a, b) => b.total - a.total).slice(0, 20);
+
+                const labels = chartData.map(car => `${car.make} - ${car.model}`);
+                const data = chartData.map(car => car.total);
+
+                const colors = data.map((_, i) => {
+                    const hue = (i * 30) % 360;
+                    return `hsla(${hue}, 75%, 60%, 0.85)`;
+                });
+
+                if (carChart) {
+                    carChart.destroy();
+                }
+
+                carChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            label: 'إجمالي السيارات',
+                            data,
+                            backgroundColor: colors,
+                            borderColor: colors.map(c => c.replace('0.85', '1')),
+                            borderWidth: 2,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                rtl: true,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 13 },
+                                padding: 12,
+                                callbacks: {
+                                    label: (context) => `الإجمالي: ${Math.round(context.raw).toLocaleString('ar-EG')}`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0,0,0,0.08)'
+                                },
+                                ticks: {
+                                    font: { size: 12, weight: 'bold' },
+                                    callback: (value) => Math.round(value).toLocaleString('ar-EG')
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: { size: 11 }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                document.getElementById('chartCount').textContent = `${chartData.length} موديل معروض`;
+                chartLoading.classList.add('hidden');
+            }, 100);
+        }
+
+        // Event listeners for filters
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                buildChart();
+            });
+        });
+
+        document.getElementById('searchBox').addEventListener('input', () => {
+            buildChart();
+        });
+
+        document.getElementById('makeFilter').addEventListener('change', () => {
+            buildChart();
+        });
+
+        // Initialize
+        initElementSdk();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8080e1c467ce99',t:'MTc3MDEwNjc2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
