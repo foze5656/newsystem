@@ -278,4 +278,275 @@
                     <div class="flex items-center justify-between flex-wrap gap-3">
                         <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
                             <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            الرسم البياني التفاعلي
+                        </h2>
+                        <span id="chartCount" class="badge bg-blue-100 text-blue-700"></span>
+                    </div>
+
+                    <!-- Filters Row -->
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <label class="font-semibold text-gray-700">الكمية:</label>
+                        <button class="filter-btn active px-4 py-2 rounded-lg border-2 border-blue-500 font-semibold text-sm" data-filter="all">
+                            الكل
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="less50">
+                            &lt; 50
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more50">
+                            ≥ 50
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more100">
+                            ≥ 100
+                        </button>
+                        <button class="filter-btn px-4 py-2 rounded-lg border-2 border-blue-500 text-blue-600 font-semibold text-sm" data-filter="more500">
+                            ≥ 500
+                        </button>
+                    </div>
+
+                    <!-- Search and Model Filter -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-2">🔍 بحث بالشركة أو الموديل:</label>
+                            <input type="text" id="searchBox" placeholder="ابحث عن شركة أو موديل..." class="search-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-2">🚗 فلترة حسب الشركة:</label>
+                            <select id="makeFilter" class="select-box w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none transition-all">
+                                <option value="">جميع الشركات</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Specific Model Selection -->
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-2">📋 اختيار موديلات محددة (اختياري):</label>
+                        <div class="relative">
+                            <div id="modelMultiSelect" class="border-2 border-gray-300 rounded-lg p-3 min-h-[50px] cursor-pointer hover:border-blue-400 transition-all bg-white">
+                                <span class="text-gray-400">اضغط لاختيار موديلات محددة...</span>
+                            </div>
+                            <div id="modelDropdown" class="hidden absolute z-50 w-full mt-2 bg-white border-2 border-gray-300 rounded-lg shadow-2xl max-h-64 overflow-y-auto">
+                                <div class="p-3 border-b bg-gray-50 sticky top-0">
+                                    <input type="text" id="modelSearchBox" placeholder="بحث في الموديلات..." class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                                </div>
+                                <div id="modelList" class="p-2"></div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">💡 اترك فارغاً لعرض جميع الموديلات</p>
+                    </div>
+                </div>
+
+                <div class="chart-container relative">
+                    <div id="chartLoading" class="chart-loading hidden">
+                        <div class="spinner"></div>
+                        <p class="text-gray-600 mt-3 font-semibold">جاري تحديث الرسم البياني...</p>
+                    </div>
+                    <canvas id="carChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="glass-card rounded-2xl p-6 fade-in">
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        جدول البيانات التفصيلي
+                    </h2>
+                    <span id="tableCount" class="badge bg-green-100 text-green-700"></span>
+                </div>
+                <div class="overflow-x-auto rounded-lg" style="max-height: 600px;">
+                    <table id="dataTable" class="data-table w-full border-collapse">
+                        <thead>
+                            <tr id="tableHeader"></tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const defaultConfig = {
+            page_title: 'محلل بيانات السيارات المتقدم',
+            upload_button_text: 'رفع ملف Excel',
+            success_message: 'تم التحليل بنجاح!',
+            background_color: '#0f172a',
+            card_color: '#ffffff',
+            text_color: '#1f2937',
+            primary_color: '#3b82f6',
+            accent_color: '#10b981'
+        };
+
+        let config = { ...defaultConfig };
+        let selectedFile = null;
+        let processedData = null;
+        let carChart = null;
+        let selectedModels = new Set();
+        let allModels = [];
+
+        // Element SDK Integration
+        async function initElementSdk() {
+            if (window.elementSdk) {
+                await window.elementSdk.init({
+                    defaultConfig,
+                    onConfigChange: async (newConfig) => {
+                        config = { ...defaultConfig, ...newConfig };
+                        applyConfig();
+                    },
+                    mapToCapabilities: (cfg) => ({
+                        recolorables: [
+                            {
+                                get: () => cfg.background_color || defaultConfig.background_color,
+                                set: (v) => window.elementSdk.setConfig({ background_color: v })
+                            },
+                            {
+                                get: () => cfg.card_color || defaultConfig.card_color,
+                                set: (v) => window.elementSdk.setConfig({ card_color: v })
+                            },
+                            {
+                                get: () => cfg.text_color || defaultConfig.text_color,
+                                set: (v) => window.elementSdk.setConfig({ text_color: v })
+                            },
+                            {
+                                get: () => cfg.primary_color || defaultConfig.primary_color,
+                                set: (v) => window.elementSdk.setConfig({ primary_color: v })
+                            },
+                            {
+                                get: () => cfg.accent_color || defaultConfig.accent_color,
+                                set: (v) => window.elementSdk.setConfig({ accent_color: v })
+                            }
+                        ],
+                        borderables: [],
+                        fontEditable: undefined,
+                        fontSizeable: undefined
+                    }),
+                    mapToEditPanelValues: (cfg) => new Map([
+                        ['page_title', cfg.page_title || defaultConfig.page_title],
+                        ['upload_button_text', cfg.upload_button_text || defaultConfig.upload_button_text],
+                        ['success_message', cfg.success_message || defaultConfig.success_message]
+                    ])
+                });
+            }
+        }
+
+        function applyConfig() {
+            document.getElementById('pageTitle').textContent = config.page_title || defaultConfig.page_title;
+            document.getElementById('uploadText').textContent = config.upload_button_text || defaultConfig.upload_button_text;
+        }
+
+        // File handling
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const processBtn = document.getElementById('processBtn');
+        const clearFileBtn = document.getElementById('clearFile');
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        clearFileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearFile();
+        });
+
+        function handleFile(file) {
+            hideError();
+            const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+            const validExtensions = ['.xlsx', '.xls'];
+            const hasValidExtension = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+            
+            if (!hasValidExtension && !validTypes.includes(file.type)) {
+                showError('يرجى اختيار ملف Excel صالح (.xlsx أو .xls)');
+                return;
+            }
+
+            selectedFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            fileInfo.classList.remove('hidden');
+            processBtn.disabled = false;
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.classList.add('hidden');
+            processBtn.disabled = true;
+            hideError();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // Error handling
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            document.getElementById('errorText').textContent = message;
+            errorDiv.classList.remove('hidden');
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast px-6 py-4 rounded-xl shadow-2xl ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'} text-white font-bold`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Process Excel
+        processBtn.addEventListener('click', processExcel);
+
+        async function processExcel() {
+            if (!selectedFile) {
+                showError('يرجى اختيار ملف Excel أولاً');
+                return;
+            }
+
+            processBtn.disabled = true;
+            processBtn.innerHTML = '<span class="flex items-center justify-center gap-3"><div class="spinner"></div>جاري المعالجة...</span>';
+
+            // Add small delay for UX
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            try {
+                const data = await readExcelFile(selectedFile);
+                
+                if (!data || data.length === 0) {
+                    showError('الملف فارغ أو لا يحتوي على بيانات صالحة');
+      
