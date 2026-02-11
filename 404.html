@@ -1480,6 +1480,171 @@
     .date-3 { top: 350px; left: 30px; font-size: 24px; animation-delay: 0.6s; }
     .date-4 { bottom: 280px; left: 35px; font-size: 24px; animation-delay: 1.8s; }
     
+    /* Imsakia (Ramadan Schedule) Styles */
+    .imsakia-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .imsakia-header {
+      background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%);
+      color: #000;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 20px;
+      box-shadow: 0 8px 24px rgba(242, 188, 27, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    
+    .imsakia-lantern {
+      font-size: 28px;
+      animation: lanternSway 4s ease-in-out infinite;
+    }
+    
+    .imsakia-filter {
+      background: #1a1a1a;
+      border: 1px solid #F2BC1B;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: #F2BC1B;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .imsakia-filter:hover {
+      background: #262626;
+      box-shadow: 0 0 20px rgba(242, 188, 27, 0.1);
+    }
+    
+    .imsakia-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    
+    .imsakia-table thead {
+      background: linear-gradient(135deg, #1a1a1a 0%, #262626 100%);
+      border-bottom: 2px solid #F2BC1B;
+    }
+    
+    .imsakia-table th {
+      padding: 14px;
+      color: #F2BC1B;
+      font-weight: 700;
+      text-align: right;
+      border-right: 1px solid #333;
+      font-size: 14px;
+    }
+    
+    .imsakia-table th:first-child {
+      border-right: none;
+    }
+    
+    .imsakia-table tbody tr {
+      border-bottom: 1px solid #262626;
+      transition: all 0.3s ease;
+    }
+    
+    .imsakia-table tbody tr:hover {
+      background: rgba(242, 188, 27, 0.05);
+      border-bottom-color: #F2BC1B;
+    }
+    
+    .imsakia-table tbody tr.current-day {
+      background: linear-gradient(90deg, rgba(242,188,27,0.1), transparent);
+      border: 2px solid #F2BC1B;
+      border-right: 2px solid #F2BC1B;
+    }
+    
+    .imsakia-table td {
+      padding: 12px 14px;
+      color: #ccc;
+      text-align: right;
+      border-right: 1px solid #333;
+      font-size: 13px;
+    }
+    
+    .imsakia-table td:first-child {
+      border-right: none;
+      font-weight: 600;
+      color: #F2BC1B;
+    }
+    
+    .imsakia-table tbody tr.current-day td:first-child {
+      color: #FFD700;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    
+    .prayer-time {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .prayer-time.current {
+      color: #FFD700;
+      font-weight: 700;
+      animation: highlight 1s ease-in-out infinite alternate;
+    }
+    
+    @keyframes highlight {
+      from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+      to { text-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+    }
+    
+    .next-prayer-info {
+      background: linear-gradient(135deg, #1a3a1a 0%, #0f2a0f 100%);
+      border: 1px solid #4ade80;
+      border-radius: 8px;
+      padding: 14px;
+      margin-top: 12px;
+      color: #86efac;
+      text-align: center;
+      font-weight: 600;
+      animation: slideIn 0.5s ease;
+    }
+    
+    .iftar-countdown {
+      background: linear-gradient(135deg, #3a1a1a 0%, #2a0f0f 100%);
+      border: 2px solid #ef4444;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+      color: #fca5a5;
+      text-align: center;
+      font-weight: 700;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .countdown-number {
+      font-size: 28px;
+      color: #fca5a5;
+      font-weight: 900;
+      display: inline-block;
+      margin: 0 4px;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    
     /* Service item Ramadan decoration */
     .service-item::before {
       content: '🌙';
@@ -1519,6 +1684,9 @@
       </div>
       
       <form id="loginForm" class="login-form">
+        <div style="text-align: center; margin-bottom: 12px; font-size: 14px; color: #F2BC1B; font-weight: 700;">
+          🌙 مبارك عليكم الشهر - رمضان كريم 🌙
+        </div>
         <div class="login-field">
           <label for="username">اسم المستخدم</label>
           <input 
@@ -1623,6 +1791,8 @@
     <div class="service-item" data-service="insurance"><span class="icon">🚧</span> <span class="label">تأمينات</span>
     </div>
     <div class="service-item" data-service="annualSubscription"><span class="icon">📅</span> <span class="label">الاشتراك السنوي</span>
+    </div>
+    <div class="service-item" data-service="imsakia"><span class="icon">🌙</span> <span class="label">امساكيه رمضان</span>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
@@ -2033,7 +2203,8 @@
           'carwash': 'غسيل السيارات',
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات',
-          'annualSubscription': 'الاشتراك السنوي'
+          'annualSubscription': 'الاشتراك السنوي',
+          'imsakia': 'امساكيه رمضان'
         };
         
         const titleElement = document.getElementById('serviceTitle');
@@ -2092,6 +2263,9 @@
           case 'annualSubscription':
             renderAnnualSubscriptionInterface();
             break;
+          case 'imsakia':
+            renderImsakia();
+            break;
         }
       }
     });
@@ -2113,12 +2287,16 @@
       const currentMonth = now.getMonth() + 1; // 1..12
       contentArea.innerHTML = `
         <div class="form-section full-width">
-          <h3 class="section-title">الموظفين - ${monthNames[(new Date()).getMonth()]}</h3>
+          <div style="background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%); color: #000; padding: 16px; border-radius: 8px; text-align: center; margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 18px;">
+            <span style="font-size: 24px; animation: lanternSway 4s ease-in-out infinite;">🏮</span>
+            مراكز الطلبات - ${monthNames[(new Date()).getMonth()]} - رمضان كريم
+            <span style="font-size: 24px; animation: lanternSway 4s ease-in-out infinite; animation-delay: 1s;">🏮</span>
+          </div>
           <div style="display:flex;align-items:center;justify-content:flex-start;margin-bottom:8px;">
             <div id="staffUpdated" style="color:#999; font-size:13px;">تحميل...</div>
           </div>
           <div id="staffTop" style="display:flex;flex-direction:column;gap:8px;align-items:center;
-               background:#0f0f0f;border:1px solid #333;padding:12px;border-radius:6px;">
+               background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);border:1px solid #F2BC1B;padding:16px;border-radius:8px;">
             <!-- top 3 will be injected here -->
           </div>
         </div>
@@ -2191,11 +2369,11 @@
         const f = document.createElement('div');
         f.style.textAlign = 'center';
         f.style.padding = '18px';
-        f.style.border = '1px solid #333';
+        f.style.border = '2px solid #F2BC1B';
         f.style.borderRadius = '8px';
         f.style.width = '100%';
-        f.style.background = 'linear-gradient(90deg, rgba(242,188,27,0.06), transparent)';
-        f.innerHTML = `<div style="font-size:16px;color:#ccc;margin-bottom:6px;">المركز الأول</div><div style="font-size:28px;font-weight:900;color:#F2BC1B;">${first.name}</div><div style="color:#fff;font-size:20px;margin-top:8px;">${first.count} طلب</div>`;
+        f.style.background = 'linear-gradient(90deg, rgba(242,188,27,0.15), rgba(242,188,27,0.05))';
+        f.innerHTML = `<div style="font-size:16px;color:#F2BC1B;margin-bottom:6px;font-weight:700;">🥇 المركز الأول</div><div style="font-size:28px;font-weight:900;color:#FFD700;">${first.name}</div><div style="color:#86efac;font-size:20px;margin-top:8px;font-weight:700;">${first.count} طلب</div>`;
         f.classList.add('animated-highlight');
         topEl.appendChild(f);
       }
@@ -2210,22 +2388,22 @@
         const s = document.createElement('div');
         s.style.flex = '1';
         s.style.padding = '12px';
-        s.style.border = '1px solid #333';
+        s.style.border = '1px solid #4ade80';
         s.style.borderRadius = '8px';
         s.style.textAlign = 'center';
-        s.style.background = '#0f0f0f';
-        s.innerHTML = `<div style="font-size:14px;color:#ccc;margin-bottom:4px;">المركز الثاني</div><div style="font-weight:800;color:#F2BC1B;">${second.name}</div><div style="color:#fff;">${second.count} طلب</div>`;
+        s.style.background = 'linear-gradient(135deg, rgba(242,188,27,0.08), transparent)';
+        s.innerHTML = `<div style="font-size:14px;color:#F2BC1B;margin-bottom:4px;font-weight:700;">🥈 المركز الثاني</div><div style="font-weight:800;color:#FFD700;">${second.name}</div><div style="color:#86efac;font-weight:600;">${second.count} طلب</div>`;
         duo.appendChild(s);
       }
       if (third) {
         const t = document.createElement('div');
         t.style.flex = '1';
         t.style.padding = '12px';
-        t.style.border = '1px solid #333';
+        t.style.border = '1px solid #f97316';
         t.style.borderRadius = '8px';
         t.style.textAlign = 'center';
-        t.style.background = '#0f0f0f';
-        t.innerHTML = `<div style="font-size:14px;color:#ccc;margin-bottom:4px;">المركز الثالث</div><div style="font-weight:800;color:#F2BC1B;">${third.name}</div><div style="color:#fff;">${third.count} طلب</div>`;
+        t.style.background = 'linear-gradient(135deg, rgba(249,115,22,0.08), transparent)';
+        t.innerHTML = `<div style="font-size:14px;color:#f97316;margin-bottom:4px;font-weight:700;">🥉 المركز الثالث</div><div style="font-weight:800;color:#FFD700;">${third.name}</div><div style="color:#fb923c;font-weight:600;">${third.count} طلب</div>`;
         duo.appendChild(t);
       }
 
@@ -7154,6 +7332,163 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       
       // Load data
       loadAllTireData();
+    }
+
+    // Render Imsakia (Ramadan Schedule)
+    function renderImsakia() {
+      const contentArea = document.getElementById('contentArea');
+      
+      // Ramadan 2026 schedule (Saudi Arabia times)
+      const ramadanSchedule = [
+        {day: 1, date: '28 ديسمبر', fajr: '05:23', dhuhr: '12:04', asr: '15:07', isha: '18:31'},
+        {day: 2, date: '29 ديسمبر', fajr: '05:24', dhuhr: '12:04', asr: '15:08', isha: '18:32'},
+        {day: 3, date: '30 ديسمبر', fajr: '05:25', dhuhr: '12:05', asr: '15:09', isha: '18:33'},
+        {day: 4, date: '31 ديسمبر', fajr: '05:26', dhuhr: '12:05', asr: '15:10', isha: '18:34'},
+        {day: 5, date: '1 يناير', fajr: '05:27', dhuhr: '12:06', asr: '15:11', isha: '18:35'},
+        {day: 6, date: '2 يناير', fajr: '05:28', dhuhr: '12:07', asr: '15:12', isha: '18:36'},
+        {day: 7, date: '3 يناير', fajr: '05:29', dhuhr: '12:08', asr: '15:13', isha: '18:37'},
+        {day: 8, date: '4 يناير', fajr: '05:30', dhuhr: '12:09', asr: '15:14', isha: '18:38'},
+        {day: 9, date: '5 يناير', fajr: '05:31', dhuhr: '12:10', asr: '15:15', isha: '18:39'},
+        {day: 10, date: '6 يناير', fajr: '05:32', dhuhr: '12:11', asr: '15:16', isha: '18:40'},
+        {day: 11, date: '7 يناير', fajr: '05:33', dhuhr: '12:12', asr: '15:17', isha: '18:41'},
+        {day: 12, date: '8 يناير', fajr: '05:34', dhuhr: '12:13', asr: '15:18', isha: '18:42'},
+        {day: 13, date: '9 يناير', fajr: '05:35', dhuhr: '12:14', asr: '15:19', isha: '18:43'},
+        {day: 14, date: '10 يناير', fajr: '05:36', dhuhr: '12:15', asr: '15:20', isha: '18:44'},
+        {day: 15, date: '11 يناير', fajr: '05:37', dhuhr: '12:16', asr: '15:21', isha: '18:45'},
+        {day: 16, date: '12 يناير', fajr: '05:38', dhuhr: '12:17', asr: '15:22', isha: '18:46'},
+        {day: 17, date: '13 يناير', fajr: '05:39', dhuhr: '12:18', asr: '15:23', isha: '18:47'},
+        {day: 18, date: '14 يناير', fajr: '05:40', dhuhr: '12:19', asr: '15:24', isha: '18:48'},
+        {day: 19, date: '15 يناير', fajr: '05:41', dhuhr: '12:20', asr: '15:25', isha: '18:49'},
+        {day: 20, date: '16 يناير', fajr: '05:42', dhuhr: '12:21', asr: '15:26', isha: '18:50'},
+        {day: 21, date: '17 يناير', fajr: '05:43', dhuhr: '12:22', asr: '15:27', isha: '18:51'},
+        {day: 22, date: '18 يناير', fajr: '05:44', dhuhr: '12:23', asr: '15:28', isha: '18:52'},
+        {day: 23, date: '19 يناير', fajr: '05:45', dhuhr: '12:24', asr: '15:29', isha: '18:53'},
+        {day: 24, date: '20 يناير', fajr: '05:46', dhuhr: '12:25', asr: '15:30', isha: '18:54'},
+        {day: 25, date: '21 يناير', fajr: '05:47', dhuhr: '12:26', asr: '15:31', isha: '18:55'},
+        {day: 26, date: '22 يناير', fajr: '05:48', dhuhr: '12:27', asr: '15:32', isha: '18:56'},
+        {day: 27, date: '23 يناير', fajr: '05:49', dhuhr: '12:28', asr: '15:33', isha: '18:57'},
+        {day: 28, date: '24 يناير', fajr: '05:50', dhuhr: '12:29', asr: '15:34', isha: '18:58'},
+        {day: 29, date: '25 يناير', fajr: '05:51', dhuhr: '12:30', asr: '15:35', isha: '18:59'},
+        {day: 30, date: '26 يناير', fajr: '05:52', dhuhr: '12:31', asr: '15:36', isha: '19:00'}
+      ];
+      
+      const today = new Date();
+      const currentDay = today.getDate();
+      const currentMonth = today.getMonth() + 1;
+      
+      // Determine current Ramadan day (approximate based on current date)
+      let currentRamadanDay = null;
+      if (currentMonth === 2 && currentDay <= 26) {
+        currentRamadanDay = currentDay - 1; // For February 2026
+      }
+      
+      let html = `<div class="imsakia-container">
+        <div class="imsakia-header">
+          🏮 امساكيه رمضان 1447 هـ 🏮
+        </div>
+        <select id="imsakia-day-filter" class="imsakia-filter">
+          <option value="">عرض كل الأيام</option>`;
+      
+      ramadanSchedule.forEach(entry => {
+        html += `<option value="${entry.day}">اليوم ${entry.day}: ${entry.date}</option>`;
+      });
+      
+      html += `</select>
+        <table class="imsakia-table" id="imsakia-table">
+          <thead>
+            <tr>
+              <th>اليوم</th>
+              <th>التاريخ</th>
+              <th>الفجر</th>
+              <th>الظهر</th>
+              <th>العصر</th>
+              <th>العشاء</th>
+            </tr>
+          </thead>
+          <tbody id="imsakia-tbody">`;
+      
+      ramadanSchedule.forEach(entry => {
+        const isCurrentDay = entry.day === currentRamadanDay;
+        html += `<tr class="${isCurrentDay ? 'current-day' : ''}">
+          <td>${entry.day}</td>
+          <td>${entry.date}</td>
+          <td><div class="prayer-time ${isCurrentDay ? 'current' : ''}">🌅 ${entry.fajr}</div></td>
+          <td><div class="prayer-time ${isCurrentDay ? 'current' : ''}">☀️ ${entry.dhuhr}</div></td>
+          <td><div class="prayer-time ${isCurrentDay ? 'current' : ''}">🌤️ ${entry.asr}</div></td>
+          <td><div class="prayer-time ${isCurrentDay ? 'current' : ''}">🌙 ${entry.isha}</div></td>
+        </tr>`;
+      });
+      
+      html += `</tbody></table>`;
+      
+      // Add next prayer info
+      if (currentRamadanDay) {
+        const currentEntry = ramadanSchedule[currentRamadanDay - 1];
+        html += `<div class="next-prayer-info">
+          ⏰ الصلاة التالية: 🌙 المغرب (الإفطار) الساعة ${currentEntry.isha}
+          <div style="margin-top: 8px; font-size: 13px; color: #4ade80; font-weight: 700;">
+            🍽️ وقت الإفطار: ${currentEntry.isha}
+          </div>
+        </div>`;
+        
+        html += `<div class="iftar-countdown" id="countdown-box">
+          ⏳ الوقت المتبقي للإفطار: <span class="countdown-number" id="countdown">00:00:00</span>
+        </div>`;
+      }
+      
+      html += `</div>`;
+      
+      contentArea.innerHTML = html;
+      
+      // Add filter functionality
+      const filterSelect = document.getElementById('imsakia-day-filter');
+      const tbody = document.getElementById('imsakia-tbody');
+      
+      filterSelect.addEventListener('change', (e) => {
+        const selectedDay = e.target.value;
+        const rows = tbody.querySelectorAll('tr');
+        
+        if (!selectedDay) {
+          rows.forEach(row => row.style.display = '');
+        } else {
+          rows.forEach(row => {
+            const dayCell = row.querySelector('td:first-child');
+            row.style.display = dayCell.textContent == selectedDay ? '' : 'none';
+          });
+        }
+      });
+      
+      // Start countdown if on Ramadan
+      if (currentRamadanDay) {
+        startIftarCountdown(currentRamadanDay, ramadanSchedule);
+      }
+    }
+    
+    function startIftarCountdown(ramadanDay, schedule) {
+      const currentEntry = schedule[ramadanDay - 1];
+      const [iftarHour, iftarMin] = currentEntry.isha.split(':').map(Number);
+      
+      function updateCountdown() {
+        const now = new Date();
+        const iftarTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), iftarHour, iftarMin, 0);
+        
+        if (now > iftarTime) {
+          iftarTime.setDate(iftarTime.getDate() + 1);
+        }
+        
+        const diff = iftarTime - now;
+        const hours = Math.floor(diff / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        
+        const countdownEl = document.getElementById('countdown');
+        if (countdownEl) {
+          countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+      }
+      
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
     }
 
     // Render Annual Subscription Interface (الاشتراك السنوي)
