@@ -610,9 +610,22 @@
       text-align: center;
     }
 
+    .installments-hero-media {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .installments-hero-media img {
+      width: min(180px, 100%);
+      height: auto;
+      object-fit: contain;
+    }
+
     .installments-title {
       color: #F2BC1B;
-      font-size: 20px;
+      font-size: 26px;
       font-weight: 800;
       margin-bottom: 6px;
     }
@@ -626,6 +639,33 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+    }
+
+    .installments-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .installments-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .installments-pay {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #999;
+      font-size: 13px;
+      white-space: nowrap;
     }
 
     .installments-row {
@@ -652,6 +692,94 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+    }
+
+    .installments-how-body {
+      display: flex;
+      flex-direction: row-reverse;
+      gap: 16px;
+      align-items: start;
+      margin-top: 12px;
+    }
+
+    .installments-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .installments-step {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #ccc;
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .installments-step.active {
+      background: #F2BC1B;
+      color: #000;
+      border-color: #F2BC1B;
+      font-weight: 700;
+    }
+
+    .installments-carousel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .carousel-image-wrapper {
+      width: min(360px, 100%);
+      aspect-ratio: 1 / 1;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .carousel-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid #F2BC1B;
+      background: #0f0f0f;
+      color: #F2BC1B;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s ease;
+    }
+
+    .carousel-nav:hover {
+      background: #F2BC1B;
+      color: #000;
+    }
+
+    .carousel-nav.prev { right: -14px; }
+    .carousel-nav.next { left: -14px; }
+
+    .carousel-step-indicator {
+      color: #999;
+      font-size: 13px;
     }
     
     /* Back Button */
@@ -1530,8 +1658,16 @@
     <div class="modal">
       <button class="modal-close" data-close-modal="installmentHowModal">×</button>
       <h3>كيفية عمل طلب جديد للأقساط</h3>
-      <div class="installments-image-wrapper">
-        <img src="https://via.placeholder.com/420x420?text=%D8%B5%D9%88%D8%B1%D8%A9+%D8%B4%D8%B1%D8%AD+%D8%B7%D9%84%D8%A8+%D8%A7%D9%84%D8%A3%D9%82%D8%B3%D8%A7%D8%B7" alt="شرح طلب جديد للأقساط">
+      <div class="installments-how-body">
+        <div class="installments-steps" id="installmentsSteps"></div>
+        <div class="installments-carousel">
+          <button class="carousel-nav prev" id="installmentsPrevBtn" aria-label="الصورة السابقة">›</button>
+          <div class="carousel-image-wrapper">
+            <img id="installmentsHowImage" src="" alt="شرح طلب جديد للأقساط">
+          </div>
+          <button class="carousel-nav next" id="installmentsNextBtn" aria-label="الصورة التالية">‹</button>
+          <div class="carousel-step-indicator" id="installmentsStepIndicator">الخطوة 1 من 5</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1980,11 +2116,78 @@
     function openSimpleModal(modalId) {
       const modal = document.getElementById(modalId);
       if (modal) modal.classList.remove('hidden');
+
+      if (modalId === 'installmentHowModal') {
+        initInstallmentCarousel();
+        showInstallmentStep(0);
+      }
     }
 
     function closeSimpleModal(modalId) {
       const modal = document.getElementById(modalId);
       if (modal) modal.classList.add('hidden');
+    }
+
+    const installmentHowImages = [
+      'https://j.top4top.io/p_369872oe41.png',
+      'https://k.top4top.io/p_3698hqeux1.png',
+      'https://f.top4top.io/p_3698ieqsv1.jpeg',
+      'https://j.top4top.io/p_3698miggh3.png',
+      'https://k.top4top.io/p_3698bhkkb2.png'
+    ];
+    let currentInstallmentStep = 0;
+
+    function initInstallmentCarousel() {
+      if (window._installmentCarouselInit) return;
+
+      const stepsContainer = document.getElementById('installmentsSteps');
+      const prevBtn = document.getElementById('installmentsPrevBtn');
+      const nextBtn = document.getElementById('installmentsNextBtn');
+
+      if (!stepsContainer || !prevBtn || !nextBtn) return;
+
+      stepsContainer.innerHTML = installmentHowImages
+        .map((_, i) => `<div class="installments-step" data-step="${i}">الخطوة ${i + 1}</div>`)
+        .join('');
+
+      prevBtn.addEventListener('click', () => {
+        showInstallmentStep(currentInstallmentStep - 1);
+      });
+
+      nextBtn.addEventListener('click', () => {
+        showInstallmentStep(currentInstallmentStep + 1);
+      });
+
+      stepsContainer.addEventListener('click', (e) => {
+        const stepEl = e.target.closest('.installments-step');
+        if (!stepEl) return;
+        const stepIndex = parseInt(stepEl.dataset.step, 10);
+        if (!Number.isNaN(stepIndex)) showInstallmentStep(stepIndex);
+      });
+
+      window._installmentCarouselInit = true;
+    }
+
+    function showInstallmentStep(index) {
+      const total = installmentHowImages.length;
+      if (!total) return;
+
+      currentInstallmentStep = (index + total) % total;
+
+      const imageEl = document.getElementById('installmentsHowImage');
+      const indicatorEl = document.getElementById('installmentsStepIndicator');
+      const stepEls = document.querySelectorAll('#installmentsSteps .installments-step');
+
+      if (imageEl) imageEl.src = installmentHowImages[currentInstallmentStep];
+      if (indicatorEl) indicatorEl.textContent = `الخطوة ${currentInstallmentStep + 1} من ${total}`;
+
+      stepEls.forEach((el, idx) => {
+        if (idx === currentInstallmentStep) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
     }
 
     document.addEventListener('click', (e) => {
@@ -2118,18 +2321,22 @@
         <div class="form-section full-width installments-card">
           <h3 class="section-title">الاقساط</h3>
           <div class="installments-hero">
+            <div class="installments-hero-media">
+              <img src="https://j.top4top.io/p_369871p0h1.png" alt="Taly">
+            </div>
             <div class="installments-title">اخذ الحين ودفع تالي</div>
-            <div class="installments-subtitle">خدمة تمويل سهلة وسريعة للعملاء</div>
           </div>
           <div class="installments-actions">
-            <div class="installments-row">
-              <a class="btn-primary btn-inline" href="https://taly.io/partners/auth/login" target="_blank" rel="noopener">تسجيل طلب اقساط</a>
+            <div class="installments-actions-row">
+              <div class="installments-pay">
+                <span>شلون يدفع العميل</span>
+                <button class="info-icon" id="installmentsPayBtn" title="شلون يدفع العميل" aria-label="شلون يدفع العميل">i</button>
+              </div>
+              <div class="installments-buttons">
+                <a class="btn-primary btn-inline" href="https://taly.io/partners/auth/login" target="_blank" rel="noopener">تسجيل طلب اقساط</a>
+                <a class="btn-primary btn-inline btn-outline" href="https://taly.io/partners/terms-condition" target="_blank" rel="noopener">الشروط والاحكام</a>
+              </div>
               <button class="info-icon" id="installmentsHowBtn" title="كيفية عمل طلب جديد للاقساط" aria-label="كيفية عمل طلب جديد للاقساط">i</button>
-            </div>
-            <div class="installments-row">
-              <a class="btn-primary btn-inline btn-outline" href="https://taly.io/partners/terms-condition" target="_blank" rel="noopener">الشروط والاحكام</a>
-              <button class="info-icon" id="installmentsPayBtn" title="شلون يدفع العميل" aria-label="شلون يدفع العميل">i</button>
-              <span style="color:#999;font-size:13px;">شلون يدفع العميل</span>
             </div>
           </div>
         </div>
