@@ -751,32 +751,6 @@
       object-fit: contain;
     }
 
-    .carousel-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 1px solid #F2BC1B;
-      background: #0f0f0f;
-      color: #F2BC1B;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      transition: all 0.2s ease;
-    }
-
-    .carousel-nav:hover {
-      background: #F2BC1B;
-      color: #000;
-    }
-
-    .carousel-nav.prev { right: -14px; }
-    .carousel-nav.next { left: -14px; }
-
     .carousel-step-indicator {
       color: #999;
       font-size: 13px;
@@ -1661,11 +1635,9 @@
       <div class="installments-how-body">
         <div class="installments-steps" id="installmentsSteps"></div>
         <div class="installments-carousel">
-          <button class="carousel-nav prev" id="installmentsPrevBtn" aria-label="الصورة السابقة">›</button>
           <div class="carousel-image-wrapper">
             <img id="installmentsHowImage" src="" alt="شرح طلب جديد للأقساط">
           </div>
-          <button class="carousel-nav next" id="installmentsNextBtn" aria-label="الصورة التالية">‹</button>
           <div class="carousel-step-indicator" id="installmentsStepIndicator">الخطوة 1 من 5</div>
         </div>
       </div>
@@ -2129,9 +2101,9 @@
     }
 
     const installmentHowImages = [
+      'https://f.top4top.io/p_3698ieqsv1.jpeg',
       'https://j.top4top.io/p_369872oe41.png',
       'https://k.top4top.io/p_3698hqeux1.png',
-      'https://f.top4top.io/p_3698ieqsv1.jpeg',
       'https://j.top4top.io/p_3698miggh3.png',
       'https://k.top4top.io/p_3698bhkkb2.png'
     ];
@@ -2141,22 +2113,11 @@
       if (window._installmentCarouselInit) return;
 
       const stepsContainer = document.getElementById('installmentsSteps');
-      const prevBtn = document.getElementById('installmentsPrevBtn');
-      const nextBtn = document.getElementById('installmentsNextBtn');
-
-      if (!stepsContainer || !prevBtn || !nextBtn) return;
+      if (!stepsContainer) return;
 
       stepsContainer.innerHTML = installmentHowImages
         .map((_, i) => `<div class="installments-step" data-step="${i}">الخطوة ${i + 1}</div>`)
         .join('');
-
-      prevBtn.addEventListener('click', () => {
-        showInstallmentStep(currentInstallmentStep - 1);
-      });
-
-      nextBtn.addEventListener('click', () => {
-        showInstallmentStep(currentInstallmentStep + 1);
-      });
 
       stepsContainer.addEventListener('click', (e) => {
         const stepEl = e.target.closest('.installments-step');
