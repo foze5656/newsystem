@@ -711,6 +711,10 @@
       margin-top: 12px;
     }
 
+    .installments-how-modal {
+      width: min(720px, 96%);
+    }
+
     .installments-steps {
       display: flex;
       flex-direction: column;
@@ -743,7 +747,7 @@
     }
 
     .carousel-image-wrapper {
-      width: min(360px, 100%);
+      width: min(480px, 100%);
       aspect-ratio: 1 / 1;
       background: #111;
       border: 1px solid #333;
@@ -1638,7 +1642,7 @@
 
   <!-- Installments How-To Modal -->
   <div id="installmentHowModal" class="modal-overlay hidden" data-modal-id="installmentHowModal">
-    <div class="modal">
+    <div class="modal installments-how-modal">
       <button class="modal-close" data-close-modal="installmentHowModal">×</button>
       <h3>كيفية عمل طلب جديد للأقساط</h3>
       <div class="installments-how-body">
@@ -2612,7 +2616,7 @@
             في حال العميل طلب ونش<br>
             تبلغون العميل نقدر نوفر لك سيارة فولفو مع سايق يوصلك لاي منطقة داخل الكويت السعر الخدمة 10 دك لاي منطقة<br><br>
             في حال العميل سأل عن مدة الوصول 15 ل 25 اقصى مدة والخدمة متوفرة 24 ساعة على مدار اليوم<br><br>
-            ضروري تبلغون العميل انه في حال انتظار لسايق اول ربع ساعة مجانية وبعد الربع ساعة 0.150 فلس ويدفعها وهو بالطريج قبل لا يوصل وجهته
+            ضروري تبلغون العميل انه في حال انتظار لسايق اول ربع ساعة مجانية وبعد الربع ساعة 0.150 فلس (لكل دقيقه) ويدفعها وهو بالطريج قبل لا يوصل وجهته
           </div>
         </div>
       `;
