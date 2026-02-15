@@ -554,6 +554,105 @@
       background: #d9a616;
       transform: translateY(-2px);
     }
+
+    .btn-inline {
+      width: auto;
+      margin-top: 0;
+      padding: 10px 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #F2BC1B;
+      border: 1px solid #F2BC1B;
+    }
+
+    .btn-outline:hover {
+      background: #F2BC1B;
+      color: #000;
+    }
+
+    .info-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #F2BC1B;
+      background: #0f0f0f;
+      color: #F2BC1B;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .info-icon:hover {
+      background: #F2BC1B;
+      color: #000;
+    }
+
+    .installments-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .installments-hero {
+      background: #0f0f0f;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .installments-title {
+      color: #F2BC1B;
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .installments-subtitle {
+      color: #999;
+      font-size: 13px;
+    }
+
+    .installments-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .installments-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .installments-image-wrapper {
+      width: min(420px, 100%);
+      aspect-ratio: 1 / 1;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .installments-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
     
     /* Back Button */
     .btn-back {
@@ -1358,318 +1457,6 @@
     /* Important red message used in protection results (single red note as requested) */
     .prot-important{ margin-top:12px; padding:12px; border-radius:8px; background: rgba(127,29,29,0.04); border:1px solid #ef4444; color:#ffb3b3; font-weight:700 }
     .prot-toast{ position:fixed; top:80px; right:40px; background:#F2BC1B; color:#000; padding:12px 16px; border-radius:10px; border:1px solid rgba(0,0,0,0.12); box-shadow:0 12px 40px rgba(0,0,0,0.6); display:none; z-index:1500; font-weight:700 }
-    
-    /* Ramadan Decorations */
-    .ramadan-decoration {
-      position: fixed;
-      z-index: 5;
-      pointer-events: none;
-    }
-    
-    /* Top Right Corner Decoration */
-    .ramadan-corner-tr {
-      top: 0;
-      right: 0;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle at 100% 0%, rgba(242, 188, 27, 0.15), transparent 70%);
-      border-radius: 0 0 0 200px;
-    }
-    
-    /* Top Left Corner Decoration */
-    .ramadan-corner-tl {
-      top: 0;
-      left: 0;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle at 0% 0%, rgba(242, 188, 27, 0.15), transparent 70%);
-      border-radius: 0 0 200px 0;
-    }
-    
-    /* Bottom Right Corner Decoration */
-    .ramadan-corner-br {
-      bottom: 0;
-      right: 0;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle at 100% 100%, rgba(242, 188, 27, 0.15), transparent 70%);
-      border-radius: 200px 0 0 0;
-    }
-    
-    /* Bottom Left Corner Decoration */
-    .ramadan-corner-bl {
-      bottom: 0;
-      left: 0;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle at 0% 100%, rgba(242, 188, 27, 0.15), transparent 70%);
-      border-radius: 0 200px 0 0;
-    }
-    
-    /* Crescent Moon */
-    .crescent-moon {
-      position: fixed;
-      width: 80px;
-      height: 80px;
-      top: 30px;
-      right: 30px;
-      z-index: 10;
-      animation: moonFloat 6s ease-in-out infinite;
-    }
-    
-    @keyframes moonFloat {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(5deg); }
-    }
-    
-    /* Star decorations */
-    .star {
-      position: fixed;
-      z-index: 8;
-      animation: starTwinkle 3s ease-in-out infinite;
-      pointer-events: none;
-    }
-    
-    @keyframes starTwinkle {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
-    }
-    
-    .star-1 { top: 60px; right: 150px; font-size: 20px; animation-delay: 0s; }
-    .star-2 { top: 40px; right: 220px; font-size: 16px; animation-delay: 0.5s; }
-    .star-3 { bottom: 120px; right: 80px; font-size: 18px; animation-delay: 1s; }
-    .star-4 { bottom: 80px; right: 160px; font-size: 14px; animation-delay: 1.5s; }
-    .star-5 { top: 100px; left: 40px; font-size: 18px; animation-delay: 2s; }
-    .star-6 { top: 60px; left: 120px; font-size: 16px; animation-delay: 0.8s; }
-    .star-7 { bottom: 100px; left: 50px; font-size: 20px; animation-delay: 1.2s; }
-    .star-8 { bottom: 60px; left: 140px; font-size: 14px; animation-delay: 2.2s; }
-    
-    /* Lantern decorations */
-    .lantern {
-      position: fixed;
-      z-index: 7;
-      animation: lanternSway 4s ease-in-out infinite;
-      pointer-events: none;
-    }
-    
-    @keyframes lanternSway {
-      0%, 100% { transform: translateX(0px) rotate(-2deg); }
-      50% { transform: translateX(15px) rotate(2deg); }
-    }
-    
-    .lantern-1 { top: 100px; right: 20px; font-size: 40px; animation-delay: 0s; }
-    .lantern-2 { bottom: 100px; right: 20px; font-size: 40px; animation-delay: 1s; }
-    .lantern-3 { top: 150px; left: 20px; font-size: 40px; animation-delay: 0.5s; }
-    .lantern-4 { bottom: 150px; left: 20px; font-size: 40px; animation-delay: 1.5s; }
-    
-    /* Dates decoration */
-    .date-palm {
-      position: fixed;
-      z-index: 6;
-      animation: dateFloat 5s ease-in-out infinite;
-      pointer-events: none;
-    }
-    
-    @keyframes dateFloat {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
-    }
-    
-    .date-1 { top: 300px; right: 30px; font-size: 24px; animation-delay: 0s; }
-    .date-2 { bottom: 300px; right: 40px; font-size: 24px; animation-delay: 1.2s; }
-    .date-3 { top: 350px; left: 30px; font-size: 24px; animation-delay: 0.6s; }
-    .date-4 { bottom: 280px; left: 35px; font-size: 24px; animation-delay: 1.8s; }
-    
-    /* Imsakia (Ramadan Schedule) Styles */
-    .imsakia-container {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    
-    .imsakia-header {
-      background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%);
-      color: #000;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      font-weight: 700;
-      font-size: 20px;
-      box-shadow: 0 8px 24px rgba(242, 188, 27, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-    
-    .imsakia-lantern {
-      font-size: 28px;
-      animation: lanternSway 4s ease-in-out infinite;
-    }
-    
-    .imsakia-filter {
-      background: #1a1a1a;
-      border: 1px solid #F2BC1B;
-      padding: 12px 16px;
-      border-radius: 8px;
-      color: #F2BC1B;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .imsakia-filter:hover {
-      background: #262626;
-      box-shadow: 0 0 20px rgba(242, 188, 27, 0.1);
-    }
-    
-    .imsakia-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-    
-    .imsakia-table thead {
-      background: linear-gradient(135deg, #1a1a1a 0%, #262626 100%);
-      border-bottom: 2px solid #F2BC1B;
-    }
-    
-    .imsakia-table th {
-      padding: 14px;
-      color: #F2BC1B;
-      font-weight: 700;
-      text-align: right;
-      border-right: 1px solid #333;
-      font-size: 14px;
-    }
-    
-    .imsakia-table th:first-child {
-      border-right: none;
-    }
-    
-    .imsakia-table tbody tr {
-      border-bottom: 1px solid #262626;
-      transition: all 0.3s ease;
-    }
-    
-    .imsakia-table tbody tr:hover {
-      background: rgba(242, 188, 27, 0.05);
-      border-bottom-color: #F2BC1B;
-    }
-    
-    .imsakia-table tbody tr.current-day {
-      background: linear-gradient(90deg, rgba(242,188,27,0.1), transparent);
-      border: 2px solid #F2BC1B;
-      border-right: 2px solid #F2BC1B;
-    }
-    
-    .imsakia-table td {
-      padding: 12px 14px;
-      color: #ccc;
-      text-align: right;
-      border-right: 1px solid #333;
-      font-size: 13px;
-    }
-    
-    .imsakia-table td:first-child {
-      border-right: none;
-      font-weight: 600;
-      color: #F2BC1B;
-    }
-    
-    .imsakia-table tbody tr.current-day td:first-child {
-      color: #FFD700;
-      font-size: 15px;
-      font-weight: 700;
-    }
-    
-    .prayer-time {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .prayer-time.current {
-      color: #FFD700;
-      font-weight: 700;
-      animation: highlight 1s ease-in-out infinite alternate;
-    }
-    
-    @keyframes highlight {
-      from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
-      to { text-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
-    }
-    
-    .next-prayer-info {
-      background: linear-gradient(135deg, #1a3a1a 0%, #0f2a0f 100%);
-      border: 1px solid #4ade80;
-      border-radius: 8px;
-      padding: 14px;
-      margin-top: 12px;
-      color: #86efac;
-      text-align: center;
-      font-weight: 600;
-      animation: slideIn 0.5s ease;
-    }
-    
-    .iftar-countdown {
-      background: linear-gradient(135deg, #3a1a1a 0%, #2a0f0f 100%);
-      border: 2px solid #ef4444;
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 12px;
-      color: #fca5a5;
-      text-align: center;
-      font-weight: 700;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    
-    .countdown-number {
-      font-size: 28px;
-      color: #fca5a5;
-      font-weight: 900;
-      display: inline-block;
-      margin: 0 4px;
-    }
-    
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-    }
-    
-    /* Service item Ramadan decoration */
-    .service-item::before {
-      content: '🌙';
-      margin-right: 4px;
-      font-size: 14px;
-      animation: itemFloat 2s ease-in-out infinite;
-    }
-    
-    @keyframes itemFloat {
-      0%, 100% { transform: translateY(0px) scale(1); opacity: 1; }
-      50% { transform: translateY(-3px) scale(1.05); opacity: 0.8; }
-    }
-    
-    /* Header title animation for Ramadan text */
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: scale(0.95); }
-      50% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.95); }
-    }
-    
-    .ramadan-text {
-      display: inline-block;
-      animation: fadeInOut 3s ease-in-out infinite;
-      margin-right: 8px;
-    }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
@@ -1684,9 +1471,6 @@
       </div>
       
       <form id="loginForm" class="login-form">
-        <div style="text-align: center; margin-bottom: 12px; font-size: 14px; color: #F2BC1B; font-weight: 700;">
-          🌙 مبارك عليكم الشهر - رمضان كريم 🌙
-        </div>
         <div class="login-field">
           <label for="username">اسم المستخدم</label>
           <input 
@@ -1737,6 +1521,35 @@
       <div class="logout-modal-buttons">
         <button id="logoutCancel" class="logout-modal-btn logout-modal-btn-cancel">إلغاء</button>
         <button id="logoutConfirm" class="logout-modal-btn logout-modal-btn-confirm">تسجيل الخروج</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Installments How-To Modal -->
+  <div id="installmentHowModal" class="modal-overlay hidden" data-modal-id="installmentHowModal">
+    <div class="modal">
+      <button class="modal-close" data-close-modal="installmentHowModal">×</button>
+      <h3>كيفية عمل طلب جديد للأقساط</h3>
+      <div class="installments-image-wrapper">
+        <img src="https://via.placeholder.com/420x420?text=%D8%B5%D9%88%D8%B1%D8%A9+%D8%B4%D8%B1%D8%AD+%D8%B7%D9%84%D8%A8+%D8%A7%D9%84%D8%A3%D9%82%D8%B3%D8%A7%D8%B7" alt="شرح طلب جديد للأقساط">
+      </div>
+    </div>
+  </div>
+
+  <!-- Installments Payment Flow Modal -->
+  <div id="installmentPayModal" class="modal-overlay hidden" data-modal-id="installmentPayModal">
+    <div class="modal">
+      <button class="modal-close" data-close-modal="installmentPayModal">×</button>
+      <h3>شلون يدفع العميل</h3>
+      <div class="info-box" style="margin-top: 10px;">
+        <ol style="margin: 0; padding-right: 18px; line-height: 1.8;">
+          <li>يوصله مسج SMS، يضغط عليه.</li>
+          <li>يطلب منه رقم التلفون، وبعدين الـ OTP.</li>
+          <li>يطلب منه الرقم المدني ويوصله مصادقة على هويتي.</li>
+          <li>يطلب منه الإيميل ويوصله الـ OTP على نفس الإيميل.</li>
+          <li>تظهر له كافة البيانات: كل شهر كم راح يدفع.</li>
+          <li>طرق الدفع المتاحة: كي نت، آبل باي، فيزا.</li>
+        </ol>
       </div>
     </div>
   </div>
@@ -1792,7 +1605,7 @@
     </div>
     <div class="service-item" data-service="annualSubscription"><span class="icon">📅</span> <span class="label">الاشتراك السنوي</span>
     </div>
-    <div class="service-item" data-service="imsakia"><span class="icon">🌙</span> <span class="label">امساكيه رمضان</span>
+    <div class="service-item" data-service="installments"><span class="icon">💳</span> <span class="label">الاقساط</span>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
@@ -1808,8 +1621,8 @@
       <div style="font-size: 48px; margin-bottom: 16px;">
        📊
       </div>
-      <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">🌙 مبارك عليكم الشهر 🌙</h3>
-      <p style="color: #FFD700; font-size: 16px; font-weight: 600;">رمضان كريم ✨</p>
+      <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">مرحباً بك في لوحة التحكم</h3>
+      <p style="color: #999; font-size: 14px;">اختر خدمة من القائمة الجانبية للبدء</p>
      </div>
     </div>
    </main>
@@ -2163,6 +1976,30 @@
       // The user will see the same service they had before opening the iframe
     };
 
+    // Simple modal helpers (installments info)
+    function openSimpleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeSimpleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.add('hidden');
+    }
+
+    document.addEventListener('click', (e) => {
+      const closeBtn = e.target.closest('[data-close-modal]');
+      if (closeBtn) {
+        closeSimpleModal(closeBtn.dataset.closeModal);
+        return;
+      }
+
+      if (e.target.classList && e.target.classList.contains('modal-overlay')) {
+        const modalId = e.target.dataset.modalId;
+        if (modalId) closeSimpleModal(modalId);
+      }
+    });
+
     // Service Selection
     document.addEventListener('click', (e) => {
       const serviceItem = e.target.closest('.service-item');
@@ -2204,12 +2041,10 @@
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات',
           'annualSubscription': 'الاشتراك السنوي',
-          'imsakia': 'امساكيه رمضان'
+          'installments': 'الاقساط'
         };
         
-        const titleElement = document.getElementById('serviceTitle');
-        const serviceText = serviceTitles[currentService];
-        titleElement.innerHTML = serviceText + ' <span class="ramadan-text">🌙 رمضان كريم</span>';
+        document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
         
         switch(currentService) {
           case 'tow':
@@ -2231,7 +2066,7 @@
             renderLockInterface();
             break;
           case 'tireSheet':
-            renderTireSheetInterface();
+            openFullscreenIframe('https://portiers.netlify.app/', 'شيت التواير');
             break;
           case 'tireIncrease':
             openFullscreenIframe('https://portaragetiers.netlify.app/', 'زيادات التواير');
@@ -2263,8 +2098,8 @@
           case 'annualSubscription':
             renderAnnualSubscriptionInterface();
             break;
-          case 'imsakia':
-            renderImsakia();
+          case 'installments':
+            renderInstallmentsInterface();
             break;
         }
       }
@@ -2274,6 +2109,37 @@
     function renderBatterySubscriptionInterface() {
       renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
         '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
+    }
+
+    // Render Installments Interface
+    function renderInstallmentsInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width installments-card">
+          <h3 class="section-title">الاقساط</h3>
+          <div class="installments-hero">
+            <div class="installments-title">اخذ الحين ودفع تالي</div>
+            <div class="installments-subtitle">خدمة تمويل سهلة وسريعة للعملاء</div>
+          </div>
+          <div class="installments-actions">
+            <div class="installments-row">
+              <a class="btn-primary btn-inline" href="https://taly.io/partners/auth/login" target="_blank" rel="noopener">تسجيل طلب اقساط</a>
+              <button class="info-icon" id="installmentsHowBtn" title="كيفية عمل طلب جديد للاقساط" aria-label="كيفية عمل طلب جديد للاقساط">i</button>
+            </div>
+            <div class="installments-row">
+              <a class="btn-primary btn-inline btn-outline" href="https://taly.io/partners/terms-condition" target="_blank" rel="noopener">الشروط والاحكام</a>
+              <button class="info-icon" id="installmentsPayBtn" title="شلون يدفع العميل" aria-label="شلون يدفع العميل">i</button>
+              <span style="color:#999;font-size:13px;">شلون يدفع العميل</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const howBtn = document.getElementById('installmentsHowBtn');
+      if (howBtn) howBtn.onclick = () => openSimpleModal('installmentHowModal');
+
+      const payBtn = document.getElementById('installmentsPayBtn');
+      if (payBtn) payBtn.onclick = () => openSimpleModal('installmentPayModal');
     }
 
     // Render Staff Interface
@@ -2287,16 +2153,12 @@
       const currentMonth = now.getMonth() + 1; // 1..12
       contentArea.innerHTML = `
         <div class="form-section full-width">
-          <div style="background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%); color: #000; padding: 16px; border-radius: 8px; text-align: center; margin-bottom: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 18px;">
-            <span style="font-size: 24px; animation: lanternSway 4s ease-in-out infinite;">🏮</span>
-            مراكز الطلبات - ${monthNames[(new Date()).getMonth()]} - رمضان كريم
-            <span style="font-size: 24px; animation: lanternSway 4s ease-in-out infinite; animation-delay: 1s;">🏮</span>
-          </div>
+          <h3 class="section-title">الموظفين - ${monthNames[(new Date()).getMonth()]}</h3>
           <div style="display:flex;align-items:center;justify-content:flex-start;margin-bottom:8px;">
             <div id="staffUpdated" style="color:#999; font-size:13px;">تحميل...</div>
           </div>
           <div id="staffTop" style="display:flex;flex-direction:column;gap:8px;align-items:center;
-               background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);border:1px solid #F2BC1B;padding:16px;border-radius:8px;">
+               background:#0f0f0f;border:1px solid #333;padding:12px;border-radius:6px;">
             <!-- top 3 will be injected here -->
           </div>
         </div>
@@ -2369,11 +2231,11 @@
         const f = document.createElement('div');
         f.style.textAlign = 'center';
         f.style.padding = '18px';
-        f.style.border = '2px solid #F2BC1B';
+        f.style.border = '1px solid #333';
         f.style.borderRadius = '8px';
         f.style.width = '100%';
-        f.style.background = 'linear-gradient(90deg, rgba(242,188,27,0.15), rgba(242,188,27,0.05))';
-        f.innerHTML = `<div style="font-size:16px;color:#F2BC1B;margin-bottom:6px;font-weight:700;">🥇 المركز الأول</div><div style="font-size:28px;font-weight:900;color:#FFD700;">${first.name}</div><div style="color:#86efac;font-size:20px;margin-top:8px;font-weight:700;">${first.count} طلب</div>`;
+        f.style.background = 'linear-gradient(90deg, rgba(242,188,27,0.06), transparent)';
+        f.innerHTML = `<div style="font-size:16px;color:#ccc;margin-bottom:6px;">المركز الأول</div><div style="font-size:28px;font-weight:900;color:#F2BC1B;">${first.name}</div><div style="color:#fff;font-size:20px;margin-top:8px;">${first.count} طلب</div>`;
         f.classList.add('animated-highlight');
         topEl.appendChild(f);
       }
@@ -2388,22 +2250,22 @@
         const s = document.createElement('div');
         s.style.flex = '1';
         s.style.padding = '12px';
-        s.style.border = '1px solid #4ade80';
+        s.style.border = '1px solid #333';
         s.style.borderRadius = '8px';
         s.style.textAlign = 'center';
-        s.style.background = 'linear-gradient(135deg, rgba(242,188,27,0.08), transparent)';
-        s.innerHTML = `<div style="font-size:14px;color:#F2BC1B;margin-bottom:4px;font-weight:700;">🥈 المركز الثاني</div><div style="font-weight:800;color:#FFD700;">${second.name}</div><div style="color:#86efac;font-weight:600;">${second.count} طلب</div>`;
+        s.style.background = '#0f0f0f';
+        s.innerHTML = `<div style="font-size:14px;color:#ccc;margin-bottom:4px;">المركز الثاني</div><div style="font-weight:800;color:#F2BC1B;">${second.name}</div><div style="color:#fff;">${second.count} طلب</div>`;
         duo.appendChild(s);
       }
       if (third) {
         const t = document.createElement('div');
         t.style.flex = '1';
         t.style.padding = '12px';
-        t.style.border = '1px solid #f97316';
+        t.style.border = '1px solid #333';
         t.style.borderRadius = '8px';
         t.style.textAlign = 'center';
-        t.style.background = 'linear-gradient(135deg, rgba(249,115,22,0.08), transparent)';
-        t.innerHTML = `<div style="font-size:14px;color:#f97316;margin-bottom:4px;font-weight:700;">🥉 المركز الثالث</div><div style="font-weight:800;color:#FFD700;">${third.name}</div><div style="color:#fb923c;font-weight:600;">${third.count} طلب</div>`;
+        t.style.background = '#0f0f0f';
+        t.innerHTML = `<div style="font-size:14px;color:#ccc;margin-bottom:4px;">المركز الثالث</div><div style="font-weight:800;color:#F2BC1B;">${third.name}</div><div style="color:#fff;">${third.count} طلب</div>`;
         duo.appendChild(t);
       }
 
@@ -6719,779 +6581,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     // Load data on page load
     loadAllSheets();
-
-    // Render Tire Sheet Interface (شيت التواير)
-    function renderTireSheetInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <style>
-          .tire-search-container { padding: 0; }
-          .tire-loader {
-            border: 3px solid #333;
-            border-top: 3px solid #F2BC1B;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: tireSpin 1s linear infinite;
-          }
-          @keyframes tireSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          .tire-toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%);
-            color: #000;
-            padding: 12px 24px;
-            border-radius: 8px;
-            box-shadow: 0 8px 25px rgba(242, 188, 27, 0.3);
-            z-index: 1000;
-            animation: tireSlideUp 0.3s ease-out;
-            font-weight: bold;
-            font-size: 14px;
-          }
-          @keyframes tireSlideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .tire-suggestions {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            left: 0;
-            background: #1a1a1a;
-            border: 2px solid #F2BC1B;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 100;
-            box-shadow: 0 8px 25px rgba(242, 188, 27, 0.2);
-          }
-          .tire-suggestion-item {
-            padding: 12px 16px;
-            cursor: pointer;
-            color: #F2BC1B;
-            border-bottom: 1px solid #333;
-            transition: all 0.2s;
-            font-size: 14px;
-          }
-          .tire-suggestion-item:hover {
-            background: rgba(242, 188, 27, 0.1);
-          }
-          .tire-info-btn {
-            background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%);
-            color: #000;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-            transition: all 0.2s;
-            border: 1px solid #F2BC1B;
-            margin-right: 8px;
-          }
-          .tire-info-btn:hover {
-            transform: scale(1.1);
-          }
-          .tire-info-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-          }
-          .tire-info-content {
-            background: linear-gradient(145deg, #1a1a1a 0%, #262626 100%);
-            border: 2px solid #F2BC1B;
-            border-radius: 12px;
-            padding: 24px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 20px 60px rgba(242, 188, 27, 0.2);
-          }
-          .tire-info-close {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: #F2BC1B;
-            color: #000;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 20px;
-            border: none;
-            transition: all 0.2s;
-          }
-          .tire-info-section {
-            margin-bottom: 16px;
-            padding: 12px;
-            background: #0f0f0f;
-            border-radius: 8px;
-            border-right: 4px solid #F2BC1B;
-          }
-          .tire-info-title {
-            color: #F2BC1B;
-            font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 8px;
-          }
-        </style>
-        
-        <div class="form-section full-width">
-          <h3 class="section-title">🔍 بحث الإطارات</h3>
-        </div>
-        
-        <div id="tireInitialLoading" class="form-section full-width" style="text-align: center;">
-          <div style="padding: 20px;">
-            <div class="tire-loader" style="margin: 0 auto 12px;"></div>
-            <p style="color: #F2BC1B; font-weight: bold;">جاري تحميل البيانات...</p>
-          </div>
-        </div>
-        
-        <div id="tireSearchBox" class="form-section full-width hidden">
-          <div style="display: flex; gap: 8px; align-items: flex-start; margin-bottom: 12px;">
-            <div style="flex: 1; position: relative;">
-              <input type="text" id="tireSearchInput" placeholder="أدخل مقاس الإطار (مثال: 215/55R17)" 
-                class="form-control" style="width: 100%; position: relative; z-index: 10;">
-              <div id="tireSuggestionsDropdown" class="tire-suggestions hidden"></div>
-            </div>
-            <button id="tireSearchButton" class="btn-primary">🔍 بحث</button>
-          </div>
-        </div>
-        
-        <div id="tireBrandFilterContainer" class="form-section full-width hidden">
-          <div style="cursor: pointer; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;" id="tireFilterToggle">
-            <span style="font-weight: 700; color: #F2BC1B;">🏷️ الماركة</span>
-            <span style="color: #F2BC1B;">▼</span>
-          </div>
-          <div id="tireFilterContent" class="hidden" style="padding: 12px 0;">
-            <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer;">
-              <input type="checkbox" id="selectAllBrands" style="margin-right: 8px;">
-              <span style="color: #F2BC1B; font-weight: bold;">اختر الكل</span>
-            </label>
-            <div id="tireBrandCheckboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;"></div>
-          </div>
-        </div>
-        
-        <div id="tireResultsContainer" class="form-section full-width hidden">
-          <div style="background: linear-gradient(135deg, #F2BC1B 0%, #d4a319 100%); padding: 12px; border-radius: 6px 6px 0 0; margin: -10px -10px 0 -10px;">
-            <h3 style="color: #000; margin: 0; font-size: 16px; font-weight: 700;">📊 النتائج</h3>
-            <p id="tireResultsCount" style="color: #000; margin: 4px 0 0 0; font-size: 13px;"></p>
-          </div>
-          <div style="overflow-x: auto; margin-top: 0;">
-            <table class="data-table" style="width: 100%; font-size: 13px;">
-              <thead>
-                <tr style="background: #262626;">
-                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">الماركة</th>
-                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">المقاس</th>
-                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">النقشة</th>
-                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">البلد</th>
-                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">السنة</th>
-                  <th class="px-4 py-2 text-right border-b" style="border-color: #333; color: #F2BC1B;">السعر</th>
-                  <th class="px-4 py-2 text-center border-b" style="border-color: #333; color: #F2BC1B;">نسخ</th>
-                </tr>
-              </thead>
-              <tbody id="tireResultsBody" style="color: #F2BC1B;"></tbody>
-            </table>
-          </div>
-        </div>
-        
-        <div id="tireNoResults" class="form-section full-width hidden" style="text-align: center; padding: 20px;">
-          <p style="color: #F2BC1B; font-size: 16px;">❌ لا توجد نتائج لهذا المقاس</p>
-        </div>
-
-        <div id="tireInfoModal" class="tire-info-modal hidden">
-          <div class="tire-info-content">
-            <button class="tire-info-close" onclick="document.getElementById('tireInfoModal').classList.add('hidden')">×</button>
-            <h2 id="tireInfoTitle" style="color: #F2BC1B; margin-bottom: 16px; text-align: center;"></h2>
-            <div id="tireInfoBody"></div>
-          </div>
-        </div>
-      `;
-      
-      // Initialize tire search
-      initializeTireSearch();
-    }
-    
-    function initializeTireSearch() {
-      let allTireData = [], allTireSizes = new Set(), currentTireResults = [];
-      let selectedBrands = new Set();
-      
-      const TIRE_SHEET_ID = '1_ml2uiVRXrltZ4ef1PKSgNSO_4SMtXKn20JSajVEDu8';
-      const TIRE_SHEET_TABS = ['Berlin Tires', 'FTC', 'Babtain Tires', 'YOKOHAMA TIRE', 'Al TERRA TIRE (By YOKOHAMA)', 'MICHELIN , BFGOODRICH', 'AL Ghanim Group China', 'AL Ghanim Group Korea', 'AL Ghanim Group SUMITOMO', 'Pirelli Retail price list', 'Firestone Tires', 'UltraForce Tires', 'فرج حولي'];
-      
-      const brandTranslations = {
-        'MICHELIN': 'ميشلان', 'BRIDGESTONE': 'بريدجستون', 'GOODYEAR': 'جوديير', 'CONTINENTAL': 'كونتيننتال',
-        'PIRELLI': 'بيريللي', 'DUNLOP': 'دنلوب', 'YOKOHAMA': 'يوكوهاما', 'HANKOOK': 'هانكوك', 'KUMHO': 'كومهو',
-        'TOYO': 'تويو', 'FALKEN': 'فالكن', 'NITTO': 'نيتو', 'BBS': 'بي بي اس', 'MAXXIS': 'ماكسيس', 'NEXEN': 'نيكسن',
-        'FIREMAX': 'فاير ماكس', 'COOPER': 'كوبر', 'GENERAL': 'جنرال', 'VREDESTEIN': 'فريدشتاين', 'APLUS': 'ايه بلاس',
-        'RUNWAY': 'رانواي', 'TRIANGLE': 'تراينجل', 'ACCELERA': 'أكسيليرا', 'SONAR': 'سونار', 'KENDA': 'كيندا'
-      };
-      
-      const countryTranslations = {
-        'CHINA': 'صيني 🇨🇳', 'THAILAND': 'تايلندي 🇹🇭', 'JAPAN': 'ياباني 🇯🇵', 'KOREA': 'كوري 🇰🇷',
-        'INDONESIA': 'إندونيسي 🇮🇩', 'MALAYSIA': 'ماليزي 🇲🇾', 'VIETNAM': 'فيتنامي 🇻🇳'
-      };
-      
-      const speedRatings = {
-        'S': { speed: '180', description: 'سيارات اقتصادية' },
-        'T': { speed: '190', description: 'سيارات متوسطة' },
-        'H': { speed: '210', description: 'سيارات عالية الأداء' },
-        'V': { speed: '240', description: 'سيارات أداء عالي جداً' },
-        'W': { speed: '270', description: 'سيارات فيراري ولامبورجيني' },
-        'Y': { speed: '300', description: 'سيارات سباق' }
-      };
-      
-      const carBrandCodes = {
-        'BMW': 'بي إم دبليو', 'AUDI': 'أودي', 'BENZ': 'مرسيدس بنز', 'PORSCHE': 'بورشه', 'VOLKSWAGEN': 'فولكس واجن',
-        'SKODA': 'سكودا', 'FORD': 'فورد', 'CHEVROLET': 'شيفروليه', 'GMC': 'جي إم سي', 'TOYOTA': 'تويوتا',
-        'LEXUS': 'لكزس', 'HONDA': 'هوندا', 'ACURA': 'أكورا', 'NISSAN': 'نيسان', 'INFINITI': 'إنفيينتي',
-        'MAZDA': 'مازدا', 'SUZUKI': 'سوزوكي', 'MITSUBISHI': 'ميتسوبيشي', 'SUBARU': 'سوبارو', 'DAIHATSU': 'داياتسو',
-        'JAGUAR': 'جاغوار', 'LAND ROVER': 'لاند روفر', 'RANGE ROVER': 'رينج روفر', 'VOLVO': 'فولفو', 'POLESTAR': 'بول ستار',
-        'BUICK': 'بويك', 'CADILLAC': 'كاديلاك', 'HUMMER': 'هامر', 'JEEP': 'جيب', 'CHRYSLER': 'كرايسلر'
-      };
-
-      function extractTireSize(sizeText) {
-        if (!sizeText) return null;
-        let processedText = sizeText.toString().replace(/(\d{3})\/(\d{2})\/(\d{2})/g, '$1/$2R$3');
-        const normalMatch = processedText.replace(/\s+/g, '').match(/(LT)?\d{3}\/\d{2}[A-Z\-]*\d{2}/i);
-        return normalMatch ? normalMatch[0].toUpperCase() : null;
-      }
-      
-      function isRunFlat(text) {
-        if (!text) return false;
-        const upperText = text.toString().toUpperCase().replace(/\s+/g, '');
-        return upperText.includes('RF') || upperText.includes('RUNFLAT') || upperText.includes('RFT');
-      }
-      
-      function isLightTruck(sizeText) {
-        if (!sizeText) return false;
-        return sizeText.toString().toUpperCase().startsWith('LT');
-      }
-      
-      function extractPattern(sizeText, patternColumn) {
-        let pattern = '';
-        if (patternColumn && patternColumn.toString().trim()) {
-          pattern = patternColumn.toString().trim();
-        }
-        if (isRunFlat(sizeText) || isRunFlat(patternColumn)) {
-          pattern = pattern ? `${pattern} (رن فلات)` : '(رن فلات)';
-        }
-        return pattern;
-      }
-      
-      function extractSpeedAndLoadIndex(sizeText) {
-        if (!sizeText) return { speed: '', loadIndex: '' };
-        const match = sizeText.toString().match(/([A-Z])(\d{2,3})$/i);
-        return {
-          speed: match ? match[1].toUpperCase() : '',
-          loadIndex: match ? match[2] : ''
-        };
-      }
-
-      function showTireToast(message) {
-        const toast = document.createElement('div');
-        toast.className = 'tire-toast';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-      }
-
-      function showTireInfo(tireSize, brand, pattern) {
-        const modal = document.getElementById('tireInfoModal');
-        const speedLoad = extractSpeedAndLoadIndex(tireSize);
-        const speedInfo = speedRatings[speedLoad.speed];
-        
-        document.getElementById('tireInfoTitle').textContent = tireSize;
-        
-        let infoHtml = `
-          <div class="tire-info-section">
-            <div class="tire-info-title">الماركة</div>
-            <div style="color: #F2BC1B;">${brand}</div>
-          </div>
-          <div class="tire-info-section">
-            <div class="tire-info-title">النقشة</div>
-            <div style="color: #F2BC1B;">${pattern || 'غير محدد'}</div>
-          </div>
-        `;
-        
-        if (speedLoad.speed && speedInfo) {
-          infoHtml += `
-            <div class="tire-info-section">
-              <div class="tire-info-title">تصنيف السرعة: ${speedLoad.speed}</div>
-              <div style="color: #bbb;">السرعة القصوى: ${speedInfo.speed} كم/س</div>
-              <div style="color: #bbb;">${speedInfo.description}</div>
-            </div>
-          `;
-        }
-        
-        if (speedLoad.loadIndex) {
-          infoHtml += `
-            <div class="tire-info-section">
-              <div class="tire-info-title">رقم الحمولة</div>
-              <div style="color: #F2BC1B;">${speedLoad.loadIndex}</div>
-            </div>
-          `;
-        }
-        
-        if (isRunFlat(tireSize) || isRunFlat(pattern)) {
-          infoHtml += `
-            <div class="tire-info-section" style="border-right-color: #10b981;">
-              <div class="tire-info-title" style="color: #10b981;">🛡️ رن فلات (Run Flat)</div>
-              <div style="color: #bbb;">يمكن للإطار العمل بعد انثقابه</div>
-            </div>
-          `;
-        }
-        
-        if (isLightTruck(tireSize)) {
-          infoHtml += `
-            <div class="tire-info-section" style="border-right-color: #f59e0b;">
-              <div class="tire-info-title" style="color: #f59e0b;">🚙 إطار جديد</div>
-              <div style="color: #bbb;">مخصص للشاحنات الخفيفة</div>
-            </div>
-          `;
-        }
-        
-        document.getElementById('tireInfoBody').innerHTML = infoHtml;
-        modal.classList.remove('hidden');
-      }
-      
-      async function loadTireSheetTab(sheetId, tabName) {
-        try {
-          const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${encodeURIComponent(tabName)}&tqx=out:json`;
-          const response = await fetch(url);
-          const text = await response.text();
-          const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/);
-          if (!jsonMatch) return [];
-          
-          const data = JSON.parse(jsonMatch[1]);
-          const sheetData = [];
-          if (data.table && data.table.rows) {
-            for (let i = 0; i < data.table.rows.length; i++) {
-              const row = data.table.rows[i];
-              if (row.c && row.c.length >= 2) {
-                const brand = row.c[0]?.v || row.c[0]?.f || '';
-                const tireSize = row.c[1]?.v || row.c[1]?.f || '';
-                const pattern = row.c[2]?.v || row.c[2]?.f || '';
-                const year = row.c[3]?.v || row.c[3]?.f || '';
-                const price = row.c[5]?.v || row.c[5]?.f || row.c[4]?.v || row.c[4]?.f || '';
-                const origin = row.c[6]?.v || row.c[6]?.f || '';
-                
-                if (brand && brand.toString().toUpperCase() === 'BRAND') continue;
-                const normalizedSize = extractTireSize(tireSize);
-                if (normalizedSize && price && price.toString().trim()) {
-                  allTireSizes.add(normalizedSize);
-                  sheetData.push({
-                    brand: brand ? brand.toString().trim() : '',
-                    tireSize: normalizedSize,
-                    originalSize: tireSize,
-                    pattern: extractPattern(tireSize, pattern),
-                    year: year ? year.toString().trim() : '',
-                    price: price.toString().trim(),
-                    origin: origin ? origin.toString().trim() : '',
-                    sheetTab: tabName
-                  });
-                }
-              }
-            }
-          }
-          return sheetData;
-        } catch (error) {
-          return [];
-        }
-      }
-      
-      async function loadAllTireData() {
-        try {
-          allTireData = [];
-          allTireSizes.clear();
-          const loadPromises = TIRE_SHEET_TABS.map(tabName => loadTireSheetTab(TIRE_SHEET_ID, tabName));
-          const results = await Promise.all(loadPromises);
-          results.forEach(tabData => {
-            if (tabData.length > 0) allTireData = allTireData.concat(tabData);
-          });
-          
-          // Populate brand filters
-          const brands = [...new Set(allTireData.map(item => item.brand))].filter(b => b);
-          const checkboxContainer = document.getElementById('tireBrandCheckboxes');
-          checkboxContainer.innerHTML = brands.map(brand => `
-            <label style="display: flex; align-items: center; cursor: pointer;">
-              <input type="checkbox" class="tire-brand-filter" value="${brand}" style="margin-right: 8px;">
-              <span style="color: #F2BC1B;">${brandTranslations[brand?.toUpperCase()] || brand}</span>
-            </label>
-          `).join('');
-          
-          // Handle select all
-          document.getElementById('selectAllBrands').addEventListener('change', (e) => {
-            document.querySelectorAll('.tire-brand-filter').forEach(cb => {
-              cb.checked = e.target.checked;
-              if (e.target.checked) {
-                selectedBrands.add(cb.value);
-              } else {
-                selectedBrands.delete(cb.value);
-              }
-            });
-          });
-          
-          document.querySelectorAll('.tire-brand-filter').forEach(cb => {
-            cb.addEventListener('change', (e) => {
-              if (e.target.checked) {
-                selectedBrands.add(e.target.value);
-              } else {
-                selectedBrands.delete(e.target.value);
-              }
-              updateSelectAllState();
-            });
-          });
-          
-          document.getElementById('tireInitialLoading').classList.add('hidden');
-          document.getElementById('tireSearchBox').classList.remove('hidden');
-          document.getElementById('tireBrandFilterContainer').classList.remove('hidden');
-        } catch (error) {
-          console.error('Error loading tire data:', error);
-        }
-      }
-      
-      function updateSelectAllState() {
-        const allCheckboxes = document.querySelectorAll('.tire-brand-filter');
-        const checkedCount = document.querySelectorAll('.tire-brand-filter:checked').length;
-        document.getElementById('selectAllBrands').checked = checkedCount === allCheckboxes.length && allCheckboxes.length > 0;
-      }
-      
-      function searchTires(searchSize) {
-        const normalizedSearch = extractTireSize(searchSize);
-        if (!normalizedSearch) return [];
-        let results = allTireData.filter(item => item.tireSize === normalizedSearch);
-        
-        // Apply brand filter if any brands are selected
-        if (selectedBrands.size > 0) {
-          results = results.filter(item => selectedBrands.has(item.brand));
-        }
-        
-        const uniqueResults = [];
-        const seen = new Set();
-        for (const result of results) {
-          const key = `${result.brand}|${result.tireSize}|${result.pattern}|${result.year}|${result.price}`;
-          if (!seen.has(key)) {
-            seen.add(key);
-            uniqueResults.push(result);
-          }
-        }
-        return uniqueResults;
-      }
-      
-      function displayTireResults(results) {
-        const tbody = document.getElementById('tireResultsBody');
-        tbody.innerHTML = '';
-        
-        const sortedResults = [...results].sort((a, b) => (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0));
-        
-        sortedResults.forEach((result, index) => {
-          const row = document.createElement('tr');
-          row.style.background = index % 2 === 0 ? '#1a1a1a' : '#0f0f0f';
-          
-          const brandArabic = brandTranslations[result.brand?.toUpperCase()] || result.brand;
-          const isLT = result.tireSize.startsWith('LT');
-          const displaySize = isLT ? `${result.tireSize} (ربع)` : result.tireSize;
-          
-          row.innerHTML = `
-            <td class="px-4 py-2 border-b" style="border-color: #333;">${result.brand ? brandArabic : '<span style="color: #999;">-</span>'}</td>
-            <td class="px-4 py-2 border-b font-bold" style="border-color: #333;"><button class="tire-info-btn">i</button> ${displaySize}</td>
-            <td class="px-4 py-2 border-b" style="border-color: #333; font-size: 12px;">${result.pattern}</td>
-            <td class="px-4 py-2 border-b" style="border-color: #333;"><select class="tire-country-select form-control" style="font-size: 12px; padding: 4px 6px;"><option>اختر</option><option>صيني 🇨🇳</option><option>تايلندي 🇹🇭</option><option>ياباني 🇯🇵</option></select></td>
-            <td class="px-4 py-2 border-b" style="border-color: #333;"><select class="tire-year-select form-control" style="font-size: 12px; padding: 4px 6px;"><option>اختر</option><option ${result.year === '2024' ? 'selected' : ''}>2024</option><option ${result.year === '2025' ? 'selected' : ''}>2025</option><option ${result.year === '2026' ? 'selected' : ''}>2026</option></select></td>
-            <td class="px-4 py-2 border-b font-bold" style="border-color: #333;">${result.price}</td>
-            <td class="px-4 py-2 border-b text-center" style="border-color: #333;">
-              <button class="tire-copy-btn btn-option" style="padding: 4px 8px; font-size: 12px;">نسخ</button>
-            </td>
-          `;
-          
-          const infoBtn = row.querySelector('.tire-info-btn');
-          infoBtn.addEventListener('click', () => showTireInfo(displaySize, brandArabic, result.pattern));
-          
-          const copyBtn = row.querySelector('.tire-copy-btn');
-          copyBtn.addEventListener('click', () => {
-            const countrySelect = row.querySelector('.tire-country-select');
-            const yearSelect = row.querySelector('.tire-year-select');
-            const country = countrySelect.value;
-            const year = yearSelect.value;
-            
-            if (country === 'اختر' || year === 'اختر') {
-              showTireToast('⚠️ اختر البلد والسنة');
-              return;
-            }
-            
-            const copyText = `${brandArabic} ${displaySize} ${country} سنة ${year}. سعر ${result.price} د.ك`;
-            const textArea = document.createElement('textarea');
-            textArea.value = copyText;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            showTireToast('✅ تم النسخ!');
-          });
-          
-          tbody.appendChild(row);
-        });
-        
-        document.getElementById('tireResultsCount').textContent = `✅ ${results.length} نتيجة`;
-        document.getElementById('tireResultsContainer').classList.remove('hidden');
-        document.getElementById('tireNoResults').classList.add('hidden');
-      }
-      
-      function updateSuggestions(searchText) {
-        const dropdown = document.getElementById('tireSuggestionsDropdown');
-        if (!searchText.trim()) {
-          dropdown.classList.add('hidden');
-          return;
-        }
-        
-        const suggestions = Array.from(allTireSizes)
-          .filter(size => size.includes(searchText.toUpperCase()))
-          .sort()
-          .slice(0, 10);
-        
-        if (suggestions.length > 0) {
-          dropdown.innerHTML = suggestions.map(size => `
-            <div class="tire-suggestion-item">${size}</div>
-          `).join('');
-          
-          dropdown.querySelectorAll('.tire-suggestion-item').forEach(item => {
-            item.addEventListener('click', () => {
-              document.getElementById('tireSearchInput').value = item.textContent;
-              dropdown.classList.add('hidden');
-              performTireSearch();
-            });
-          });
-          
-          dropdown.classList.remove('hidden');
-        } else {
-          dropdown.classList.add('hidden');
-        }
-      }
-      
-      async function performTireSearch() {
-        const searchInput = document.getElementById('tireSearchInput').value.trim();
-        if (!searchInput) {
-          document.getElementById('tireResultsContainer').classList.add('hidden');
-          document.getElementById('tireNoResults').classList.add('hidden');
-          return;
-        }
-        
-        currentTireResults = searchTires(searchInput);
-        if (currentTireResults.length > 0) {
-          displayTireResults(currentTireResults);
-        } else {
-          document.getElementById('tireResultsContainer').classList.add('hidden');
-          document.getElementById('tireNoResults').classList.remove('hidden');
-        }
-      }
-      
-      // Event listeners
-      document.getElementById('tireSearchButton').addEventListener('click', performTireSearch);
-      document.getElementById('tireSearchInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') performTireSearch();
-      });
-      
-      document.getElementById('tireSearchInput').addEventListener('input', (e) => {
-        updateSuggestions(e.target.value);
-      });
-      
-      document.getElementById('tireFilterToggle').addEventListener('click', () => {
-        const filterContent = document.getElementById('tireFilterContent');
-        filterContent.classList.toggle('hidden');
-      });
-      
-      // Close modal
-      document.getElementById('tireInfoModal').addEventListener('click', (e) => {
-        if (e.target.id === 'tireInfoModal') {
-          e.target.classList.add('hidden');
-        }
-      });
-      
-      // Load data
-      loadAllTireData();
-    }
-
-    // Render Imsakia (Ramadan Schedule)
-    function renderImsakia() {
-      const contentArea = document.getElementById('contentArea');
-      
-      // Ramadan 2026 schedule - Kuwait Times (أوقات الكويت) - البيانات الصحيحة من timesprayer.com
-      const ramadanSchedule = [
-        {day: 1, date: '18 فبراير 2026', fajr: '05:03', dhuhr: '12:02', asr: '15:14', maghreb: '17:40', isha: '19:10'},
-        {day: 2, date: '19 فبراير 2026', fajr: '05:02', dhuhr: '12:02', asr: '15:15', maghreb: '17:40', isha: '19:10'},
-        {day: 3, date: '20 فبراير 2026', fajr: '05:01', dhuhr: '12:02', asr: '15:15', maghreb: '17:41', isha: '19:11'},
-        {day: 4, date: '21 فبراير 2026', fajr: '05:00', dhuhr: '12:02', asr: '15:16', maghreb: '17:42', isha: '19:12'},
-        {day: 5, date: '22 فبراير 2026', fajr: '04:59', dhuhr: '12:02', asr: '15:16', maghreb: '17:43', isha: '19:13'},
-        {day: 6, date: '23 فبراير 2026', fajr: '04:58', dhuhr: '12:01', asr: '15:17', maghreb: '17:43', isha: '19:13'},
-        {day: 7, date: '24 فبراير 2026', fajr: '04:58', dhuhr: '12:01', asr: '15:17', maghreb: '17:44', isha: '19:14'},
-        {day: 8, date: '25 فبراير 2026', fajr: '04:57', dhuhr: '12:01', asr: '15:17', maghreb: '17:45', isha: '19:15'},
-        {day: 9, date: '26 فبراير 2026', fajr: '04:56', dhuhr: '12:01', asr: '15:18', maghreb: '17:45', isha: '19:15'},
-        {day: 10, date: '27 فبراير 2026', fajr: '04:55', dhuhr: '12:01', asr: '15:18', maghreb: '17:46', isha: '19:16'},
-        {day: 11, date: '28 فبراير 2026', fajr: '04:54', dhuhr: '12:01', asr: '15:18', maghreb: '17:47', isha: '19:17'},
-        {day: 12, date: '1 مارس 2026', fajr: '04:53', dhuhr: '12:00', asr: '15:19', maghreb: '17:47', isha: '19:17'},
-        {day: 13, date: '2 مارس 2026', fajr: '04:52', dhuhr: '12:00', asr: '15:19', maghreb: '17:48', isha: '19:18'},
-        {day: 14, date: '3 مارس 2026', fajr: '04:51', dhuhr: '12:00', asr: '15:19', maghreb: '17:49', isha: '19:19'},
-        {day: 15, date: '4 مارس 2026', fajr: '04:49', dhuhr: '12:00', asr: '15:20', maghreb: '17:49', isha: '19:19'},
-        {day: 16, date: '5 مارس 2026', fajr: '04:48', dhuhr: '12:00', asr: '15:20', maghreb: '17:50', isha: '19:20'},
-        {day: 17, date: '6 مارس 2026', fajr: '04:47', dhuhr: '11:59', asr: '15:20', maghreb: '17:51', isha: '19:21'},
-        {day: 18, date: '7 مارس 2026', fajr: '04:46', dhuhr: '11:59', asr: '15:20', maghreb: '17:51', isha: '19:21'},
-        {day: 19, date: '8 مارس 2026', fajr: '04:45', dhuhr: '11:59', asr: '15:21', maghreb: '17:52', isha: '19:22'},
-        {day: 20, date: '9 مارس 2026', fajr: '04:44', dhuhr: '11:59', asr: '15:21', maghreb: '17:53', isha: '19:23'},
-        {day: 21, date: '10 مارس 2026', fajr: '04:43', dhuhr: '11:58', asr: '15:21', maghreb: '17:53', isha: '19:23'},
-        {day: 22, date: '11 مارس 2026', fajr: '04:42', dhuhr: '11:58', asr: '15:21', maghreb: '17:54', isha: '19:24'},
-        {day: 23, date: '12 مارس 2026', fajr: '04:40', dhuhr: '11:58', asr: '15:22', maghreb: '17:54', isha: '19:24'},
-        {day: 24, date: '13 مارس 2026', fajr: '04:39', dhuhr: '11:58', asr: '15:22', maghreb: '17:55', isha: '19:25'},
-        {day: 25, date: '14 مارس 2026', fajr: '04:38', dhuhr: '11:57', asr: '15:22', maghreb: '17:56', isha: '19:26'},
-        {day: 26, date: '15 مارس 2026', fajr: '04:37', dhuhr: '11:57', asr: '15:22', maghreb: '17:56', isha: '19:26'},
-        {day: 27, date: '16 مارس 2026', fajr: '04:36', dhuhr: '11:57', asr: '15:22', maghreb: '17:57', isha: '19:27'},
-        {day: 28, date: '17 مارس 2026', fajr: '04:34', dhuhr: '11:56', asr: '15:22', maghreb: '17:58', isha: '19:28'},
-        {day: 29, date: '18 مارس 2026', fajr: '04:33', dhuhr: '11:56', asr: '15:22', maghreb: '17:58', isha: '19:28'},
-        {day: 30, date: '19 مارس 2026', fajr: '04:32', dhuhr: '11:56', asr: '15:23', maghreb: '17:59', isha: '19:29'}
-      ];
-      
-      const today = new Date();
-      const currentDay = today.getDate();
-      const currentMonth = today.getMonth() + 1;
-      
-      // Determine current Ramadan day (approximate based on current date)
-      let currentRamadanDay = null;
-      if (currentMonth === 2 && currentDay <= 26) {
-        currentRamadanDay = currentDay - 1; // For February 2026
-      }
-      
-      let html = `<div class="imsakia-container">
-        <div class="imsakia-header">
-          🏮 امساكيه رمضان 1447 هـ - دولة الكويت 🇰🇼 🏮
-        </div>
-        <select id="imsakia-day-filter" class="imsakia-filter">
-          <option value="">عرض كل الأيام</option>`;
-      
-      ramadanSchedule.forEach(entry => {
-        html += `<option value="${entry.day}">اليوم ${entry.day}: ${entry.date}</option>`;
-      });
-      
-      html += `</select>
-        <table class="imsakia-table" id="imsakia-table">
-          <thead>
-            <tr>
-              <th>اليوم</th>
-              <th>التاريخ</th>
-              <th>الفجر</th>
-              <th>الظهر</th>
-              <th>العصر</th>
-              <th>المغرب 🍽️</th>
-              <th>العشاء</th>
-            </tr>
-          </thead>
-          <tbody id="imsakia-tbody">`;
-      
-      ramadanSchedule.forEach(entry => {
-        const isCurrentDay = entry.day === currentRamadanDay;
-        html += `<tr class="${isCurrentDay ? 'current-day' : ''}">
-          <td>${entry.day}</td>
-          <td>${entry.date}</td>
-          <td><div class="prayer-time ${isCurrentDay ? 'current' : ''}">🌅 ${entry.fajr}</div></td>
-          <td><div class="prayer-time ${isCurrentDay ? 'current' : ''}">☀️ ${entry.dhuhr}</div></td>
-          <td><div class="prayer-time ${isCurrentDay ? 'current' : ''}">🌤️ ${entry.asr}</div></td>
-          <td><div class="prayer-time ${isCurrentDay ? 'current' : ''}" style="color: #FF6B35; font-weight: 700;">🍽️ ${entry.maghreb}</div></td>
-          <td><div class="prayer-time ${isCurrentDay ? 'current' : ''}">🌙 ${entry.isha}</div></td>
-        </tr>`;
-      });
-      
-      html += `</tbody></table>`;
-      
-      // Add next prayer info
-      if (currentRamadanDay) {
-        const currentEntry = ramadanSchedule[currentRamadanDay - 1];
-        html += `<div class="next-prayer-info">
-          ⏰ الصلاة التالية: �️ المغرب (الإفطار) الساعة ${currentEntry.maghreb}
-          <div style="margin-top: 8px; font-size: 13px; color: #FF6B35; font-weight: 700;">
-            🍽️ وقت الإفطار: ${currentEntry.maghreb}
-          </div>
-        </div>`;
-        
-        html += `<div class="iftar-countdown" id="countdown-box">
-          ⏳ الوقت المتبقي للإفطار: <span class="countdown-number" id="countdown">00:00:00</span>
-        </div>`;
-      }
-      
-      html += `</div>`;
-      
-      contentArea.innerHTML = html;
-      
-      // Add filter functionality
-      const filterSelect = document.getElementById('imsakia-day-filter');
-      const tbody = document.getElementById('imsakia-tbody');
-      
-      filterSelect.addEventListener('change', (e) => {
-        const selectedDay = e.target.value;
-        const rows = tbody.querySelectorAll('tr');
-        
-        if (!selectedDay) {
-          rows.forEach(row => row.style.display = '');
-        } else {
-          rows.forEach(row => {
-            const dayCell = row.querySelector('td:first-child');
-            row.style.display = dayCell.textContent == selectedDay ? '' : 'none';
-          });
-        }
-      });
-      
-      // Start countdown if on Ramadan
-      if (currentRamadanDay) {
-        startIftarCountdown(currentRamadanDay, ramadanSchedule);
-      }
-    }
-    
-    function startIftarCountdown(ramadanDay, schedule) {
-      const currentEntry = schedule[ramadanDay - 1];
-      const [iftarHour, iftarMin] = currentEntry.maghreb.split(':').map(Number);
-      
-      function updateCountdown() {
-        const now = new Date();
-        const iftarTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), iftarHour, iftarMin, 0);
-        
-        if (now > iftarTime) {
-          iftarTime.setDate(iftarTime.getDate() + 1);
-        }
-        
-        const diff = iftarTime - now;
-        const hours = Math.floor(diff / 3600000);
-        const minutes = Math.floor((diff % 3600000) / 60000);
-        const seconds = Math.floor((diff % 60000) / 1000);
-        
-        const countdownEl = document.getElementById('countdown');
-        if (countdownEl) {
-          countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-      }
-      
-      updateCountdown();
-      setInterval(updateCountdown, 1000);
-    }
 
     // Render Annual Subscription Interface (الاشتراك السنوي)
     function renderAnnualSubscriptionInterface() {
