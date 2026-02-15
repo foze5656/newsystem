@@ -2608,6 +2608,12 @@
               </tbody>
             </table>
           </div>
+          <div id="towPortarageNote" class="info-box hidden" style="margin-top: 10px;">
+            في حال العميل طلب ونش<br>
+            تبلغون العميل نقدر نوفر لك سيارة فولفو مع سايق يوصلك لاي منطقة داخل الكويت السعر الخدمة 10 دك لاي منطقة<br><br>
+            في حال العميل سأل عن مدة الوصول 15 ل 25 اقصى مدة والخدمة متوفرة 24 ساعة على مدار اليوم<br><br>
+            ضروري تبلغون العميل انه في حال انتظار لسايق اول ربع ساعة مجانية وبعد الربع ساعة 0.150 فلس ويدفعها وهو بالطريج قبل لا يوصل وجهته
+          </div>
         </div>
       `;
       
@@ -3061,9 +3067,11 @@
     function calculateTowPrice() {
       const routes = getTowRoutes(formData.company, formData.towType);
       const route = routes.find(r => r.from === formData.from && r.to === formData.to);
+      const portarageNote = document.getElementById('towPortarageNote');
       
       if (!route) {
         document.getElementById('towResultSection').classList.add('hidden');
+        if (portarageNote) portarageNote.classList.add('hidden');
         return;
       }
       
@@ -3191,6 +3199,14 @@
       
       tbody.innerHTML = rows;
       document.getElementById('towResultSection').classList.remove('hidden');
+
+      if (portarageNote) {
+        if (formData.companyArabic === 'بورتراج' && (formData.towType === 'normal' || formData.towType === 'flatbed')) {
+          portarageNote.classList.remove('hidden');
+        } else {
+          portarageNote.classList.add('hidden');
+        }
+      }
       
       setTimeout(() => {
         const resultSection = document.getElementById('towResultSection');
