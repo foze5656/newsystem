@@ -7305,6 +7305,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
       const supportState = {
         mode: 'idle',
+        service: null,
         step: null,
         data: {}
       };
@@ -7326,6 +7327,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         chatBody.scrollTop = chatBody.scrollHeight;
       }
 
+      function getCurrentUserName(){
+        return localStorage.getItem('currentUser') || 'صديقنا';
+      }
+
       function normalizeArabic(text){
         return String(text || '')
           .toLowerCase()
@@ -7339,6 +7344,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           .trim();
       }
 
+      function isGreeting(text){
+        const t = normalizeArabic(text);
+        return /(السلام عليكم|سلام|مرحبا|اهلا|هلا|صباح الخير|مساء الخير)/.test(t);
+      }
+
       function detectYesNo(text){
         const t = normalizeArabic(text);
         if (/\b(نعم|اي|ايوه|أكيد|تمام|صح)\b/.test(t)) return 'yes';
@@ -7350,6 +7360,28 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const t = normalizeArabic(text);
         if (t.includes('فل') || t.includes('فلات') || t.includes('داون') || t.includes('flat')) return 'flatbed';
         if (t.includes('عادي') || t.includes('نورمال') || t.includes('normal')) return 'normal';
+        return null;
+      }
+
+      function detectFuelType(text){
+        const t = normalizeArabic(text);
+        if (t.includes('ممتاز')) return 'premium';
+        if (t.includes('خصوصي')) return 'special';
+        if (t.includes('الترا') || t.includes('التر')) return 'ultra';
+        return null;
+      }
+
+      function detectBalanceSource(text){
+        const t = normalizeArabic(text);
+        if (t.includes('من عندنا') || t.includes('عندنا')) return 'ours';
+        if (t.includes('من عند العميل') || t.includes('العميل')) return 'customer';
+        return null;
+      }
+
+      function detectLockProvider(text){
+        const t = normalizeArabic(text);
+        if (t.includes('بورتراج')) return 'portarage';
+        if (t.includes('خارجي') || t.includes('مورد')) return 'external';
         return null;
       }
 
@@ -7367,36 +7399,35 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         return [...new Set(list.filter(Boolean))];
       }
 
-      function findBestMatch(input, options){
-        const n = normalizeArabic(input);
-        let exact = options.find(o => normalizeArabic(o) === n);
-        if (exact) return exact;
-        let includes = options.find(o => normalizeArabic(o).includes(n) || n.includes(normalizeArabic(o)));
-        return includes || null;
+      function normalizeEqual(a, b){
+        return normalizeArabic(a) === normalizeArabic(b);
       }
 
-      function suggestOptions(input, options){
+      function findExactNormalized(input, options){
         const n = normalizeArabic(input);
-        return options.filter(o => normalizeArabic(o).includes(n) || n.includes(normalizeArabic(o))).slice(0, 6);
+        return options.find(o => normalizeArabic(o) === n) || null;
       }
 
-      function resetSupport(){
-        supportState.mode = 'idle';
-        supportState.step = null;
-        supportState.data = {
-          companyArabic: 'بورتراج',
-          company: 'portarage towtruk',
-          towType: null,
-          from: null,
-          to: null,
-          isLocked: null,
-          extraCharges: null,
-          flatbedPortarageExtraCharges: null
-        };
+      function findAreaFromText(text, options){
+        const t = normalizeArabic(text);
+        for (const opt of options) {
+          if (t.includes(normalizeArabic(opt))) return opt;
+        }
+        return null;
       }
 
       function sheetsReady(){
         return sheetsData && sheetsData['portarage towtruk'];
+      }
+
+      function resetSupport(){
+        supportState.mode = 'idle';
+        supportState.service = null;
+        supportState.step = null;
+        supportState.data = {
+          companyArabic: 'بورتراج',
+          company: 'portarage towtruk'
+        };
       }
 
       function getTowRoutesSafe(company, towType){
@@ -7404,9 +7435,31 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         return getTowRoutes(company, towType) || [];
       }
 
+      function findAreaPrice(rows, columns, areaInput, rowStart){
+        const start = typeof rowStart === 'number' ? rowStart : 2;
+        let price = null;
+        let cancellation = null;
+
+        for (let i = start; i < rows.length; i++) {
+          const row = rows[i];
+          if (row[columns[0]] && normalizeEqual(row[columns[0]], areaInput)) {
+            price = row[columns[1]];
+            cancellation = row[columns[2]];
+            break;
+          }
+          if (columns.length > 3 && row[columns[3]] && normalizeEqual(row[columns[3]], areaInput)) {
+            price = row[columns[4]];
+            cancellation = row[columns[5]];
+            break;
+          }
+        }
+
+        return { price, cancellation };
+      }
+
       function computeTowQuote(d){
         const routes = getTowRoutesSafe(d.company, d.towType);
-        const route = routes.find(r => r.from === d.from && r.to === d.to);
+        const route = routes.find(r => normalizeEqual(r.from, d.from) && normalizeEqual(r.to, d.to));
         if (!route) return { error: 'route-not-found' };
 
         let companyPrice = parseFloat(route.price) || 0;
@@ -7429,7 +7482,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
         if (d.company.toLowerCase() !== 'portarage towtruk') {
           const portarageRoutes = getTowRoutesSafe('portarage towtruk', d.towType);
-          const portarageRoute = portarageRoutes.find(r => r.from === d.from && r.to === d.to);
+          const portarageRoute = portarageRoutes.find(r => normalizeEqual(r.from, d.from) && normalizeEqual(r.to, d.to));
           if (portarageRoute) {
             portaragePrice = parseFloat(portarageRoute.price) || 0;
             discount = portaragePrice - companyPrice;
@@ -7442,83 +7495,438 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         return { companyPrice, lockedCharge, extraCharges, total, portaragePrice, discount, cancelPrice };
       }
 
-      function nextQuestion(){
-        const d = supportState.data;
-        if (!d.towType) return 'towType';
-        if (!d.from) return 'from';
-        if (!d.to) return 'to';
-        if (d.towType === 'flatbed' && d.companyArabic === 'بورتراج' && d.isLocked === null) return 'isLocked';
-        if (d.companyArabic === 'بورتراج') {
-          if (d.towType === 'normal' && d.extraCharges === null) return 'extraCharges';
-          if (d.towType === 'flatbed' && d.flatbedPortarageExtraCharges === null) return 'flatbedPortarageExtraCharges';
+      const SERVICES = [
+        { key: 'tow', keywords: ['ونش', 'سحب', 'سطحه', 'سطحة'] },
+        { key: 'battery', keywords: ['بطاريه', 'بطارية', 'تركيب بطارية'] },
+        { key: 'fuel', keywords: ['بنزين', 'وقود'] },
+        { key: 'lock', keywords: ['فتح قفل', 'قفل', 'فتح باب'] },
+        { key: 'puncture', keywords: ['بنشر', 'بنشره'] },
+        { key: 'balance', keywords: ['ميزان', 'تركيب'] },
+        { key: 'mech_inspection', keywords: ['فحص'] },
+        { key: 'mech_brakes', keywords: ['سفايف', 'ديسكات'] },
+        { key: 'mech_oilfilter', keywords: ['زيت وفلتر', 'فلتر'] },
+        { key: 'mech_alternator', keywords: ['دينمو', 'سلف'] },
+        { key: 'mech_wipers', keywords: ['مساحات'] },
+        { key: 'mech_acgas', keywords: ['غاز مكيف', 'مكيف'] },
+        { key: 'mech_coolant', keywords: ['ماي راديتر', 'راديتر'] },
+        { key: 'mech_brakefluid', keywords: ['زيت بريك'] },
+        { key: 'mech_transmission', keywords: ['زيت سكان'] }
+      ];
+
+      function detectService(text){
+        const t = normalizeArabic(text);
+        for (const svc of SERVICES) {
+          if (svc.keywords.some(k => t.includes(normalizeArabic(k)))) return svc.key;
         }
         return null;
       }
 
       function askFor(field){
-        if (field === 'towType') return addMsg('ما نوع الونش المطلوب؟ (عادي / فل داون)', 'bot');
+        const name = getCurrentUserName();
+        if (field === 'towType') return addMsg(`يا ${name}، ما نوع الونش المطلوب؟ (عادي / فل داون)`, 'bot');
         if (field === 'from') return addMsg('من أي منطقة؟', 'bot');
         if (field === 'to') return addMsg('إلى أي منطقة؟', 'bot');
         if (field === 'isLocked') return addMsg('هل ونش مسكر؟ (نعم / لا)', 'bot');
         if (field === 'extraCharges') return addMsg('هل القير ما يتبوش أو السيارة فيها حادث؟ (نعم / لا)', 'bot');
         if (field === 'flatbedPortarageExtraCharges') return addMsg('هل القير ما يتبوش أو السيارة فيها حادث؟ (نعم / لا)', 'bot');
+        if (field === 'area') return addMsg('اذكر المنطقة لو سمحت.', 'bot');
+        if (field === 'fuelType') return addMsg('ما نوع البنزين؟ (ممتاز / خصوصي / الترا)', 'bot');
+        if (field === 'lockProvider') return addMsg('الخدمة من بورتراج ولا مورد خارجي؟', 'bot');
+        if (field === 'externalPrice') return addMsg('كم سعر الفني الخارجي؟', 'bot');
+        if (field === 'balanceSource') return addMsg('التواير من عندنا ولا من عند العميل؟', 'bot');
+        if (field === 'tireCount') return addMsg('كم عدد التواير؟', 'bot');
+        if (field === 'diskTurning') return addMsg('هل مخرطة ديسكات؟ (نعم / لا)', 'bot');
+        if (field === 'oilSource') return addMsg('مصدر الزيت؟ (من عند العميل / من عندنا)', 'bot');
+        if (field === 'supplierPrice') return addMsg('كم سعر القطعة من المورد؟', 'bot');
       }
 
-      function startTowFlow(text){
+      function startServiceFlow(serviceKey, text){
         resetSupport();
-        supportState.mode = 'tow';
+        supportState.mode = 'service';
+        supportState.service = serviceKey;
 
-        const detectedTowType = detectTowType(text);
-        if (detectedTowType) supportState.data.towType = detectedTowType;
-
-        const locs = extractLocations(text);
-        if (locs.from) supportState.data.from = locs.from;
-        if (locs.to) supportState.data.to = locs.to;
-
-        // Try to resolve location names if possible
-        if (supportState.data.towType) {
-          const routes = getTowRoutesSafe(supportState.data.company, supportState.data.towType);
-          const fromOptions = unique(routes.map(r => r.from));
-          const toOptions = unique(routes.map(r => r.to));
-
-          if (supportState.data.from) {
-            const matchFrom = findBestMatch(supportState.data.from, fromOptions);
-            supportState.data.from = matchFrom || supportState.data.from;
-          }
-          if (supportState.data.to) {
-            const matchTo = findBestMatch(supportState.data.to, toOptions);
-            supportState.data.to = matchTo || supportState.data.to;
-          }
+        // Try to prefill from text
+        if (serviceKey === 'tow') {
+          const detectedTowType = detectTowType(text);
+          if (detectedTowType) supportState.data.towType = detectedTowType;
+          const locs = extractLocations(text);
+          if (locs.from) supportState.data.from = locs.from;
+          if (locs.to) supportState.data.to = locs.to;
         }
 
-        const field = nextQuestion();
-        if (field) return askFor(field);
-        return finishTowQuote();
+        if (serviceKey === 'fuel') {
+          const ft = detectFuelType(text);
+          if (ft) supportState.data.fuelType = ft;
+        }
+
+        if (serviceKey === 'lock') {
+          const lp = detectLockProvider(text);
+          if (lp) supportState.data.lockProvider = lp;
+        }
+
+        if (serviceKey === 'balance') {
+          const bs = detectBalanceSource(text);
+          if (bs) supportState.data.balanceSource = bs;
+        }
+
+        if (serviceKey === 'mech_brakes') {
+          const yn = detectYesNo(text);
+          if (yn) supportState.data.diskTurning = yn;
+        }
+
+        if (serviceKey === 'mech_oilfilter') {
+          const t = normalizeArabic(text);
+          if (t.includes('العميل')) supportState.data.oilSource = 'customer';
+          if (t.includes('عندنا')) supportState.data.oilSource = 'ours';
+        }
+
+        if (serviceKey === 'mech_alternator') {
+          const m = text.match(/(\d+(?:\.\d+)?)/);
+          if (m) supportState.data.supplierPrice = parseFloat(m[1]);
+        }
+
+        // Try to extract area by matching options
+        const area = tryExtractAreaFromText(serviceKey, text);
+        if (area) supportState.data.area = area;
+
+        const next = nextQuestion();
+        if (next) return askFor(next);
+        return finalizeService();
       }
 
-      function finishTowQuote(){
+      function nextQuestion(){
+        const d = supportState.data;
+        const s = supportState.service;
+
+        if (s === 'tow') {
+          if (!d.towType) return 'towType';
+          if (!d.from) return 'from';
+          if (!d.to) return 'to';
+          if (d.towType === 'flatbed' && d.companyArabic === 'بورتراج' && d.isLocked === null) return 'isLocked';
+          if (d.companyArabic === 'بورتراج') {
+            if (d.towType === 'normal' && d.extraCharges === null) return 'extraCharges';
+            if (d.towType === 'flatbed' && d.flatbedPortarageExtraCharges === null) return 'flatbedPortarageExtraCharges';
+          }
+          return null;
+        }
+
+        if (s === 'fuel') {
+          if (!d.area) return 'area';
+          if (!d.fuelType) return 'fuelType';
+          return null;
+        }
+
+        if (s === 'lock') {
+          if (!d.lockProvider) return 'lockProvider';
+          if (d.lockProvider === 'portarage' && !d.area) return 'area';
+          if (d.lockProvider === 'external' && (d.externalPrice === null || d.externalPrice === undefined)) return 'externalPrice';
+          return null;
+        }
+
+        if (s === 'balance') {
+          if (!d.balanceSource) return 'balanceSource';
+          if (!d.area) return 'area';
+          if (d.balanceSource === 'customer' && !d.tireCount) return 'tireCount';
+          return null;
+        }
+
+        if (s === 'mech_brakes') {
+          if (!d.area) return 'area';
+          if (!d.diskTurning) return 'diskTurning';
+          return null;
+        }
+
+        if (s === 'mech_oilfilter') {
+          if (!d.oilSource) return 'oilSource';
+          if (!d.area) return 'area';
+          return null;
+        }
+
+        if (s === 'mech_alternator') {
+          if (!d.area) return 'area';
+          if (!d.supplierPrice) return 'supplierPrice';
+          return null;
+        }
+
+        if (s === 'mech_inspection' || s === 'mech_acgas' || s === 'mech_wipers' || s === 'mech_coolant' || s === 'mech_brakefluid' || s === 'mech_transmission' || s === 'battery' || s === 'puncture') {
+          if (!d.area) return 'area';
+          return null;
+        }
+
+        return null;
+      }
+
+      function tryExtractAreaFromText(serviceKey, text){
+        const t = normalizeArabic(text);
+        let sheetName = null;
+        let columns = null;
+        let rowStart = 2;
+
+        if (serviceKey === 'battery') {
+          sheetName = 'تركيب بطارية';
+          columns = [0, 1, 2, 4, 5, 6];
+          rowStart = 3;
+        } else if (serviceKey === 'fuel') {
+          sheetName = 'خدمات5';
+          columns = [0, 1, 2, 4, 5, 6];
+        } else if (serviceKey === 'puncture') {
+          sheetName = 'خدمات5';
+          columns = [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14];
+        } else if (serviceKey === 'balance') {
+          sheetName = 'ميزان وتركيب';
+          columns = [0, 1, 2, 4, 5, 6];
+        } else if (serviceKey === 'mech_inspection' || serviceKey === 'mech_acgas') {
+          sheetName = 'خدمات ميكانيكية';
+          columns = [0, 1, 2, 4, 5, 6];
+        } else if (serviceKey === 'mech_brakes') {
+          sheetName = 'خدمات ميكانيكية';
+          columns = [16, 17, 18, 20, 21, 22];
+        } else if (serviceKey === 'mech_oilfilter') {
+          sheetName = 'خدمات ميكانيكية';
+          columns = [8, 9, 10, 12, 13, 14];
+        } else if (serviceKey === 'mech_alternator') {
+          sheetName = 'خدمات ميكانيكية2';
+          columns = [0, 1, 2, 4, 5, 6];
+        } else if (serviceKey === 'mech_wipers') {
+          sheetName = 'خدمات ميكانيكية2';
+          columns = [8, 9, 10, 12, 13, 14];
+        } else if (serviceKey === 'mech_coolant' || serviceKey === 'mech_brakefluid' || serviceKey === 'mech_transmission') {
+          sheetName = 'خدمات5';
+          columns = [0, 1, 2, 4, 5, 6];
+        } else if (serviceKey === 'lock') {
+          sheetName = 'فتح قفل';
+          columns = [16, 17, 18, 20, 21, 22];
+        }
+
+        if (!sheetName || !sheetsData[sheetName]) return null;
+
+        const rows = sheetsData[sheetName];
+        const options = [];
+        for (let i = rowStart; i < rows.length; i++) {
+          const row = rows[i];
+          if (serviceKey === 'puncture') {
+            if (row[0]) options.push(row[0]);
+            if (row[4]) options.push(row[4]);
+            if (row[8]) options.push(row[8]);
+            if (row[12]) options.push(row[12]);
+          } else {
+            if (row[columns[0]]) options.push(row[columns[0]]);
+            if (columns.length > 3 && row[columns[3]]) options.push(row[columns[3]]);
+          }
+        }
+        return findAreaFromText(t, unique(options));
+      }
+
+      function finalizeService(){
+        const s = supportState.service;
+        const d = supportState.data;
+
+        if (s === 'tow') return finalizeTow();
+        if (s === 'battery') return finalizeBattery();
+        if (s === 'fuel') return finalizeFuel();
+        if (s === 'lock') return finalizeLock();
+        if (s === 'puncture') return finalizePuncture();
+        if (s === 'balance') return finalizeBalance();
+        if (s === 'mech_inspection') return finalizeMechanical('inspection');
+        if (s === 'mech_acgas') return finalizeMechanical('acgas');
+        if (s === 'mech_brakes') return finalizeMechanical('brakes');
+        if (s === 'mech_oilfilter') return finalizeMechanical('oilfilter');
+        if (s === 'mech_alternator') return finalizeAlternator();
+        if (s === 'mech_wipers') return finalizeWipers();
+        if (s === 'mech_coolant') return finalizeFluid('coolant');
+        if (s === 'mech_brakefluid') return finalizeFluid('brakefluid');
+        if (s === 'mech_transmission') return finalizeFluid('transmission');
+      }
+
+      function finalizeTow(){
         const d = supportState.data;
         const quote = computeTowQuote(d);
         if (quote.error) {
           addMsg('ما حصلت هذا المسار بالضبط. ممكن تأكد كتابة المناطق؟', 'bot');
-          supportState.step = 'from';
           return;
         }
 
-        let msg = `السعر التقريبي: ${quote.total.toFixed(2)} ${config.currency}`;
+        let msg = `السعر النهائي: ${quote.total.toFixed(2)} ${config.currency}`;
         if (d.towType === 'flatbed' && d.isLocked) msg += ' (يشمل ونش مسكر +5)';
         if (quote.extraCharges > 0) msg += ' (يشمل رسوم عربانات +10)';
         if (quote.cancelPrice) msg += ` | رسوم الإلغاء: ${quote.cancelPrice}`;
 
         addMsg(msg, 'bot');
-        addMsg('هل تحتاج حساب مسار آخر؟ اكتب: ونش من ... إلى ...', 'bot');
+        addMsg('إذا تحتاج خدمة ثانية اكتب نوع الخدمة والمنطقة.', 'bot');
         resetSupport();
       }
 
-      function handleTowFlow(text){
+      function finalizeBattery(){
+        const rows = sheetsData['تركيب بطارية'];
+        if (!rows) return addMsg('بيانات الخدمة غير متوفرة حاليًا.', 'bot');
+        const r = findAreaPrice(rows, [0,1,2,4,5,6], supportState.data.area, 3);
+        if (!r.price) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+        addMsg(`سعر الخدمة: ${parseFloat(r.price).toFixed(2)} ${config.currency} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+        resetSupport();
+      }
+
+      function finalizeFuel(){
+        const rows = sheetsData['خدمات5'];
+        if (!rows) return addMsg('بيانات الخدمة غير متوفرة حاليًا.', 'bot');
+        const r = findAreaPrice(rows, [0,1,2,4,5,6], supportState.data.area, 2);
+        if (!r.price) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+        const fuelPrices = { premium: 1.5, special: 1.5, ultra: 2.5 };
+        const fuelNames = { premium: 'بنزين ممتاز', special: 'بنزين خصوصي', ultra: 'بنزين الترا' };
+        const fuelPrice = fuelPrices[supportState.data.fuelType] || 1.5;
+        const total = (parseFloat(r.price) || 0) + fuelPrice;
+        addMsg(`رسوم الخدمة: ${parseFloat(r.price).toFixed(2)} ${config.currency} | نوع البنزين: ${fuelNames[supportState.data.fuelType]} | الإجمالي: ${total.toFixed(2)} ${config.currency} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+        resetSupport();
+      }
+
+      function finalizeLock(){
+        const d = supportState.data;
+        if (d.lockProvider === 'external') {
+          const external = parseFloat(d.externalPrice) || 0;
+          const finalPrice = external + LOCK_SURCHARGE;
+          addMsg(`سعر الفني الخارجي: ${external.toFixed(2)} ${config.currency} | السعر النهائي: ${finalPrice.toFixed(2)} ${config.currency}`, 'bot');
+          resetSupport();
+          return;
+        }
+
+        const rows = sheetsData['فتح قفل'] || sheetsData['خدمات5'];
+        if (!rows) return addMsg('بيانات الخدمة غير متوفرة حاليًا.', 'bot');
+        const r = findAreaPrice(rows, [16,17,18,20,21,22], d.area, 2);
+        if (!r.price) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+        addMsg(`سعر فتح القفل (بورتراج): ${parseFloat(r.price).toFixed(2)} ${config.currency} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+        resetSupport();
+      }
+
+      function finalizePuncture(){
+        const rows = sheetsData['خدمات5'];
+        if (!rows) return addMsg('بيانات الخدمة غير متوفرة حاليًا.', 'bot');
+        let externalPrice = null, externalCancel = null, internalPrice = null, internalCancel = null;
+        for (let i = 2; i < rows.length; i++) {
+          const row = rows[i];
+          if (row[0] && normalizeEqual(row[0], supportState.data.area)) {
+            externalPrice = row[1];
+            externalCancel = row[2];
+          }
+          if (row[4] && normalizeEqual(row[4], supportState.data.area)) {
+            externalPrice = row[5];
+            externalCancel = row[6];
+          }
+          if (row[8] && normalizeEqual(row[8], supportState.data.area)) {
+            internalPrice = row[9];
+            internalCancel = row[10];
+          }
+          if (row[12] && normalizeEqual(row[12], supportState.data.area)) {
+            internalPrice = row[13];
+            internalCancel = row[14];
+          }
+        }
+        if (!externalPrice && !internalPrice) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+        const extMsg = externalPrice ? `خدمة رقعة خارجية/سبير: ${parseFloat(externalPrice).toFixed(2)} ${config.currency} (إلغاء: ${externalCancel ? parseFloat(externalCancel).toFixed(2) + ' ' + config.currency : 'غير محدد'})` : '';
+        const intMsg = internalPrice ? `خدمة رقعة داخلية: ${parseFloat(internalPrice).toFixed(2)} ${config.currency} (إلغاء: ${internalCancel ? parseFloat(internalCancel).toFixed(2) + ' ' + config.currency : 'غير محدد'})` : '';
+        addMsg([extMsg, intMsg].filter(Boolean).join(' | '), 'bot');
+        resetSupport();
+      }
+
+      function finalizeBalance(){
+        const rows = sheetsData['ميزان وتركيب'];
+        if (!rows) return addMsg('بيانات الخدمة غير متوفرة حاليًا.', 'bot');
+        if (supportState.data.balanceSource === 'ours') {
+          const r = findAreaPrice(rows, [0,1,2,4,5,6], supportState.data.area, 2);
+          if (!r.price) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+          addMsg(`سعر الخدمة: ${parseFloat(r.price).toFixed(2)} ${config.currency} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+        } else {
+          const r = findAreaPrice(rows, [8,9,10,12,13,14], supportState.data.area, 2);
+          if (!r.price) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+          const tireCount = parseInt(supportState.data.tireCount, 10) || 0;
+          const total = (parseFloat(r.price) || 0) + (tireCount * 5);
+          addMsg(`سعر الخدمة الأساسي: ${parseFloat(r.price).toFixed(2)} ${config.currency} | عدد التواير: ${tireCount} | الإجمالي: ${total.toFixed(2)} ${config.currency} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+        }
+        resetSupport();
+      }
+
+      function finalizeMechanical(type){
+        const rows = sheetsData['خدمات ميكانيكية'];
+        if (!rows) return addMsg('بيانات الخدمة غير متوفرة حاليًا.', 'bot');
+        let columns = null;
+        if (type === 'inspection' || type === 'acgas') columns = [0,1,2,4,5,6];
+        if (type === 'brakes') columns = [16,17,18,20,21,22];
+        if (type === 'oilfilter') columns = [8,9,10,12,13,14];
+
+        if (type === 'oilfilter' && supportState.data.oilSource === 'ours') {
+          addMsg('سعر زيت وفلتر من عندنا يعتمد على نوع الزيت. اذكر نوع السيارة لو سمحت.', 'bot');
+          resetSupport();
+          return;
+        }
+
+        const r = findAreaPrice(rows, columns, supportState.data.area, 2);
+        if (!r.price) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+
+        let total = parseFloat(r.price) || 0;
+        if (type === 'brakes' && supportState.data.diskTurning === 'yes') total += 5;
+
+        addMsg(`سعر الخدمة: ${total.toFixed(2)} ${config.currency} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+        resetSupport();
+      }
+
+      function finalizeAlternator(){
+        const rows = sheetsData['خدمات ميكانيكية2'];
+        if (!rows) return addMsg('بيانات الخدمة غير متوفرة حاليًا.', 'bot');
+        const r = findAreaPrice(rows, [0,1,2,4,5,6], supportState.data.area, 2);
+        if (!r.price) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+        const supplier = parseFloat(supportState.data.supplierPrice) || 0;
+        const partPrice = supplier + 20;
+        const total = (parseFloat(r.price) || 0) + partPrice;
+        addMsg(`سعر الخدمة: ${parseFloat(r.price).toFixed(2)} ${config.currency} | سعر القطعة (المورد +20): ${partPrice.toFixed(2)} ${config.currency} | الإجمالي: ${total.toFixed(2)} ${config.currency} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+        resetSupport();
+      }
+
+      function finalizeWipers(){
+        const rows = sheetsData['خدمات ميكانيكية2'];
+        if (!rows) return addMsg('بيانات الخدمة غير متوفرة حاليًا.', 'bot');
+        const r = findAreaPrice(rows, [8,9,10,12,13,14], supportState.data.area, 2);
+        if (!r.price) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+        addMsg(`رسوم تبديل المساحات: ${parseFloat(r.price).toFixed(2)} ${config.currency} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+        resetSupport();
+      }
+
+      function finalizeFluid(type){
+        const rows = sheetsData['خدمات5'];
+        if (!rows) return addMsg('بيانات الخدمة غير متوفرة حاليًا.', 'bot');
+        const r = findAreaPrice(rows, [0,1,2,4,5,6], supportState.data.area, 2);
+        if (!r.price) return addMsg('ما لقيت المنطقة في الشيت. اكتبها بشكل مطابق.', 'bot');
+
+        const othersRows = sheetsData['others'];
+        if (!othersRows) return addMsg('بيانات الزيوت غير متوفرة حاليًا.', 'bot');
+
+        let typeFilter = '';
+        if (type === 'coolant') typeFilter = 'COOLANT';
+        if (type === 'brakefluid') typeFilter = 'BREAK LIQUIDO';
+        if (type === 'transmission') typeFilter = 'TRANSMISIONES';
+
+        const brands = [];
+        for (let i = 1; i < othersRows.length; i++) {
+          const row = othersRows[i];
+          if (row[1] === typeFilter) {
+            const brand = row[0] || '';
+            const price = parseFloat(row[3]) || 0;
+            if (brand && !isNaN(price)) brands.push({ brand, price });
+          }
+        }
+
+        if (!brands.length) {
+          addMsg(`رسوم الخدمة: ${parseFloat(r.price).toFixed(2)} ${config.currency} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+          resetSupport();
+          return;
+        }
+
+        const options = brands.slice(0, 6).map(b => `${b.brand}: ${(parseFloat(r.price) + b.price).toFixed(2)} ${config.currency}`).join(' | ');
+        addMsg(`خيارات الأسعار (خدمة + زيت): ${options} | رسوم الإلغاء: ${r.cancellation ? parseFloat(r.cancellation).toFixed(2) + ' ' + config.currency : 'غير محدد'}`, 'bot');
+        resetSupport();
+      }
+
+      function handleServiceFlow(text){
         const d = supportState.data;
         const field = nextQuestion();
-        if (!field) return finishTowQuote();
+        if (!field) return finalizeService();
 
         if (field === 'towType') {
           const t = detectTowType(text);
@@ -7529,32 +7937,16 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         if (field === 'from') {
           const routes = getTowRoutesSafe(d.company, d.towType || 'normal');
           const fromOptions = unique(routes.map(r => r.from));
-          const match = findBestMatch(text, fromOptions);
-          if (!match) {
-            const suggestions = suggestOptions(text, fromOptions);
-            if (suggestions.length) {
-              addMsg(`ما لقيت منطقة مطابقة. أمثلة قريبة: ${suggestions.join('، ')}`, 'bot');
-            } else {
-              addMsg('ما لقيت هذه المنطقة. حاول تكتبها بشكل أبسط.', 'bot');
-            }
-            return;
-          }
+          const match = findExactNormalized(text, fromOptions) || findAreaFromText(text, fromOptions);
+          if (!match) return addMsg('ما لقيت المنطقة، اكتبها مثل ما هي في الشيت.', 'bot');
           d.from = match;
         }
 
         if (field === 'to') {
-          const routes = getTowRoutesSafe(d.company, d.towType || 'normal').filter(r => r.from === d.from);
+          const routes = getTowRoutesSafe(d.company, d.towType || 'normal').filter(r => normalizeEqual(r.from, d.from));
           const toOptions = unique(routes.map(r => r.to));
-          const match = findBestMatch(text, toOptions);
-          if (!match) {
-            const suggestions = suggestOptions(text, toOptions);
-            if (suggestions.length) {
-              addMsg(`ما لقيت وجهة مطابقة. أمثلة: ${suggestions.join('، ')}`, 'bot');
-            } else {
-              addMsg('ما لقيت هذه الوجهة. حاول تكتبها بشكل أبسط.', 'bot');
-            }
-            return;
-          }
+          const match = findExactNormalized(text, toOptions) || findAreaFromText(text, toOptions);
+          if (!match) return addMsg('ما لقيت الوجهة، اكتبها مثل ما هي في الشيت.', 'bot');
           d.to = match;
         }
 
@@ -7576,9 +7968,63 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           d.flatbedPortarageExtraCharges = yn;
         }
 
+        if (field === 'area') {
+          const area = tryExtractAreaFromText(supportState.service, text) || text.trim();
+          d.area = area;
+        }
+
+        if (field === 'fuelType') {
+          const ft = detectFuelType(text);
+          if (!ft) return addMsg('اختر نوع البنزين: ممتاز أو خصوصي أو الترا.', 'bot');
+          d.fuelType = ft;
+        }
+
+        if (field === 'lockProvider') {
+          const lp = detectLockProvider(text);
+          if (!lp) return addMsg('اختر مزود الخدمة: بورتراج أو مورد خارجي.', 'bot');
+          d.lockProvider = lp;
+        }
+
+        if (field === 'externalPrice') {
+          const m = text.match(/(\d+(?:\.\d+)?)/);
+          if (!m) return addMsg('اكتب سعر الفني الخارجي كرقم.', 'bot');
+          d.externalPrice = parseFloat(m[1]);
+        }
+
+        if (field === 'balanceSource') {
+          const bs = detectBalanceSource(text);
+          if (!bs) return addMsg('اختر المصدر: من عندنا أو من عند العميل.', 'bot');
+          d.balanceSource = bs;
+        }
+
+        if (field === 'tireCount') {
+          const m = text.match(/(\d+)/);
+          if (!m) return addMsg('اكتب عدد التواير بالأرقام.', 'bot');
+          d.tireCount = parseInt(m[1], 10);
+        }
+
+        if (field === 'diskTurning') {
+          const yn = detectYesNo(text);
+          if (!yn) return addMsg('جاوب بنعم أو لا لو سمحت.', 'bot');
+          d.diskTurning = yn;
+        }
+
+        if (field === 'oilSource') {
+          const t = normalizeArabic(text);
+          if (t.includes('العميل')) d.oilSource = 'customer';
+          else if (t.includes('عندنا')) d.oilSource = 'ours';
+          else return addMsg('اختر: من عند العميل أو من عندنا.', 'bot');
+        }
+
+        if (field === 'supplierPrice') {
+          const m = text.match(/(\d+(?:\.\d+)?)/);
+          if (!m) return addMsg('اكتب سعر القطعة كرقم.', 'bot');
+          d.supplierPrice = parseFloat(m[1]);
+        }
+
         const next = nextQuestion();
         if (next) return askFor(next);
-        return finishTowQuote();
+        return finalizeService();
       }
 
       function sendChat(){
@@ -7592,12 +8038,17 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           return;
         }
 
-        if (supportState.mode === 'tow') return handleTowFlow(text);
+        if (isGreeting(text)) {
+          addMsg(`حياك الله يا ${getCurrentUserName()}! كيف أقدر أساعدك اليوم؟`, 'bot');
+          return;
+        }
 
-        const isTowIntent = /ونش|سحب|سطحه|سطحة/.test(normalizeArabic(text));
-        if (isTowIntent) return startTowFlow(text);
+        if (supportState.mode === 'service') return handleServiceFlow(text);
 
-        addMsg('اكتب سؤالك بشكل محدد مثل: بكم ونش من الفنطاس إلى الشويخ؟', 'bot');
+        const serviceKey = detectService(text);
+        if (serviceKey) return startServiceFlow(serviceKey, text);
+
+        addMsg('اكتب الخدمة المطلوبة مع المنطقة مثل: بكم بنزين في السالمية؟ أو بكم ونش من الفنطاس إلى الشويخ؟', 'bot');
       }
 
       chatSend.onclick = sendChat;
