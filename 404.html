@@ -7294,11 +7294,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
   <script>
     (function(){
-      const AI_ENDPOINTS = {
-        chat: '/api/ai-chat',
-        search: '/api/ai-search'
-      };
-
       const chatPanel = document.getElementById('aiChatPanel');
       const searchPanel = document.getElementById('aiSearchPanel');
       const chatBody = document.getElementById('aiChatBody');
@@ -7308,7 +7303,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const searchBtn = document.getElementById('aiSearchBtn');
       const searchResults = document.getElementById('aiSearchResults');
 
-      const history = [];
+      const supportState = {
+        mode: 'idle',
+        step: null,
+        data: {}
+      };
 
       function toggle(panel, open){
         panel.classList[open ? 'remove' : 'add']('hidden');
@@ -7327,57 +7326,287 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         chatBody.scrollTop = chatBody.scrollHeight;
       }
 
-      async function sendChat(){
+      function normalizeArabic(text){
+        return String(text || '')
+          .toLowerCase()
+          .replace(/[إأآا]/g, 'ا')
+          .replace(/ى/g, 'ي')
+          .replace(/ة/g, 'ه')
+          .replace(/ؤ/g, 'و')
+          .replace(/ئ/g, 'ي')
+          .replace(/[\u064B-\u065F]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      function detectYesNo(text){
+        const t = normalizeArabic(text);
+        if (/\b(نعم|اي|ايوه|أكيد|تمام|صح)\b/.test(t)) return 'yes';
+        if (/\b(لا|مو|مش|ابدا|موش)\b/.test(t)) return 'no';
+        return null;
+      }
+
+      function detectTowType(text){
+        const t = normalizeArabic(text);
+        if (t.includes('فل') || t.includes('فلات') || t.includes('داون') || t.includes('flat')) return 'flatbed';
+        if (t.includes('عادي') || t.includes('نورمال') || t.includes('normal')) return 'normal';
+        return null;
+      }
+
+      function extractLocations(text){
+        const t = normalizeArabic(text);
+        const fromMatch = t.match(/من\s+([^\s].*?)(?=\s+(الى|إلى)\s+|$)/);
+        const toMatch = t.match(/(الى|إلى)\s+(.+)/);
+        return {
+          from: fromMatch ? fromMatch[1].trim() : null,
+          to: toMatch ? toMatch[2].trim() : null
+        };
+      }
+
+      function unique(list){
+        return [...new Set(list.filter(Boolean))];
+      }
+
+      function findBestMatch(input, options){
+        const n = normalizeArabic(input);
+        let exact = options.find(o => normalizeArabic(o) === n);
+        if (exact) return exact;
+        let includes = options.find(o => normalizeArabic(o).includes(n) || n.includes(normalizeArabic(o)));
+        return includes || null;
+      }
+
+      function suggestOptions(input, options){
+        const n = normalizeArabic(input);
+        return options.filter(o => normalizeArabic(o).includes(n) || n.includes(normalizeArabic(o))).slice(0, 6);
+      }
+
+      function resetSupport(){
+        supportState.mode = 'idle';
+        supportState.step = null;
+        supportState.data = {
+          companyArabic: 'بورتراج',
+          company: 'portarage towtruk',
+          towType: null,
+          from: null,
+          to: null,
+          isLocked: null,
+          extraCharges: null,
+          flatbedPortarageExtraCharges: null
+        };
+      }
+
+      function sheetsReady(){
+        return sheetsData && sheetsData['portarage towtruk'];
+      }
+
+      function getTowRoutesSafe(company, towType){
+        if (!sheetsReady()) return [];
+        return getTowRoutes(company, towType) || [];
+      }
+
+      function computeTowQuote(d){
+        const routes = getTowRoutesSafe(d.company, d.towType);
+        const route = routes.find(r => r.from === d.from && r.to === d.to);
+        if (!route) return { error: 'route-not-found' };
+
+        let companyPrice = parseFloat(route.price) || 0;
+        let extraCharges = 0;
+
+        if (d.towType === 'normal') {
+          extraCharges = (d.companyArabic === 'بورتراج' && d.extraCharges === 'yes') ? 10 : 0;
+        } else if (d.towType === 'flatbed') {
+          if (d.companyArabic === 'بورتراج') {
+            extraCharges = (d.flatbedPortarageExtraCharges === 'yes') ? 10 : 0;
+          } else {
+            extraCharges = 0;
+          }
+        }
+
+        const lockedCharge = (d.towType === 'flatbed' && d.isLocked) ? 5 : 0;
+
+        let portaragePrice = companyPrice;
+        let discount = 0;
+
+        if (d.company.toLowerCase() !== 'portarage towtruk') {
+          const portarageRoutes = getTowRoutesSafe('portarage towtruk', d.towType);
+          const portarageRoute = portarageRoutes.find(r => r.from === d.from && r.to === d.to);
+          if (portarageRoute) {
+            portaragePrice = parseFloat(portarageRoute.price) || 0;
+            discount = portaragePrice - companyPrice;
+          }
+        }
+
+        const total = companyPrice + lockedCharge + extraCharges;
+        const cancelPrice = getCancellationPrice(d.from, d.to, d.towType);
+
+        return { companyPrice, lockedCharge, extraCharges, total, portaragePrice, discount, cancelPrice };
+      }
+
+      function nextQuestion(){
+        const d = supportState.data;
+        if (!d.towType) return 'towType';
+        if (!d.from) return 'from';
+        if (!d.to) return 'to';
+        if (d.towType === 'flatbed' && d.companyArabic === 'بورتراج' && d.isLocked === null) return 'isLocked';
+        if (d.companyArabic === 'بورتراج') {
+          if (d.towType === 'normal' && d.extraCharges === null) return 'extraCharges';
+          if (d.towType === 'flatbed' && d.flatbedPortarageExtraCharges === null) return 'flatbedPortarageExtraCharges';
+        }
+        return null;
+      }
+
+      function askFor(field){
+        if (field === 'towType') return addMsg('ما نوع الونش المطلوب؟ (عادي / فل داون)', 'bot');
+        if (field === 'from') return addMsg('من أي منطقة؟', 'bot');
+        if (field === 'to') return addMsg('إلى أي منطقة؟', 'bot');
+        if (field === 'isLocked') return addMsg('هل ونش مسكر؟ (نعم / لا)', 'bot');
+        if (field === 'extraCharges') return addMsg('هل القير ما يتبوش أو السيارة فيها حادث؟ (نعم / لا)', 'bot');
+        if (field === 'flatbedPortarageExtraCharges') return addMsg('هل القير ما يتبوش أو السيارة فيها حادث؟ (نعم / لا)', 'bot');
+      }
+
+      function startTowFlow(text){
+        resetSupport();
+        supportState.mode = 'tow';
+
+        const detectedTowType = detectTowType(text);
+        if (detectedTowType) supportState.data.towType = detectedTowType;
+
+        const locs = extractLocations(text);
+        if (locs.from) supportState.data.from = locs.from;
+        if (locs.to) supportState.data.to = locs.to;
+
+        // Try to resolve location names if possible
+        if (supportState.data.towType) {
+          const routes = getTowRoutesSafe(supportState.data.company, supportState.data.towType);
+          const fromOptions = unique(routes.map(r => r.from));
+          const toOptions = unique(routes.map(r => r.to));
+
+          if (supportState.data.from) {
+            const matchFrom = findBestMatch(supportState.data.from, fromOptions);
+            supportState.data.from = matchFrom || supportState.data.from;
+          }
+          if (supportState.data.to) {
+            const matchTo = findBestMatch(supportState.data.to, toOptions);
+            supportState.data.to = matchTo || supportState.data.to;
+          }
+        }
+
+        const field = nextQuestion();
+        if (field) return askFor(field);
+        return finishTowQuote();
+      }
+
+      function finishTowQuote(){
+        const d = supportState.data;
+        const quote = computeTowQuote(d);
+        if (quote.error) {
+          addMsg('ما حصلت هذا المسار بالضبط. ممكن تأكد كتابة المناطق؟', 'bot');
+          supportState.step = 'from';
+          return;
+        }
+
+        let msg = `السعر التقريبي: ${quote.total.toFixed(2)} ${config.currency}`;
+        if (d.towType === 'flatbed' && d.isLocked) msg += ' (يشمل ونش مسكر +5)';
+        if (quote.extraCharges > 0) msg += ' (يشمل رسوم عربانات +10)';
+        if (quote.cancelPrice) msg += ` | رسوم الإلغاء: ${quote.cancelPrice}`;
+
+        addMsg(msg, 'bot');
+        addMsg('هل تحتاج حساب مسار آخر؟ اكتب: ونش من ... إلى ...', 'bot');
+        resetSupport();
+      }
+
+      function handleTowFlow(text){
+        const d = supportState.data;
+        const field = nextQuestion();
+        if (!field) return finishTowQuote();
+
+        if (field === 'towType') {
+          const t = detectTowType(text);
+          if (!t) return addMsg('اختر نوع الونش: عادي أو فل داون.', 'bot');
+          d.towType = t;
+        }
+
+        if (field === 'from') {
+          const routes = getTowRoutesSafe(d.company, d.towType || 'normal');
+          const fromOptions = unique(routes.map(r => r.from));
+          const match = findBestMatch(text, fromOptions);
+          if (!match) {
+            const suggestions = suggestOptions(text, fromOptions);
+            if (suggestions.length) {
+              addMsg(`ما لقيت منطقة مطابقة. أمثلة قريبة: ${suggestions.join('، ')}`, 'bot');
+            } else {
+              addMsg('ما لقيت هذه المنطقة. حاول تكتبها بشكل أبسط.', 'bot');
+            }
+            return;
+          }
+          d.from = match;
+        }
+
+        if (field === 'to') {
+          const routes = getTowRoutesSafe(d.company, d.towType || 'normal').filter(r => r.from === d.from);
+          const toOptions = unique(routes.map(r => r.to));
+          const match = findBestMatch(text, toOptions);
+          if (!match) {
+            const suggestions = suggestOptions(text, toOptions);
+            if (suggestions.length) {
+              addMsg(`ما لقيت وجهة مطابقة. أمثلة: ${suggestions.join('، ')}`, 'bot');
+            } else {
+              addMsg('ما لقيت هذه الوجهة. حاول تكتبها بشكل أبسط.', 'bot');
+            }
+            return;
+          }
+          d.to = match;
+        }
+
+        if (field === 'isLocked') {
+          const yn = detectYesNo(text);
+          if (!yn) return addMsg('جاوب بنعم أو لا لو سمحت.', 'bot');
+          d.isLocked = (yn === 'yes');
+        }
+
+        if (field === 'extraCharges') {
+          const yn = detectYesNo(text);
+          if (!yn) return addMsg('جاوب بنعم أو لا لو سمحت.', 'bot');
+          d.extraCharges = yn;
+        }
+
+        if (field === 'flatbedPortarageExtraCharges') {
+          const yn = detectYesNo(text);
+          if (!yn) return addMsg('جاوب بنعم أو لا لو سمحت.', 'bot');
+          d.flatbedPortarageExtraCharges = yn;
+        }
+
+        const next = nextQuestion();
+        if (next) return askFor(next);
+        return finishTowQuote();
+      }
+
+      function sendChat(){
         const text = (chatInput.value || '').trim();
         if (!text) return;
         chatInput.value = '';
         addMsg(text, 'user');
-        history.push({ role: 'user', content: text });
 
-        try {
-          const res = await fetch(AI_ENDPOINTS.chat, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: text, history })
-          });
-          if (!res.ok) throw new Error('Bad response');
-          const data = await res.json();
-          const reply = data.reply || 'تم استلام رسالتك.';
-          addMsg(reply, 'bot');
-          history.push({ role: 'assistant', content: reply });
-        } catch (e) {
-          addMsg('شكرًا! سيتم الرد عليك بعد تجهيز الربط بالخادم.', 'bot');
+        if (!sheetsReady()) {
+          addMsg('جاري تحميل بيانات الأسعار... حاول بعد ثواني.', 'bot');
+          return;
         }
+
+        if (supportState.mode === 'tow') return handleTowFlow(text);
+
+        const isTowIntent = /ونش|سحب|سطحه|سطحة/.test(normalizeArabic(text));
+        if (isTowIntent) return startTowFlow(text);
+
+        addMsg('اكتب سؤالك بشكل محدد مثل: بكم ونش من الفنطاس إلى الشويخ؟', 'bot');
       }
 
       chatSend.onclick = sendChat;
       chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
 
-      async function runSearch(){
+      function runSearch(){
         const q = (searchInput.value || '').trim();
         if (!q) return;
-        searchResults.innerHTML = '<div class="ai-result-item">جاري البحث...</div>';
-        try {
-          const res = await fetch(AI_ENDPOINTS.search, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: q })
-          });
-          if (!res.ok) throw new Error('Bad response');
-          const data = await res.json();
-          const items = Array.isArray(data.results) ? data.results : [];
-          if (!items.length) {
-            searchResults.innerHTML = '<div class="ai-result-item">لا توجد نتائج.</div>';
-            return;
-          }
-          searchResults.innerHTML = items.map(r => {
-            const title = r.title || 'نتيجة';
-            const snippet = r.snippet || '';
-            return `<div class="ai-result-item"><div style="color:#F2BC1B; font-weight:700; margin-bottom:4px;">${title}</div><div>${snippet}</div></div>`;
-          }).join('');
-        } catch (e) {
-          searchResults.innerHTML = '<div class="ai-result-item">الربط بالخادم غير متوفر الآن.</div>';
-        }
+        searchResults.innerHTML = '<div class="ai-result-item">اكتب كلماتك وسأبحث في المحتوى لاحقًا.</div>';
       }
 
       searchBtn.onclick = runSearch;
