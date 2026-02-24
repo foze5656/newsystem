@@ -4442,12 +4442,12 @@
           <tbody>
             <tr class="data-row">
               <td data-cell="QR"></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td data-cell="TIRE_SIZE"></td>
+              <td data-cell="PATTERN"></td>
+              <td data-cell="ORIGIN"></td>
+              <td data-cell="QTY"></td>
+              <td data-cell="UNIT_PRICE"></td>
+              <td data-cell="AMOUNT"></td>
             </tr>
             <tr class="empty-row"><td colspan="7"></td></tr>
             <tr class="empty-row"><td colspan="7"></td></tr>
@@ -4459,8 +4459,8 @@
             <strong>Note:</strong> Payment shall be 15 days upon receipt of the items above.
           </div>
           <div class="totals">
-            <div class="total-row">Subtotal ($)</div>
-            <div class="total-row">Total Amount (KWD)</div>
+            <div class="total-row">Subtotal ($): <span data-cell="SUBTOTAL"></span></div>
+            <div class="total-row">Total Amount (KWD): <span data-cell="TOTAL"></span></div>
           </div>
         </div>
         <div class="lop-footer">System Generated No signature required</div>
@@ -4478,6 +4478,26 @@
               <label>QR NUMBER</label>
               <input id="lopQr" class="form-control" placeholder="QR NUMBER">
             </div>
+            <div class="form-field">
+              <label>TIRE SIZE</label>
+              <input id="lopTireSize" class="form-control" placeholder="TIRE SIZE">
+            </div>
+            <div class="form-field">
+              <label>PATTERN</label>
+              <input id="lopPattern" class="form-control" placeholder="PATTERN">
+            </div>
+            <div class="form-field">
+              <label>ORIGIN</label>
+              <input id="lopOrigin" class="form-control" placeholder="ORIGIN">
+            </div>
+            <div class="form-field">
+              <label>Quantity</label>
+              <input id="lopQty" type="number" class="form-control" placeholder="Quantity">
+            </div>
+            <div class="form-field">
+              <label>Unit Price</label>
+              <input id="lopUnitPrice" type="number" class="form-control" placeholder="Unit Price">
+            </div>
           </div>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button id="lopGenerateBtn" class="btn-primary">تحميل الصورة</button>
@@ -4492,7 +4512,12 @@
       const qrInput = document.getElementById('lopQr');
       if (generateBtn) generateBtn.onclick = async () => {
         const values = {
-          qrNumber: document.getElementById('lopQr')?.value || ''
+          qrNumber: document.getElementById('lopQr')?.value || '',
+          tireSize: document.getElementById('lopTireSize')?.value || '',
+          pattern: document.getElementById('lopPattern')?.value || '',
+          origin: document.getElementById('lopOrigin')?.value || '',
+          qty: document.getElementById('lopQty')?.value || '',
+          unitPrice: document.getElementById('lopUnitPrice')?.value || ''
         };
 
         const previewSection = document.getElementById('lopPreviewSection');
@@ -4599,14 +4624,33 @@
       const table = container.querySelector('table.waffle') || container.querySelector('table');
       if (!table) return;
 
-      if (values && values.qrNumber) {
-        const qrCell = table.querySelector('[data-cell="QR"]');
-        if (qrCell) {
-          qrCell.textContent = values.qrNumber;
-          return;
-        }
-        setLopCellValue(table, 17, 2, values.qrNumber);
-      }
+      if (!values) return;
+
+      setLopText(table, 'QR', values.qrNumber);
+      setLopText(table, 'TIRE_SIZE', values.tireSize);
+      setLopText(table, 'PATTERN', values.pattern);
+      setLopText(table, 'ORIGIN', values.origin);
+      setLopText(table, 'QTY', values.qty);
+      setLopText(table, 'UNIT_PRICE', formatMoney(values.unitPrice));
+
+      const qtyNum = parseFloat(values.qty);
+      const unitNum = parseFloat(values.unitPrice);
+      const amount = Number.isFinite(qtyNum) && Number.isFinite(unitNum) ? qtyNum * unitNum : null;
+      const amountText = formatMoney(amount);
+      setLopText(table, 'AMOUNT', amountText);
+      setLopText(table, 'SUBTOTAL', amountText);
+      setLopText(table, 'TOTAL', amountText);
+    }
+
+    function setLopText(table, key, value) {
+      const cell = table.querySelector(`[data-cell="${key}"]`);
+      if (cell) cell.textContent = value || '';
+    }
+
+    function formatMoney(value) {
+      const num = typeof value === 'string' ? parseFloat(value) : value;
+      if (!Number.isFinite(num)) return '';
+      return num.toFixed(2);
     }
 
     function setLopCellValue(table, rowNumber, colNumber, value) {
