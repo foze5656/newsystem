@@ -4412,7 +4412,7 @@
           }
         </style>
         <div class="lop-head">
-          <div class="lop-title"><img id="lopLogoImg" src="" alt="MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL" crossorigin="anonymous" referrerpolicy="no-referrer" style="height:38px; width:auto; display:block;"></div>
+          <div class="lop-title">Portarage Roadside Assistance Company</div>
           <div class="lop-title-small">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div>
         </div>
         <div class="lop-meta">
@@ -4422,7 +4422,7 @@
           </div>
           <div class="card">
             <div class="label">DATE</div>
-            <div class="value">4/2/2026</div>
+            <div class="value" data-cell="DATE"></div>
           </div>
           <div class="card">
             <div class="label">QR NUMBER</div>
@@ -4434,6 +4434,7 @@
             <tr>
               <th>TIRE SIZE</th>
               <th>PATTERN</th>
+              <th>YEAR</th>
               <th>ORIGIN</th>
               <th>Quantity</th>
               <th>Unit Price</th>
@@ -4466,6 +4467,10 @@
               <label>رقم QR</label>
               <input id="lopQr" class="form-control" placeholder="رقم QR">
             </div>
+            <div class="form-field">
+              <label>التاريخ</label>
+              <input id="lopDate" type="date" class="form-control">
+            </div>
           </div>
           <div id="lopItems" style="margin-top:10px;display:flex;flex-direction:column;gap:10px;"></div>
           <div style="display:flex;gap:8px;margin-top:10px;">
@@ -4496,6 +4501,10 @@
           <div class="form-field">
             <label>النقشة</label>
             <input id="lopPattern${index}" data-field="pattern" class="form-control" placeholder="النقشة">
+          </div>
+          <div class="form-field">
+            <label>السنة</label>
+            <input id="lopYear${index}" data-field="year" class="form-control" placeholder="السنة">
           </div>
           <div class="form-field">
             <label>المنشأ</label>
@@ -4532,16 +4541,18 @@
           rows.forEach(rowEl => {
             const size = rowEl.querySelector('[data-field="tireSize"]')?.value || '';
             const pattern = rowEl.querySelector('[data-field="pattern"]')?.value || '';
+            const year = rowEl.querySelector('[data-field="year"]')?.value || '';
             const origin = rowEl.querySelector('[data-field="origin"]')?.value || '';
             const qty = rowEl.querySelector('[data-field="qty"]')?.value || '';
             const unitPrice = rowEl.querySelector('[data-field="unitPrice"]')?.value || '';
-            if (size || pattern || origin || qty || unitPrice) {
-              items.push({ size, pattern, origin, qty, unitPrice });
+            if (size || pattern || year || origin || qty || unitPrice) {
+              items.push({ size, pattern, year, origin, qty, unitPrice });
             }
           });
         }
         return {
           qrNumber: document.getElementById('lopQr')?.value || '',
+          date: document.getElementById('lopDate')?.value || '',
           items
         };
       };
@@ -4574,6 +4585,18 @@
             generateBtn.click();
           }
         });
+      }
+
+      const dateInput = document.getElementById('lopDate');
+      if (dateInput) {
+        if (!dateInput.value) {
+          const today = new Date();
+          const yyyy = today.getFullYear();
+          const mm = String(today.getMonth() + 1).padStart(2, '0');
+          const dd = String(today.getDate()).padStart(2, '0');
+          dateInput.value = `${yyyy}-${mm}-${dd}`;
+        }
+        dateInput.addEventListener('input', () => updateLopPreview());
       }
 
       if (qrInput) qrInput.addEventListener('input', () => updateLopPreview());
@@ -4659,6 +4682,7 @@
       if (!values) return;
 
       setLopText(container, 'QR_TOP', values.qrNumber);
+      setLopText(container, 'DATE', values.date ? formatDateDisplay(values.date) : formatDateDisplay(new Date()));
       const items = Array.isArray(values.items) ? values.items : [];
       let subtotal = 0;
 
@@ -4679,6 +4703,7 @@
           row.innerHTML = `
             <td>${item.size || ''}</td>
             <td>${item.pattern || ''}</td>
+            <td>${item.year || ''}</td>
             <td>${item.origin || ''}</td>
             <td>${item.qty || ''}</td>
             <td>${formatMoney(item.unitPrice) || ''}</td>
@@ -4690,7 +4715,7 @@
         for (let i = 0; i < 2; i++) {
           const emptyRow = document.createElement('tr');
           emptyRow.className = 'empty-row';
-          emptyRow.innerHTML = '<td colspan="6"></td>';
+          emptyRow.innerHTML = '<td colspan="7"></td>';
           itemsBody.appendChild(emptyRow);
         }
       }
@@ -4755,6 +4780,24 @@
       const num = typeof value === 'string' ? parseFloat(value) : value;
       if (!Number.isFinite(num)) return '';
       return num.toFixed(2);
+    }
+
+    function formatDateDisplay(value) {
+      if (!value) return '';
+      if (value instanceof Date) {
+        const yyyy = value.getFullYear();
+        const mm = String(value.getMonth() + 1).padStart(2, '0');
+        const dd = String(value.getDate()).padStart(2, '0');
+        return `${dd}/${mm}/${yyyy}`;
+      }
+      if (typeof value === 'string') {
+        const parts = value.split('-');
+        if (parts.length === 3) {
+          return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return value;
+      }
+      return String(value);
     }
 
     function setLopCellValue(table, rowNumber, colNumber, value) {
