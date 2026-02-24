@@ -4286,6 +4286,126 @@
 
 
 
+    const LOP_TEMPLATE_URL = '';
+    const LOP_TEMPLATE_HTML = `
+      <div class="lop-sheet">
+        <style>
+          .lop-sheet {
+            background: #dbe7f6;
+            padding: 16px;
+            border: 1px solid #9fb2d6;
+            font-family: Calibri, Arial, sans-serif;
+            color: #0f172a;
+          }
+          .lop-sheet table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+          }
+          .lop-sheet td {
+            border: 1px solid #7c8aa8;
+            padding: 6px 6px;
+            font-size: 12px;
+            vertical-align: middle;
+          }
+          .lop-sheet .row-blank td {
+            height: 18px;
+            background: #dbe7f6;
+          }
+          .lop-sheet .company-row td {
+            background: #c7d8f3;
+            text-align: center;
+            font-weight: 700;
+          }
+          .lop-sheet .header-row td {
+            background: #1f4e78;
+            color: #ffffff;
+            font-weight: 700;
+            text-align: center;
+          }
+          .lop-sheet .input-row td {
+            background: #fff59d;
+            text-align: center;
+            font-weight: 600;
+          }
+          .lop-sheet .note-label {
+            background: #1f4e78;
+            color: #ffffff;
+            font-weight: 700;
+          }
+          .lop-sheet .summary-label {
+            background: #e9effa;
+            font-weight: 700;
+            text-align: center;
+          }
+          .lop-sheet .footer-row td {
+            background: #dbe7f6;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+          }
+        </style>
+        <table class="waffle">
+          <colgroup>
+            <col style="width: 4%;">
+            <col style="width: 16%;">
+            <col style="width: 14%;">
+            <col style="width: 14%;">
+            <col style="width: 14%;">
+            <col style="width: 12%;">
+            <col style="width: 13%;">
+            <col style="width: 13%;">
+          </colgroup>
+          <tbody>
+            <tr class="row-blank"><td></td><td colspan="7"></td></tr>
+            <tr class="company-row"><td></td><td colspan="7">MOHAMED NASER AL-SAYER &amp; SONSES CO. WLL</td></tr>
+            <tr class="row-blank"><td></td><td colspan="7"></td></tr>
+            <tr class="header-row">
+              <td></td>
+              <td>QR NUMBER</td>
+              <td>TIRE SIZE</td>
+              <td>PATTERN</td>
+              <td>ORIGIN</td>
+              <td>Quantity</td>
+              <td>Unit Price</td>
+              <td>Amount</td>
+            </tr>
+            <tr class="input-row">
+              <td></td>
+              <td data-cell="B16"></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr class="row-blank"><td></td><td colspan="7"></td></tr>
+            <tr>
+              <td></td>
+              <td class="note-label" colspan="3">Note:</td>
+              <td></td>
+              <td class="summary-label" colspan="2">Subtotal ($)</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td colspan="7">Payment shall be 15 days upon receipt of the items above.</td>
+            </tr>
+            <tr class="row-blank"><td></td><td colspan="7"></td></tr>
+            <tr>
+              <td></td>
+              <td colspan="5"></td>
+              <td class="summary-label" colspan="2">Total Amount (KWD)</td>
+            </tr>
+            <tr class="row-blank"><td></td><td colspan="7"></td></tr>
+            <tr class="footer-row"><td></td><td colspan="7">System Generated No signature required</td></tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+    let lopTemplateCache = '';
+
     function renderLopInterface() {
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
@@ -4317,7 +4437,7 @@
         const previewCapture = document.getElementById('lopPreviewCapture');
         if (previewSection) previewSection.classList.remove('hidden');
         if (previewCapture) {
-          const templateHtml = getLopTemplateHtml();
+          const templateHtml = await getLopTemplateHtml();
           if (!templateHtml) {
             showToast('قالب LOP غير موجود');
             return;
@@ -4343,11 +4463,27 @@
       }
     }
 
-    function getLopTemplateHtml() {
+    async function getLopTemplateHtml() {
       let html = '';
 
       if (typeof LOP_TEMPLATE_HTML === 'string') {
         html = LOP_TEMPLATE_HTML;
+      }
+
+      if (!html && lopTemplateCache) {
+        html = lopTemplateCache;
+      }
+
+      if (!html && LOP_TEMPLATE_URL) {
+        try {
+          const res = await fetch(LOP_TEMPLATE_URL, { cache: 'no-store' });
+          if (res.ok) {
+            html = await res.text();
+            lopTemplateCache = html;
+          }
+        } catch (e) {
+          console.warn('Failed to load LOP template URL', e);
+        }
       }
 
       if (!html) {
@@ -4407,6 +4543,11 @@
     }
 
     function setLopCellValue(table, rowNumber, colNumber, value) {
+      const directCell = table.querySelector(`[data-cell="${columnNumberToLetter(colNumber)}${rowNumber}"]`);
+      if (directCell) {
+        directCell.textContent = value;
+        return;
+      }
       const rows = Array.from(table.querySelectorAll('tr'));
       const row = rows[rowNumber - 1];
       if (!row) return;
@@ -4416,6 +4557,17 @@
       if (!cell) return;
 
       cell.textContent = value;
+    }
+
+    function columnNumberToLetter(num) {
+      let letter = '';
+      let n = num;
+      while (n > 0) {
+        const mod = (n - 1) % 26;
+        letter = String.fromCharCode(65 + mod) + letter;
+        n = Math.floor((n - 1) / 26);
+      }
+      return letter;
     }
 
     // Render Unlock (فتح قفل السيارة) as a separate service
