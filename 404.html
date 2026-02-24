@@ -4410,7 +4410,7 @@
           }
         </style>
         <div class="lop-head">
-          <div class="lop-title">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div>
+          <div class="lop-title"><img src="https://i.top4top.io/p_35860o72q1.png" alt="MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL" style="height:38px; width:auto; display:block;"></div>
           <div class="lop-title-small">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div>
         </div>
         <div class="lop-meta">
@@ -4423,14 +4423,13 @@
             <div class="value">4/2/2026</div>
           </div>
           <div class="card">
-            <div class="label">CLIENT</div>
-            <div class="value">Mohamed Naser ALSayer</div>
+            <div class="label">QR NUMBER</div>
+            <div class="value" data-cell="QR_TOP"></div>
           </div>
         </div>
         <table class="lop-table">
           <thead>
             <tr>
-              <th>QR NUMBER</th>
               <th>TIRE SIZE</th>
               <th>PATTERN</th>
               <th>ORIGIN</th>
@@ -4441,7 +4440,6 @@
           </thead>
           <tbody>
             <tr class="data-row">
-              <td data-cell="QR"></td>
               <td data-cell="TIRE_SIZE_1"></td>
               <td data-cell="PATTERN_1"></td>
               <td data-cell="ORIGIN_1"></td>
@@ -4450,7 +4448,6 @@
               <td data-cell="AMOUNT_1"></td>
             </tr>
             <tr class="data-row">
-              <td></td>
               <td data-cell="TIRE_SIZE_2"></td>
               <td data-cell="PATTERN_2"></td>
               <td data-cell="ORIGIN_2"></td>
@@ -4458,8 +4455,8 @@
               <td data-cell="UNIT_PRICE_2"></td>
               <td data-cell="AMOUNT_2"></td>
             </tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
-            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="6"></td></tr>
+            <tr class="empty-row"><td colspan="6"></td></tr>
           </tbody>
         </table>
         <div class="lop-note">
@@ -4666,7 +4663,7 @@
 
       if (!values) return;
 
-      setLopText(table, 'QR', values.qrNumber);
+      setLopText(table, 'QR_TOP', values.qrNumber);
       const items = Array.isArray(values.items) ? values.items : [];
       let subtotal = 0;
 
