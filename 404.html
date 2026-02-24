@@ -4467,7 +4467,6 @@
             <button id="lopSelectBridgestone" class="btn-option" style="padding:14px;">بريدجيستون</button>
           </div>
         </div>
-        <div id="lopFormWrapper"></div>
       `;
 
       const yokohamaBtn = document.getElementById('lopSelectYokohama');
@@ -4477,9 +4476,9 @@
     }
 
     function renderLopForm(company) {
-      const wrapper = document.getElementById('lopFormWrapper');
-      if (!wrapper) return;
-      wrapper.innerHTML = `
+      const contentArea = document.getElementById('contentArea');
+      if (!contentArea) return;
+      contentArea.innerHTML = `
         <div class="form-section full-width">
           <div class="form-grid">
             <div class="form-field">
