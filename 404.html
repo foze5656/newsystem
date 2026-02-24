@@ -1791,7 +1791,7 @@
      </div>
      <div class="service-item submenu-item" data-service="tireSheet"><span class="label">شيت التواير</span>
      </div>
-      <div class="service-item submenu-item" data-service="tire_lop"><span class="label">lop</span>
+      <div class="service-item submenu-item" data-service="tire_lop"><span class="label">فواتير التواير</span>
       </div>
      <div class="service-item submenu-item" data-service="balance"><span class="label">ميزان وتركيب</span>
      </div>
@@ -2300,7 +2300,7 @@
           'unlock': 'فتح قفل السيارة',
           'tireSheet': 'شيت التواير',
           'tireIncrease': 'زيادات التواير',
-          'tire_lop': 'lop',
+          'tire_lop': 'فواتير التواير',
           'puncture': 'بنشر',
           'balance': 'ميزان وتركيب',
           'ringRepair': 'تصليح الرنقات',
@@ -4461,7 +4461,7 @@
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="form-section full-width">
-          <h3 class="section-title">lop</h3>
+          <h3 class="section-title">فواتير التواير</h3>
           <div class="form-grid">
             <button id="lopSelectYokohama" class="btn-option" style="padding:14px;">يوكاهما</button>
             <button id="lopSelectBridgestone" class="btn-option" style="padding:14px;">بريدجيستون</button>
@@ -4480,6 +4480,9 @@
       if (!contentArea) return;
       contentArea.innerHTML = `
         <div class="form-section full-width">
+          <div style="display:flex;gap:8px;align-items:center;justify-content:flex-start;margin-bottom:8px;">
+            <button id="lopBackBtn" class="btn-back" style="padding:6px 12px;">رجوع</button>
+          </div>
           <div class="form-grid">
             <div class="form-field">
               <label>رقم QR</label>
@@ -4501,6 +4504,7 @@
         </div>
       `;
 
+      const backBtn = document.getElementById('lopBackBtn');
       const generateBtn = document.getElementById('lopGenerateBtn');
       const addItemBtn = document.getElementById('lopAddItemBtn');
       const qrInput = document.getElementById('lopQr');
@@ -4593,6 +4597,8 @@
         fillLopTemplate(previewCapture, values);
       };
 
+      if (backBtn) backBtn.onclick = () => renderLopInterface();
+
       if (generateBtn) generateBtn.onclick = async () => {
         await updateLopPreview();
         await exportLopImage();
@@ -4605,6 +4611,16 @@
             generateBtn.click();
           }
         });
+      }
+
+      const dateInput = document.getElementById('lopDate');
+      if (dateInput) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        dateInput.value = `${yyyy}-${mm}-${dd}`;
+        dateInput.addEventListener('input', () => updateLopPreview());
       }
 
       if (qrInput) qrInput.addEventListener('input', () => updateLopPreview());
