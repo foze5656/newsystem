@@ -4283,6 +4283,7 @@
 
 
     const LOP_TEMPLATE_URL = '';
+    const LOP_LOGO_DATA_URL = '';
     const LOP_TEMPLATE_HTML = `
       <div class="lop-invoice">
         <style>
@@ -4410,7 +4411,7 @@
           }
         </style>
         <div class="lop-head">
-          <div class="lop-title"><img src="https://i.top4top.io/p_35860o72q1.png" alt="MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL" crossorigin="anonymous" referrerpolicy="no-referrer" style="height:38px; width:auto; display:block;"></div>
+          <div class="lop-title"><img id="lopLogoImg" src="" alt="MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL" crossorigin="anonymous" referrerpolicy="no-referrer" style="height:38px; width:auto; display:block;"></div>
           <div class="lop-title-small">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div>
         </div>
         <div class="lop-meta">
@@ -4556,6 +4557,7 @@
           if (!templateHtml) return;
           previewCapture.innerHTML = templateHtml;
         }
+        hydrateLopLogo(previewCapture);
         fillLopTemplate(previewCapture, values);
       };
 
@@ -4575,6 +4577,7 @@
 
       if (qrInput) qrInput.addEventListener('input', () => updateLopPreview());
       if (itemsContainer) itemsContainer.addEventListener('input', () => updateLopPreview());
+      updateLopPreview();
     }
 
     async function getLopTemplateHtml() {
@@ -4631,6 +4634,7 @@
         return;
       }
       try {
+        await ensureLopLogoLoaded(target);
         await ensureHtml2Canvas();
         const canvas = await html2canvas(target, {
           backgroundColor: '#0b0b0b',
@@ -4690,9 +4694,29 @@
         }
       }
 
-      const subtotalText = subtotal > 0 ? formatMoney(subtotal) : '';
+      const subtotalText = formatMoney(subtotal) || '0.00';
       setLopText(table, 'SUBTOTAL', subtotalText);
       setLopText(table, 'TOTAL', subtotalText);
+    }
+
+    function hydrateLopLogo(container) {
+      const logo = container.querySelector('#lopLogoImg');
+      if (!logo) return;
+      if (LOP_LOGO_DATA_URL) {
+        logo.src = LOP_LOGO_DATA_URL;
+      } else if (!logo.src) {
+        logo.src = 'https://i.top4top.io/p_35860o72q1.png';
+      }
+    }
+
+    function ensureLopLogoLoaded(container) {
+      return new Promise(resolve => {
+        const logo = container.querySelector('#lopLogoImg');
+        if (!logo) return resolve();
+        if (logo.complete) return resolve();
+        logo.onload = () => resolve();
+        logo.onerror = () => resolve();
+      });
     }
 
     function setLopText(table, key, value) {
