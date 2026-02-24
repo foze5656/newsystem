@@ -4296,30 +4296,6 @@
               <label>QR NUMBER</label>
               <input id="lopQr" class="form-control" placeholder="QR NUMBER">
             </div>
-            <div class="form-field">
-              <label>TIRE SIZE</label>
-              <input id="lopTireSize" class="form-control" placeholder="TIRE SIZE">
-            </div>
-            <div class="form-field">
-              <label>PATTERN</label>
-              <input id="lopPattern" class="form-control" placeholder="PATTERN">
-            </div>
-            <div class="form-field">
-              <label>ORIGIN</label>
-              <input id="lopOrigin" class="form-control" placeholder="ORIGIN">
-            </div>
-            <div class="form-field">
-              <label>Quantity</label>
-              <input id="lopQty" type="number" class="form-control" placeholder="Quantity">
-            </div>
-            <div class="form-field">
-              <label>Unit Price</label>
-              <input id="lopUnitPrice" type="number" class="form-control" placeholder="Unit Price">
-            </div>
-            <div class="form-field">
-              <label>Amount</label>
-              <input id="lopAmount" type="number" class="form-control" placeholder="Amount">
-            </div>
           </div>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button id="lopGenerateBtn" class="btn-primary">تحميل الصورة</button>
@@ -4331,15 +4307,10 @@
       `;
 
       const generateBtn = document.getElementById('lopGenerateBtn');
+      const qrInput = document.getElementById('lopQr');
       if (generateBtn) generateBtn.onclick = async () => {
         const values = {
-          'QR NUMBER': document.getElementById('lopQr')?.value || '-',
-          'TIRE SIZE': document.getElementById('lopTireSize')?.value || '-',
-          'PATTERN': document.getElementById('lopPattern')?.value || '-',
-          'ORIGIN': document.getElementById('lopOrigin')?.value || '-',
-          'Quantity': document.getElementById('lopQty')?.value || '-',
-          'Unit Price': document.getElementById('lopUnitPrice')?.value || '-',
-          'Amount': document.getElementById('lopAmount')?.value || '-'
+          qrNumber: document.getElementById('lopQr')?.value || ''
         };
 
         const previewSection = document.getElementById('lopPreviewSection');
@@ -4361,6 +4332,15 @@
 
         await exportLopImage();
       };
+
+      if (qrInput && generateBtn) {
+        qrInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            generateBtn.click();
+          }
+        });
+      }
     }
 
     function getLopTemplateHtml() {
@@ -4418,38 +4398,24 @@
     }
 
     function fillLopTemplate(container, values) {
-      const table = container.querySelector('table.waffle');
+      const table = container.querySelector('table.waffle') || container.querySelector('table');
       if (!table) return;
 
-      const rows = Array.from(table.querySelectorAll('tr'));
-      const headerRow = rows.find(r => r.textContent.includes('QR NUMBER') && r.textContent.includes('TIRE SIZE'));
-      if (!headerRow) return;
-
-      const headerCells = Array.from(headerRow.querySelectorAll('td'));
-      const headerMap = {};
-      headerCells.forEach((cell, idx) => {
-        const key = cell.textContent.trim();
-        if (key) headerMap[key] = idx;
-      });
-
-      let dataRow = headerRow.nextElementSibling;
-      if (!dataRow || dataRow.tagName.toLowerCase() !== 'tr') {
-        dataRow = document.createElement('tr');
-        headerCells.forEach(cell => {
-          const td = document.createElement('td');
-          td.className = cell.className || 's31';
-          dataRow.appendChild(td);
-        });
-        headerRow.parentElement.insertBefore(dataRow, headerRow.nextSibling);
+      if (values && values.qrNumber) {
+        setLopCellValue(table, 16, 2, values.qrNumber);
       }
+    }
 
-      const dataCells = Array.from(dataRow.querySelectorAll('td'));
-      Object.keys(values).forEach(key => {
-        const idx = headerMap[key];
-        if (idx !== undefined && dataCells[idx]) {
-          dataCells[idx].textContent = values[key];
-        }
-      });
+    function setLopCellValue(table, rowNumber, colNumber, value) {
+      const rows = Array.from(table.querySelectorAll('tr'));
+      const row = rows[rowNumber - 1];
+      if (!row) return;
+
+      const cells = Array.from(row.querySelectorAll('td, th'));
+      const cell = cells[colNumber - 1];
+      if (!cell) return;
+
+      cell.textContent = value;
     }
 
     // Render Unlock (فتح قفل السيارة) as a separate service
