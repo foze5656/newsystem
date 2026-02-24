@@ -4463,13 +4463,25 @@
         <div class="form-section full-width">
           <h3 class="section-title">lop</h3>
           <div class="form-grid">
-            <div class="form-field">
-              <label>الجهة</label>
-              <select id="lopCompany" class="form-control">
-                <option value="yokohama">يوكاهما</option>
-                <option value="bridgestone">بريدجيستون</option>
-              </select>
-            </div>
+            <button id="lopSelectYokohama" class="btn-option" style="padding:14px;">يوكاهما</button>
+            <button id="lopSelectBridgestone" class="btn-option" style="padding:14px;">بريدجيستون</button>
+          </div>
+        </div>
+        <div id="lopFormWrapper"></div>
+      `;
+
+      const yokohamaBtn = document.getElementById('lopSelectYokohama');
+      const bridgestoneBtn = document.getElementById('lopSelectBridgestone');
+      if (yokohamaBtn) yokohamaBtn.onclick = () => renderLopForm('yokohama');
+      if (bridgestoneBtn) bridgestoneBtn.onclick = () => renderLopForm('bridgestone');
+    }
+
+    function renderLopForm(company) {
+      const wrapper = document.getElementById('lopFormWrapper');
+      if (!wrapper) return;
+      wrapper.innerHTML = `
+        <div class="form-section full-width">
+          <div class="form-grid">
             <div class="form-field">
               <label>رقم QR</label>
               <input id="lopQr" class="form-control" placeholder="رقم QR">
@@ -4493,9 +4505,8 @@
       const generateBtn = document.getElementById('lopGenerateBtn');
       const addItemBtn = document.getElementById('lopAddItemBtn');
       const qrInput = document.getElementById('lopQr');
-      const companySelect = document.getElementById('lopCompany');
-
       const itemsContainer = document.getElementById('lopItems');
+
       const addItemRow = (index) => {
         if (!itemsContainer) return;
         const row = document.createElement('div');
@@ -4559,7 +4570,7 @@
           });
         }
         return {
-          company: companySelect?.value || 'yokohama',
+          company,
           qrNumber: document.getElementById('lopQr')?.value || '',
           date: document.getElementById('lopDate')?.value || '',
           items
@@ -4570,9 +4581,10 @@
         const values = collectLopValues();
         const previewSection = document.getElementById('lopPreviewSection');
         const previewCapture = document.getElementById('lopPreviewCapture');
-        if (previewSection) previewSection.classList.remove('hidden');
-        if (!previewCapture) return;
+        if (!previewSection || !previewCapture) return;
+        if (!values.qrNumber && !values.date && values.items.length === 0) return;
 
+        previewSection.classList.remove('hidden');
         if (!previewCapture.querySelector('.lop-invoice')) {
           const templateHtml = await getLopTemplateHtml();
           if (!templateHtml) return;
@@ -4596,22 +4608,10 @@
         });
       }
 
-      const dateInput = document.getElementById('lopDate');
-      if (dateInput) {
-        if (!dateInput.value) {
-          const today = new Date();
-          const yyyy = today.getFullYear();
-          const mm = String(today.getMonth() + 1).padStart(2, '0');
-          const dd = String(today.getDate()).padStart(2, '0');
-          dateInput.value = `${yyyy}-${mm}-${dd}`;
-        }
-        dateInput.addEventListener('input', () => updateLopPreview());
-      }
-
       if (qrInput) qrInput.addEventListener('input', () => updateLopPreview());
-      if (companySelect) companySelect.addEventListener('change', () => updateLopPreview());
       if (itemsContainer) itemsContainer.addEventListener('input', () => updateLopPreview());
-      updateLopPreview();
+      const dateInput = document.getElementById('lopDate');
+      if (dateInput) dateInput.addEventListener('input', () => updateLopPreview());
     }
 
     async function getLopTemplateHtml() {
