@@ -949,6 +949,20 @@
       outline: 2px solid #F2BC1B;
       outline-offset: 2px;
     }
+
+    .lop-sheet-editor table {
+      border-collapse: collapse;
+      width: max-content;
+      min-width: 100%;
+    }
+
+    .lop-sheet-editor th,
+    .lop-sheet-editor thead,
+    .lop-sheet-editor .row-headers-background,
+    .lop-sheet-editor .column-headers-background,
+    .lop-sheet-editor .row-header-wrapper {
+      display: none !important;
+    }
     
     /* Info Boxes */
     .info-box {
@@ -4320,12 +4334,23 @@
           <div class="muted-text">تقدر تعدل أو تكتب مباشرة داخل الجدول</div>
         </div>
         <div class="form-section full-width">
-          <div id="lopSheetEditor" class="lop-sheet-editor" contenteditable="true"></div>
+          <div id="lopSheetEditor" class="lop-sheet-editor"></div>
         </div>
       `;
 
       const editor = document.getElementById('lopSheetEditor');
-      if (editor) editor.innerHTML = LOP_SHEET_HTML;
+      if (editor) {
+        editor.innerHTML = LOP_SHEET_HTML;
+        const table = editor.querySelector('table');
+        if (table) {
+          const thead = table.querySelector('thead');
+          if (thead) thead.remove();
+          table.querySelectorAll('th').forEach(th => th.remove());
+          table.querySelectorAll('td').forEach(td => {
+            td.setAttribute('contenteditable', 'true');
+          });
+        }
+      }
     }
 
     // Render Unlock (فتح قفل السيارة) as a separate service
