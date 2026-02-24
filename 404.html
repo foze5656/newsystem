@@ -4413,7 +4413,7 @@
         </style>
         <div class="lop-head">
           <div class="lop-title">Portarage Roadside Assistance Company</div>
-          <div class="lop-title-small">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div>
+          <div class="lop-title-small" data-cell="COMPANY_NAME">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div>
         </div>
         <div class="lop-meta">
           <div class="card">
@@ -4464,6 +4464,13 @@
           <h3 class="section-title">lop</h3>
           <div class="form-grid">
             <div class="form-field">
+              <label>الجهة</label>
+              <select id="lopCompany" class="form-control">
+                <option value="yokohama">يوكاهما</option>
+                <option value="bridgestone">بريدجيستون</option>
+              </select>
+            </div>
+            <div class="form-field">
               <label>رقم QR</label>
               <input id="lopQr" class="form-control" placeholder="رقم QR">
             </div>
@@ -4486,6 +4493,7 @@
       const generateBtn = document.getElementById('lopGenerateBtn');
       const addItemBtn = document.getElementById('lopAddItemBtn');
       const qrInput = document.getElementById('lopQr');
+      const companySelect = document.getElementById('lopCompany');
 
       const itemsContainer = document.getElementById('lopItems');
       const addItemRow = (index) => {
@@ -4551,6 +4559,7 @@
           });
         }
         return {
+          company: companySelect?.value || 'yokohama',
           qrNumber: document.getElementById('lopQr')?.value || '',
           date: document.getElementById('lopDate')?.value || '',
           items
@@ -4600,6 +4609,7 @@
       }
 
       if (qrInput) qrInput.addEventListener('input', () => updateLopPreview());
+      if (companySelect) companySelect.addEventListener('change', () => updateLopPreview());
       if (itemsContainer) itemsContainer.addEventListener('input', () => updateLopPreview());
       updateLopPreview();
     }
@@ -4666,8 +4676,9 @@
           useCORS: true
         });
         const link = document.createElement('a');
-        const dateStr = new Date().toISOString().slice(0, 10);
-        link.download = `lop-${dateStr}.png`;
+        const qrValue = document.getElementById('lopQr')?.value?.trim() || '';
+        const safeName = qrValue ? qrValue.replace(/[^\w\-]+/g, '_') : new Date().toISOString().slice(0, 10);
+        link.download = `${safeName}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
       } catch (err) {
@@ -4681,6 +4692,10 @@
 
       if (!values) return;
 
+      const companyName = values.company === 'bridgestone'
+        ? 'Bridgestone Tire Distribution Co W.L.L.'
+        : 'MOHAMED NASER AL-SAYER & SONSEST. CO. WLL';
+      setLopText(container, 'COMPANY_NAME', companyName);
       setLopText(container, 'QR_TOP', values.qrNumber);
       setLopText(container, 'DATE', values.date ? formatDateDisplay(values.date) : formatDateDisplay(new Date()));
       const items = Array.isArray(values.items) ? values.items : [];
