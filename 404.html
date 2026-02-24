@@ -86,11 +86,11 @@
       <table class="w-full">
        <thead class="table-header">
         <tr>
-         <th class="px-6 py-4 text-right text-white font-bold text-lg">Row Labels</th>
+         <th class="px-6 py-4 text-right text-white font-bold text-lg">المقاس</th>
          <th class="px-6 py-4 text-center text-white font-bold text-lg">2022</th>
          <th class="px-6 py-4 text-center text-white font-bold text-lg">2023</th>
          <th class="px-6 py-4 text-center text-white font-bold text-lg">2024</th>
-         <th class="px-6 py-4 text-center text-white font-bold text-lg">Grand Total</th>
+         <th class="px-6 py-4 text-center text-white font-bold text-lg">المجموع</th>
         </tr>
        </thead>
        <tbody id="resultsTable" class="divide-y divide-emerald-100">
@@ -205,42 +205,54 @@
 
     // Process and aggregate data
     function processData(data) {
-      // Find the Bat and CountOfID columns (case-insensitive)
-      const batKey = Object.keys(data[0] || {}).find(k => k.toLowerCase() === 'bat');
-      const countKey = Object.keys(data[0] || {}).find(k => k.toLowerCase().includes('countofid') || k.toLowerCase().includes('count'));
+      // Find the Bat and year columns (case-insensitive)
+      const batKey = Object.keys(data[0] || {}).find(k => k.toLowerCase() === 'bat' || k.toLowerCase().includes('row label'));
+      
+      // Find year columns
+      const year2022Key = Object.keys(data[0] || {}).find(k => k.toString().includes('2022'));
+      const year2023Key = Object.keys(data[0] || {}).find(k => k.toString().includes('2023'));
+      const year2024Key = Object.keys(data[0] || {}).find(k => k.toString().includes('2024'));
 
-      if (!batKey || !countKey || data.length === 0) {
+      if (!batKey || data.length === 0) {
         showEmptyMessage();
         return;
       }
 
       // Aggregate data by normalized Bat
       const aggregated = {};
-      const originalBatNames = {}; // لحفظ الشكل الأصلي للعرض
+      const originalBatNames = {};
       
       data.forEach(row => {
         const batOriginal = String(row[batKey] || '').trim();
         const batNormalized = normalizeBatSize(batOriginal);
-        const count = parseFloat(row[countKey]) || 0;
 
         if (batNormalized) {
-          if (aggregated[batNormalized]) {
-            aggregated[batNormalized] += count;
-          } else {
-            aggregated[batNormalized] = count;
-            originalBatNames[batNormalized] = batOriginal; // حفظ أول ظهور
+          if (!aggregated[batNormalized]) {
+            aggregated[batNormalized] = {
+              year2022: 0,
+              year2023: 0,
+              year2024: 0
+            };
+            originalBatNames[batNormalized] = batOriginal;
           }
+
+          if (year2022Key) aggregated[batNormalized].year2022 += parseFloat(row[year2022Key]) || 0;
+          if (year2023Key) aggregated[batNormalized].year2023 += parseFloat(row[year2023Key]) || 0;
+          if (year2024Key) aggregated[batNormalized].year2024 += parseFloat(row[year2024Key]) || 0;
         }
       });
 
       // Convert to array and sort
       processedData = Object.entries(aggregated)
-        .map(([batNormalized, count]) => ({ 
+        .map(([batNormalized, years]) => ({ 
           bat: originalBatNames[batNormalized],
           batNormalized: batNormalized,
-          count 
+          year2022: years.year2022,
+          year2023: years.year2023,
+          year2024: years.year2024,
+          total: years.year2022 + years.year2023 + years.year2024
         }))
-        .sort((a, b) => b.count - a.count);
+        .sort((a, b) => b.total - a.total);
 
       if (processedData.length === 0) {
         showEmptyMessage();
@@ -257,13 +269,12 @@
 
       // Update stats
       document.getElementById('uniqueCount').textContent = processedData.length;
-      document.getElementById('totalCount').textContent = processedData.reduce((sum, item) => sum + item.count, 0).toLocaleString('ar-SA');
+      document.getElementById('totalCount').textContent = processedData.reduce((sum, item) => sum + item.total, 0).toLocaleString('ar-SA');
       document.getElementById('originalRows').textContent = originalRowCount;
 
       // Build table rows
-      resultsTable.innerHTML = processedData.map((item, index) => `
+      resultsTable.innerHTML = processedData.map((item) => `
         <tr class="hover:bg-emerald-50 transition-colors">
-          <td class="px-6 py-4 text-emerald-600 font-medium">${index + 1}</td>
           <td class="px-6 py-4">
             <span class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-lg font-bold">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -272,8 +283,11 @@
               ${item.bat}
             </span>
           </td>
-          <td class="px-6 py-4">
-            <span class="text-xl font-bold text-emerald-700">${item.count.toLocaleString('ar-SA')}</span>
+          <td class="px-6 py-4 text-center text-emerald-700 font-semibold">${item.year2022.toLocaleString('ar-SA')}</td>
+          <td class="px-6 py-4 text-center text-emerald-700 font-semibold">${item.year2023.toLocaleString('ar-SA')}</td>
+          <td class="px-6 py-4 text-center text-emerald-700 font-semibold">${item.year2024.toLocaleString('ar-SA')}</td>
+          <td class="px-6 py-4 text-center">
+            <span class="inline-flex px-3 py-1 bg-emerald-200 text-emerald-900 rounded-lg font-bold">${item.total.toLocaleString('ar-SA')}</span>
           </td>
         </tr>
       `).join('');
@@ -290,8 +304,11 @@
       if (processedData.length === 0) return;
 
       const exportData = processedData.map(item => ({
-        'Bat': item.bat,
-        'CountOfID': item.count
+        'Row Labels': item.bat,
+        '2022': item.year2022,
+        '2023': item.year2023,
+        '2024': item.year2024,
+        'Grand Total': item.total
       }));
 
       const ws = XLSX.utils.json_to_sheet(exportData);
@@ -299,10 +316,10 @@
       XLSX.utils.book_append_sheet(wb, ws, 'النتائج');
 
       // Set column widths
-      ws['!cols'] = [{ wch: 20 }, { wch: 15 }];
+      ws['!cols'] = [{ wch: 20 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 15 }];
 
       XLSX.writeFile(wb, 'نتائج_البطاريات.xlsx');
     }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d313c6135f0d1a4',t:'MTc3MTk1OTk0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d314167d39cd1a4',t:'MTc3MTk2MDE0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
