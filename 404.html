@@ -4346,12 +4346,46 @@
         const previewCapture = document.getElementById('lopPreviewCapture');
         if (previewSection) previewSection.classList.remove('hidden');
         if (previewCapture) {
-          previewCapture.innerHTML = LOP_TEMPLATE_HTML;
+          const templateHtml = getLopTemplateHtml();
+          if (!templateHtml) {
+            showToast('قالب LOP غير موجود');
+            return;
+          }
+          previewCapture.innerHTML = templateHtml;
+          if (!previewCapture.querySelector('table')) {
+            showToast('قالب LOP غير صالح');
+            return;
+          }
           fillLopTemplate(previewCapture, values);
         }
 
         await exportLopImage();
       };
+    }
+
+    function getLopTemplateHtml() {
+      let html = '';
+
+      if (typeof LOP_TEMPLATE_HTML === 'string') {
+        html = LOP_TEMPLATE_HTML;
+      }
+
+      if (!html) {
+        const templateEl = document.getElementById('lopTemplate');
+        if (templateEl) {
+          html = templateEl.innerHTML || templateEl.textContent || '';
+        }
+      }
+
+      if (!html || !html.trim()) return '';
+
+      if (html.includes('&lt;') || html.includes('&gt;')) {
+        const decoder = document.createElement('textarea');
+        decoder.innerHTML = html;
+        html = decoder.value;
+      }
+
+      return html;
     }
 
     function setText(id, value) {
@@ -4362,6 +4396,10 @@
     async function exportLopImage() {
       const target = document.getElementById('lopPreviewCapture');
       if (!target) return;
+      if (!target.querySelector('table')) {
+        showToast('لا يوجد قالب صالح للتصدير');
+        return;
+      }
       try {
         await ensureHtml2Canvas();
         const canvas = await html2canvas(target, {
