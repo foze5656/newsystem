@@ -4284,6 +4284,7 @@
 
     const LOP_TEMPLATE_URL = '';
     const LOP_LOGO_DATA_URL = '';
+    let lopLogoDataCache = '';
     const LOP_TEMPLATE_HTML = `
       <div class="lop-invoice">
         <style>
@@ -4557,7 +4558,7 @@
           if (!templateHtml) return;
           previewCapture.innerHTML = templateHtml;
         }
-        hydrateLopLogo(previewCapture);
+        await hydrateLopLogo(previewCapture);
         fillLopTemplate(previewCapture, values);
       };
 
@@ -4657,7 +4658,7 @@
 
       if (!values) return;
 
-      setLopText(table, 'QR_TOP', values.qrNumber);
+      setLopText(container, 'QR_TOP', values.qrNumber);
       const items = Array.isArray(values.items) ? values.items : [];
       let subtotal = 0;
 
@@ -4695,18 +4696,35 @@
       }
 
       const subtotalText = formatMoney(subtotal) || '0.00';
-      setLopText(table, 'SUBTOTAL', subtotalText);
-      setLopText(table, 'TOTAL', subtotalText);
+      setLopText(container, 'SUBTOTAL', subtotalText);
+      setLopText(container, 'TOTAL', subtotalText);
     }
 
-    function hydrateLopLogo(container) {
+    async function hydrateLopLogo(container) {
       const logo = container.querySelector('#lopLogoImg');
       if (!logo) return;
       if (LOP_LOGO_DATA_URL) {
         logo.src = LOP_LOGO_DATA_URL;
-      } else if (!logo.src) {
-        logo.src = 'https://i.top4top.io/p_35860o72q1.png';
+        return;
       }
+      if (lopLogoDataCache) {
+        logo.src = lopLogoDataCache;
+        return;
+      }
+      const fallback = 'https://i.top4top.io/p_35860o72q1.png';
+      try {
+        const res = await fetch(fallback, { mode: 'cors', cache: 'force-cache' });
+        if (res.ok) {
+          const blob = await res.blob();
+          const dataUrl = await blobToDataUrl(blob);
+          lopLogoDataCache = dataUrl;
+          logo.src = dataUrl;
+          return;
+        }
+      } catch (e) {
+        console.warn('Failed to load logo as data url', e);
+      }
+      logo.src = fallback;
     }
 
     function ensureLopLogoLoaded(container) {
@@ -4719,9 +4737,18 @@
       });
     }
 
-    function setLopText(table, key, value) {
-      const cell = table.querySelector(`[data-cell="${key}"]`);
+    function setLopText(root, key, value) {
+      const cell = root.querySelector(`[data-cell="${key}"]`);
       if (cell) cell.textContent = value || '';
+    }
+
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
     }
 
     function formatMoney(value) {
