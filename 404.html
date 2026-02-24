@@ -4410,7 +4410,7 @@
           }
         </style>
         <div class="lop-head">
-          <div class="lop-title"><img src="https://i.top4top.io/p_35860o72q1.png" alt="MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL" style="height:38px; width:auto; display:block;"></div>
+          <div class="lop-title"><img src="https://i.top4top.io/p_35860o72q1.png" alt="MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL" crossorigin="anonymous" referrerpolicy="no-referrer" style="height:38px; width:auto; display:block;"></div>
           <div class="lop-title-small">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div>
         </div>
         <div class="lop-meta">
@@ -4438,26 +4438,7 @@
               <th>Amount</th>
             </tr>
           </thead>
-          <tbody>
-            <tr class="data-row">
-              <td data-cell="TIRE_SIZE_1"></td>
-              <td data-cell="PATTERN_1"></td>
-              <td data-cell="ORIGIN_1"></td>
-              <td data-cell="QTY_1"></td>
-              <td data-cell="UNIT_PRICE_1"></td>
-              <td data-cell="AMOUNT_1"></td>
-            </tr>
-            <tr class="data-row">
-              <td data-cell="TIRE_SIZE_2"></td>
-              <td data-cell="PATTERN_2"></td>
-              <td data-cell="ORIGIN_2"></td>
-              <td data-cell="QTY_2"></td>
-              <td data-cell="UNIT_PRICE_2"></td>
-              <td data-cell="AMOUNT_2"></td>
-            </tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
-            <tr class="empty-row"><td colspan="6"></td></tr>
-          </tbody>
+          <tbody data-items-body></tbody>
         </table>
         <div class="lop-note">
           <div class="note-box">
@@ -4480,8 +4461,8 @@
           <h3 class="section-title">lop</h3>
           <div class="form-grid">
             <div class="form-field">
-              <label>QR NUMBER</label>
-              <input id="lopQr" class="form-control" placeholder="QR NUMBER">
+              <label>رقم QR</label>
+              <input id="lopQr" class="form-control" placeholder="رقم QR">
             </div>
           </div>
           <div id="lopItems" style="margin-top:10px;display:flex;flex-direction:column;gap:10px;"></div>
@@ -4507,24 +4488,24 @@
         row.dataset.itemIndex = String(index);
         row.innerHTML = `
           <div class="form-field">
-            <label>TIRE SIZE</label>
-            <input id="lopTireSize${index}" class="form-control" placeholder="TIRE SIZE">
+            <label>مقاس الإطار</label>
+            <input id="lopTireSize${index}" data-field="tireSize" class="form-control" placeholder="مقاس الإطار">
           </div>
           <div class="form-field">
-            <label>PATTERN</label>
-            <input id="lopPattern${index}" class="form-control" placeholder="PATTERN">
+            <label>النقشة</label>
+            <input id="lopPattern${index}" data-field="pattern" class="form-control" placeholder="النقشة">
           </div>
           <div class="form-field">
-            <label>ORIGIN</label>
-            <input id="lopOrigin${index}" class="form-control" placeholder="ORIGIN">
+            <label>المنشأ</label>
+            <input id="lopOrigin${index}" data-field="origin" class="form-control" placeholder="المنشأ">
           </div>
           <div class="form-field">
-            <label>Quantity</label>
-            <input id="lopQty${index}" type="number" class="form-control" placeholder="Quantity">
+            <label>الكمية</label>
+            <input id="lopQty${index}" data-field="qty" type="number" class="form-control" placeholder="الكمية">
           </div>
           <div class="form-field">
-            <label>Unit Price</label>
-            <input id="lopUnitPrice${index}" type="number" class="form-control" placeholder="Unit Price">
+            <label>سعر الوحدة</label>
+            <input id="lopUnitPrice${index}" data-field="unitPrice" type="number" class="form-control" placeholder="سعر الوحدة">
           </div>
         `;
         itemsContainer.appendChild(row);
@@ -4538,42 +4519,48 @@
       if (addItemBtn) addItemBtn.onclick = () => {
         if (!itemsContainer) return;
         const existing = itemsContainer.querySelectorAll('[data-item-index]').length;
-        if (existing >= 2) return;
         addItemRow(existing + 1);
+        updateLopPreview();
       };
 
-      if (generateBtn) generateBtn.onclick = async () => {
-        const items = [1, 2].map(idx => {
-          const size = document.getElementById(`lopTireSize${idx}`)?.value || '';
-          const pattern = document.getElementById(`lopPattern${idx}`)?.value || '';
-          const origin = document.getElementById(`lopOrigin${idx}`)?.value || '';
-          const qty = document.getElementById(`lopQty${idx}`)?.value || '';
-          const unitPrice = document.getElementById(`lopUnitPrice${idx}`)?.value || '';
-          return { size, pattern, origin, qty, unitPrice };
-        }).filter(item => item.size || item.pattern || item.origin || item.qty || item.unitPrice);
-
-        const values = {
+      const collectLopValues = () => {
+        const items = [];
+        if (itemsContainer) {
+          const rows = Array.from(itemsContainer.querySelectorAll('[data-item-index]'));
+          rows.forEach(rowEl => {
+            const size = rowEl.querySelector('[data-field="tireSize"]')?.value || '';
+            const pattern = rowEl.querySelector('[data-field="pattern"]')?.value || '';
+            const origin = rowEl.querySelector('[data-field="origin"]')?.value || '';
+            const qty = rowEl.querySelector('[data-field="qty"]')?.value || '';
+            const unitPrice = rowEl.querySelector('[data-field="unitPrice"]')?.value || '';
+            if (size || pattern || origin || qty || unitPrice) {
+              items.push({ size, pattern, origin, qty, unitPrice });
+            }
+          });
+        }
+        return {
           qrNumber: document.getElementById('lopQr')?.value || '',
           items
         };
+      };
 
+      const updateLopPreview = async () => {
+        const values = collectLopValues();
         const previewSection = document.getElementById('lopPreviewSection');
         const previewCapture = document.getElementById('lopPreviewCapture');
         if (previewSection) previewSection.classList.remove('hidden');
-        if (previewCapture) {
-          const templateHtml = await getLopTemplateHtml();
-          if (!templateHtml) {
-            showToast('قالب LOP غير موجود');
-            return;
-          }
-          previewCapture.innerHTML = templateHtml;
-          if (!previewCapture.querySelector('table')) {
-            showToast('قالب LOP غير صالح');
-            return;
-          }
-          fillLopTemplate(previewCapture, values);
-        }
+        if (!previewCapture) return;
 
+        if (!previewCapture.querySelector('.lop-invoice')) {
+          const templateHtml = await getLopTemplateHtml();
+          if (!templateHtml) return;
+          previewCapture.innerHTML = templateHtml;
+        }
+        fillLopTemplate(previewCapture, values);
+      };
+
+      if (generateBtn) generateBtn.onclick = async () => {
+        await updateLopPreview();
         await exportLopImage();
       };
 
@@ -4585,6 +4572,9 @@
           }
         });
       }
+
+      if (qrInput) qrInput.addEventListener('input', () => updateLopPreview());
+      if (itemsContainer) itemsContainer.addEventListener('input', () => updateLopPreview());
     }
 
     async function getLopTemplateHtml() {
@@ -4643,7 +4633,7 @@
       try {
         await ensureHtml2Canvas();
         const canvas = await html2canvas(target, {
-          backgroundColor: '#ffffff',
+          backgroundColor: '#0b0b0b',
           scale: 2,
           useCORS: true
         });
@@ -4667,22 +4657,40 @@
       const items = Array.isArray(values.items) ? values.items : [];
       let subtotal = 0;
 
-      [1, 2].forEach((idx) => {
-        const item = items[idx - 1] || {};
-        setLopText(table, `TIRE_SIZE_${idx}`, item.size);
-        setLopText(table, `PATTERN_${idx}`, item.pattern);
-        setLopText(table, `ORIGIN_${idx}`, item.origin);
-        setLopText(table, `QTY_${idx}`, item.qty);
-        setLopText(table, `UNIT_PRICE_${idx}`, formatMoney(item.unitPrice));
+      const itemsBody = table.querySelector('[data-items-body]');
+      if (itemsBody) {
+        itemsBody.innerHTML = '';
+        const list = items.length ? items : [{}];
 
-        const qtyNum = parseFloat(item.qty);
-        const unitNum = parseFloat(item.unitPrice);
-        const amount = Number.isFinite(qtyNum) && Number.isFinite(unitNum) ? qtyNum * unitNum : 0;
-        subtotal += amount;
-        setLopText(table, `AMOUNT_${idx}`, formatMoney(amount));
-      });
+        list.forEach((item) => {
+          const qtyNum = parseFloat(item.qty);
+          const unitNum = parseFloat(item.unitPrice);
+          const hasAmount = Number.isFinite(qtyNum) && Number.isFinite(unitNum);
+          const amount = hasAmount ? qtyNum * unitNum : null;
+          if (hasAmount) subtotal += amount;
 
-      const subtotalText = formatMoney(subtotal) || '0.00';
+          const row = document.createElement('tr');
+          row.className = 'data-row';
+          row.innerHTML = `
+            <td>${item.size || ''}</td>
+            <td>${item.pattern || ''}</td>
+            <td>${item.origin || ''}</td>
+            <td>${item.qty || ''}</td>
+            <td>${formatMoney(item.unitPrice) || ''}</td>
+            <td>${formatMoney(amount) || ''}</td>
+          `;
+          itemsBody.appendChild(row);
+        });
+
+        for (let i = 0; i < 2; i++) {
+          const emptyRow = document.createElement('tr');
+          emptyRow.className = 'empty-row';
+          emptyRow.innerHTML = '<td colspan="6"></td>';
+          itemsBody.appendChild(emptyRow);
+        }
+      }
+
+      const subtotalText = subtotal > 0 ? formatMoney(subtotal) : '';
       setLopText(table, 'SUBTOTAL', subtotalText);
       setLopText(table, 'TOTAL', subtotalText);
     }
