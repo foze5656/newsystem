@@ -934,34 +934,15 @@
       display: none !important;
     }
 
-    .lop-sheet-editor {
-      background: #ffffff;
-      color: #000000;
-      border: 1px solid #ddd;
+    .lop-preview {
+      background: #1a1a1a;
+      border: 1px solid #333;
       border-radius: 6px;
-      padding: 12px;
-      max-height: 70vh;
-      overflow: auto;
-      direction: ltr;
+      padding: 10px;
     }
 
-    .lop-sheet-editor:focus {
-      outline: 2px solid #F2BC1B;
-      outline-offset: 2px;
-    }
-
-    .lop-sheet-editor table {
-      border-collapse: collapse;
-      width: max-content;
-      min-width: 100%;
-    }
-
-    .lop-sheet-editor th,
-    .lop-sheet-editor thead,
-    .lop-sheet-editor .row-headers-background,
-    .lop-sheet-editor .column-headers-background,
-    .lop-sheet-editor .row-header-wrapper {
-      display: none !important;
+    .lop-preview .data-table {
+      border: 1px solid #404040;
     }
     
     /* Info Boxes */
@@ -2323,8 +2304,8 @@
           'unlock': 'فتح قفل السيارة',
           'tireSheet': 'شيت التواير',
           'tireIncrease': 'زيادات التواير',
-          'puncture': 'بنشر',
           'tire_lop': 'lop',
+          'puncture': 'بنشر',
           'balance': 'ميزان وتركيب',
           'ringRepair': 'تصليح الرنقات',
           'mechanical': 'خدمات ميكانيكية',
@@ -2707,7 +2688,7 @@
       if (hasTow) {
         options.push({
           value: 'group_tow',
-          label: lang === 'en' ? 'Tow Trucks' : 'ونش عادي'
+          label: lang === 'en' ? 'Tow Trucks' : 'ونش'
         });
       }
 
@@ -2719,29 +2700,9 @@
       }
 
       const grouped = new Set(['NORMAL TOWTRUK', 'BIG TOWTRUK', 'FULL DOWN', 'FULL DOWN CLOSE']);
-      const desiredOrder = [
-        'TIER BUS',
-        'BATTERY BUS',
-        'WASH BUS',
-        'MECHANIC BUS',
-        'OFFICE BOY',
-        'STORE'
-      ];
-
-      const otherTypesRaw = rawTypes
-        .filter(t => !grouped.has(t.toString().trim().toUpperCase()));
-
-      const ordered = [];
-      desiredOrder.forEach(key => {
-        const match = otherTypesRaw.find(t => t.toString().trim().toUpperCase() === key);
-        if (match) ordered.push(match);
-      });
-
-      const remaining = otherTypesRaw
-        .filter(t => !desiredOrder.includes(t.toString().trim().toUpperCase()))
-        .sort((a, b) => a.localeCompare(b, 'ar'));
-
-      const otherTypes = ordered.concat(remaining)
+      const otherTypes = rawTypes
+        .filter(t => !grouped.has(t.toString().trim().toUpperCase()))
+        .sort((a, b) => a.localeCompare(b, 'ar'))
         .map(t => ({ value: t, label: formatDriverType(t, lang) || t }));
 
       return options.concat(otherTypes);
@@ -4323,33 +4284,127 @@
       });
     }
 
-    const LOP_SHEET_HTML = `<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<style type="text/css">.ritz .waffle a { color: inherit; }.ritz .waffle .s20{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s22{border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:right;font-weight:bold;color:#000000;font-family:docs-Tahoma,Arial;font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s4{border-right:none;background-color:#ddebf7;text-align:left;color:#000000;font-family:"Times New Roman";font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s13{background-color:#ddebf7;text-align:right;color:#000000;font-family:"Times New Roman";font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s12{background-color:#ffffff;text-align:left;color:#000000;font-family:"Times New Roman";font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s26{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffff00;text-align:left;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s19{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#003366;text-align:left;color:#ffffff;font-family:"Times New Roman";font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s7{background-color:#d7e7f5;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s23{border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s42{border-right:none;border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:left;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s29{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffff00;text-align:center;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s10{background-color:#ffffff;text-align:center;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s43{border-left:none;border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:left;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s16{border-bottom:1px SOLID #000000;background-color:#ddebf7;text-align:left;color:#000000;font-family:"Times New Roman";font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s35{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:left;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s28{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffff00;text-align:center;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:12pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s34{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#003366;text-align:left;font-weight:bold;color:#ffffff;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s2{border-right:1px SOLID #000000;background-color:#ddebf7;text-align:center;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:12pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s8{background-color:#ddebf7;text-align:left;color:#ffffff;font-family:"Times New Roman";font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s5{border-left:none;border-right:none;background-color:#d7e7f5;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s11{background-color:#ffffff;text-align:center;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:top;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s18{border-right:1px SOLID #000000;background-color:#ddebf7;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s32{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#d7e7f5;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s45{background-color:#d7e7f5;text-align:center;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s27{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffff00;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s9{background-color:#ddebf7;text-align:center;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:12pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s21{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#0070c0;text-align:center;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:12pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s33{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ddebf7;text-align:center;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s14{background-color:#ddebf7;text-align:center;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:top;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s24{border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:left;font-weight:bold;font-style:italic;color:#0d0d0d;font-family:"docs-Segoe UI",Arial;font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s1{border-right:1px SOLID #000000;background-color:#ddebf7;text-align:left;color:#000000;font-family:"Times New Roman";font-size:14pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s36{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:center;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s15{border-bottom:1px SOLID #000000;background-color:#ddebf7;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s44{border-left:none;border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:right;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s30{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:left;font-weight:bold;color:#000000;font-family:"Times New Roman";font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s40{border-left:none;border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s6{background-color:#ffffff;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s37{border-right:none;border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:top;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s0{background-color:#ddebf7;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s17{border-bottom:1px SOLID #000000;background-color:#ddebf7;text-align:center;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s41{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:top;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s25{border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:right;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s31{border-bottom:1px SOLID #000000;border-right:1px SOLID #000000;background-color:#ffffff;text-align:center;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s39{border-left:none;border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s38{border-left:none;border-right:none;border-bottom:1px SOLID #000000;background-color:#ffffff;text-align:left;color:#000000;font-family:"Times New Roman";font-size:11pt;vertical-align:top;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}.ritz .waffle .s3{background-color:#ddebf7;text-align:left;color:#000000;font-family:"Times New Roman";font-size:8pt;vertical-align:bottom;white-space:nowrap;direction:ltr;padding:2px 3px 2px 3px;}</style><div class="ritz grid-container" dir="ltr"><table class="waffle" cellspacing="0" cellpadding="0"><thead><tr><th class="row-header freezebar-origin-ltr"></th><th id="0C0" style="width:100px;" class="column-headers-background">A</th><th id="0C1" style="width:100px;" class="column-headers-background">B</th><th id="0C2" style="width:100px;" class="column-headers-background">C</th><th id="0C3" style="width:100px;" class="column-headers-background">D</th><th id="0C4" style="width:100px;" class="column-headers-background">E</th><th id="0C5" style="width:100px;" class="column-headers-background">F</th><th id="0C6" style="width:100px;" class="column-headers-background">G</th><th id="0C7" style="width:111px;" class="column-headers-background">H</th><th id="0C8" style="width:100px;" class="column-headers-background">I</th></tr></thead><tbody><tr style="height: 20px"><th id="0R0" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">1</div></th><td class="s0" dir="ltr"></td><td class="s1" dir="ltr" colspan="3">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</td><td class="s2"></td><td class="s3"></td><td class="s3"></td><td class="s4 softmerge" dir="ltr"><div class="softmerge-inner" style="width:309px;left:-1px">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div></td><td class="s5"></td></tr><tr style="height: 20px"><th id="0R1" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">2</div></th><td class="s0" dir="ltr"></td><td class="s6"></td><td class="s6"></td><td class="s6"></td><td class="s6"></td><td class="s6"></td><td class="s6"></td><td class="s6"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R2" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">3</div></th><td class="s0" dir="ltr"></td><td class="s3"></td><td class="s8"></td><td class="s3"></td><td class="s9"></td><td class="s3"></td><td class="s3"></td><td class="s3"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R3" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">4</div></th><td class="s0" dir="ltr"></td><td class="s10"></td><td class="s10"></td><td class="s10"></td><td class="s10"></td><td class="s10"></td><td class="s10"></td><td class="s10"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R4" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">5</div></th><td class="s0" dir="ltr"></td><td class="s3"></td><td class="s3"></td><td class="s3"></td><td class="s0"></td><td class="s3"></td><td class="s3"></td><td class="s3"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R5" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">6</div></th><td class="s0" dir="ltr"></td><td class="s6"></td><td class="s11"></td><td class="s11"></td><td class="s12"></td><td class="s11"></td><td class="s11"></td><td class="s11"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R6" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">7</div></th><td class="s0" dir="ltr"></td><td class="s11"></td><td class="s11"></td><td class="s11"></td><td class="s12"></td><td class="s11"></td><td class="s11"></td><td class="s11"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R7" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">8</div></th><td class="s0" dir="ltr"></td><td class="s3" dir="ltr">PHONE</td><td class="s3"></td><td class="s3"></td><td class="s3"></td><td class="s3"></td><td class="s13" dir="ltr">4/2/2026</td><td class="s3"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R8" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">9</div></th><td class="s0" dir="ltr"></td><td class="s6" dir="ltr">22663333</td><td class="s6"></td><td class="s6"></td><td class="s11"></td><td class="s6"></td><td class="s6"></td><td class="s6"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R9" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">10</div></th><td class="s0" dir="ltr"></td><td class="s3"></td><td class="s3"></td><td class="s3"></td><td class="s14"></td><td class="s3"></td><td class="s3"></td><td class="s3"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R10" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">11</div></th><td class="s0" dir="ltr"></td><td class="s6"></td><td class="s10"></td><td class="s10"></td><td class="s12"></td><td class="s10"></td><td class="s10"></td><td class="s10"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R11" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">12</div></th><td class="s0" dir="ltr"></td><td class="s15"></td><td class="s15"></td><td class="s15"></td><td class="s16"></td><td class="s17" dir="ltr" colspan="3">Mohamed Naser ALSayer</td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R12" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">13</div></th><td class="s18" dir="ltr"></td><td class="s19"></td><td class="s19"></td><td class="s19"></td><td class="s19"></td><td class="s19"></td><td class="s19"></td><td class="s19"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R13" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">14</div></th><td class="s18" dir="ltr"></td><td class="s20"></td><td class="s20"></td><td class="s20"></td><td class="s20"></td><td class="s20"></td><td class="s20"></td><td class="s20"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R14" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">15</div></th><td class="s18" dir="ltr"></td><td class="s21" dir="ltr">QR NUMBER</td><td class="s21" dir="ltr">TIRE SIZE</td><td class="s21" dir="ltr">PATTERN</td><td class="s21" dir="ltr">ORIGIN</td><td class="s21" dir="ltr">Quantity</td><td class="s21" dir="ltr">Unit Price</td><td class="s21" dir="ltr">Amount</td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R15" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">16</div></th><td class="s0" dir="ltr"></td><td class="s22" dir="ltr"></td><td class="s23" dir="ltr"></td><td class="s24" dir="ltr"></td><td class="s23" dir="ltr"></td><td class="s25" dir="ltr"></td><td class="s25" dir="ltr"></td><td class="s25" dir="ltr"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R16" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">17</div></th><td class="s18" dir="ltr"></td><td class="s26"></td><td class="s27"></td><td class="s27"></td><td class="s28"></td><td class="s29"></td><td class="s29"></td><td class="s29"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R17" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">18</div></th><td class="s18"></td><td class="s30"></td><td class="s31"></td><td class="s31"></td><td class="s20"></td><td class="s31"></td><td class="s20"></td><td class="s20"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R18" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">19</div></th><td class="s18"></td><td class="s32" dir="ltr">|</td><td class="s32"></td><td class="s32"></td><td class="s33"></td><td class="s32"></td><td class="s32"></td><td class="s32"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R19" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">20</div></th><td class="s18"></td><td class="s34" dir="ltr">Note:</td><td class="s34"></td><td class="s34"></td><td class="s34"></td><td class="s35" dir="ltr">Subtotal ($)</td><td class="s35"></td><td class="s36" dir="ltr"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R20" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">21</div></th><td class="s18"></td><td class="s37 softmerge" dir="ltr"><div class="softmerge-inner" style="width:498px;left:-1px">Payment shall be 15 days upon receipt of the items above.</div></td><td class="s38"></td><td class="s38"></td><td class="s38"></td><td class="s39"></td><td class="s40"></td><td class="s20"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R21" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">22</div></th><td class="s18"></td><td class="s41"></td><td class="s41"></td><td class="s41"></td><td class="s41"></td><td class="s20"></td><td class="s31"></td><td class="s20"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R22" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">23</div></th><td class="s18"></td><td class="s41"></td><td class="s41"></td><td class="s41"></td><td class="s41"></td><td class="s20"></td><td class="s20"></td><td class="s20"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R23" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">24</div></th><td class="s18"></td><td class="s41"></td><td class="s41"></td><td class="s41"></td><td class="s41"></td><td class="s20"></td><td class="s20"></td><td class="s20"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R24" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">25</div></th><td class="s18"></td><td class="s41"></td><td class="s41"></td><td class="s41"></td><td class="s41"></td><td class="s42 softmerge" dir="ltr"><div class="softmerge-inner" style="width:198px;left:-1px">Total Amount (KWD)</div></td><td class="s43"></td><td class="s44" dir="ltr"></td><td class="s7"></td></tr><tr style="height: 20px"><th id="0R25" style="height: 20px;" class="row-headers-background"><div class="row-header-wrapper" style="line-height: 20px">26</div></th><td class="s45" dir="ltr" colspan="9">System Generated No signature required</td></tr></tbody></table></div>`;
-
     function renderLopInterface() {
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="form-section full-width">
           <h3 class="section-title">lop</h3>
-          <div class="muted-text">تقدر تعدل أو تكتب مباشرة داخل الجدول</div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>QR NUMBER</label>
+              <input id="lopQr" class="form-control" placeholder="QR NUMBER">
+            </div>
+            <div class="form-field">
+              <label>TIRE SIZE</label>
+              <input id="lopTireSize" class="form-control" placeholder="TIRE SIZE">
+            </div>
+            <div class="form-field">
+              <label>PATTERN</label>
+              <input id="lopPattern" class="form-control" placeholder="PATTERN">
+            </div>
+            <div class="form-field">
+              <label>ORIGIN</label>
+              <input id="lopOrigin" class="form-control" placeholder="ORIGIN">
+            </div>
+            <div class="form-field">
+              <label>Quantity</label>
+              <input id="lopQty" type="number" class="form-control" placeholder="Quantity">
+            </div>
+            <div class="form-field">
+              <label>Unit Price</label>
+              <input id="lopUnitPrice" type="number" class="form-control" placeholder="Unit Price">
+            </div>
+            <div class="form-field">
+              <label>Amount</label>
+              <input id="lopAmount" type="number" class="form-control" placeholder="Amount">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button id="lopGenerateBtn" class="btn-primary">تحميل الصورة</button>
+          </div>
         </div>
-        <div class="form-section full-width">
-          <div id="lopSheetEditor" class="lop-sheet-editor"></div>
+        <div id="lopPreviewSection" class="form-section full-width hidden">
+          <div id="lopPreviewCapture" class="lop-preview">
+            <div class="table-header">lop</div>
+            <div class="table-scroll" style="max-height:none;overflow:visible;">
+              <table class="data-table" id="lopPreviewTable">
+                <thead>
+                  <tr>
+                    <th>QR NUMBER</th>
+                    <th>TIRE SIZE</th>
+                    <th>PATTERN</th>
+                    <th>ORIGIN</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td id="lopValQr">-</td>
+                    <td id="lopValTire">-</td>
+                    <td id="lopValPattern">-</td>
+                    <td id="lopValOrigin">-</td>
+                    <td id="lopValQty">-</td>
+                    <td id="lopValUnit">-</td>
+                    <td id="lopValAmount">-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       `;
 
-      const editor = document.getElementById('lopSheetEditor');
-      if (editor) {
-        editor.innerHTML = LOP_SHEET_HTML;
-        const table = editor.querySelector('table');
-        if (table) {
-          const thead = table.querySelector('thead');
-          if (thead) thead.remove();
-          table.querySelectorAll('th').forEach(th => th.remove());
-          table.querySelectorAll('td').forEach(td => {
-            td.setAttribute('contenteditable', 'true');
-          });
-        }
+      const generateBtn = document.getElementById('lopGenerateBtn');
+      if (generateBtn) generateBtn.onclick = async () => {
+        const values = {
+          qr: document.getElementById('lopQr')?.value || '-',
+          tire: document.getElementById('lopTireSize')?.value || '-',
+          pattern: document.getElementById('lopPattern')?.value || '-',
+          origin: document.getElementById('lopOrigin')?.value || '-',
+          qty: document.getElementById('lopQty')?.value || '-',
+          unit: document.getElementById('lopUnitPrice')?.value || '-',
+          amount: document.getElementById('lopAmount')?.value || '-'
+        };
+
+        const previewSection = document.getElementById('lopPreviewSection');
+        if (previewSection) previewSection.classList.remove('hidden');
+
+        setText('lopValQr', values.qr);
+        setText('lopValTire', values.tire);
+        setText('lopValPattern', values.pattern);
+        setText('lopValOrigin', values.origin);
+        setText('lopValQty', values.qty);
+        setText('lopValUnit', values.unit);
+        setText('lopValAmount', values.amount);
+
+        await exportLopImage();
+      };
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    async function exportLopImage() {
+      const target = document.getElementById('lopPreviewCapture');
+      if (!target) return;
+      try {
+        await ensureHtml2Canvas();
+        const canvas = await html2canvas(target, {
+          backgroundColor: '#1a1a1a',
+          scale: 2,
+          useCORS: true
+        });
+        const link = document.createElement('a');
+        const dateStr = new Date().toISOString().slice(0, 10);
+        link.download = `lop-${dateStr}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (err) {
+        console.error('Export failed', err);
       }
     }
 
