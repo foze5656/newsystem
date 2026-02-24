@@ -4487,7 +4487,7 @@
               <input id="lopQr" class="form-control" placeholder="QR NUMBER">
             </div>
           </div>
-          <div id="lopItems" class="form-grid" style="margin-top:10px;"></div>
+          <div id="lopItems" style="margin-top:10px;display:flex;flex-direction:column;gap:10px;"></div>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button id="lopAddItemBtn" class="btn-option">+</button>
             <button id="lopGenerateBtn" class="btn-primary">تحميل الصورة</button>
@@ -4680,14 +4680,14 @@
 
         const qtyNum = parseFloat(item.qty);
         const unitNum = parseFloat(item.unitPrice);
-        const amount = Number.isFinite(qtyNum) && Number.isFinite(unitNum) ? qtyNum * unitNum : null;
-        if (Number.isFinite(amount)) subtotal += amount;
+        const amount = Number.isFinite(qtyNum) && Number.isFinite(unitNum) ? qtyNum * unitNum : 0;
+        subtotal += amount;
         setLopText(table, `AMOUNT_${idx}`, formatMoney(amount));
       });
 
-      const subtotalText = formatMoney(subtotal);
-      setLopText(table, 'SUBTOTAL', subtotalText || '0.00');
-      setLopText(table, 'TOTAL', subtotalText || '0.00');
+      const subtotalText = formatMoney(subtotal) || '0.00';
+      setLopText(table, 'SUBTOTAL', subtotalText);
+      setLopText(table, 'TOTAL', subtotalText);
     }
 
     function setLopText(table, key, value) {
