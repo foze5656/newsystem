@@ -4284,139 +4284,164 @@
 
     const LOP_TEMPLATE_URL = '';
     const LOP_TEMPLATE_HTML = `
-      <div class="lop-sheet">
+      <div class="lop-invoice">
         <style>
-          .lop-sheet {
-            background: #cfe0f7;
-            padding: 0;
-            border: 1px solid #7c8aa8;
-            font-family: Calibri, Arial, sans-serif;
-            color: #0f172a;
+          .lop-invoice {
+            background: #0b0b0b;
+            border: 1px solid #2b2b2b;
+            border-radius: 12px;
+            padding: 18px;
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+            color: #f5f5f5;
+            width: 100%;
+            box-sizing: border-box;
           }
-          .lop-sheet table {
+          .lop-head {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 14px;
+          }
+          .lop-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #f2bc1b;
+            letter-spacing: 0.3px;
+          }
+          .lop-title-small {
+            font-size: 11px;
+            color: #cfcfcf;
+            text-align: right;
+            font-weight: 600;
+          }
+          .lop-meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+          }
+          .lop-meta .card {
+            background: #141414;
+            border: 1px solid #2b2b2b;
+            border-radius: 8px;
+            padding: 10px 12px;
+          }
+          .lop-meta .label {
+            font-size: 11px;
+            color: #9a9a9a;
+            margin-bottom: 6px;
+          }
+          .lop-meta .value {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+          }
+          .lop-client {
+            text-align: right;
+            margin-bottom: 10px;
+            color: #f2bc1b;
+            font-weight: 700;
+          }
+          .lop-table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed;
-            background: #cfe0f7;
+            background: #101010;
+            border: 1px solid #2b2b2b;
+            border-radius: 10px;
+            overflow: hidden;
           }
-          .lop-sheet td {
-            border: 1px solid #7c8aa8;
-            padding: 4px 6px;
-            font-size: 11px;
-            height: 18px;
-            vertical-align: middle;
-          }
-          .lop-sheet .row-blank td {
-            background: #cfe0f7;
-          }
-          .lop-sheet .title-main {
+          .lop-table th,
+          .lop-table td {
+            border-bottom: 1px solid #2b2b2b;
+            padding: 10px 8px;
             text-align: center;
-            font-weight: 700;
             font-size: 12px;
-            letter-spacing: 0.3px;
-            background: #cfe0f7;
           }
-          .lop-sheet .title-small {
-            text-align: center;
-            font-weight: 700;
-            font-size: 10.5px;
-            background: #cfe0f7;
+          .lop-table thead th {
+            background: #f2bc1b;
+            color: #101010;
+            font-weight: 800;
           }
-          .lop-sheet .header-row td {
-            background: #1f4e78;
+          .lop-table tbody tr.data-row td {
+            background: #151515;
             color: #ffffff;
-            font-weight: 700;
-            text-align: center;
-          }
-          .lop-sheet .input-row td {
-            background: #fff59d;
-            text-align: center;
             font-weight: 600;
           }
-          .lop-sheet .note-label {
-            background: #1f4e78;
-            color: #ffffff;
+          .lop-table tbody tr.empty-row td {
+            background: #101010;
+            color: #6b6b6b;
+            height: 28px;
+          }
+          .lop-note {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            margin-top: 12px;
+            align-items: center;
+          }
+          .lop-note .note-box {
+            background: #141414;
+            border: 1px solid #2b2b2b;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #cfcfcf;
+          }
+          .lop-note .totals {
+            display: grid;
+            gap: 8px;
+            min-width: 180px;
+          }
+          .lop-note .total-row {
+            background: #101010;
+            border: 1px solid #2b2b2b;
+            border-radius: 8px;
+            padding: 8px 10px;
             font-weight: 700;
-          }
-          .lop-sheet .summary-label {
-            background: #dfe7f7;
-            font-weight: 700;
+            color: #f2bc1b;
             text-align: center;
           }
-          .lop-sheet .footer-row td {
-            background: #cfe0f7;
+          .lop-footer {
+            margin-top: 10px;
             text-align: center;
-            font-size: 10.5px;
-            font-weight: 600;
-          }
-          .lop-sheet .right-align {
-            text-align: right;
-            padding-right: 8px;
-          }
-          .lop-sheet .center-align {
-            text-align: center;
+            font-size: 11px;
+            color: #9a9a9a;
           }
         </style>
-        <table class="waffle">
-          <colgroup>
-            <col style="width: 4%;">
-            <col style="width: 12%;">
-            <col style="width: 12%;">
-            <col style="width: 12%;">
-            <col style="width: 12%;">
-            <col style="width: 10%;">
-            <col style="width: 12%;">
-            <col style="width: 12%;">
-            <col style="width: 14%;">
-          </colgroup>
+        <div class="lop-head">
+          <div class="lop-title">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div>
+          <div class="lop-title-small">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</div>
+        </div>
+        <div class="lop-meta">
+          <div class="card">
+            <div class="label">PHONE</div>
+            <div class="value">22663333</div>
+          </div>
+          <div class="card">
+            <div class="label">DATE</div>
+            <div class="value">4/2/2026</div>
+          </div>
+          <div class="card">
+            <div class="label">CLIENT</div>
+            <div class="value">Mohamed Naser ALSayer</div>
+          </div>
+        </div>
+        <table class="lop-table">
+          <thead>
+            <tr>
+              <th>QR NUMBER</th>
+              <th>TIRE SIZE</th>
+              <th>PATTERN</th>
+              <th>ORIGIN</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
           <tbody>
-            <tr>
-              <td></td>
-              <td class="title-main" colspan="5">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</td>
-              <td colspan="2" style="background:#cfe0f7;"></td>
-              <td class="title-small">MOHAMED NASER AL-SAYER &amp; SONSEST. CO. WLL</td>
-            </tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr>
-              <td></td>
-              <td style="background:#cfe0f7;">PHONE</td>
-              <td colspan="4" style="background:#cfe0f7;"></td>
-              <td class="right-align" style="background:#cfe0f7;">4/2/2026</td>
-              <td colspan="2" style="background:#cfe0f7;"></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td>22663333</td>
-              <td colspan="7"></td>
-            </tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr>
-              <td></td>
-              <td colspan="3"></td>
-              <td class="center-align" colspan="3">Mohamed Naser ALSayer</td>
-              <td colspan="2"></td>
-            </tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="header-row">
-              <td></td>
-              <td>QR NUMBER</td>
-              <td>TIRE SIZE</td>
-              <td>PATTERN</td>
-              <td>ORIGIN</td>
-              <td>Quantity</td>
-              <td>Unit Price</td>
-              <td>Amount</td>
-              <td></td>
-            </tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="input-row">
-              <td></td>
-              <td data-cell="B17"></td>
-              <td></td>
+            <tr class="data-row">
+              <td data-cell="QR"></td>
               <td></td>
               <td></td>
               <td></td>
@@ -4424,34 +4449,21 @@
               <td></td>
               <td></td>
             </tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr>
-              <td></td>
-              <td class="note-label" colspan="1">Note:</td>
-              <td colspan="3"></td>
-              <td colspan="1"></td>
-              <td class="summary-label" colspan="2">Subtotal ($)</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td colspan="4">Payment shall be 15 days upon receipt of the items above.</td>
-              <td colspan="4"></td>
-            </tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr>
-              <td></td>
-              <td colspan="5"></td>
-              <td class="summary-label" colspan="2">Total Amount (KWD)</td>
-              <td></td>
-            </tr>
-            <tr class="row-blank"><td></td><td colspan="8"></td></tr>
-            <tr class="footer-row"><td></td><td colspan="5">System Generated No signature required</td><td colspan="3"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
+            <tr class="empty-row"><td colspan="7"></td></tr>
           </tbody>
         </table>
+        <div class="lop-note">
+          <div class="note-box">
+            <strong>Note:</strong> Payment shall be 15 days upon receipt of the items above.
+          </div>
+          <div class="totals">
+            <div class="total-row">Subtotal ($)</div>
+            <div class="total-row">Total Amount (KWD)</div>
+          </div>
+        </div>
+        <div class="lop-footer">System Generated No signature required</div>
       </div>
     `;
     let lopTemplateCache = '';
@@ -4588,6 +4600,11 @@
       if (!table) return;
 
       if (values && values.qrNumber) {
+        const qrCell = table.querySelector('[data-cell="QR"]');
+        if (qrCell) {
+          qrCell.textContent = values.qrNumber;
+          return;
+        }
         setLopCellValue(table, 17, 2, values.qrNumber);
       }
     }
