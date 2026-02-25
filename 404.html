@@ -7157,8 +7157,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       // If header is available, use it to build the row dynamically
       if (header.length >= 7) {
         const row = {};
-        row[header[0]] = payload.date;        // Column A: تاريخ الموعد
-        row[header[1]] = payload.time;        // Column B: وقت الموعد
+        row[header[0]] = asSheetText(payload.date);        // Column A: تاريخ الموعد
+        row[header[1]] = asSheetText(payload.time);        // Column B: وقت الموعد
         row[header[2]] = payload.qrOrder;     // Column C: رقم الطلب
         row[header[3]] = payload.customerName; // Column D: اسم العميل
         row[header[4]] = payload.area;        // Column E: المنطقة
@@ -7170,8 +7170,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       // Fallback: use expected column names
       // Order: A=تاريخ الموعد, B=وقت الموعد, C=رقم الطلب, D=اسم العميل, E=المنطقة, F=نوع الخدمة, G=الفنيين
       return {
-        'تاريخ الموعد': payload.date,
-        'وقت الموعد': payload.time,
+        'تاريخ الموعد': asSheetText(payload.date),
+        'وقت الموعد': asSheetText(payload.time),
         'رقم الطلب': payload.qrOrder,
         'اسم العميل': payload.customerName,
         'المنطقة': payload.area,
