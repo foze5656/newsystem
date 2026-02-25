@@ -4509,11 +4509,11 @@
             height: 28px;
           }
           .lop-note {
-            display: grid;
-            grid-template-columns: 1fr auto;
+            display: flex;
+            justify-content: space-between;
             gap: 10px;
             margin-top: 12px;
-            align-items: center;
+            align-items: flex-end;
           }
           .lop-note .note-box {
             background: #141414;
@@ -4522,6 +4522,12 @@
             padding: 10px 12px;
             font-size: 12px;
             color: #cfcfcf;
+            display: inline-block;
+            width: fit-content;
+            max-width: 260px;
+            margin-left: auto;
+            text-align: right;
+            align-self: flex-end;
           }
           .lop-note .totals {
             display: grid;
