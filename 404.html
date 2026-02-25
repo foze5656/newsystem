@@ -976,16 +976,7 @@
       border: 1px solid rgba(245, 158, 11, 0.5);
     }
 
-    .problem-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      border: 1px solid rgba(239, 68, 68, 0.6);
+    .status-problem {
       background: repeating-linear-gradient(
         45deg,
         rgba(239, 68, 68, 0.35),
@@ -993,8 +984,19 @@
         rgba(59, 130, 246, 0.35) 6px,
         rgba(59, 130, 246, 0.35) 12px
       );
-      text-align: center;
-      min-width: 100px;
+      color: #fff;
+      border: 1px solid rgba(239, 68, 68, 0.7);
+      animation: statusPulse 1.8s ease-in-out infinite;
+      cursor: pointer;
+    }
+
+    .status-badge.status-problem {
+      min-width: 84px;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3); }
+      50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.25); }
     }
 
     .export-mode .export-hide {
@@ -2581,7 +2583,6 @@
                   <th id="driverHeaderType">النوع</th>
                   <th id="driverHeaderShift">وقت بداية الدوام</th>
                   <th id="driverHeaderStatus" class="export-hide">الحالة</th>
-                  <th id="driverHeaderProblem">الملاحظات</th>
                   <th id="driverHeaderOff" class="export-hide">الإجازات</th>
                 </tr>
               </thead>
@@ -2665,7 +2666,7 @@
       } catch (err) {
         console.error(err);
         const tbody = document.querySelector('#driverStatusTable tbody');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="color:#f88;padding:12px">خطأ في تحميل البيانات</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="color:#f88;padding:12px">خطأ في تحميل البيانات</td></tr>';
       }
     }
 
@@ -2688,7 +2689,7 @@
 
       const rows = window._driverStatusRows || [];
       if (rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="color:#999;padding:12px">لا توجد بيانات</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="color:#999;padding:12px">لا توجد بيانات</td></tr>';
         return;
       }
 
@@ -2709,7 +2710,7 @@
       });
 
       if (computed.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="color:#999;padding:12px">لا توجد نتائج مطابقة</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="color:#999;padding:12px">لا توجد نتائج مطابقة</td></tr>';
         return;
       }
 
@@ -2720,18 +2721,22 @@
         const daysOff = formatDaysOffDisplay(r);
         const name = getDriverNameByLanguage(r, lang);
         const typeDisplay = formatDriverType(r.type, lang);
-        const statusLabel = getDriverStatusLabel(r.status.key, lang);
         const problemText = (r.problem || '').toString().trim();
+        const statusLabel = problemText ? (lang === 'en' ? 'Out of Service' : 'متعطل') : getDriverStatusLabel(r.status.key, lang);
         tr.innerHTML = `
           <td>${idx + 1}</td>
           <td>${escapeHtml(name || '-')}</td>
           <td>${escapeHtml(typeDisplay || '-')}</td>
           <td>${escapeHtml(shiftDisplay)}</td>
-          <td class="export-hide"><span class="status-badge status-${r.status.key}">${statusLabel}</span></td>
-          <td>${problemText ? `<span class="problem-badge">${escapeHtml(problemText)}</span>` : ''}</td>
+          <td class="export-hide"><span class="status-badge ${problemText ? 'status-problem' : `status-${r.status.key}`}" ${problemText ? `data-problem="${escapeHtml(problemText)}"` : ''}>${statusLabel}</span></td>
           <td class="export-hide">${escapeHtml(daysOff)}</td>
         `;
         tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll('.status-problem').forEach(el => {
+        el.onclick = () => openDriverProblemModal(el.getAttribute('data-problem') || '');
+        el.title = 'اضغط لعرض السبب';
       });
     }
 
@@ -2847,7 +2852,6 @@
       const headerType = document.getElementById('driverHeaderType');
       const headerShift = document.getElementById('driverHeaderShift');
       const headerStatus = document.getElementById('driverHeaderStatus');
-      const headerProblem = document.getElementById('driverHeaderProblem');
       const headerOff = document.getElementById('driverHeaderOff');
       const viewSelect = document.getElementById('driverViewFilter');
 
@@ -2863,7 +2867,6 @@
         if (headerType) headerType.textContent = 'Type';
         if (headerShift) headerShift.textContent = 'Shift Start';
         if (headerStatus) headerStatus.textContent = 'Status';
-        if (headerProblem) headerProblem.textContent = 'Problem';
         if (headerOff) headerOff.textContent = 'Days Off';
         if (viewSelect) {
           const allOption = viewSelect.querySelector('option[value="all"]');
@@ -2883,7 +2886,6 @@
         if (headerType) headerType.textContent = 'النوع';
         if (headerShift) headerShift.textContent = 'وقت بداية الدوام';
         if (headerStatus) headerStatus.textContent = 'الحالة';
-        if (headerProblem) headerProblem.textContent = 'الملاحظات';
         if (headerOff) headerOff.textContent = 'الإجازات';
         if (viewSelect) {
           const allOption = viewSelect.querySelector('option[value="all"]');
@@ -2937,6 +2939,41 @@
         script.onerror = () => reject(new Error('Failed to load html2canvas'));
         document.head.appendChild(script);
       });
+    }
+
+    function ensureDriverProblemModal() {
+      let overlay = document.getElementById('driverProblemModal');
+      if (overlay) return overlay;
+
+      overlay = document.createElement('div');
+      overlay.id = 'driverProblemModal';
+      overlay.className = 'modal-overlay hidden';
+      overlay.innerHTML = `
+        <div class="modal">
+          <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+          <h3>سبب التعطل</h3>
+          <div id="driverProblemText" style="color:#fff;font-size:14px;line-height:1.6;"></div>
+          <div class="modal-actions">
+            <button id="driverProblemClose" class="btn-secondary" type="button" style="min-width:120px;">إغلاق</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      const closeOverlay = () => overlay.classList.add('hidden');
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
+      overlay.querySelector('.modal-close').onclick = closeOverlay;
+      overlay.querySelector('#driverProblemClose').onclick = closeOverlay;
+
+      return overlay;
+    }
+
+    function openDriverProblemModal(text) {
+      const overlay = ensureDriverProblemModal();
+      const textEl = overlay.querySelector('#driverProblemText');
+      textEl.textContent = text || 'لا يوجد سبب';
+      overlay.classList.remove('hidden');
     }
 
     function isOffToday(row, now) {
@@ -6663,21 +6700,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const dayOfWeek = dateObj.toLocaleDateString('ar-EG', { weekday: 'long' });
       const formattedDate = dateObj.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
       
-      const dayIndex = dateObj.getDay();
-      const startOfYear = new Date(dateObj.getFullYear(), 0, 1);
-      const days = Math.floor((dateObj - startOfYear) / (24 * 60 * 60 * 1000));
-      const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-      
-      if (dayIndex === 5 && weekNumber % 2 === 1) {
-        availableSlots.innerHTML = `
-          <div class="error-box">
-            <strong>❌ مغلق يوم الجمعة</strong><br>
-            أقرب موعد متاح: يوم السبت
-          </div>
-        `;
-        return;
-      }
-
       const formatMinutesToTime = (minutes) => {
         const hours = Math.floor(minutes / 60);
         const mins = minutes % 60;
