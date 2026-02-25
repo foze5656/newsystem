@@ -4516,16 +4516,13 @@
       const originDatalist = document.getElementById('lopOriginOptions');
 
       const originOptions = [
-        { ar: 'ياباني', en: 'Japan' },
-        { ar: 'كوري', en: 'Korea' },
-        { ar: 'ماليزي', en: 'Malaysia' },
-        { ar: 'فلبيني', en: 'Philippines' },
-        { ar: 'هنغاري', en: 'Hungary' },
-        { ar: 'صيني', en: 'China' },
-        { ar: 'هندي', en: 'India' },
         { ar: 'تايلندي', en: 'Thailand' },
-        { ar: 'ألماني', en: 'Germany' },
-        { ar: 'أمريكي', en: 'USA' }
+        { ar: 'امريكي', en: 'USA' },
+        { ar: 'هانقاري', en: 'Hungary' },
+        { ar: 'بولندي', en: 'Poland' },
+        { ar: 'فلبيني', en: 'Philippines' },
+        { ar: 'ياباني', en: 'Japan' },
+        { ar: 'فيتنامي', en: 'Vietnam' }
       ];
 
       if (originDatalist) {
@@ -4851,16 +4848,13 @@
       if (!value) return '';
       const text = value.toString().trim();
       const map = {
-        'ياباني': 'Japan',
-        'كوري': 'Korea',
-        'ماليزي': 'Malaysia',
-        'فلبيني': 'Philippines',
-        'هنغاري': 'Hungary',
-        'صيني': 'China',
-        'هندي': 'India',
         'تايلندي': 'Thailand',
-        'ألماني': 'Germany',
-        'أمريكي': 'USA'
+        'امريكي': 'USA',
+        'هانقاري': 'Hungary',
+        'بولندي': 'Poland',
+        'فلبيني': 'Philippines',
+        'ياباني': 'Japan',
+        'فيتنامي': 'Vietnam'
       };
       return map[text] || text;
     }
