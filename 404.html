@@ -4968,6 +4968,7 @@
       const itemsContainer = document.getElementById('lopItems');
       const rows = itemsContainer ? Array.from(itemsContainer.querySelectorAll('.form-grid')) : [];
       let hasAnyItem = false;
+      let hasRowMissing = false;
       rows.forEach((rowEl, idx) => {
         const sizeEl = rowEl.querySelector('[data-field="tireSize"]');
         const patternEl = rowEl.querySelector('[data-field="pattern"]');
@@ -4991,12 +4992,12 @@
         if (rowHasAny) hasAnyItem = true;
 
         if (rowHasAny) {
-          if (!rowValues.size.trim()) sizeEl && sizeEl.classList.add('lop-error');
-          if (!rowValues.pattern.trim()) patternEl && patternEl.classList.add('lop-error');
-          if (!rowValues.year.trim()) yearEl && yearEl.classList.add('lop-error');
-          if (!rowValues.origin.trim()) originEl && originEl.classList.add('lop-error');
-          if (!rowValues.qty.trim()) qtyEl && qtyEl.classList.add('lop-error');
-          if (!rowValues.unitPrice.trim()) unitEl && unitEl.classList.add('lop-error');
+          if (!rowValues.size.trim()) { sizeEl && sizeEl.classList.add('lop-error'); hasRowMissing = true; }
+          if (!rowValues.pattern.trim()) { patternEl && patternEl.classList.add('lop-error'); hasRowMissing = true; }
+          if (!rowValues.year.trim()) { yearEl && yearEl.classList.add('lop-error'); hasRowMissing = true; }
+          if (!rowValues.origin.trim()) { originEl && originEl.classList.add('lop-error'); hasRowMissing = true; }
+          if (!rowValues.qty.trim()) { qtyEl && qtyEl.classList.add('lop-error'); hasRowMissing = true; }
+          if (!rowValues.unitPrice.trim()) { unitEl && unitEl.classList.add('lop-error'); hasRowMissing = true; }
         }
       });
 
@@ -5007,8 +5008,7 @@
         });
       }
 
-      const hasErrors = missing.length > 0 || rows.some(rowEl => rowEl.querySelector('.lop-error'));
-      if (hasErrors) {
+      if (missing.length > 0 || hasRowMissing) {
         const message = missing.length ? `البيانات الناقصة: ${missing.join('، ')}` : 'يرجى إكمال بيانات التواير';
         showToast(message);
         return;
