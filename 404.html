@@ -4559,8 +4559,8 @@
             <label>سعر الوحدة</label>
             <input id="lopUnitPrice${index}" data-field="unitPrice" type="number" class="form-control" placeholder="سعر الوحدة">
           </div>
-          <div class="form-field" style="display:flex;align-items:flex-end;">
-            <button type="button" class="btn-option" data-remove-item="${index}" style="width:100%;">حذف</button>
+          <div class="form-field" style="display:flex;align-items:flex-end;justify-content:flex-start;">
+            <button type="button" class="btn-option" data-remove-item="${index}" title="حذف" aria-label="حذف" style="width:38px;height:38px;min-width:38px;padding:0;display:flex;align-items:center;justify-content:center;">🗑️</button>
           </div>
         `;
         itemsContainer.appendChild(row);
@@ -4571,21 +4571,32 @@
         addItemRow(1);
       }
 
+      const updateAddButtonVisibility = () => {
+        if (!itemsContainer || !addItemBtn) return;
+        const existing = itemsContainer.querySelectorAll('[data-item-index]').length;
+        addItemBtn.style.display = existing >= 2 ? 'none' : 'inline-flex';
+      };
+
       if (itemsContainer) {
         itemsContainer.addEventListener('click', (e) => {
           const removeBtn = e.target.closest('[data-remove-item]');
           if (!removeBtn) return;
           const rowEl = removeBtn.closest('[data-item-index]');
-          if (rowEl) rowEl.remove();
+          if (rowEl && window.confirm('تأكيد حذف هذا المنتج؟')) {
+            rowEl.remove();
+          }
           updateLopPreview();
+          updateAddButtonVisibility();
         });
       }
 
       if (addItemBtn) addItemBtn.onclick = () => {
         if (!itemsContainer) return;
         const existing = itemsContainer.querySelectorAll('[data-item-index]').length;
+        if (existing >= 2) return;
         addItemRow(existing + 1);
         updateLopPreview();
+        updateAddButtonVisibility();
       };
 
       const collectLopValues = () => {
@@ -4657,6 +4668,7 @@
 
       if (qrInput) qrInput.addEventListener('input', () => updateLopPreview());
       if (itemsContainer) itemsContainer.addEventListener('input', () => updateLopPreview());
+      updateAddButtonVisibility();
     }
 
     async function getLopTemplateHtml() {
