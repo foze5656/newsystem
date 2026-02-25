@@ -4404,6 +4404,9 @@
             color: #f2bc1b;
             text-align: center;
           }
+          .lop-note .total-row span[dir="ltr"] {
+            unicode-bidi: isolate;
+          }
           .lop-footer {
             margin-top: 10px;
             text-align: center;
@@ -4448,8 +4451,8 @@
             <strong>Note:</strong> Payment shall be 15 days upon receipt of the items above.
           </div>
           <div class="totals">
-            <div class="total-row">Subtotal ($): <span data-cell="SUBTOTAL">0.00</span></div>
-            <div class="total-row">Total Amount (KWD): <span data-cell="TOTAL">0.00</span></div>
+            <div class="total-row">Subtotal <span dir="ltr">($)</span>: <span data-cell="SUBTOTAL">0.00</span></div>
+            <div class="total-row">Total Amount <span dir="ltr">(KWD)</span>: <span data-cell="TOTAL">0.00</span></div>
           </div>
         </div>
         <div class="lop-footer">System Generated No signature required</div>
@@ -4494,6 +4497,7 @@
             </div>
           </div>
           <div id="lopItems" style="margin-top:10px;display:flex;flex-direction:column;gap:10px;"></div>
+          <datalist id="lopOriginOptions"></datalist>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button id="lopAddItemBtn" class="btn-option">+</button>
             <button id="lopGenerateBtn" class="btn-primary">تحميل الصورة</button>
@@ -4509,6 +4513,24 @@
       const addItemBtn = document.getElementById('lopAddItemBtn');
       const qrInput = document.getElementById('lopQr');
       const itemsContainer = document.getElementById('lopItems');
+      const originDatalist = document.getElementById('lopOriginOptions');
+
+      const originOptions = [
+        { ar: 'ياباني', en: 'Japan' },
+        { ar: 'كوري', en: 'Korea' },
+        { ar: 'ماليزي', en: 'Malaysia' },
+        { ar: 'فلبيني', en: 'Philippines' },
+        { ar: 'هنغاري', en: 'Hungary' },
+        { ar: 'صيني', en: 'China' },
+        { ar: 'هندي', en: 'India' },
+        { ar: 'تايلندي', en: 'Thailand' },
+        { ar: 'ألماني', en: 'Germany' },
+        { ar: 'أمريكي', en: 'USA' }
+      ];
+
+      if (originDatalist) {
+        originDatalist.innerHTML = originOptions.map(o => `<option value="${o.ar}"></option>`).join('');
+      }
 
       const addItemRow = (index) => {
         if (!itemsContainer) return;
@@ -4530,7 +4552,7 @@
           </div>
           <div class="form-field">
             <label>المنشأ</label>
-            <input id="lopOrigin${index}" data-field="origin" class="form-control" placeholder="المنشأ">
+            <input id="lopOrigin${index}" data-field="origin" class="form-control" placeholder="المنشأ" list="lopOriginOptions">
           </div>
           <div class="form-field">
             <label>الكمية</label>
@@ -4540,6 +4562,9 @@
             <label>سعر الوحدة</label>
             <input id="lopUnitPrice${index}" data-field="unitPrice" type="number" class="form-control" placeholder="سعر الوحدة">
           </div>
+          <div class="form-field" style="display:flex;align-items:flex-end;">
+            <button type="button" class="btn-option" data-remove-item="${index}" style="width:100%;">حذف</button>
+          </div>
         `;
         itemsContainer.appendChild(row);
       };
@@ -4547,6 +4572,16 @@
       if (itemsContainer) {
         itemsContainer.innerHTML = '';
         addItemRow(1);
+      }
+
+      if (itemsContainer) {
+        itemsContainer.addEventListener('click', (e) => {
+          const removeBtn = e.target.closest('[data-remove-item]');
+          if (!removeBtn) return;
+          const rowEl = removeBtn.closest('[data-item-index]');
+          if (rowEl) rowEl.remove();
+          updateLopPreview();
+        });
       }
 
       if (addItemBtn) addItemBtn.onclick = () => {
@@ -4726,13 +4761,15 @@
           const amount = hasAmount ? qtyNum * unitNum : null;
           if (hasAmount) subtotal += amount;
 
+          const originDisplay = mapOriginToEnglish(item.origin);
+
           const row = document.createElement('tr');
           row.className = 'data-row';
           row.innerHTML = `
             <td>${item.size || ''}</td>
             <td>${item.pattern || ''}</td>
             <td>${item.year || ''}</td>
-            <td>${item.origin || ''}</td>
+            <td>${originDisplay || ''}</td>
             <td>${item.qty || ''}</td>
             <td>${formatMoney(item.unitPrice) || ''}</td>
             <td>${formatMoney(amount) || ''}</td>
@@ -4808,6 +4845,24 @@
       const num = typeof value === 'string' ? parseFloat(value) : value;
       if (!Number.isFinite(num)) return '';
       return num.toFixed(2);
+    }
+
+    function mapOriginToEnglish(value) {
+      if (!value) return '';
+      const text = value.toString().trim();
+      const map = {
+        'ياباني': 'Japan',
+        'كوري': 'Korea',
+        'ماليزي': 'Malaysia',
+        'فلبيني': 'Philippines',
+        'هنغاري': 'Hungary',
+        'صيني': 'China',
+        'هندي': 'India',
+        'تايلندي': 'Thailand',
+        'ألماني': 'Germany',
+        'أمريكي': 'USA'
+      };
+      return map[text] || text;
     }
 
     function formatDateDisplay(value) {
