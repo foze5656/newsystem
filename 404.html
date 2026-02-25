@@ -7211,6 +7211,15 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       if (overlay._toggleMechOther) overlay._toggleMechOther();
       if (otherInput) otherInput.value = '';
 
+      const submitBtn = overlay.querySelector('#mechSubmit');
+      const cancelBtn = overlay.querySelector('#mechCancel');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.textContent = 'حفظ الموعد';
+      }
+      if (cancelBtn) cancelBtn.disabled = false;
+
       setModalMessage(overlay.querySelector('#mechMessage'), '', '');
       overlay.classList.remove('hidden');
     }
@@ -7248,7 +7257,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
       const rows = window._mechAppointmentsRaw || await loadMechanicalAppointmentsData();
       const dataRows = (rows || []).slice(1);
-      const conflict = dataRows.some(r => normalizeDateStr(r[0]) === dateOnly && normalizeTimeStr(r[1]) === timeOnly);
+      const conflict = dataRows.some(r =>
+        normalizeDateStr(r[0]) === dateOnly &&
+        normalizeTimeStr(r[1]) === timeOnly &&
+        (r[6] || '') === techVal
+      );
       if (conflict) {
         setModalMessage(message, 'error', 'هذا الوقت محجوز بالفعل. يرجى اختيار وقت آخر.');
         return;
