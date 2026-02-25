@@ -2839,10 +2839,10 @@
 
     function getDriverStatusLabel(key, lang) {
       if (lang === 'en') {
-        const map = { in: 'In Duty', soon: 'Available', ending: 'Ending Soon', off: 'Off', out: 'Off Duty' };
+        const map = { in: 'In Duty', soon: 'Soon', ending: 'Ending Soon', off: 'Off', out: 'Off Duty' };
         return map[key] || 'Off Duty';
       }
-      const map = { in: 'في العمل', soon: 'متاحة', ending: 'ينتهي قريباً', off: 'إجازة', out: 'خارج الدوام' };
+      const map = { in: 'في العمل', soon: 'قريبا', ending: 'ينتهي قريباً', off: 'إجازة', out: 'خارج الدوام' };
       return map[key] || 'خارج الدوام';
     }
 
