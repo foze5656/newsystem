@@ -5928,15 +5928,9 @@
         const filtered = dataRows.filter(r => {
           // Check if row has data (not empty)
           if (!r[0] && !r[1] && !r[2]) return false;
-          
-          const dateCell = parseCellDate(r[0]); // column A -> index 0 (التاريخ)
-          // If date parsing fails but row has data, still include it
-          if (!dateCell && r[0]) {
-            // If manually entered, try to compare as string
-            if ((r[0] || '').trim() !== selectedDate) return false;
-          } else if (dateCell && dateCell !== selectedDate) {
-            return false;
-          }
+
+          const dateCell = normalizeDateStr(r[0]); // normalize to YYYY-MM-DD
+          if (dateCell && dateCell !== selectedDate) return false;
           
           if (selectedTech && (r[6] || '') !== selectedTech) return false;
           return true;
@@ -5947,8 +5941,8 @@
         } else {
           tableBody.innerHTML = filtered.map(r => `
             <tr>
-              <td>${r[0] || '-'}</td>
-              <td>${r[1] || '-'}</td>
+              <td>${normalizeDateStr(r[0]) || '-'}</td>
+              <td>${normalizeTimeStr(r[1]) || '-'}</td>
               <td>${r[2] || '-'}</td>
               <td>${r[3] || '-'}</td>
               <td>${r[4] || '-'}</td>
