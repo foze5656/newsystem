@@ -3072,6 +3072,13 @@
         .replace(/\bP\.M\.\b/gi, 'مساءً');
     }
 
+    function convertAmPmToEnglish(text) {
+      if (!text) return text;
+      return text
+        .replace(/\bصباحاً\b/gi, 'AM')
+        .replace(/\bمساءً\b/gi, 'PM');
+    }
+
     function isInDuty(now, shiftStartToday) {
       const window = getDutyWindow(now, shiftStartToday);
       if (!window) return false;
@@ -3109,10 +3116,15 @@
     }
 
     function formatShiftDisplay(row, now) {
-      if (row.shiftDisplay) return convertAmPmToArabic(row.shiftDisplay.toString());
+      const lang = window._driverStatusLang || 'ar';
+      if (row.shiftDisplay) {
+        const rawText = row.shiftDisplay.toString();
+        return lang === 'en' ? convertAmPmToEnglish(rawText) : convertAmPmToArabic(rawText);
+      }
       const parsed = parseShiftTimeToDate(row.shiftRaw, row.shiftDisplay, now);
       if (!parsed) return '-';
-      return convertAmPmToArabic(parsed.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }));
+      const formatted = parsed.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      return lang === 'en' ? formatted : convertAmPmToArabic(formatted);
     }
 
     function formatDaysOffDisplay(row) {
@@ -4649,7 +4661,7 @@
           <datalist id="lopOriginOptions"></datalist>
           <div style="display:flex;gap:8px;margin-top:10px;">
             <button id="lopAddItemBtn" class="btn-option">+</button>
-            <button id="lopGenerateBtn" class="btn-primary">تحميل الصورة</button>
+            <button id="lopGenerateBtn" class="btn-primary">تحميل الفاتوره</button>
           </div>
         </div>
         <div id="lopPreviewSection" class="form-section full-width hidden">
@@ -4948,71 +4960,6 @@
         showToast('لا يوجد قالب صالح للتصدير');
         return;
       }
-      const values = collectLopValues();
-      const missing = [];
-
-      const qrInput = document.getElementById('lopQr');
-      const dateInput = document.getElementById('lopDate');
-      if (qrInput) qrInput.classList.remove('lop-error');
-      if (dateInput) dateInput.classList.remove('lop-error');
-
-      if (!values.qrNumber) {
-        missing.push('رقم QR');
-        if (qrInput) qrInput.classList.add('lop-error');
-      }
-      if (!values.date) {
-        missing.push('التاريخ');
-        if (dateInput) dateInput.classList.add('lop-error');
-      }
-
-      const itemsContainer = document.getElementById('lopItems');
-      const rows = itemsContainer ? Array.from(itemsContainer.querySelectorAll('.form-grid')) : [];
-      let hasAnyItem = false;
-      let hasRowMissing = false;
-      rows.forEach((rowEl, idx) => {
-        const sizeEl = rowEl.querySelector('[data-field="tireSize"]');
-        const patternEl = rowEl.querySelector('[data-field="pattern"]');
-        const yearEl = rowEl.querySelector('[data-field="year"]');
-        const originEl = rowEl.querySelector('[data-field="origin"]');
-        const qtyEl = rowEl.querySelector('[data-field="qty"]');
-        const unitEl = rowEl.querySelector('[data-field="unitPrice"]');
-
-        [sizeEl, patternEl, yearEl, originEl, qtyEl, unitEl].forEach(el => el && el.classList.remove('lop-error'));
-
-        const rowValues = {
-          size: sizeEl?.value || '',
-          pattern: patternEl?.value || '',
-          year: yearEl?.value || '',
-          origin: originEl?.value || '',
-          qty: qtyEl?.value || '',
-          unitPrice: unitEl?.value || ''
-        };
-
-        const rowHasAny = Object.values(rowValues).some(v => (v || '').trim());
-        if (rowHasAny) hasAnyItem = true;
-
-        if (rowHasAny) {
-          if (!rowValues.size.trim()) { sizeEl && sizeEl.classList.add('lop-error'); hasRowMissing = true; }
-          if (!rowValues.pattern.trim()) { patternEl && patternEl.classList.add('lop-error'); hasRowMissing = true; }
-          if (!rowValues.year.trim()) { yearEl && yearEl.classList.add('lop-error'); hasRowMissing = true; }
-          if (!rowValues.origin.trim()) { originEl && originEl.classList.add('lop-error'); hasRowMissing = true; }
-          if (!rowValues.qty.trim()) { qtyEl && qtyEl.classList.add('lop-error'); hasRowMissing = true; }
-          if (!rowValues.unitPrice.trim()) { unitEl && unitEl.classList.add('lop-error'); hasRowMissing = true; }
-        }
-      });
-
-      if (!hasAnyItem) {
-        missing.push('بيانات التواير');
-        rows.forEach(rowEl => {
-          rowEl.querySelectorAll('input').forEach(el => el.classList.add('lop-error'));
-        });
-      }
-
-      if (missing.length > 0 || hasRowMissing) {
-        const message = missing.length ? `البيانات الناقصة: ${missing.join('، ')}` : 'يرجى إكمال بيانات التواير';
-        showToast(message);
-        return;
-      }
       try {
         await ensureLopLogoLoaded(target);
         await ensureHtml2Canvas();
@@ -5020,7 +4967,7 @@
           backgroundColor: '#0b0b0b',
           scale: 2,
           useCORS: true
-        });
+        }); 
         const link = document.createElement('a');
         const qrValue = document.getElementById('lopQr')?.value?.trim() || '';
         const safeName = qrValue ? qrValue.replace(/[^\w\-]+/g, '_') : new Date().toISOString().slice(0, 10);
