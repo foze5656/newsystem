@@ -4631,6 +4631,9 @@
         <div class="form-section full-width">
           <div style="display:flex;gap:8px;align-items:center;justify-content:flex-start;margin-bottom:8px;">
             <button id="lopBackBtn" class="btn-back" style="padding:6px 12px;">رجوع</button>
+            <div style="color:#F2BC1B;font-weight:700;font-size:14px;">
+              ${company === 'yokohama' ? 'فاتوره يوكاهما' : 'فاتوره بريدجستون'}
+            </div>
           </div>
           <div class="form-grid">
             <div class="form-field">
@@ -4879,7 +4882,15 @@
       }
 
       if (qrInput) qrInput.addEventListener('input', () => updateLopPreview());
-      if (itemsContainer) itemsContainer.addEventListener('input', () => updateLopPreview());
+      if (itemsContainer) itemsContainer.addEventListener('input', (e) => {
+        const target = e.target;
+        if (target && target.classList && target.classList.contains('lop-error')) {
+          target.classList.remove('lop-error');
+        }
+        updateLopPreview();
+      });
+      if (qrInput) qrInput.addEventListener('input', () => qrInput.classList.remove('lop-error'));
+      if (dateInput) dateInput.addEventListener('input', () => dateInput.classList.remove('lop-error'));
       updateAddButtonVisibility();
       updateDeleteButtonsVisibility();
     }
