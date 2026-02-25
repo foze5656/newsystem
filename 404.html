@@ -2183,9 +2183,22 @@
       
       // Show the main dashboard again
       document.getElementById('dashboardWrapper').style.display = 'grid';
-      
-      // Don't reset the service - keep the current state
-      // The user will see the same service they had before opening the iframe
+
+      // Reset to home screen
+      currentService = '';
+      document.querySelectorAll('.service-item').forEach(item => item.classList.remove('active'));
+      const serviceTitle = document.getElementById('serviceTitle');
+      if (serviceTitle) serviceTitle.textContent = 'اختر خدمة من القائمة';
+      const contentArea = document.getElementById('contentArea');
+      if (contentArea) {
+        contentArea.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🌙</div>
+            <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">مبارك عليكم الشهر </h3>
+            <p style="color: #999; font-size: 14px;">اختر خدمة الي محتاجها من القائمه الي على اليمين </p>
+          </div>
+        `;
+      }
     };
 
     // Simple modal helpers (installments info)
@@ -4604,11 +4617,11 @@
             <label>الكمية</label>
             <input id="lopQty${index}" data-field="qty" type="number" class="form-control" placeholder="الكمية">
           </div>
-          <div class="form-field">
-            <label>سعر الوحدة</label>
-            <input id="lopUnitPrice${index}" data-field="unitPrice" type="number" class="form-control" placeholder="سعر الوحدة">
-          </div>
-          <div class="form-field" style="display:flex;align-items:flex-end;justify-content:flex-start;">
+          <div class="form-field" style="display:flex;gap:6px;align-items:flex-end;">
+            <div style="flex:1;">
+              <label>سعر الوحدة</label>
+              <input id="lopUnitPrice${index}" data-field="unitPrice" type="number" class="form-control" placeholder="سعر الوحدة">
+            </div>
             <button type="button" class="btn-option" data-remove-item="${index}" title="حذف" aria-label="حذف" style="width:38px;height:38px;min-width:38px;padding:0;display:flex;align-items:center;justify-content:center;">🗑️</button>
           </div>
         `;
