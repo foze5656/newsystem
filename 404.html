@@ -7225,8 +7225,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.querySelector('.modal-close').onclick = closeOverlay;
       overlay.querySelector('#cwCancel').onclick = closeOverlay;
       overlay.querySelector('#cwSubmit').onclick = handleCarWashSubmit;
-
-      prepareDateTimeInput(overlay.querySelector('#cwDatetime'));
       return overlay;
     }
 
@@ -7254,11 +7252,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     function openCarWashModal() {
       const overlay = ensureCarWashModal();
       const datetimeInput = overlay.querySelector('#cwDatetime');
-      const mainPicker = document.getElementById('appointmentDateTime');
-      const baseValue = mainPicker?.value || getRoundedNowIso();
-      datetimeInput.value = baseValue;
+      datetimeInput.value = '';
       datetimeInput.min = getRoundedNowIso();
-      prepareDateTimeInput(datetimeInput);
+      blockManualInput(datetimeInput);
 
       const washSelect = overlay.querySelector('#cwWashType');
       const selectedWash = (formData.selectedWashes && formData.selectedWashes[0]) || 'premium';
@@ -7438,8 +7434,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       };
       serviceSelect.onchange = toggleOtherField;
       overlay._toggleMechOther = toggleOtherField;
-
-      prepareDateTimeInput(overlay.querySelector('#mechDatetime'));
       return overlay;
     }
 
@@ -7474,6 +7468,47 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       };
     }
 
+    function getMechanicTechnicianName(row) {
+      return (row.nameAr || row.nameEn || '').toString().trim();
+    }
+
+    async function populateMechanicalTechniciansForDate(dateStr) {
+      try {
+        await loadDriverStatusData();
+      } catch (e) {}
+
+      const select = document.getElementById('mechTechnician');
+      if (!select) return;
+
+      const rows = window._driverStatusRows || [];
+      const targetDate = dateStr ? new Date(`${dateStr}T00:00:00`) : null;
+      const techs = rows
+        .filter(r => (r.type || '').toString().trim().toUpperCase() === 'MECHANIC BUS')
+        .map(r => {
+          const name = getMechanicTechnicianName(r);
+          const off = targetDate ? isOffToday(r, targetDate) : false;
+          return { name, off };
+        })
+        .filter(t => t.name);
+
+      const unique = new Map();
+      techs.forEach(t => {
+        if (!unique.has(t.name)) unique.set(t.name, t.off);
+      });
+
+      const options = Array.from(unique.entries()).map(([name, off]) => {
+        const label = off ? `${name} (اجازه)` : name;
+        return { value: name, label };
+      });
+
+      if (options.length === 0) {
+        select.innerHTML = '<option value="">لا يوجد فنيين</option>';
+        return;
+      }
+
+      select.innerHTML = options.map(o => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`).join('');
+    }
+
     async function openMechanicalModal() {
       // Ensure data is loaded to get header information
       if (!window._mechAppointmentsHeader || window._mechAppointmentsHeader.length === 0) {
@@ -7483,9 +7518,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       
       const overlay = ensureMechanicalModal();
       const datetimeInput = overlay.querySelector('#mechDatetime');
-      datetimeInput.value = getRoundedNowIso();
+      datetimeInput.value = '';
       datetimeInput.min = getRoundedNowIso();
-      prepareDateTimeInput(datetimeInput);
+      blockManualInput(datetimeInput);
 
       const mechServiceLabels = {
         inspection: 'فحص السيارة',
@@ -7507,7 +7542,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.querySelector('#mechOrder').value = '';
       overlay.querySelector('#mechCustomer').value = '';
       overlay.querySelector('#mechArea').value = '';
-      overlay.querySelector('#mechTechnician').value = 'يوسف و رحمه الله';
+      await populateMechanicalTechniciansForDate('');
+      datetimeInput.onchange = () => {
+        const dateOnly = normalizeDateStr(datetimeInput.value || '');
+        populateMechanicalTechniciansForDate(dateOnly);
+      };
       if (overlay._toggleMechOther) overlay._toggleMechOther();
       if (otherInput) otherInput.value = '';
 
