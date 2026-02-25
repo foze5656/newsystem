@@ -416,6 +416,52 @@
       color: #888;
     }
 
+    /* Horizontal date picker */
+    .date-picker {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .date-picker::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .date-picker::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 6px;
+    }
+
+    .date-card {
+      min-width: 110px;
+      padding: 10px 8px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #141414;
+      color: #fff;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      scroll-snap-align: start;
+      white-space: nowrap;
+    }
+
+    .date-card:hover {
+      border-color: #555;
+    }
+
+    .date-card.active {
+      border-color: #F2BC1B;
+      color: #F2BC1B;
+      background: #101010;
+      box-shadow: 0 6px 16px rgba(242, 188, 27, 0.2);
+    }
+
     /* Modal styles (shared for carwash & mechanical booking) */
     .modal-overlay {
       position: fixed;
@@ -5391,10 +5437,11 @@
         
         <div id="mechAppointmentsSection" class="data-table-container hidden" style="margin-top:12px; grid-column: 1 / -1;">
           <div class="table-header">مواعيد الميكانيكية</div>
-          <div style="display:flex;gap:8px;align-items:center;margin:8px 0;">
-            <div>
+          <div style="display:flex;gap:8px;align-items:flex-end;margin:8px 0;flex-wrap:wrap;">
+            <div style="flex:1;min-width:240px;">
               <label style="color:#fff;">التاريخ</label>
-              <input type="date" id="mechApptDate" class="form-control" style="max-width:160px;" />
+              <div id="mechDatePicker" class="date-picker"></div>
+              <input type="date" id="mechApptDate" class="form-control" style="max-width:160px; display:none;" />
             </div>
             <div>
               <label style="color:#fff;">الفني</label>
@@ -5872,6 +5919,134 @@
       return `${year}-${month}-${day}`;
     }
 
+    function getInputDateValue(input) {
+      if (!input) return '';
+      const value = (input.value || '').toString().trim();
+      if (!value) return '';
+      if (input.type === 'datetime-local') return value.split('T')[0] || '';
+      return value;
+    }
+
+    function setInputDateValue(input, dateStr) {
+      if (!input || !dateStr) return;
+      if (input.type === 'datetime-local') {
+        const timePart = (input.value || '').split('T')[1] || getRoundedNowIso().split('T')[1];
+        input.value = `${dateStr}T${timePart}`;
+      } else {
+        input.value = dateStr;
+      }
+    }
+
+    function formatDateCardLabel(date) {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        day: '2-digit',
+        month: 'short'
+      }).formatToParts(date);
+
+      const getPart = (type) => {
+        const part = parts.find(p => p.type === type);
+        return part ? part.value : '';
+      };
+
+      const weekday = getPart('weekday') || date.toLocaleDateString('en-US', { weekday: 'short' });
+      const day = getPart('day') || String(date.getDate()).padStart(2, '0');
+      const month = getPart('month') || date.toLocaleDateString('en-US', { month: 'short' });
+      return `${weekday} ${day} ${month}`;
+    }
+
+    function isDateInRange(dateStr, startDate, days) {
+      if (!dateStr) return false;
+      const d = new Date(`${dateStr}T00:00:00`);
+      if (isNaN(d.getTime())) return false;
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(start.getDate() + days - 1);
+      return d >= start && d <= end;
+    }
+
+    function renderHorizontalDatePicker(container, { selectedDate, days = 14, startDate, onSelect }) {
+      if (!container) return;
+      const base = new Date(startDate || new Date());
+      base.setHours(0, 0, 0, 0);
+      container.innerHTML = '';
+
+      for (let i = 0; i < days; i++) {
+        const d = new Date(base);
+        d.setDate(base.getDate() + i);
+        const iso = getLocalDateString(d);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'date-card' + (iso === selectedDate ? ' active' : '');
+        btn.dataset.date = iso;
+        btn.textContent = formatDateCardLabel(d);
+        btn.onclick = () => {
+          setActiveDateCard(container, iso);
+          if (typeof onSelect === 'function') onSelect(iso);
+        };
+
+        container.appendChild(btn);
+      }
+
+      const active = container.querySelector('.date-card.active');
+      if (active) active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    function setActiveDateCard(container, dateStr) {
+      if (!container) return;
+      container.querySelectorAll('.date-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.date === dateStr);
+      });
+      const active = container.querySelector('.date-card.active');
+      if (active) active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    function setupHorizontalDatePicker({ containerId, inputId, onDateChange, days = 14, triggerOnInit = false }) {
+      const container = document.getElementById(containerId);
+      const input = document.getElementById(inputId);
+      if (!container || !input) return;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const selectedDate = getInputDateValue(input) || getLocalDateString(today);
+      const startDate = isDateInRange(selectedDate, today, days) ? today : new Date(`${selectedDate}T00:00:00`);
+
+      renderHorizontalDatePicker(container, {
+        selectedDate,
+        days,
+        startDate,
+        onSelect: (dateStr) => {
+          setInputDateValue(input, dateStr);
+          if (typeof onDateChange === 'function') onDateChange(dateStr);
+        }
+      });
+
+      input.onchange = () => {
+        const newDate = getInputDateValue(input);
+        if (!newDate) return;
+        if (!container.querySelector(`[data-date="${newDate}"]`)) {
+          renderHorizontalDatePicker(container, {
+            selectedDate: newDate,
+            days,
+            startDate: new Date(`${newDate}T00:00:00`),
+            onSelect: (dateStr) => {
+              setInputDateValue(input, dateStr);
+              if (typeof onDateChange === 'function') onDateChange(dateStr);
+            }
+          });
+        } else {
+          setActiveDateCard(container, newDate);
+        }
+        if (typeof onDateChange === 'function') onDateChange(newDate);
+      };
+
+      if (triggerOnInit && typeof onDateChange === 'function') {
+        onDateChange(selectedDate);
+      }
+    }
+
     function parseCellDate(cell) {
       if (!cell) return null;
       
@@ -5954,8 +6129,14 @@
       }
 
       // attach handlers
-      dateInput.onchange = filterAndRender;
       techFilter.onchange = filterAndRender;
+
+      setupHorizontalDatePicker({
+        containerId: 'mechDatePicker',
+        inputId: 'mechApptDate',
+        onDateChange: () => filterAndRender(),
+        days: 14
+      });
 
       document.getElementById('mechRegisterBtn').onclick = () => {
         openMechanicalModal();
@@ -5980,6 +6161,23 @@
       section.classList.remove('hidden');
       filterAndRender();
       scheduleAutoRefresh();
+    }
+
+    function setupCarWashAppointmentsUI() {
+      const appointmentDateTime = document.getElementById('appointmentDateTime');
+      if (!appointmentDateTime) return;
+
+      prepareDateTimeInput(appointmentDateTime);
+      const selectedDate = getInputDateValue(appointmentDateTime) || getLocalDateString(new Date());
+      setInputDateValue(appointmentDateTime, selectedDate);
+
+      loadCarWashAppointments(selectedDate);
+      setupHorizontalDatePicker({
+        containerId: 'carWashDatePicker',
+        inputId: 'appointmentDateTime',
+        onDateChange: (dateStr) => loadCarWashAppointments(dateStr),
+        days: 14
+      });
     }
 
     function calculateAlternatorPrice() {
@@ -6060,6 +6258,10 @@
         <div id="appointmentSection" class="form-section full-width">
           <h3 class="section-title">اختيار الموعد</h3>
           <div class="form-field">
+            <label>التاريخ</label>
+            <div id="carWashDatePicker" class="date-picker"></div>
+          </div>
+          <div class="form-field" style="display:none;">
             <label>تاريخ ووقت الموعد</label>
             <input type="datetime-local" id="appointmentDateTime" class="form-control datetime-control" style="max-width: 280px;">
           </div>
@@ -6096,17 +6298,7 @@
       }
 
       // initialize appointment date and load slots immediately (no need to click a wash)
-      (function initAppointments() {
-        const appointmentDateTime = document.getElementById('appointmentDateTime');
-        if (!appointmentDateTime) return;
-        prepareDateTimeInput(appointmentDateTime);
-        const dateOnly = (appointmentDateTime.value || '').split('T')[0] || getLocalDateString(new Date());
-        loadCarWashAppointments(dateOnly);
-        appointmentDateTime.onchange = () => {
-          const selectedDate = (appointmentDateTime.value || '').split('T')[0];
-          if (selectedDate) loadCarWashAppointments(selectedDate);
-        };
-      })();
+      setupCarWashAppointmentsUI();
 
       document.querySelectorAll('[data-wash]').forEach(btn => {
         btn.onclick = () => {
@@ -6180,17 +6372,7 @@
       
       document.getElementById('appointmentSection').classList.remove('hidden');
       
-      const appointmentDateTime = document.getElementById('appointmentDateTime');
-      if (appointmentDateTime) {
-        prepareDateTimeInput(appointmentDateTime);
-        const selectedDate = (appointmentDateTime.value || '').split('T')[0];
-        const fallbackDate = getLocalDateString(new Date());
-        loadCarWashAppointments(selectedDate || fallbackDate);
-        appointmentDateTime.onchange = () => {
-          const dateOnly = (appointmentDateTime.value || '').split('T')[0];
-          if (dateOnly) loadCarWashAppointments(dateOnly);
-        };
-      }
+      setupCarWashAppointmentsUI();
     }
 
     window.copyWashDetails = async function(type) {
