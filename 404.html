@@ -6580,7 +6580,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           }
         }
         
-        calculateAvailableSlots(selectedDate);
+        await calculateAvailableSlots(selectedDate);
         return carWashData;
         
       } catch (error) {
@@ -6590,7 +6590,36 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
     }
 
-    function calculateAvailableSlots(selectedDate) {
+    async function getWashBusDutyWindow(selectedDate) {
+      try {
+        await loadDriverStatusData();
+      } catch (e) {}
+
+      const rows = window._driverStatusRows || [];
+      const dateObj = new Date(`${selectedDate}T00:00:00`);
+      if (isNaN(dateObj.getTime())) return null;
+
+      const washRows = rows.filter(r => (r.type || '').toString().trim().toUpperCase() === 'WASH BUS');
+      if (!washRows.length) return { missing: true };
+
+      const windows = [];
+      washRows.forEach(r => {
+        if (isOffToday(r, dateObj)) return;
+        const shiftStart = parseShiftTimeToDate(r.shiftRaw, r.shiftDisplay, dateObj);
+        if (!shiftStart) return;
+        const start = new Date(shiftStart);
+        const end = addHours(start, 12);
+        windows.push({ start, end });
+      });
+
+      if (!windows.length) return { off: true };
+
+      const earliestStart = windows.reduce((a, b) => (a.start < b.start ? a : b)).start;
+      const latestEnd = windows.reduce((a, b) => (a.end > b.end ? a : b)).end;
+      return { start: earliestStart, end: latestEnd };
+    }
+
+    async function calculateAvailableSlots(selectedDate) {
       const availableSlots = document.getElementById('availableSlots');
       
       const dateObj = new Date(selectedDate + 'T00:00:00');
@@ -6611,6 +6640,44 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         `;
         return;
       }
+
+      const formatMinutesToTime = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        const period = hours >= 12 ? 'مساءً' : 'صباحاً';
+        const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+        return mins === 0 ? `${displayHours} ${period}` : `${displayHours}:${String(mins).padStart(2, '0')} ${period}`;
+      };
+
+      let workStartMinutes = 630; // 10:30 AM
+      let workEndMinutes = 1320;  // 10:00 PM
+
+      const duty = await getWashBusDutyWindow(selectedDate);
+      if (duty && duty.off) {
+        availableSlots.innerHTML = `
+          <div class="error-box">
+            <strong>❌ لا يوجد دوام لباص الغسيل بهذا اليوم</strong><br>
+            يرجى اختيار يوم آخر
+          </div>
+        `;
+        return;
+      }
+
+      if (duty && duty.start && duty.end) {
+        const dayStart = new Date(dateObj);
+        dayStart.setHours(0, 0, 0, 0);
+
+        const startDiff = Math.round((duty.start - dayStart) / 60000);
+        const endDiff = Math.round((duty.end - dayStart) / 60000);
+
+        workStartMinutes = Math.max(0, Math.min(24 * 60, startDiff));
+        workEndMinutes = Math.max(0, Math.min(24 * 60, endDiff));
+
+        if (workEndMinutes <= workStartMinutes) {
+          workStartMinutes = 630;
+          workEndMinutes = 1320;
+        }
+      }
       
       const todayAppointments = carWashData.filter(apt => apt.date === selectedDate);
       todayAppointments.sort((a, b) => {
@@ -6626,14 +6693,20 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         </div>
       `;
       
-      const workStartMinutes = 630; // 10:30 AM
+      const washDurations = {
+        premium: 60,
+        special: 120,
+        ultra: 180
+      };
+
+      const travelTime = 30;
+
       // Last allowed START time (آخر وصول) per wash type
       const washLastArrival = {
-        premium: 20 * 60 + 30, // 20:30
-        special: 19 * 60 + 30, // 19:30
-        ultra: 18 * 60 + 30    // 18:30
+        premium: Math.max(workStartMinutes, workEndMinutes - washDurations.premium - travelTime),
+        special: Math.max(workStartMinutes, workEndMinutes - washDurations.special - travelTime),
+        ultra: Math.max(workStartMinutes, workEndMinutes - washDurations.ultra - travelTime)
       };
-      const workEndMinutes = 1320;  // 10:00 PM (fallback, not used for per-wash limits)
       
       const today = new Date();
       const isToday = dateObj.getDate() === today.getDate() && 
@@ -6670,13 +6743,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       appointments.sort((a, b) => a.start - b.start);
       
       const selectedWashes = formData.selectedWashes || [];
-      const washDurations = {
-        premium: 60,
-        special: 120,
-        ultra: 180
-      };
-      
-      const travelTime = 30;
       
         // Find all available time slots for each wash type
       const availableTimeSlots = {};
@@ -6751,7 +6817,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         html += `
           <div class="warning-box">
             <strong>⚠️ لا يوجد وقت كافٍ لأي نوع غسيل محدد اليوم</strong><br>
-            ساعات العمل تنتهي الساعة 10:00 مساءً
+            ساعات العمل تنتهي الساعة ${formatMinutesToTime(workEndMinutes)}
           </div>
         `;
         
@@ -6762,9 +6828,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         html += `
           <div class="info-box" style="background: #1a4a2a; border-color: #10b981; margin-top: 10px;">
             <div style="font-size: 12px; font-weight: 700; color: #10b981; margin-bottom: 6px;">💡 اقتراح: ${tomorrowDay}</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">⭐ غسيل ممتاز: ابتداءً من 10:30 صباحاً</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل خصوصي: ابتداءً من 10:30 صباحاً</div>
-            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ابتداءً من 10:30 صباحاً</div>
+            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">⭐ غسيل ممتاز: ابتداءً من ${formatMinutesToTime(workStartMinutes)}</div>
+            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">💎 غسيل خصوصي: ابتداءً من ${formatMinutesToTime(workStartMinutes)}</div>
+            <div style="font-size: 11px; color: #10b981; margin: 3px 0;">👑 غسيل ألترا: ابتداءً من ${formatMinutesToTime(workStartMinutes)}</div>
           </div>
         `;
       } else {
@@ -6774,18 +6840,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         `;
         
         // Helper function to format time
-        const formatTimeSimple = (minutes) => {
-          const hours = Math.floor(minutes / 60);
-          const mins = minutes % 60;
-          const period = hours >= 12 ? 'مساءً' : 'صباحاً';
-          const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
-          
-          if (mins === 0) {
-            return `${displayHours} ${period}`;
-          } else {
-            return `${displayHours}:${mins.toString().padStart(2, '0')} ${period}`;
-          }
-        };
+        const formatTimeSimple = (minutes) => formatMinutesToTime(minutes);
         
         // Helper to format time range - show actual available window (earliest start -> latest allowed start)
         const formatTimeRange = (slots, washDuration, washType) => {
