@@ -4529,6 +4529,55 @@
         originDatalist.innerHTML = originOptions.map(o => `<option value="${o.ar}"></option>`).join('');
       }
 
+      let pendingDeleteRow = null;
+
+      const ensureLopDeleteModal = () => {
+        let modal = document.getElementById('lopDeleteModal');
+        if (modal) return modal;
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+          <div id="lopDeleteModal" class="logout-modal-overlay hidden">
+            <div class="logout-modal">
+              <div class="logout-modal-icon">⚠️</div>
+              <h2 class="logout-modal-title">تأكيد الحذف</h2>
+              <p class="logout-modal-message">هل أنت متأكد من حذف هذا المنتج؟</p>
+              <div class="logout-modal-buttons">
+                <button id="lopDeleteCancel" class="logout-modal-btn logout-modal-btn-cancel">إلغاء</button>
+                <button id="lopDeleteConfirm" class="logout-modal-btn logout-modal-btn-confirm">حذف</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(wrapper.firstElementChild);
+        modal = document.getElementById('lopDeleteModal');
+
+        const cancelBtn = document.getElementById('lopDeleteCancel');
+        const confirmBtn = document.getElementById('lopDeleteConfirm');
+
+        if (cancelBtn) cancelBtn.onclick = () => modal.classList.add('hidden');
+        if (confirmBtn) confirmBtn.onclick = () => {
+          modal.classList.add('hidden');
+          if (pendingDeleteRow) {
+            pendingDeleteRow.remove();
+            pendingDeleteRow = null;
+            updateLopPreview();
+            updateAddButtonVisibility();
+          }
+        };
+
+        modal.onclick = (e) => {
+          if (e.target === modal) modal.classList.add('hidden');
+        };
+
+        return modal;
+      };
+
+      const openLopDeleteConfirm = (rowEl) => {
+        pendingDeleteRow = rowEl;
+        const modal = ensureLopDeleteModal();
+        modal.classList.remove('hidden');
+      };
+
       const addItemRow = (index) => {
         if (!itemsContainer) return;
         const row = document.createElement('div');
@@ -4582,11 +4631,7 @@
           const removeBtn = e.target.closest('[data-remove-item]');
           if (!removeBtn) return;
           const rowEl = removeBtn.closest('[data-item-index]');
-          if (rowEl && window.confirm('تأكيد حذف هذا المنتج؟')) {
-            rowEl.remove();
-          }
-          updateLopPreview();
-          updateAddButtonVisibility();
+          if (rowEl) openLopDeleteConfirm(rowEl);
         });
       }
 
