@@ -4465,6 +4465,7 @@
           </div>
           <div class="totals">
             <div class="total-row">Subtotal <span dir="ltr">($)</span>: <span data-cell="SUBTOTAL">0.00</span></div>
+            <div class="total-row">Discount <span dir="ltr">($)</span>: <span data-cell="DISCOUNT">0.00</span></div>
             <div class="total-row">Total Amount <span dir="ltr">(KWD)</span>: <span data-cell="TOTAL">0.00</span></div>
           </div>
         </div>
@@ -4575,6 +4576,7 @@
             pendingDeleteRow = null;
             updateLopPreview();
             updateAddButtonVisibility();
+            updateDeleteButtonsVisibility();
           }
         };
 
@@ -4639,6 +4641,14 @@
         addItemBtn.style.display = existing >= 2 ? 'none' : 'inline-flex';
       };
 
+      const updateDeleteButtonsVisibility = () => {
+        if (!itemsContainer) return;
+        const existing = itemsContainer.querySelectorAll('[data-item-index]').length;
+        itemsContainer.querySelectorAll('[data-remove-item]').forEach(btn => {
+          btn.style.display = existing > 1 ? 'inline-flex' : 'none';
+        });
+      };
+
       if (itemsContainer) {
         itemsContainer.addEventListener('click', (e) => {
           const removeBtn = e.target.closest('[data-remove-item]');
@@ -4655,6 +4665,7 @@
         addItemRow(existing + 1);
         updateLopPreview();
         updateAddButtonVisibility();
+        updateDeleteButtonsVisibility();
       };
 
       const collectLopValues = () => {
@@ -4727,6 +4738,7 @@
       if (qrInput) qrInput.addEventListener('input', () => updateLopPreview());
       if (itemsContainer) itemsContainer.addEventListener('input', () => updateLopPreview());
       updateAddButtonVisibility();
+      updateDeleteButtonsVisibility();
     }
 
     async function getLopTemplateHtml() {
@@ -4854,6 +4866,7 @@
 
       const subtotalText = formatMoney(subtotal) || '0.00';
       setLopText(container, 'SUBTOTAL', subtotalText);
+      setLopText(container, 'DISCOUNT', '0.00');
       setLopText(container, 'TOTAL', subtotalText);
     }
 
@@ -5827,7 +5840,7 @@
     // Load and render mechanical appointments from external Google Sheet (مواعيد الميكانيكيه)
     async function loadMechanicalAppointmentsData() {
       try {
-        const sheetId = '1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4';
+        const sheetId = '1tuD10Lf1IEhVKFgZJyK2iSydfsPB-PJFFGaX8Ehoyv0';
         const sheetName = 'مواعيد الميكانيكيه';
         const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
         const res = await fetch(csvUrl);
@@ -5955,7 +5968,7 @@
       };
 
       document.getElementById('mechEditBtn').onclick = () => {
-        window.open('https://docs.google.com/spreadsheets/d/1CPGWPsJ3lFdYkV2DMWmJef5yw7QBimoTruBw-ef1Dq4/edit?usp=sharing', '_blank');
+        window.open('https://docs.google.com/spreadsheets/d/1tuD10Lf1IEhVKFgZJyK2iSydfsPB-PJFFGaX8Ehoyv0/edit#gid=0', '_blank');
       };
 
       const scheduleAutoRefresh = () => {
@@ -6765,7 +6778,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
     // Shared helpers for local booking (carwash/mechanical)
     const SHEETDB_URL = 'https://sheetdb.io/api/v1/wvoh60e0yhry4'; // Car Wash API
-    const MECHANICAL_SHEETDB_URL = 'https://sheetdb.io/api/v1/jcvn1kw9zy7o7'; // Mechanical API
+    const MECHANICAL_SHEETDB_URL = 'https://sheetdb.io/api/v1/i0hw3fbd5a92i'; // Mechanical API
 
     function pickHeader(headerRow, candidates, fallback) {
       const headers = (headerRow || []).map(h => (h || '').toString().toLowerCase().trim());
