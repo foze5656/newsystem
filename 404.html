@@ -976,6 +976,27 @@
       border: 1px solid rgba(245, 158, 11, 0.5);
     }
 
+    .problem-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      border: 1px solid rgba(239, 68, 68, 0.6);
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(239, 68, 68, 0.35),
+        rgba(239, 68, 68, 0.35) 6px,
+        rgba(59, 130, 246, 0.35) 6px,
+        rgba(59, 130, 246, 0.35) 12px
+      );
+      text-align: center;
+      min-width: 100px;
+    }
+
     .export-mode .export-hide {
       display: none !important;
     }
@@ -2560,6 +2581,7 @@
                   <th id="driverHeaderType">النوع</th>
                   <th id="driverHeaderShift">وقت بداية الدوام</th>
                   <th id="driverHeaderStatus" class="export-hide">الحالة</th>
+                  <th id="driverHeaderProblem">الملاحظات</th>
                   <th id="driverHeaderOff" class="export-hide">الإجازات</th>
                 </tr>
               </thead>
@@ -2631,7 +2653,8 @@
             off1Raw: getCellValue(c[4]),
             off1Display: getCellDisplay(c[4]),
             off2Raw: getCellValue(c[5]),
-            off2Display: getCellDisplay(c[5])
+            off2Display: getCellDisplay(c[5]),
+            problem: getCellDisplay(c[6])
           };
         }).filter(r => r.nameEn || r.nameAr || r.type || r.shiftDisplay);
 
@@ -2642,7 +2665,7 @@
       } catch (err) {
         console.error(err);
         const tbody = document.querySelector('#driverStatusTable tbody');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="color:#f88;padding:12px">خطأ في تحميل البيانات</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="color:#f88;padding:12px">خطأ في تحميل البيانات</td></tr>';
       }
     }
 
@@ -2665,7 +2688,7 @@
 
       const rows = window._driverStatusRows || [];
       if (rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="color:#999;padding:12px">لا توجد بيانات</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="color:#999;padding:12px">لا توجد بيانات</td></tr>';
         return;
       }
 
@@ -2686,7 +2709,7 @@
       });
 
       if (computed.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="color:#999;padding:12px">لا توجد نتائج مطابقة</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="color:#999;padding:12px">لا توجد نتائج مطابقة</td></tr>';
         return;
       }
 
@@ -2698,12 +2721,14 @@
         const name = getDriverNameByLanguage(r, lang);
         const typeDisplay = formatDriverType(r.type, lang);
         const statusLabel = getDriverStatusLabel(r.status.key, lang);
+        const problemText = (r.problem || '').toString().trim();
         tr.innerHTML = `
           <td>${idx + 1}</td>
           <td>${escapeHtml(name || '-')}</td>
           <td>${escapeHtml(typeDisplay || '-')}</td>
           <td>${escapeHtml(shiftDisplay)}</td>
           <td class="export-hide"><span class="status-badge status-${r.status.key}">${statusLabel}</span></td>
+          <td>${problemText ? `<span class="problem-badge">${escapeHtml(problemText)}</span>` : ''}</td>
           <td class="export-hide">${escapeHtml(daysOff)}</td>
         `;
         tbody.appendChild(tr);
@@ -2822,6 +2847,7 @@
       const headerType = document.getElementById('driverHeaderType');
       const headerShift = document.getElementById('driverHeaderShift');
       const headerStatus = document.getElementById('driverHeaderStatus');
+      const headerProblem = document.getElementById('driverHeaderProblem');
       const headerOff = document.getElementById('driverHeaderOff');
       const viewSelect = document.getElementById('driverViewFilter');
 
@@ -2837,6 +2863,7 @@
         if (headerType) headerType.textContent = 'Type';
         if (headerShift) headerShift.textContent = 'Shift Start';
         if (headerStatus) headerStatus.textContent = 'Status';
+        if (headerProblem) headerProblem.textContent = 'Problem';
         if (headerOff) headerOff.textContent = 'Days Off';
         if (viewSelect) {
           const allOption = viewSelect.querySelector('option[value="all"]');
@@ -2856,6 +2883,7 @@
         if (headerType) headerType.textContent = 'النوع';
         if (headerShift) headerShift.textContent = 'وقت بداية الدوام';
         if (headerStatus) headerStatus.textContent = 'الحالة';
+        if (headerProblem) headerProblem.textContent = 'الملاحظات';
         if (headerOff) headerOff.textContent = 'الإجازات';
         if (viewSelect) {
           const allOption = viewSelect.querySelector('option[value="all"]');
@@ -2992,6 +3020,15 @@
       return null;
     }
 
+    function convertAmPmToArabic(text) {
+      if (!text) return text;
+      return text
+        .replace(/\bAM\b/gi, 'صباحاً')
+        .replace(/\bPM\b/gi, 'مساءً')
+        .replace(/\bA\.M\.\b/gi, 'صباحاً')
+        .replace(/\bP\.M\.\b/gi, 'مساءً');
+    }
+
     function isInDuty(now, shiftStartToday) {
       const window = getDutyWindow(now, shiftStartToday);
       if (!window) return false;
@@ -3029,10 +3066,10 @@
     }
 
     function formatShiftDisplay(row, now) {
-      if (row.shiftDisplay) return row.shiftDisplay.toString();
+      if (row.shiftDisplay) return convertAmPmToArabic(row.shiftDisplay.toString());
       const parsed = parseShiftTimeToDate(row.shiftRaw, row.shiftDisplay, now);
       if (!parsed) return '-';
-      return parsed.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      return convertAmPmToArabic(parsed.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }));
     }
 
     function formatDaysOffDisplay(row) {
