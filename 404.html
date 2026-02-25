@@ -1008,6 +1008,7 @@
       border: none;
       border-radius: 0;
       padding: 0;
+      position: relative;
     }
     
     /* Info Boxes */
@@ -4590,9 +4591,9 @@
             <strong>Note:</strong> Payment shall be 15 days upon receipt of the items above.
           </div>
           <div class="totals">
-            <div class="total-row">Subtotal <span dir="ltr">($)</span>: <span data-cell="SUBTOTAL">0.00</span></div>
-            <div class="total-row">Discount <span dir="ltr">($)</span>: <span data-cell="DISCOUNT">0.00</span></div>
-            <div class="total-row">Total Amount <span dir="ltr">(KWD)</span>: <span data-cell="TOTAL">0.00</span></div>
+            <div class="total-row">Subtotal: <span data-cell="SUBTOTAL">0.00</span> KWD</div>
+            <div class="total-row">Discount: <span data-cell="DISCOUNT">0.00</span> KWD</div>
+            <div class="total-row">Total Amount: <span data-cell="TOTAL">0.00</span> KWD</div>
           </div>
         </div>
         <div class="lop-footer">System Generated No signature required</div>
@@ -4818,6 +4819,50 @@
         };
       };
 
+      const ensureLopPreviewBlocker = (container) => {
+        if (!container) return null;
+        let blocker = container.querySelector('#lopPreviewBlocker');
+        if (blocker) return blocker;
+        blocker = document.createElement('div');
+        blocker.id = 'lopPreviewBlocker';
+        blocker.style.position = 'absolute';
+        blocker.style.inset = '0';
+        blocker.style.background = '#000';
+        blocker.style.opacity = '1';
+        blocker.style.zIndex = '5';
+        blocker.style.display = 'none';
+        container.appendChild(blocker);
+        return blocker;
+      };
+
+      const isCompleteLopItem = (item) => {
+        return !!(
+          (item.size || '').trim() &&
+          (item.pattern || '').trim() &&
+          (item.year || '').trim() &&
+          (item.origin || '').trim() &&
+          (item.qty || '').trim() &&
+          (item.unitPrice || '').trim()
+        );
+      };
+
+      const validateLopValues = (values) => {
+        if (!values) return { valid: false, hasAny: false };
+        const hasAny = !!(values.qrNumber || values.date || (values.items && values.items.length));
+        const hasHeader = !!(values.qrNumber && values.date);
+        const items = Array.isArray(values.items) ? values.items : [];
+        const hasItems = items.length > 0;
+        const itemsComplete = hasItems && items.every(isCompleteLopItem);
+        return { valid: hasHeader && itemsComplete, hasAny };
+      };
+
+      const setLopPreviewBlocked = (blocked) => {
+        const previewCapture = document.getElementById('lopPreviewCapture');
+        const blocker = ensureLopPreviewBlocker(previewCapture);
+        if (!blocker) return;
+        blocker.style.display = blocked ? 'block' : 'none';
+      };
+
       const updateLopPreview = async () => {
         const values = collectLopValues();
         const previewSection = document.getElementById('lopPreviewSection');
@@ -4833,6 +4878,9 @@
         }
         await hydrateLopLogo(previewCapture);
         fillLopTemplate(previewCapture, values);
+
+        const validation = validateLopValues(values);
+        setLopPreviewBlocked(!validation.valid && validation.hasAny);
       };
 
       if (backBtn) backBtn.onclick = () => renderLopInterface();
@@ -4918,6 +4966,24 @@
       if (!target) return;
       if (!target.querySelector('table')) {
         showToast('لا يوجد قالب صالح للتصدير');
+        return;
+      }
+      const values = collectLopValues();
+      const hasHeader = !!(values.qrNumber && values.date);
+      const items = Array.isArray(values.items) ? values.items : [];
+      const itemsComplete = items.length > 0 && items.every(item =>
+        (item.size || '').trim() &&
+        (item.pattern || '').trim() &&
+        (item.year || '').trim() &&
+        (item.origin || '').trim() &&
+        (item.qty || '').trim() &&
+        (item.unitPrice || '').trim()
+      );
+
+      if (!(hasHeader && itemsComplete)) {
+        const blocker = target.querySelector('#lopPreviewBlocker');
+        if (blocker) blocker.style.display = 'block';
+        showToast('يرجى تعبئة جميع البيانات قبل التحميل');
         return;
       }
       try {
