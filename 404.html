@@ -5938,21 +5938,21 @@
     }
 
     function formatDateCardLabel(date) {
-      const parts = new Intl.DateTimeFormat('en-US', {
-        weekday: 'short',
-        day: '2-digit',
-        month: 'short'
-      }).formatToParts(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
 
-      const getPart = (type) => {
-        const part = parts.find(p => p.type === type);
-        return part ? part.value : '';
-      };
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
 
-      const weekday = getPart('weekday') || date.toLocaleDateString('en-US', { weekday: 'short' });
-      const day = getPart('day') || String(date.getDate()).padStart(2, '0');
-      const month = getPart('month') || date.toLocaleDateString('en-US', { month: 'short' });
-      return `${weekday} ${day} ${month}`;
+      const isToday = d.getTime() === today.getTime();
+      const isTomorrow = d.getTime() === tomorrow.getTime();
+
+      const title = isToday ? 'اليوم' : (isTomorrow ? 'غدا' : d.toLocaleDateString('ar-KW', { weekday: 'short' }));
+      const subtitle = d.toLocaleDateString('ar-KW', { day: '2-digit', month: 'short' });
+
+      return { title, subtitle };
     }
 
     function isDateInRange(dateStr, startDate, days) {
@@ -5981,7 +5981,11 @@
         btn.type = 'button';
         btn.className = 'date-card' + (iso === selectedDate ? ' active' : '');
         btn.dataset.date = iso;
-        btn.textContent = formatDateCardLabel(d);
+        const label = formatDateCardLabel(d);
+        btn.innerHTML = `
+          <div style="font-size:12px; font-weight:800;">${label.title}</div>
+          <div style="font-size:11px; color:#999; margin-top:2px;">${label.subtitle}</div>
+        `;
         btn.onclick = () => {
           setActiveDateCard(container, iso);
           if (typeof onSelect === 'function') onSelect(iso);
