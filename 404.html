@@ -2813,12 +2813,21 @@
           --brand-gold-soft: #d4a319;
           --brand-bg: #0a0a0a;
           --brand-panel: #1a1a1a;
+          --brand-panel-strong: #262626;
           --brand-border: #333;
+          --brand-muted: #999;
+          --brand-text: #ccc;
+        }
+
+        * {
+          font-family: 'Cairo', sans-serif;
+          letter-spacing: 0.2px;
         }
 
         html, body {
           background: var(--brand-bg);
-          font-family: 'Cairo', sans-serif;
+          color: var(--brand-text);
+          font-size: 15px;
         }
 
         .auth-container {
@@ -2827,8 +2836,10 @@
 
         .auth-card {
           background: linear-gradient(145deg, #1a1a1a 0%, #262626 100%);
-          border-color: var(--brand-gold);
+          border: 2px solid var(--brand-gold);
+          border-radius: 12px;
           box-shadow: 0 20px 60px rgba(242, 188, 27, 0.2);
+          padding: 2rem 2rem;
         }
 
         .system-title {
@@ -2836,39 +2847,42 @@
           text-shadow: 0 0 20px rgba(242, 188, 27, 0.3);
         }
 
-        .form-label,
-        .user-badge,
+        .header {
+          background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+          border-bottom: 2px solid var(--brand-gold);
+          box-shadow: 0 4px 20px rgba(242, 188, 27, 0.15);
+        }
+
+        .header-content {
+          max-width: 1280px;
+        }
+
+        .content {
+          max-width: 1280px;
+        }
+
         .header-title,
-        .dropdown-label,
-        .search-title,
         .dashboard-title,
+        .search-title,
+        .dropdown-label,
         .battery-title {
           color: var(--brand-gold);
         }
 
-        .form-input,
-        .dropdown-input {
-          background: #0a0a0a;
-          border-color: var(--brand-border);
-          color: var(--brand-gold);
-        }
-
-        .form-input:focus,
-        .dropdown-input:focus {
-          border-color: var(--brand-gold);
-          box-shadow: 0 0 0 4px rgba(242, 188, 27, 0.15);
-        }
-
-        .btn-login,
-        .btn-sheet,
-        .show-prices-btn {
-          background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-gold-soft) 100%);
+        .user-badge {
+          background: var(--brand-gold);
           color: #000;
+          border-radius: 999px;
+          padding: 6px 14px;
+          font-size: 13px;
         }
 
         .btn-logout {
-          border-color: var(--brand-gold);
+          background: #262626;
+          border: 2px solid var(--brand-gold);
           color: var(--brand-gold);
+          border-radius: 8px;
+          padding: 6px 14px;
         }
 
         .btn-logout:hover {
@@ -2876,28 +2890,80 @@
           color: #000;
         }
 
-        .header,
-        .dashboard-header {
-          background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
-          border-bottom-color: var(--brand-gold);
-        }
-
         .search-mode-selector,
         .search-section,
         .results-section,
-        .low-stock-section {
+        .low-stock-section,
+        .dashboard-header {
           background: var(--brand-panel);
-          border-color: var(--brand-border);
+          border: 1px solid var(--brand-border);
+          border-radius: 6px;
+          box-shadow: none;
+        }
+
+        .search-mode-selector {
+          padding: 10px;
+          gap: 8px;
         }
 
         .mode-btn {
-          border-color: var(--brand-gold);
+          background: #0a0a0a;
+          border: 1px solid var(--brand-gold);
           color: var(--brand-gold);
+          border-radius: 6px;
+          padding: 8px 12px;
+          font-size: 13px;
         }
 
         .mode-btn.active {
           background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-gold-soft) 100%);
           color: #000;
+        }
+
+        .form-input,
+        .dropdown-input {
+          background: #0a0a0a;
+          border: 2px solid var(--brand-border);
+          border-radius: 8px;
+          color: var(--brand-gold);
+          font-size: 14px;
+        }
+
+        .form-input:focus,
+        .dropdown-input:focus {
+          border-color: var(--brand-gold);
+          box-shadow: 0 0 0 3px rgba(242, 188, 27, 0.15);
+        }
+
+        .btn-login,
+        .btn-sheet,
+        .show-prices-btn,
+        .btn-export-excel {
+          background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-gold-soft) 100%);
+          color: #000;
+          border-radius: 6px;
+          font-size: 13px;
+        }
+
+        .battery-result {
+          background: #0f0f0f;
+          border: 1px solid var(--brand-border);
+          border-radius: 6px;
+          padding: 14px;
+        }
+
+        .battery-size-box {
+          border-radius: 6px;
+          box-shadow: none;
+          font-size: 14px;
+        }
+
+        .prices-table,
+        .low-stock-table {
+          background: #0a0a0a;
+          border-radius: 6px;
+          border-collapse: collapse;
+          overflow: hidden;
         }
 
         .prices-table thead,
@@ -2906,15 +2972,75 @@
           color: #000;
         }
 
+        .prices-table th,
+        .low-stock-table th {
+          font-size: 13px;
+          padding: 10px;
+        }
+
+        .prices-table td,
+        .low-stock-table td {
+          font-size: 13px;
+          color: var(--brand-text);
+          border-left: 1px solid #1a1a1a;
+        }
+
         .warehouse-stock-badge,
-        .driver-item-stock,
-        .user-badge {
+        .driver-item-stock {
           background: var(--brand-gold);
           color: #000;
+          border-radius: 6px;
+        }
+
+        .driver-item {
+          background: #0a0a0a;
+          border: 1px solid #222;
+          border-radius: 6px;
+        }
+
+        .warehouse-only-notice {
+          border-radius: 6px;
+        }
+
+        .copy-btn {
+          border-radius: 6px;
         }
 
         .copy-btn.copied {
           background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-gold-soft) 100%);
+          color: #000;
+        }
+
+        .stat-card {
+          background: #0a0a0a;
+          border: 1px solid var(--brand-border);
+          border-radius: 6px;
+          padding: 12px;
+          box-shadow: none;
+        }
+
+        .stat-value {
+          color: var(--brand-gold);
+        }
+
+        .stat-label {
+          color: var(--brand-muted);
+          font-size: 12px;
+        }
+
+        .dropdown-list {
+          background: #0a0a0a;
+          border: 1px solid var(--brand-gold);
+          border-radius: 8px;
+        }
+
+        .dropdown-item {
+          font-size: 13px;
+          color: var(--brand-gold);
+        }
+
+        .dropdown-item:hover {
+          background: var(--brand-gold);
           color: #000;
         }
 
