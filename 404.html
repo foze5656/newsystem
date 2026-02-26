@@ -5067,7 +5067,11 @@
         return '<div class="warehouse-only-notice">في المورد فقط ❗</div>';
       }
 
-      return battery.drivers.map(driver => {
+      const driversSorted = [...battery.drivers].sort((a, b) =>
+        (a.name || '').localeCompare((b.name || ''), 'ar', { sensitivity: 'base' })
+      );
+
+      return driversSorted.map(driver => {
         let driverInfo = '';
         if (driver.fk > 0) {
           driverInfo += `<span class="driver-item-stock">${driver.fkSupplierName}: ${driver.fk}</span>`;
@@ -5271,7 +5275,7 @@
 
         <div id="nbResultSection" class="data-table-container hidden">
           <div class="table-header" id="nbResultTitle">نتيجة البحث</div>
-          <div class="table-scroll">
+          <div class="table-scroll" style="max-height: 320px;">
             <table class="data-table">
               <thead>
                 <tr>
