@@ -4570,6 +4570,24 @@
       size: ''
     };
 
+    const NEW_BATTERY_USERS = {
+      Abdullah: { role: 'كول سنتر', isStaff: true },
+      Suaad: { role: 'كول سنتر', isStaff: true },
+      Laila: { role: 'كول سنتر', isStaff: true },
+      Nasser: { role: 'كول سنتر', isStaff: true },
+      Khalifa: { role: 'كول سنتر', isStaff: true },
+      Azam: { role: 'كول سنتر', isStaff: true },
+      Abdulwahab: { role: 'كول سنتر', isStaff: true },
+      Bashar: { role: 'كول سنتر', isStaff: true },
+      Ali: { role: 'كول سنتر', isStaff: true },
+      Sabah: { role: 'كول سنتر', isStaff: true },
+      Hamad: { role: 'كول سنتر', isStaff: true },
+      Fawzi: { role: 'كول سنتر', isStaff: true },
+      Mohamad: { role: 'المحاسب', isStaff: false },
+      Salem: { role: 'المدير', isStaff: false },
+      esraa: { role: 'تيم ليدر', isStaff: false }
+    };
+
     // Initialize Element SDK
     if (window.elementSdk) {
       window.elementSdk.init({
@@ -4982,6 +5000,69 @@
         '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
     }
 
+    function buildBatteryCopyMessage(brand, size, salePrice) {
+      const brandUpper = (brand || '').toUpperCase();
+      if (brandUpper.includes('MOTER CRAFT') || brandUpper.includes('MOTOR CRAFT') || brandUpper.includes('MOTORCRAFT')) {
+        if (size === 'DA100' || size === '95AGM') {
+          return `متوفرة بطارية موتر كرافت امريكيه 🇺🇸 كفالتها (سنتين) على الوكيل فورد الغانم سعرها ${salePrice} دك`;
+        }
+        return `متوفرة بطارية موتر كرافت امريكيه 🇺🇸 كفالتها 3 سنوات على الوكيل فورد الغانم السعر مع رسوم التركيب ${salePrice} دك`;
+      }
+      if (brandUpper.includes('VARTA')) {
+        return `متوفرة بطارية فارتا المانيه 🇩🇪 كفالتها سنه على الوكيل اف اتو انترنشلن السعر مع رسوم التركيب ${salePrice} دك`;
+      }
+      if (brandUpper.includes('ABM')) {
+        return `متوفرة بطارية ايه بي ام ماليزيه 🇲🇾 كفالتها سنه واحده على الوكيل اف كي السعر مع رسوم التركيب ${salePrice} دك`;
+      }
+      if (brandUpper.includes('MOTO RAFT') || brandUpper.includes('MOTORAFT')) {
+        return `متوفرة بطارية موتر رافت هنديه 🇮🇳 كفالتها سنه واحده على الوكيل افتخار السعر مع رسوم التركيب ${salePrice} دك`;
+      }
+      if (brandUpper.includes('BOSSTER') || brandUpper.includes('BOOSTER')) {
+        return `متوفرة بطارية (بوستر/أوكلا) صينيه 🇨🇳 كفالتها سنه واحده على الوكيل المشعل السعر مع رسوم التركيب ${salePrice} دك`;
+      }
+      return `متوفرة بطارية ${brand} السعر مع رسوم التركيب ${salePrice} دك`;
+    }
+
+    async function copyNewBatteryMessage(message, btn) {
+      if (!message) return;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(message);
+        } else {
+          const textarea = document.createElement('textarea');
+          textarea.value = message;
+          textarea.style.position = 'fixed';
+          textarea.style.top = '0';
+          textarea.style.left = '0';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+        }
+
+        if (btn) {
+          const original = btn.textContent;
+          btn.textContent = '✅ تم النسخ';
+          btn.classList.add('success');
+          setTimeout(() => {
+            btn.textContent = original;
+            btn.classList.remove('success');
+          }, 1800);
+        }
+      } catch (err) {
+        console.error('فشل النسخ:', err);
+        if (btn) {
+          const original = btn.textContent;
+          btn.textContent = '❌ فشل النسخ';
+          setTimeout(() => {
+            btn.textContent = original;
+          }, 1800);
+        }
+      }
+    }
+
     async function fetchNewBatteryCsvRows(url) {
       const res = await fetch(url, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to load battery sheet');
@@ -5020,6 +5101,7 @@
           if (!size) continue;
 
           const brand = (cols[1] || '').trim();
+          const price = parseFloat(cols[3]) || 0;
           const salePrice = parseFloat(cols[4]) || 0;
           const fkStock = parseFloat(cols[5]) || 0;
           const mStock = parseFloat(cols[6]) || 0;
@@ -5034,6 +5116,7 @@
           newBatteryBatteryData.push({
             size,
             brand,
+            price,
             salePrice,
             fkStock,
             mStock,
@@ -5055,6 +5138,11 @@
 
     function renderNewBatteryInterface() {
       const contentArea = document.getElementById('contentArea');
+      const currentUserName = (localStorage.getItem('currentUser') || '').trim();
+      const roleInfo = NEW_BATTERY_USERS[currentUserName] || { role: 'كول سنتر', isStaff: true };
+      const showCopyButton = roleInfo.isStaff;
+      const showPurchasePrice = !roleInfo.isStaff;
+
       contentArea.innerHTML = `
         <div class="form-section">
           <h3 class="section-title">طريقة البحث</h3>
@@ -5110,9 +5198,11 @@
                 <tr>
                   <th>الماركة</th>
                   <th>المقاس</th>
+                  ${showPurchasePrice ? '<th>سعر الشراء</th>' : ''}
                   <th>سعر البيع</th>
                   <th>المخزون الرئيسي</th>
                   <th>مخزون السائقين</th>
+                  ${showCopyButton ? '<th>نسخ الرسالة</th>' : ''}
                 </tr>
               </thead>
               <tbody id="nbResultBody"></tbody>
@@ -5161,11 +5251,23 @@
           <tr>
             <td class="highlight">${row.brand || '-'}</td>
             <td>${row.size}</td>
+            ${showPurchasePrice ? `<td class="highlight">${row.price.toFixed(2)} ${config.currency}</td>` : ''}
             <td class="highlight">${row.salePrice.toFixed(2)} ${config.currency}</td>
             <td>${row.warehouseTotal}</td>
             <td>${row.driversTotal}</td>
+            ${showCopyButton ? `<td><button class="copy-btn-small" data-copy-message="${row.copyMessage}">نسخ</button></td>` : ''}
           </tr>
         `).join('');
+
+        if (showCopyButton) {
+          resultBody.querySelectorAll('[data-copy-message]').forEach(btn => {
+            btn.onclick = async () => {
+              const msg = btn.getAttribute('data-copy-message') || '';
+              await copyNewBatteryMessage(msg, btn);
+            };
+          });
+        }
+
         messageEl.classList.add('hidden');
         resultSection.classList.remove('hidden');
       };
@@ -5207,9 +5309,11 @@
             .map(b => ({
               brand: b.brand,
               size: b.size,
+              price: b.price,
               salePrice: b.salePrice,
               warehouseTotal: b.fkStock + b.mStock,
-              driversTotal: b.driversTotal
+              driversTotal: b.driversTotal,
+              copyMessage: buildBatteryCopyMessage(b.brand, b.size, b.salePrice)
             }));
 
           renderBatteryRows(rows, `نتائج المقاس: ${size}`);
@@ -5313,9 +5417,11 @@
               rows.push({
                 brand: b.brand,
                 size: count > 1 ? `${size} (${count})` : size,
+                price: b.price,
                 salePrice: b.salePrice,
                 warehouseTotal: b.fkStock + b.mStock,
-                driversTotal: b.driversTotal
+                driversTotal: b.driversTotal,
+                copyMessage: buildBatteryCopyMessage(b.brand, size, b.salePrice)
               });
             });
           });
