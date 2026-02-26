@@ -4588,6 +4588,34 @@
       esraa: { role: 'تيم ليدر', isStaff: false }
     };
 
+    const NEW_BATTERY_DRIVERS_AR = {
+      'NYAZ-DATARAM': 'نياز وداترام',
+      'Muthu': 'موتو',
+      'Ganesh': 'جانيش',
+      'Iresh-Sanidu': 'اريش-سانديو',
+      'GUFRAN': 'غفران',
+      'edeson alpert': 'إيديسون ألبرت',
+      'Irfan': 'عرفان',
+      'Albert': 'ألبرت',
+      'Lakshman': 'لاكشمان',
+      'santheel': 'سانتيل',
+      'ARVENTH': 'أرفنت',
+      'MortaDA/Santhosh': 'مرتضى / سانتوش',
+      'Mayura': 'مايورا',
+      'yusuf & rahimah allah': 'يوسف و رحمة الله',
+      'ali and Mohammed': 'علي ومحمد',
+      'Sayid and Ramos': 'سيد و رامز',
+      'bala': 'بالا',
+      'Durga Prasad': 'دورجا براساد'
+    };
+
+    function getNewBatterySupplierName(brand, type) {
+      const brandUpper = (brand || '').toUpperCase();
+      if (brandUpper.includes('VARTA')) return 'مورد فارتا';
+      if (brandUpper.includes('EMTRAC')) return 'مورد البحبطين';
+      return type === 'FK' ? 'مورد اف كي' : 'مورد افتخار';
+    }
+
     // Initialize Element SDK
     if (window.elementSdk) {
       window.elementSdk.init({
@@ -5023,6 +5051,34 @@
       return `متوفرة بطارية ${brand} السعر مع رسوم التركيب ${salePrice} دك`;
     }
 
+    function buildNewBatteryWarehouseContent(battery) {
+      let content = '';
+      if (battery.fkStock > 0) {
+        content += `<span class="warehouse-stock-badge">${battery.fkSupplierName}: ${battery.fkStock}</span>`;
+      }
+      if (battery.mStock > 0) {
+        content += `<span class="warehouse-stock-badge">${battery.mSupplierName}: ${battery.mStock}</span>`;
+      }
+      return content || '-';
+    }
+
+    function buildNewBatteryDriversContent(battery) {
+      if (!battery.drivers || battery.drivers.length === 0) {
+        return '<div class="warehouse-only-notice">في المورد فقط ❗</div>';
+      }
+
+      return battery.drivers.map(driver => {
+        let driverInfo = '';
+        if (driver.fk > 0) {
+          driverInfo += `<span class="driver-item-stock">${driver.fkSupplierName}: ${driver.fk}</span>`;
+        }
+        if (driver.m > 0) {
+          driverInfo += `<span class="driver-item-stock">${driver.mSupplierName}: ${driver.m}</span>`;
+        }
+        return `<div class="driver-item"><span class="driver-item-name">${driver.name}</span>${driverInfo}</div>`;
+      }).join('');
+    }
+
     async function copyNewBatteryMessage(message, btn) {
       if (!message) return;
       try {
@@ -5105,11 +5161,31 @@
           const salePrice = parseFloat(cols[4]) || 0;
           const fkStock = parseFloat(cols[5]) || 0;
           const mStock = parseFloat(cols[6]) || 0;
+          const fkSupplierName = getNewBatterySupplierName(brand, 'FK');
+          const mSupplierName = getNewBatterySupplierName(brand, 'M');
           let driversTotal = 0;
+          const drivers = [];
 
           for (let colIndex = 7; colIndex < headers.length; colIndex += 2) {
+            const driverHeader = headers[colIndex];
+            if (!driverHeader || driverHeader.toString().trim() === '' || driverHeader.toString().toLowerCase() === 'total') {
+              continue;
+            }
+
             const fkQty = parseFloat(cols[colIndex]) || 0;
             const mQty = parseFloat(cols[colIndex + 1]) || 0;
+            if (fkQty > 0 || mQty > 0) {
+              const englishName = driverHeader.toString().trim();
+              const arabicName = NEW_BATTERY_DRIVERS_AR[englishName] || englishName;
+              drivers.push({
+                name: arabicName,
+                englishName,
+                fk: fkQty,
+                m: mQty,
+                fkSupplierName,
+                mSupplierName
+              });
+            }
             driversTotal += fkQty + mQty;
           }
 
@@ -5120,6 +5196,9 @@
             salePrice,
             fkStock,
             mStock,
+            fkSupplierName,
+            mSupplierName,
+            drivers,
             driversTotal
           });
         }
@@ -5253,8 +5332,8 @@
             <td>${row.size}</td>
             ${showPurchasePrice ? `<td class="highlight">${row.price.toFixed(2)} ${config.currency}</td>` : ''}
             <td class="highlight">${row.salePrice.toFixed(2)} ${config.currency}</td>
-            <td>${row.warehouseTotal}</td>
-            <td>${row.driversTotal}</td>
+            <td class="warehouse-cell">${row.warehouseContent}</td>
+            <td class="drivers-cell">${row.driversContent}</td>
             ${showCopyButton ? `<td><button class="copy-btn-small" data-copy-message="${row.copyMessage}">نسخ</button></td>` : ''}
           </tr>
         `).join('');
@@ -5311,8 +5390,8 @@
               size: b.size,
               price: b.price,
               salePrice: b.salePrice,
-              warehouseTotal: b.fkStock + b.mStock,
-              driversTotal: b.driversTotal,
+              warehouseContent: buildNewBatteryWarehouseContent(b),
+              driversContent: buildNewBatteryDriversContent(b),
               copyMessage: buildBatteryCopyMessage(b.brand, b.size, b.salePrice)
             }));
 
@@ -5419,8 +5498,8 @@
                 size: count > 1 ? `${size} (${count})` : size,
                 price: b.price,
                 salePrice: b.salePrice,
-                warehouseTotal: b.fkStock + b.mStock,
-                driversTotal: b.driversTotal,
+                warehouseContent: buildNewBatteryWarehouseContent(b),
+                driversContent: buildNewBatteryDriversContent(b),
                 copyMessage: buildBatteryCopyMessage(b.brand, size, b.salePrice)
               });
             });
