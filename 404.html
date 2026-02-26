@@ -5401,13 +5401,14 @@
 
           const tableHtml = buildTableHtml(rows);
           const sizeId = makeSizeId(size);
-          const sizeLabel = count > 1 ? `${size} (${count})` : size;
+          const sizeLabel = count > 1 ? `${size} (عدد التكرار: ${count})` : size;
+          const hasRows = rows.length > 0;
 
           return `
             <div class="form-section full-width" style="margin-top:8px;">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
                 <h3 class="section-title" style="margin:0;">${sizeLabel}</h3>
-                <button class="btn-option" data-size-toggle="${sizeId}">إظهار الأسعار</button>
+                ${hasRows ? `<button class="btn-option" data-size-toggle="${sizeId}">إظهار الأسعار</button>` : ''}
               </div>
               <div id="nbSizeTable-${sizeId}" class="data-table-container hidden" style="margin-top:8px;">
                 <div class="table-header">الأسعار والمخزون</div>
