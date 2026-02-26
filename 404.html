@@ -5071,7 +5071,7 @@
         (a.name || '').localeCompare((b.name || ''), 'ar', { sensitivity: 'base' })
       );
 
-      return driversSorted.map(driver => {
+      return driversSorted.map((driver, index) => {
         let driverInfo = '';
         if (driver.fk > 0) {
           driverInfo += `<span class="driver-item-stock">${driver.fkSupplierName}: ${driver.fk}</span>`;
@@ -5079,7 +5079,7 @@
         if (driver.m > 0) {
           driverInfo += `<span class="driver-item-stock">${driver.mSupplierName}: ${driver.m}</span>`;
         }
-        return `<div class="driver-item"><span class="driver-item-name">${driver.name}</span>${driverInfo}</div>`;
+        return `<div class="driver-item"><span class="driver-item-name">${index + 1}- ${driver.name}</span><span style="display:inline-block;width:6px;"></span>${driverInfo}</div>`;
       }).join('');
     }
 
@@ -5275,7 +5275,7 @@
 
         <div id="nbResultSection" class="data-table-container hidden">
           <div class="table-header" id="nbResultTitle">نتيجة البحث</div>
-          <div class="table-scroll" style="max-height: 320px;">
+          <div class="table-scroll" style="max-height: 55vh;">
             <table class="data-table">
               <thead>
                 <tr>
