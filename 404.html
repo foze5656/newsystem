@@ -4554,6 +4554,22 @@
     let carWashData = [];
     let lastIframeState = null; // Store last iframe state
 
+    const NEW_BATTERY_CAR_SHEET_ID = '1tUjEj-1FtAqewhJiRcC4dgGwgrxhb5OjKxGWEojFzlg';
+    const NEW_BATTERY_BATTERY_SHEET_ID = '1WghSWhC-NJ0h--afoaR0ydzTP8ULw7N3tBDgToXoLVk';
+    const NEW_BATTERY_CAR_SHEET_URL = `https://docs.google.com/spreadsheets/d/${NEW_BATTERY_CAR_SHEET_ID}/export?format=csv&gid=0`;
+    const NEW_BATTERY_BATTERY_SHEET_URL = `https://docs.google.com/spreadsheets/d/${NEW_BATTERY_BATTERY_SHEET_ID}/export?format=csv&gid=0`;
+
+    let newBatteryCarData = [];
+    let newBatteryBatteryData = [];
+    let newBatteryDataLoaded = false;
+    let newBatteryState = {
+      mode: 'size',
+      make: '',
+      model: '',
+      year: '',
+      size: ''
+    };
+
     // Initialize Element SDK
     if (window.elementSdk) {
       window.elementSdk.init({
@@ -4903,7 +4919,7 @@
             renderBatterySubscriptionInterface();
             break;
           case 'newBattery':
-            openFullscreenIframeWithHtml(getNewBatteryHtml(), 'بطارية جديدة');
+            renderNewBatteryInterface();
             break;
           case 'batteryInstall':
             renderBatteryInstallInterface();
@@ -4964,6 +4980,349 @@
     function renderBatterySubscriptionInterface() {
       renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
         '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
+    }
+
+    async function fetchNewBatteryCsvRows(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('Failed to load battery sheet');
+      const text = await res.text();
+      return parseCSV(text);
+    }
+
+    async function loadNewBatteryData() {
+      if (newBatteryDataLoaded) return;
+
+      try {
+        const [carRows, batteryRows] = await Promise.all([
+          fetchNewBatteryCsvRows(NEW_BATTERY_CAR_SHEET_URL),
+          fetchNewBatteryCsvRows(NEW_BATTERY_BATTERY_SHEET_URL)
+        ]);
+
+        newBatteryCarData = [];
+        for (let i = 1; i < carRows.length; i++) {
+          const cols = carRows[i] || [];
+          if (cols[0] && cols[3]) {
+            newBatteryCarData.push({
+              make: (cols[0] || '').trim(),
+              model: (cols[1] || '').trim(),
+              year: (cols[2] || '').trim(),
+              bat: (cols[3] || '').trim(),
+              count: parseInt(cols[4], 10) || 1
+            });
+          }
+        }
+
+        const headers = batteryRows[0] || [];
+        newBatteryBatteryData = [];
+        for (let i = 1; i < batteryRows.length; i++) {
+          const cols = batteryRows[i] || [];
+          const size = (cols[0] || '').trim();
+          if (!size) continue;
+
+          const brand = (cols[1] || '').trim();
+          const salePrice = parseFloat(cols[4]) || 0;
+          const fkStock = parseFloat(cols[5]) || 0;
+          const mStock = parseFloat(cols[6]) || 0;
+          let driversTotal = 0;
+
+          for (let colIndex = 7; colIndex < headers.length; colIndex += 2) {
+            const fkQty = parseFloat(cols[colIndex]) || 0;
+            const mQty = parseFloat(cols[colIndex + 1]) || 0;
+            driversTotal += fkQty + mQty;
+          }
+
+          newBatteryBatteryData.push({
+            size,
+            brand,
+            salePrice,
+            fkStock,
+            mStock,
+            driversTotal
+          });
+        }
+
+        newBatteryDataLoaded = true;
+      } catch (error) {
+        console.error('خطأ في تحميل بيانات البطاريات:', error);
+      }
+    }
+
+    function getExactMatch(list, value) {
+      const v = (value || '').trim().toLowerCase();
+      if (!v) return '';
+      return list.find(item => (item || '').toString().trim().toLowerCase() === v) || '';
+    }
+
+    function renderNewBatteryInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section">
+          <h3 class="section-title">طريقة البحث</h3>
+          <div class="btn-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <button class="btn-option active" data-nb-mode="size">🔋 البحث بالمقاس</button>
+            <button class="btn-option" data-nb-mode="car">🚗 البحث بالسيارة</button>
+          </div>
+        </div>
+
+        <div id="nbLoading" class="form-section">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="spinner"></span>
+            <span style="color:#999;font-size:13px;">جاري تحميل بيانات البطاريات...</span>
+          </div>
+        </div>
+
+        <div id="nbSizeSection" class="form-section">
+          <h3 class="section-title">مقاس البطارية</h3>
+          <div class="form-field">
+            <input type="text" list="nbSizeOptions" id="nbSizeInput" class="form-control" placeholder="اكتب أو اختر المقاس">
+            <datalist id="nbSizeOptions"></datalist>
+          </div>
+        </div>
+
+        <div id="nbCarSection" class="form-section hidden">
+          <h3 class="section-title">اختيار السيارة</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>الشركة</label>
+              <input type="text" list="nbMakeOptions" id="nbMakeInput" class="form-control" placeholder="اختر الشركة">
+              <datalist id="nbMakeOptions"></datalist>
+            </div>
+            <div class="form-field">
+              <label>الموديل</label>
+              <input type="text" list="nbModelOptions" id="nbModelInput" class="form-control" placeholder="اختر الموديل" disabled>
+              <datalist id="nbModelOptions"></datalist>
+            </div>
+            <div class="form-field">
+              <label>السنة</label>
+              <input type="text" list="nbYearOptions" id="nbYearInput" class="form-control" placeholder="اختر السنة" disabled>
+              <datalist id="nbYearOptions"></datalist>
+            </div>
+          </div>
+        </div>
+
+        <div id="nbMessage" class="warning-box hidden"></div>
+
+        <div id="nbResultSection" class="data-table-container hidden">
+          <div class="table-header" id="nbResultTitle">نتيجة البحث</div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>الماركة</th>
+                  <th>المقاس</th>
+                  <th>سعر البيع</th>
+                  <th>المخزون الرئيسي</th>
+                  <th>مخزون السائقين</th>
+                </tr>
+              </thead>
+              <tbody id="nbResultBody"></tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      const loadingEl = document.getElementById('nbLoading');
+      const sizeSection = document.getElementById('nbSizeSection');
+      const carSection = document.getElementById('nbCarSection');
+      const resultSection = document.getElementById('nbResultSection');
+      const resultBody = document.getElementById('nbResultBody');
+      const resultTitle = document.getElementById('nbResultTitle');
+      const messageEl = document.getElementById('nbMessage');
+
+      const sizeInput = document.getElementById('nbSizeInput');
+      const makeInput = document.getElementById('nbMakeInput');
+      const modelInput = document.getElementById('nbModelInput');
+      const yearInput = document.getElementById('nbYearInput');
+      const sizeOptions = document.getElementById('nbSizeOptions');
+      const makeOptions = document.getElementById('nbMakeOptions');
+      const modelOptions = document.getElementById('nbModelOptions');
+      const yearOptions = document.getElementById('nbYearOptions');
+
+      const resetResults = () => {
+        resultBody.innerHTML = '';
+        resultSection.classList.add('hidden');
+        messageEl.classList.add('hidden');
+      };
+
+      const showMessage = (text) => {
+        messageEl.textContent = text;
+        messageEl.classList.remove('hidden');
+        resultSection.classList.add('hidden');
+      };
+
+      const renderBatteryRows = (rows, titleText) => {
+        if (!rows.length) {
+          showMessage('لا توجد نتائج مطابقة');
+          return;
+        }
+
+        resultTitle.textContent = titleText;
+        resultBody.innerHTML = rows.map(row => `
+          <tr>
+            <td class="highlight">${row.brand || '-'}</td>
+            <td>${row.size}</td>
+            <td class="highlight">${row.salePrice.toFixed(2)} ${config.currency}</td>
+            <td>${row.warehouseTotal}</td>
+            <td>${row.driversTotal}</td>
+          </tr>
+        `).join('');
+        messageEl.classList.add('hidden');
+        resultSection.classList.remove('hidden');
+      };
+
+      const setMode = (mode) => {
+        newBatteryState.mode = mode;
+        document.querySelectorAll('[data-nb-mode]').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.nbMode === mode);
+        });
+        sizeSection.classList.toggle('hidden', mode !== 'size');
+        carSection.classList.toggle('hidden', mode !== 'car');
+        resetResults();
+      };
+
+      document.querySelectorAll('[data-nb-mode]').forEach(btn => {
+        btn.onclick = () => setMode(btn.dataset.nbMode);
+      });
+
+      loadNewBatteryData().then(() => {
+        loadingEl.classList.add('hidden');
+
+        const sizes = [...new Set(newBatteryBatteryData.map(b => b.size))].filter(Boolean).sort();
+        sizeOptions.innerHTML = sizes.map(s => `<option value="${s}"></option>`).join('');
+
+        const makes = [...new Set(newBatteryCarData.map(c => c.make))].filter(Boolean).sort();
+        makeOptions.innerHTML = makes.map(m => `<option value="${m}"></option>`).join('');
+
+        sizeInput.oninput = () => {
+          const size = getExactMatch(sizes, sizeInput.value);
+          newBatteryState.size = size;
+          if (!size) {
+            resetResults();
+            return;
+          }
+
+          const rows = newBatteryBatteryData
+            .filter(b => b.size.toUpperCase() === size.toUpperCase())
+            .filter(b => (b.fkStock + b.mStock + b.driversTotal) > 0)
+            .map(b => ({
+              brand: b.brand,
+              size: b.size,
+              salePrice: b.salePrice,
+              warehouseTotal: b.fkStock + b.mStock,
+              driversTotal: b.driversTotal
+            }));
+
+          renderBatteryRows(rows, `نتائج المقاس: ${size}`);
+        };
+
+        makeInput.oninput = () => {
+          const make = getExactMatch(makes, makeInput.value);
+          newBatteryState.make = make;
+          newBatteryState.model = '';
+          newBatteryState.year = '';
+          modelInput.value = '';
+          yearInput.value = '';
+          yearInput.disabled = true;
+
+          if (!make) {
+            modelInput.disabled = true;
+            modelOptions.innerHTML = '';
+            yearOptions.innerHTML = '';
+            resetResults();
+            return;
+          }
+
+          const models = [...new Set(newBatteryCarData
+            .filter(c => c.make === make)
+            .map(c => c.model)
+          )].filter(Boolean).sort();
+
+          modelOptions.innerHTML = models.map(m => `<option value="${m}"></option>`).join('');
+          modelInput.disabled = false;
+          resetResults();
+        };
+
+        modelInput.oninput = () => {
+          const make = newBatteryState.make;
+          if (!make) return;
+
+          const models = [...new Set(newBatteryCarData
+            .filter(c => c.make === make)
+            .map(c => c.model)
+          )].filter(Boolean);
+          const model = getExactMatch(models, modelInput.value);
+          newBatteryState.model = model;
+          newBatteryState.year = '';
+          yearInput.value = '';
+
+          if (!model) {
+            yearInput.disabled = true;
+            yearOptions.innerHTML = '';
+            resetResults();
+            return;
+          }
+
+          const years = [...new Set(newBatteryCarData
+            .filter(c => c.make === make && c.model === model)
+            .map(c => c.year)
+          )].filter(Boolean).sort((a, b) => b - a);
+
+          yearOptions.innerHTML = years.map(y => `<option value="${y}"></option>`).join('');
+          yearInput.disabled = false;
+          resetResults();
+        };
+
+        yearInput.oninput = () => {
+          const make = newBatteryState.make;
+          const model = newBatteryState.model;
+          const years = [...new Set(newBatteryCarData
+            .filter(c => c.make === make && c.model === model)
+            .map(c => c.year)
+          )].filter(Boolean);
+
+          const year = getExactMatch(years, yearInput.value);
+          newBatteryState.year = year;
+          if (!year) {
+            resetResults();
+            return;
+          }
+
+          const matchingCars = newBatteryCarData.filter(c =>
+            c.make === make && c.model === model && c.year === year
+          );
+
+          if (!matchingCars.length) {
+            showMessage('لا توجد نتائج مطابقة');
+            return;
+          }
+
+          const sizeCounts = {};
+          matchingCars.forEach(c => {
+            sizeCounts[c.bat] = (sizeCounts[c.bat] || 0) + (c.count || 1);
+          });
+
+          const sizesArray = Object.entries(sizeCounts);
+          const rows = [];
+
+          sizesArray.forEach(([size, count]) => {
+            const sizeBatteries = newBatteryBatteryData
+              .filter(b => b.size.toUpperCase() === size.toUpperCase())
+              .filter(b => (b.fkStock + b.mStock + b.driversTotal) > 0);
+
+            sizeBatteries.forEach(b => {
+              rows.push({
+                brand: b.brand,
+                size: count > 1 ? `${size} (${count})` : size,
+                salePrice: b.salePrice,
+                warehouseTotal: b.fkStock + b.mStock,
+                driversTotal: b.driversTotal
+              });
+            });
+          });
+
+          renderBatteryRows(rows, `نتائج السيارة: ${make} ${model} ${year}`);
+        };
+      });
     }
 
     // Render Installments Interface
