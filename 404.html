@@ -5273,24 +5273,9 @@
 
         <div id="nbMessage" class="warning-box hidden"></div>
 
-        <div id="nbResultSection" class="data-table-container hidden">
+        <div id="nbResultSection" class="data-table-container hidden" style="max-height:none;">
           <div class="table-header" id="nbResultTitle">نتيجة البحث</div>
-          <div class="table-scroll" style="max-height: none;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>الماركة</th>
-                  <th>المقاس</th>
-                  ${showPurchasePrice ? '<th>سعر الشراء</th>' : ''}
-                  <th>سعر البيع</th>
-                  <th>المخزون الرئيسي</th>
-                  <th>مخزون السائقين</th>
-                  ${showCopyButton ? '<th>نسخ الرسالة</th>' : ''}
-                </tr>
-              </thead>
-              <tbody id="nbResultBody"></tbody>
-            </table>
-          </div>
+          <div id="nbResultContent" style="padding: 6px 8px;"></div>
         </div>
       `;
 
@@ -5298,9 +5283,9 @@
       const sizeSection = document.getElementById('nbSizeSection');
       const carSection = document.getElementById('nbCarSection');
       const resultSection = document.getElementById('nbResultSection');
-      const resultBody = document.getElementById('nbResultBody');
       const resultTitle = document.getElementById('nbResultTitle');
       const messageEl = document.getElementById('nbMessage');
+      const resultContent = document.getElementById('nbResultContent');
 
       const sizeInput = document.getElementById('nbSizeInput');
       const makeInput = document.getElementById('nbMakeInput');
@@ -5312,7 +5297,7 @@
       const yearOptions = document.getElementById('nbYearOptions');
 
       const resetResults = () => {
-        resultBody.innerHTML = '';
+        resultContent.innerHTML = '';
         resultSection.classList.add('hidden');
         messageEl.classList.add('hidden');
       };
@@ -5323,14 +5308,39 @@
         resultSection.classList.add('hidden');
       };
 
-      const renderBatteryRows = (rows, titleText) => {
+      const escapeAttr = (value) => (value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;');
+
+      const attachCopyHandlers = (container) => {
+        if (!showCopyButton) return;
+        container.querySelectorAll('[data-copy-message]').forEach(btn => {
+          btn.onclick = async () => {
+            const msg = btn.getAttribute('data-copy-message') || '';
+            await copyNewBatteryMessage(msg, btn);
+          };
+        });
+      };
+
+      const buildTableHtml = (rows) => {
         if (!rows.length) {
-          showMessage('لا توجد نتائج مطابقة');
-          return;
+          return '<div class="warning-box">لا توجد نتائج مطابقة</div>';
         }
 
-        resultTitle.textContent = titleText;
-        resultBody.innerHTML = rows.map(row => `
+        const header = `
+          <tr>
+            <th>الماركة</th>
+            <th>المقاس</th>
+            ${showPurchasePrice ? '<th>سعر الشراء</th>' : ''}
+            <th>سعر البيع</th>
+            <th>المخزون الرئيسي</th>
+            <th>مخزون السائقين</th>
+            ${showCopyButton ? '<th>نسخ الرسالة</th>' : ''}
+          </tr>
+        `;
+
+        const body = rows.map(row => `
           <tr>
             <td class="highlight">${row.brand || '-'}</td>
             <td>${row.size}</td>
@@ -5338,21 +5348,91 @@
             <td class="highlight">${row.salePrice.toFixed(2)} ${config.currency}</td>
             <td class="warehouse-cell">${row.warehouseContent}</td>
             <td class="drivers-cell">${row.driversContent}</td>
-            ${showCopyButton ? `<td><button class="copy-btn-small" data-copy-message="${row.copyMessage}">نسخ</button></td>` : ''}
+            ${showCopyButton ? `<td><button class="copy-btn-small" data-copy-message="${escapeAttr(row.copyMessage)}">نسخ</button></td>` : ''}
           </tr>
         `).join('');
 
-        if (showCopyButton) {
-          resultBody.querySelectorAll('[data-copy-message]').forEach(btn => {
-            btn.onclick = async () => {
-              const msg = btn.getAttribute('data-copy-message') || '';
-              await copyNewBatteryMessage(msg, btn);
-            };
-          });
+        return `
+          <div class="table-scroll" style="max-height:none;">
+            <table class="data-table">
+              <thead>${header}</thead>
+              <tbody>${body}</tbody>
+            </table>
+          </div>
+        `;
+      };
+
+      const renderBatteryRows = (rows, titleText) => {
+        if (!rows.length) {
+          showMessage('لا توجد نتائج مطابقة');
+          return;
         }
 
+        resultTitle.textContent = titleText;
+        resultContent.innerHTML = buildTableHtml(rows);
+        attachCopyHandlers(resultContent);
         messageEl.classList.add('hidden');
         resultSection.classList.remove('hidden');
+      };
+
+      const makeSizeId = (size) => (size || '').toString().replace(/[^a-z0-9]/gi, '_') || 'size';
+
+      const renderSizeBlocks = (sizesArray, make, model, year) => {
+        if (!sizesArray.length) {
+          showMessage('لا توجد نتائج مطابقة');
+          return;
+        }
+
+        resultTitle.textContent = `نتائج السيارة: ${make} ${model} ${year}`;
+        const blocks = sizesArray.map(([size, count]) => {
+          const sizeBatteries = newBatteryBatteryData
+            .filter(b => b.size.toUpperCase() === size.toUpperCase())
+            .filter(b => (b.fkStock + b.mStock + b.driversTotal) > 0);
+
+          const rows = sizeBatteries.map(b => ({
+            brand: b.brand,
+            size: count > 1 ? `${size} (${count})` : size,
+            price: b.price,
+            salePrice: b.salePrice,
+            warehouseContent: buildNewBatteryWarehouseContent(b),
+            driversContent: buildNewBatteryDriversContent(b),
+            copyMessage: buildBatteryCopyMessage(b.brand, size, b.salePrice)
+          }));
+
+          const tableHtml = buildTableHtml(rows);
+          const sizeId = makeSizeId(size);
+          const sizeLabel = count > 1 ? `${size} (${count})` : size;
+
+          return `
+            <div class="form-section full-width" style="margin-top:8px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                <h3 class="section-title" style="margin:0;">${sizeLabel}</h3>
+                <button class="btn-option" data-size-toggle="${sizeId}">إظهار الأسعار</button>
+              </div>
+              <div id="nbSizeTable-${sizeId}" class="data-table-container hidden" style="margin-top:8px;">
+                <div class="table-header">الأسعار والمخزون</div>
+                <div style="padding:10px;">${tableHtml}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        resultContent.innerHTML = blocks;
+        messageEl.classList.add('hidden');
+        resultSection.classList.remove('hidden');
+
+        resultContent.querySelectorAll('[data-size-toggle]').forEach(btn => {
+          btn.onclick = () => {
+            const targetId = btn.getAttribute('data-size-toggle');
+            const panel = document.getElementById(`nbSizeTable-${targetId}`);
+            if (!panel) return;
+            const isHidden = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !isHidden);
+            btn.textContent = isHidden ? 'إخفاء الأسعار' : 'إظهار الأسعار';
+          };
+        });
+
+        attachCopyHandlers(resultContent);
       };
 
       const setMode = (mode) => {
@@ -5489,27 +5569,7 @@
           });
 
           const sizesArray = Object.entries(sizeCounts);
-          const rows = [];
-
-          sizesArray.forEach(([size, count]) => {
-            const sizeBatteries = newBatteryBatteryData
-              .filter(b => b.size.toUpperCase() === size.toUpperCase())
-              .filter(b => (b.fkStock + b.mStock + b.driversTotal) > 0);
-
-            sizeBatteries.forEach(b => {
-              rows.push({
-                brand: b.brand,
-                size: count > 1 ? `${size} (${count})` : size,
-                price: b.price,
-                salePrice: b.salePrice,
-                warehouseContent: buildNewBatteryWarehouseContent(b),
-                driversContent: buildNewBatteryDriversContent(b),
-                copyMessage: buildBatteryCopyMessage(b.brand, size, b.salePrice)
-              });
-            });
-          });
-
-          renderBatteryRows(rows, `نتائج السيارة: ${make} ${model} ${year}`);
+          renderSizeBlocks(sizesArray, make, model, year);
         };
       });
     }
