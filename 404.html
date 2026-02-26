@@ -3052,12 +3052,9 @@
      </head>
      <body>
       <div id="authContainer" class="auth-container">
-       <div class="auth-card">
-      <div class="logo-container"><img src="https://i.top4top.io/p_35860o72q1.png" alt="شعار النظام" style="display: block; margin: 0 auto 1.5rem auto;" onerror="this.style.display='none'">
-       <div class="system-title">
-        ⚡ سيستم البطاريات ⚡
+      <div class="auth-card">
+       <div class="logo-container"><img src="https://i.top4top.io/p_35860o72q1.png" alt="شعار النظام" style="display: block; margin: 0 auto 1.5rem auto;" onerror="this.style.display='none'">
        </div>
-      </div>
       <div id="errorMessage" class="error-message"></div>
       <form id="loginForm" onsubmit="handleLogin(event)">
        <div class="form-group"><label class="form-label">اسم المستخدم</label> <input type="text" id="username" class="form-input" placeholder="أدخل اسم المستخدم" required>
@@ -3070,11 +3067,11 @@
       <div id="mainContainer" class="main-container">
        <header class="header">
       <div class="header-content">
-       <div class="header-logo"><img src="https://i.top4top.io/p_35860o72q1.png" alt="شعار النظام" onerror="this.style.display='none'">
-        <div class="header-title" id="headerTitle">
-         ⚡ سيستم البطاريات ⚡
-        </div>
-       </div>
+         <div class="header-logo"><img src="https://i.top4top.io/p_35860o72q1.png" alt="شعار النظام" onerror="this.style.display='none'">
+          <div class="header-title" id="headerTitle">
+           بطارية جديدة
+          </div>
+         </div>
        <div class="user-info">
         <div class="user-badge" id="userBadge"></div><button class="btn-logout" onclick="handleLogout()">تسجيل الخروج</button>
        </div>
@@ -11471,7 +11468,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     async function copyToClipboard(text) {
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(text);
+          await navigator.clipboard.writeText(text); 
         } else {
           const ta = document.createElement('textarea');
           ta.value = text;
