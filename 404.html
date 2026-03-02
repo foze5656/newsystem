@@ -5733,7 +5733,9 @@
     async function loadDriverStatusData(force = false) {
       try {
         const sheetId = '1nhjZLD1VoYYusxKi4wUFIP3fdToVlrIREy31WZdipWo';
-        const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const currentMonthName = monthNames[new Date().getMonth()];
+        const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(currentMonthName)}`;
         const res = await fetch(sheetUrl, { cache: 'no-cache' });
 
         if (!res.ok) throw new Error('failed to load drivers sheet');
