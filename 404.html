@@ -5735,6 +5735,7 @@
         const sheetId = '1nhjZLD1VoYYusxKi4wUFIP3fdToVlrIREy31WZdipWo';
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const currentMonthName = monthNames[new Date().getMonth()];
+        window._driverStatusMonthName = currentMonthName;
         const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(currentMonthName)}`;
         const res = await fetch(sheetUrl, { cache: 'no-cache' });
 
@@ -5769,12 +5770,20 @@
 
         window._driverStatusRows = drivers;
         populateDriverTypeFilter(drivers);
+        updateDriverStatusLanguageUI(window._driverStatusLang || 'ar');
+
+        if (drivers.length === 0) {
+          const tbody = document.querySelector('#driverStatusTable tbody');
+          if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="color:#ffd54f;padding:12px">غير متوفر جدول السائقين لهذا الشهر سيتم التحديث قريبا</td></tr>';
+          return;
+        }
 
         renderDriverStatusTable();
       } catch (err) {
         console.error(err);
         const tbody = document.querySelector('#driverStatusTable tbody');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="color:#f88;padding:12px">خطأ في تحميل البيانات</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="color:#ffd54f;padding:12px">غير متوفر جدول السائقين لهذا الشهر سيتم التحديث قريبا</td></tr>';
+        updateDriverStatusLanguageUI(window._driverStatusLang || 'ar');
       }
     }
 
@@ -5963,9 +5972,12 @@
       const headerOff = document.getElementById('driverHeaderOff');
       const viewSelect = document.getElementById('driverViewFilter');
 
+      const monthName = window._driverStatusMonthName;
+      const titleSuffix = monthName ? ` - ${monthName}` : '';
+
       if (lang === 'en') {
         if (toggle) toggle.textContent = 'العربية';
-        if (title) title.textContent = 'Drivers Table';
+        if (title) title.textContent = `Drivers Table${titleSuffix}`;
         if (downloadBtn) downloadBtn.textContent = 'Download Image';
         if (sheetBtn) sheetBtn.textContent = 'Open Google Sheet';
         if (viewLabel) viewLabel.textContent = 'View Filter';
@@ -5984,7 +5996,7 @@
         }
       } else {
         if (toggle) toggle.textContent = 'English';
-        if (title) title.textContent = 'جدول السائقين';
+        if (title) title.textContent = `جدول السائقين${titleSuffix}`;
         if (downloadBtn) downloadBtn.textContent = 'تحميل كصورة';
         if (sheetBtn) sheetBtn.textContent = 'فتح Google Sheet';
         if (viewLabel) viewLabel.textContent = 'فلتر العرض';
