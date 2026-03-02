@@ -5766,7 +5766,15 @@
             off2Display: getCellDisplay(c[5]),
             problem: getCellDisplay(c[6])
           };
-        }).filter(r => r.nameEn || r.nameAr || r.type || r.shiftDisplay);
+        }).filter(r => {
+          const headerTokens = ['drivers name en', 'drivers name ar', 'type', 'sheeft time', 'shift time', 'days off', 'problem'];
+          const values = [r.nameEn, r.nameAr, r.type, r.shiftDisplay, r.off1Display, r.off2Display, r.problem]
+            .map(v => (v || '').toString().trim().toLowerCase())
+            .filter(Boolean);
+          const isHeaderRow = values.length > 0 && values.every(v => headerTokens.includes(v));
+          if (isHeaderRow) return false;
+          return r.nameEn || r.nameAr || r.type || r.shiftDisplay;
+        });
 
         window._driverStatusRows = drivers;
         populateDriverTypeFilter(drivers);
