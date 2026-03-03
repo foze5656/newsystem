@@ -29,349 +29,131 @@
       color: #FFD700; /* gold */
       border: 1px solid #FFD700;
       border-radius: 10px;
-      function createShuffledDeck() {
-        const ranks = [
-          { label: 'A', value: 14, bj: 11 },
-          { label: 'K', value: 13, bj: 10 },
-          { label: 'Q', value: 12, bj: 10 },
-          { label: 'J', value: 11, bj: 10 },
-          { label: '10', value: 10, bj: 10 },
-          { label: '9', value: 9, bj: 9 },
-          { label: '8', value: 8, bj: 8 },
-          { label: '7', value: 7, bj: 7 },
-          { label: '6', value: 6, bj: 6 },
-          { label: '5', value: 5, bj: 5 },
-          { label: '4', value: 4, bj: 4 },
-          { label: '3', value: 3, bj: 3 },
-          { label: '2', value: 2, bj: 2 }
-        ];
-        const suits = [
-          { symbol: '♠', color: '#F2BC1B' },
-          { symbol: '♣', color: '#F2BC1B' },
-          { symbol: '♥', color: '#ef4444' },
-          { symbol: '♦', color: '#ef4444' }
-        ];
-        const deck = [];
-        suits.forEach(suit => {
-          ranks.forEach(rank => {
-            deck.push({
-              label: `${rank.label}${suit.symbol}`,
-              value: rank.value,
-              bj: rank.bj,
-              suit: suit.symbol,
-              color: suit.color
-            });
-          });
-        });
-        for (let i = deck.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [deck[i], deck[j]] = [deck[j], deck[i]];
-        }
-        return deck;
+      box-shadow: 0 10px 30px rgba(255,215,0,0.06);
+      padding: 6px;
+    }
+
+    option {
+      background: #0a0a0a;
+      color: #FFD700;
+      padding: 10px 12px;
+      font-size: 13px;
+      transition: all 0.18s ease;
+      border-radius: 8px;
+    }
+
+    option:hover {
+      background: #B8860B; /* dark gold */
+      color: #000;
+      box-shadow: 0 8px 20px rgba(255,215,0,0.12), 0 0 12px rgba(255,215,0,0.06) inset;
+    }
+
+    select {
+      background: #070707;
+      border: 1px solid #FFD700;
+      color: #FFD700;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(255,215,0,0.04);
+    }
+
+    select option {
+      background: #0a0a0a;
+      color: #FFD700;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    select option:hover,
+    select option:checked {
+      background: #B8860B;
+      color: #000;
+      box-shadow: 0 8px 20px rgba(255,215,0,0.12);
+    }
+
+    /* Firefox specific */
+    @-moz-document url-prefix() {
+      option {
+        background: #0a0a0a;
+        color: #FFD700;
       }
 
-      function renderCardFace(card, small = false) {
-        const sizeClass = small ? 'card-face small' : 'card-face';
-        return `<div class="${sizeClass}" style="color:${card.color};">${card.label}</div>`;
+      option:hover {
+        background: #B8860B;
+        color: #000;
       }
-
-      function renderWarCardGame() {
-        const contentArea = document.getElementById('contentArea');
-        if (!contentArea) return;
-
-        contentArea.innerHTML = `
-          <div class="form-section full-width">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-              <h3 class="section-title" style="margin:0;">جنجفه - حرب</h3>
-              <button id="warResetBtn" class="btn-back" style="padding:6px 12px;font-size:12px;">إعادة</button>
-            </div>
-            <div id="warStatus" class="info-box" style="margin-top:8px;">اضغط سحب لبدء الجولة</div>
-            <div class="card-table" style="margin-top:10px;">
-              <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-                <div>
-                  <div class="muted-text">أنت</div>
-                  <div id="warPlayerCount" class="warning-box" style="margin-top:6px;">0 ورقة</div>
-                </div>
-                <div>
-                  <div class="muted-text">الكمبيوتر</div>
-                  <div id="warCpuCount" class="warning-box" style="margin-top:6px;">0 ورقة</div>
-                </div>
-              </div>
-              <div style="margin-top:12px;" class="card-hand" id="warBattleArea"></div>
-            </div>
-            <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
-              <button id="warDrawBtn" class="btn-back" style="padding:8px 16px;font-size:13px;">سحب جولة</button>
-            </div>
-          </div>
-        `;
-
-        const statusEl = document.getElementById('warStatus');
-        const playerCountEl = document.getElementById('warPlayerCount');
-        const cpuCountEl = document.getElementById('warCpuCount');
-        const battleEl = document.getElementById('warBattleArea');
-        const drawBtn = document.getElementById('warDrawBtn');
-        const resetBtn = document.getElementById('warResetBtn');
-        if (!statusEl || !playerCountEl || !cpuCountEl || !battleEl || !drawBtn) return;
-
-        let deck = createShuffledDeck();
-        let playerDeck = deck.filter((_, idx) => idx % 2 === 0);
-        let cpuDeck = deck.filter((_, idx) => idx % 2 === 1);
-        let round = 0;
-
-        const updateCounts = () => {
-          playerCountEl.textContent = `${playerDeck.length} ورقة`;
-          cpuCountEl.textContent = `${cpuDeck.length} ورقة`;
-        };
-
-        const endIfEmpty = () => {
-          if (playerDeck.length === 0 || cpuDeck.length === 0) {
-            const winner = playerDeck.length > cpuDeck.length ? 'أنت' : 'الكمبيوتر';
-            statusEl.textContent = `انتهت اللعبة، الفائز: ${winner}`;
-            drawBtn.disabled = true;
-            drawBtn.style.opacity = '0.6';
-            return true;
-          }
-          return false;
-        };
-
-        const resolveBattle = (pot) => {
-          if (endIfEmpty()) return;
-          const playerCard = playerDeck.shift();
-          const cpuCard = cpuDeck.shift();
-          pot.push(playerCard, cpuCard);
-          battleEl.innerHTML = `
-            ${renderCardFace(playerCard)}
-            ${renderCardFace(cpuCard)}
-          `;
-
-          if (playerCard.value > cpuCard.value) {
-            playerDeck.push(...pot);
-            statusEl.textContent = 'أنت فزت بالجولة';
-          } else if (playerCard.value < cpuCard.value) {
-            cpuDeck.push(...pot);
-            statusEl.textContent = 'الكمبيوتر فاز بالجولة';
-          } else {
-            statusEl.textContent = 'تعادل! حرب!';
-            const warCount = Math.min(3, playerDeck.length, cpuDeck.length);
-            if (warCount === 0) {
-              if (playerDeck.length > cpuDeck.length) playerDeck.push(...pot);
-              else cpuDeck.push(...pot);
-            } else {
-              for (let i = 0; i < warCount; i++) {
-                pot.push(playerDeck.shift());
-                pot.push(cpuDeck.shift());
-              }
-              resolveBattle(pot);
-              return;
-            }
-          }
-          updateCounts();
-          endIfEmpty();
-        };
-
-        drawBtn.onclick = () => {
-          if (drawBtn.disabled) return;
-          round += 1;
-          statusEl.textContent = `الجولة ${round}`;
-          resolveBattle([]);
-        };
-
-        if (resetBtn) {
-          resetBtn.onclick = () => renderWarCardGame();
-        }
-
-        updateCounts();
-      }
-
-      function renderBlackjackGame() {
-        const contentArea = document.getElementById('contentArea');
-        if (!contentArea) return;
-        contentArea.innerHTML = `
-          <div class="form-section full-width">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-              <h3 class="section-title" style="margin:0;">جنجفه - بلاك جاك</h3>
-              <button id="bjResetBtn" class="btn-back" style="padding:6px 12px;font-size:12px;">إعادة</button>
-            </div>
-            <div id="bjStatus" class="info-box" style="margin-top:8px;">ابدأ بسحب ورقتين</div>
-            <div class="card-table" style="margin-top:10px;">
-              <div class="muted-text">الكمبيوتر</div>
-              <div id="bjDealerHand" class="card-hand" style="margin-top:6px;"></div>
-              <div id="bjDealerScore" class="warning-box" style="margin-top:6px; text-align:center;">المجموع: ؟</div>
-              <div class="muted-text" style="margin-top:10px;">أنت</div>
-              <div id="bjPlayerHand" class="card-hand" style="margin-top:6px;"></div>
-              <div id="bjPlayerScore" class="warning-box" style="margin-top:6px; text-align:center;">المجموع: 0</div>
-            </div>
-            <div style="margin-top:12px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-              <button id="bjDealBtn" class="btn-back" style="padding:8px 16px;font-size:13px;">توزيع</button>
-              <button id="bjHitBtn" class="btn-back" style="padding:8px 16px;font-size:13px;">سحب</button>
-              <button id="bjStandBtn" class="btn-back" style="padding:8px 16px;font-size:13px;">ثبات</button>
-            </div>
-          </div>
-        `;
-
-        const statusEl = document.getElementById('bjStatus');
-        const dealerHandEl = document.getElementById('bjDealerHand');
-        const playerHandEl = document.getElementById('bjPlayerHand');
-        const dealerScoreEl = document.getElementById('bjDealerScore');
-        const playerScoreEl = document.getElementById('bjPlayerScore');
-        const dealBtn = document.getElementById('bjDealBtn');
-        const hitBtn = document.getElementById('bjHitBtn');
-        const standBtn = document.getElementById('bjStandBtn');
-        const resetBtn = document.getElementById('bjResetBtn');
-        if (!statusEl || !dealerHandEl || !playerHandEl || !dealerScoreEl || !playerScoreEl || !dealBtn || !hitBtn || !standBtn) return;
-
-        let deck = createShuffledDeck();
-        let playerHand = [];
-        let dealerHand = [];
-        let inRound = false;
-
-        const handValue = (hand) => {
-          let total = 0;
-          let aces = 0;
-          hand.forEach(card => {
-            total += card.bj;
-            if (card.bj === 11) aces += 1;
-          });
-          while (total > 21 && aces > 0) {
-            total -= 10;
-            aces -= 1;
-          }
-          return total;
-        };
-
-        const renderHands = (hideDealer = true) => {
-          dealerHandEl.innerHTML = '';
-          dealerHand.forEach((card, idx) => {
-            if (idx === 0 && hideDealer) {
-              dealerHandEl.innerHTML += `<div class="card-face back">✦</div>`;
-            } else {
-              dealerHandEl.innerHTML += renderCardFace(card, true);
-            }
-          });
-          playerHandEl.innerHTML = playerHand.map(card => renderCardFace(card, true)).join('');
-          playerScoreEl.textContent = `المجموع: ${handValue(playerHand)}`;
-          dealerScoreEl.textContent = hideDealer ? 'المجموع: ؟' : `المجموع: ${handValue(dealerHand)}`;
-        };
-
-        const endRound = (message) => {
-          inRound = false;
-          statusEl.textContent = message;
-          renderHands(false);
-        };
-
-        const dealerPlay = () => {
-          while (handValue(dealerHand) < 17) {
-            dealerHand.push(deck.pop());
-          }
-          const dealerScore = handValue(dealerHand);
-          const playerScore = handValue(playerHand);
-          if (dealerScore > 21) {
-            endRound('الكمبيوتر تجاوز 21، أنت فزت!');
-          } else if (dealerScore > playerScore) {
-            endRound('الكمبيوتر فاز');
-          } else if (dealerScore < playerScore) {
-            endRound('أنت فزت!');
-          } else {
-            endRound('تعادل');
-          }
-        };
-
-        dealBtn.onclick = () => {
-          deck = createShuffledDeck();
-          playerHand = [deck.pop(), deck.pop()];
-          dealerHand = [deck.pop(), deck.pop()];
-          inRound = true;
-          statusEl.textContent = 'دورك الآن';
-          renderHands(true);
-        };
-
-        hitBtn.onclick = () => {
-          if (!inRound) return;
-          playerHand.push(deck.pop());
-          const score = handValue(playerHand);
-          renderHands(true);
-          if (score > 21) {
-            endRound('أنت تجاوزت 21، خسرت الجولة');
-          }
-        };
-
-        standBtn.onclick = () => {
-          if (!inRound) return;
-          dealerPlay();
-        };
-
-        if (resetBtn) {
-          resetBtn.onclick = () => renderBlackjackGame();
-        }
-
-        renderHands(true);
-      }
-
-      function renderHighCardGame() {
-        const contentArea = document.getElementById('contentArea');
-        if (!contentArea) return;
-        contentArea.innerHTML = `
-          <div class="form-section full-width">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-              <h3 class="section-title" style="margin:0;">جنجفه - أعلى ورقة</h3>
-              <button id="highResetBtn" class="btn-back" style="padding:6px 12px;font-size:12px;">إعادة</button>
-            </div>
-            <div id="highStatus" class="info-box" style="margin-top:8px;">اضغط سحب لبدء الجولة</div>
-            <div class="card-table" style="margin-top:10px;">
-              <div class="card-hand" id="highBattle"></div>
-            </div>
-            <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
-              <button id="highDrawBtn" class="btn-back" style="padding:8px 16px;font-size:13px;">سحب</button>
-            </div>
-            <div id="highScore" class="warning-box" style="margin-top:10px; text-align:center;">أنت 0 | الكمبيوتر 0</div>
-          </div>
-        `;
-
-        const statusEl = document.getElementById('highStatus');
-        const battleEl = document.getElementById('highBattle');
-        const drawBtn = document.getElementById('highDrawBtn');
-        const scoreEl = document.getElementById('highScore');
-        const resetBtn = document.getElementById('highResetBtn');
-        if (!statusEl || !battleEl || !drawBtn || !scoreEl) return;
-
-        let playerScore = 0;
-        let cpuScore = 0;
-        let deck = createShuffledDeck();
-
-        const updateScore = () => {
-          scoreEl.textContent = `أنت ${playerScore} | الكمبيوتر ${cpuScore}`;
-        };
-
-        drawBtn.onclick = () => {
-          if (deck.length < 2) deck = createShuffledDeck();
-          const playerCard = deck.pop();
-          const cpuCard = deck.pop();
-          battleEl.innerHTML = `${renderCardFace(playerCard)}${renderCardFace(cpuCard)}`;
-          if (playerCard.value > cpuCard.value) {
-            playerScore += 1;
-            statusEl.textContent = 'أنت فزت بالجولة';
-          } else if (playerCard.value < cpuCard.value) {
-            cpuScore += 1;
-            statusEl.textContent = 'الكمبيوتر فاز بالجولة';
-          } else {
-            statusEl.textContent = 'تعادل';
-          }
-          updateScore();
-        };
-
-        if (resetBtn) {
-          resetBtn.onclick = () => {
-            playerScore = 0;
-            cpuScore = 0;
-            deck = createShuffledDeck();
-            battleEl.innerHTML = '';
-            statusEl.textContent = 'اضغط سحب لبدء الجولة';
-            updateScore();
-          };
-        }
-
-        updateScore();
-      }
+    }
+    
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .dashboard-wrapper {
+      height: 100%;
+      width: 100%;
+      display: none;
+      grid-template-columns: 220px 1fr;
+      background: #0a0a0a;
+      overflow: hidden;
+      position: relative;
+      gap: 0;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+      border-left: 2px solid #F2BC1B;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 10px;
+      gap: 6px;
+      position: relative;
+      z-index: 100;
+    }
+    
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .sidebar::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #F2BC1B;
+      border-radius: 3px;
+    }
+    
+    .logo-section {
+      text-align: center;
+      padding: 10px 0 12px 0;
+      border-bottom: 1px solid #333;
+      margin-bottom: 8px;
+    }
+    
+    .logo-section img {
+      max-width: 100px;
+      height: auto;
+      margin: 0 auto 6px;
+    }
+    
+    .logo-section h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #F2BC1B;
+      margin: 0;
+    }
+    
+    .service-item {
+      background: #2a2a2a;
+      border: 1px solid #404040;
+      border-radius: 5px;
+      padding: 8px 10px;
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
@@ -1943,48 +1725,6 @@
     /* Important red message used in protection results (single red note as requested) */
     .prot-important{ margin-top:12px; padding:12px; border-radius:8px; background: rgba(127,29,29,0.04); border:1px solid #ef4444; color:#ffb3b3; font-weight:700 }
     .prot-toast{ position:fixed; top:80px; right:40px; background:#F2BC1B; color:#000; padding:12px 16px; border-radius:10px; border:1px solid rgba(0,0,0,0.12); box-shadow:0 12px 40px rgba(0,0,0,0.6); display:none; z-index:1500; font-weight:700 }
-
-    .card-table {
-      background:#0f0f0f;
-      border:1px solid #333;
-      border-radius:12px;
-      padding:12px;
-      box-shadow:0 12px 30px rgba(0,0,0,0.5);
-    }
-
-    .card-hand {
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:center;
-      align-items:center;
-    }
-
-    .card-face {
-      width:90px;
-      height:130px;
-      background:#111;
-      border:1px solid #333;
-      border-radius:10px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:22px;
-      font-weight:700;
-      box-shadow:0 8px 20px rgba(0,0,0,0.6);
-    }
-
-    .card-face.small {
-      width:70px;
-      height:100px;
-      font-size:18px;
-    }
-
-    .card-face.back {
-      background:linear-gradient(135deg,#1a1a1a,#0a0a0a);
-      border-color:#F2BC1B;
-      color:#F2BC1B;
-    }
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
@@ -2162,12 +1902,8 @@
      </div>
      <div class="service-item submenu-item" data-service="installments"><span class="label">الاقساط</span>
      </div>
-     <div class="service-item submenu-item" data-service="card_war"><span class="label">جنجفه - حرب</span>
-     </div>
-     <div class="service-item submenu-item" data-service="card_blackjack"><span class="label">جنجفه - بلاك جاك</span>
-     </div>
-     <div class="service-item submenu-item" data-service="card_high"><span class="label">جنجفه - أعلى ورقة</span>
-     </div>
+      <div class="service-item submenu-item" data-service="games"><span class="label">العاب</span>
+      </div>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
@@ -2284,12 +2020,6 @@
     (async function initLogin() {
       await loadUsers();
       checkAuthStatus();
-
-      // Check version updates every 1 minute
-      if (window.versionCheckIntervalId) clearInterval(window.versionCheckIntervalId);
-      window.versionCheckIntervalId = setInterval(() => {
-        loadUsers();
-      }, 60 * 1000);
       
       const loginForm = document.getElementById('loginForm');
       const loginError = document.getElementById('loginError');
@@ -2388,19 +2118,14 @@
       }
     }
 
-    // Auto-refresh the full page every 2 minutes with notification
+    // Check version from sheet every hour (no auto refresh)
     setInterval(() => {
       try {
-        if (typeof showToast === 'function') {
-          showToast('🔄 سيتم تحديث الصفحة الآن...');
-        }
-        setTimeout(() => {
-          window.location.reload();
-        }, 1200);
+        loadUsers();
       } catch (e) {
-        console.error('Auto refresh failed', e);
+        console.error('Version check failed', e);
       }
-    }, 2 * 60 * 1000);
+    }, 60 * 60 * 1000);
     
     // ========== ORIGINAL APP CODE ==========
     
@@ -2687,110 +2412,6 @@
       }
     });
 
-    const serviceTitles = {
-      'tow': 'خدمة ونشات',
-      'batterySubscription': 'اشتراك بطارية',
-      'newBattery': 'بطارية جديدة',
-      'batteryInstall': 'تركيب بطارية',
-      'fuel': 'خدمة بنزين',
-      'unlock': 'فتح قفل السيارة',
-      'tireSheet': 'شيت التواير',
-      'tireIncrease': 'زيادات التواير',
-      'tire_lop': 'فواتير التواير',
-      'puncture': 'بنشر',
-      'balance': 'ميزان وتركيب',
-      'ringRepair': 'تصليح الرنقات',
-      'mechanical': 'خدمات ميكانيكية',
-      'staff_centers': 'مراكز الطلبات',
-      'driver_status': 'جدول السائقين',
-      'carwash': 'غسيل السيارات',
-      'protection': 'الحمايه والتغيم',
-      'insurance': 'تأمينات',
-      'annualSubscription': 'الاشتراك السنوي',
-      'installments': 'الاقساط',
-      'card_war': 'جنجفه - حرب',
-      'card_blackjack': 'جنجفه - بلاك جاك',
-      'card_high': 'جنجفه - أعلى ورقة'
-    };
-
-    function handleServiceSelection(serviceKey) {
-      const title = serviceTitles[serviceKey] || '';
-      const titleEl = document.getElementById('serviceTitle');
-      if (titleEl) titleEl.textContent = title;
-
-      switch(serviceKey) {
-        case 'tow':
-          renderTowInterface();
-          break;
-        case 'batterySubscription':
-          renderBatterySubscriptionInterface();
-          break;
-        case 'newBattery':
-          openFullscreenIframe('https://portaragebatteries.netlify.app/', 'بطارية جديدة');
-          break;
-        case 'batteryInstall':
-          renderBatteryInstallInterface();
-          break;
-        case 'fuel':
-          renderFuelInterface();
-          break;
-        case 'unlock':
-          renderLockInterface();
-          break;
-        case 'tireSheet':
-          openFullscreenIframe('https://portiers.netlify.app/', 'شيت التواير');
-          break;
-        case 'tireIncrease':
-          openFullscreenIframe('https://portaragetiers.netlify.app/', 'زيادات التواير');
-          break;
-        case 'tire_lop':
-          renderLopInterface();
-          break;
-        case 'puncture':
-          renderPunctureService();
-          break;
-        case 'balance':
-          renderBalanceService();
-          break;
-        case 'ringRepair':
-          renderRingRepairInterface();
-          break;
-        case 'mechanical':
-          renderMechanicalInterface();
-          break;
-        case 'staff_centers':
-          renderStaffInterface();
-          break;
-        case 'driver_status':
-          renderDriverStatusInterface();
-          break;
-        case 'carwash':
-          renderCarWashInterface();
-          break;
-        case 'protection':
-          renderProtectionInterface();
-          break;
-        case 'insurance':
-          renderInsuranceInterface();
-          break;
-        case 'annualSubscription':
-          renderAnnualSubscriptionInterface();
-          break;
-        case 'installments':
-          renderInstallmentsInterface();
-          break;
-        case 'card_war':
-          renderWarCardGame();
-          break;
-        case 'card_blackjack':
-          renderBlackjackGame();
-          break;
-        case 'card_high':
-          renderHighCardGame();
-          break;
-      }
-    }
-
     // Service Selection
     document.addEventListener('click', (e) => {
       const serviceItem = e.target.closest('.service-item');
@@ -2802,7 +2423,9 @@
             ? 'batterySubmenu'
             : (serviceItem.dataset.service === 'tire'
               ? 'tireSubmenu'
-              : (serviceItem.dataset.service === 'staff' ? 'staffSubmenu' : 'otherSubmenu'));
+              : (serviceItem.dataset.service === 'staff'
+                ? 'staffSubmenu'
+                : 'otherSubmenu'));
           const submenu = document.getElementById(submenuId);
           if (submenu) submenu.classList.toggle('show');
           return;
@@ -2818,7 +2441,97 @@
         currentService = serviceItem.dataset.service;
         formData = {};
         
-        handleServiceSelection(currentService);
+        const serviceTitles = {
+          'tow': 'خدمة ونشات',
+          'batterySubscription': 'اشتراك بطارية',
+          'newBattery': 'بطارية جديدة',
+          'batteryInstall': 'تركيب بطارية',
+          'fuel': 'خدمة بنزين',
+          'unlock': 'فتح قفل السيارة',
+          'tireSheet': 'شيت التواير',
+          'tireIncrease': 'زيادات التواير',
+          'tire_lop': 'فواتير التواير',
+          'puncture': 'بنشر',
+          'balance': 'ميزان وتركيب',
+          'ringRepair': 'تصليح الرنقات',
+          'mechanical': 'خدمات ميكانيكية',
+          'staff_centers': 'مراكز الطلبات',
+          'driver_status': 'جدول السائقين',
+          'carwash': 'غسيل السيارات',
+          'protection': 'الحمايه والتغيم',
+          'insurance': 'تأمينات',
+          'annualSubscription': 'الاشتراك السنوي',
+          'installments': 'الاقساط',
+          'games': 'العاب'
+        };
+        
+        document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
+        
+        switch(currentService) {
+          case 'tow':
+            renderTowInterface();
+            break;
+          case 'batterySubscription':
+            renderBatterySubscriptionInterface();
+            break;
+          case 'newBattery':
+            openFullscreenIframe('https://portaragebatteries.netlify.app/', 'بطارية جديدة');
+            break;
+          case 'batteryInstall':
+            renderBatteryInstallInterface();
+            break;
+          case 'fuel':
+            renderFuelInterface();
+            break;
+          case 'unlock':
+            renderLockInterface();
+            break;
+          case 'tireSheet':
+            openFullscreenIframe('https://portiers.netlify.app/', 'شيت التواير');
+            break;
+          case 'tireIncrease':
+            openFullscreenIframe('https://portaragetiers.netlify.app/', 'زيادات التواير');
+            break;
+          case 'tire_lop':
+            renderLopInterface();
+            break;
+          case 'puncture':
+            renderPunctureService();
+            break;
+          case 'balance':
+            renderBalanceService();
+            break;
+          case 'ringRepair':
+            renderRingRepairInterface();
+            break;
+          case 'mechanical':
+            renderMechanicalInterface();
+            break;
+          case 'staff_centers':
+            renderStaffInterface();
+            break;
+          case 'driver_status':
+            renderDriverStatusInterface();
+            break;
+          case 'carwash':
+            renderCarWashInterface();
+            break;
+          case 'protection':
+            renderProtectionInterface();
+            break;
+          case 'insurance':
+            renderInsuranceInterface();
+            break;
+          case 'annualSubscription':
+            renderAnnualSubscriptionInterface();
+            break;
+          case 'installments':
+            renderInstallmentsInterface();
+            break;
+          case 'games':
+            renderGamesInterface();
+            break;
+        }
       }
     });
 
@@ -2866,169 +2579,36 @@
       if (payBtn) payBtn.onclick = () => openSimpleModal('installmentPayModal');
     }
 
-    function renderOtherServicesInterface() {
+    function renderGamesInterface() {
       const contentArea = document.getElementById('contentArea');
-      if (!contentArea) return;
       contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <h3 class="section-title">خدمات أخرى</h3>
-          <div class="form-grid" style="grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));">
-            <button class="btn-back" data-other-service="protection">الحمايه والتغيم</button>
-            <button class="btn-back" data-other-service="insurance">تأمينات</button>
-            <button class="btn-back" data-other-service="annualSubscription">الاشتراك السنوي</button>
-            <button class="btn-back" data-other-service="installments">الاقساط</button>
-            <button class="btn-back" data-other-service="cardGame">لعبة جنجفه</button>
+        <div class="form-section full-width" style="padding:0; overflow:hidden;">
+          <div style="padding:10px 12px; border-bottom:1px solid #333; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <h3 class="section-title" style="margin:0;">العاب</h3>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn-back" data-game-url="https://seenjeemkw.com/start-game" data-game-title="سين جيم" style="padding:6px 12px; font-size:12px;">سين جيم</button>
+              <button class="btn-back" data-game-url="https://mkhmkh.com/" data-game-title="مخمخ" style="padding:6px 12px; font-size:12px;">مخمخ</button>
+              <button class="btn-back" data-game-url="https://tarbaa.com/" data-game-title="تربعة" style="padding:6px 12px; font-size:12px;">تربعة</button>
+            </div>
+          </div>
+          <div style="height:70vh; min-height:520px;">
+            <iframe id="gamesIframe" src="https://seenjeemkw.com/start-game" title="سين جيم" style="width:100%; height:100%; border:0;"></iframe>
           </div>
         </div>
       `;
 
-      contentArea.querySelectorAll('[data-other-service]').forEach(btn => {
+      const iframe = document.getElementById('gamesIframe');
+      const buttons = contentArea.querySelectorAll('[data-game-url]');
+      buttons.forEach((btn) => {
         btn.addEventListener('click', () => {
-          const target = btn.getAttribute('data-other-service');
-          if (!target) return;
-          currentService = target;
-          formData = {};
-          handleServiceSelection(target);
+          const url = btn.getAttribute('data-game-url');
+          const title = btn.getAttribute('data-game-title') || 'العاب';
+          if (iframe && url) {
+            iframe.src = url;
+            iframe.title = title;
+          }
         });
       });
-    }
-
-    function renderXOGameInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-            <h3 class="section-title" style="margin:0;">لعبة اكس او (تحدي صعب)</h3>
-            <button id="xoResetBtn" class="btn-back" style="padding:6px 12px;font-size:12px;">إعادة</button>
-          </div>
-          <div id="xoStatus" class="info-box" style="margin-top:8px;">دورك الآن (✕)</div>
-          <div id="xoBoard" style="margin-top:12px; display:grid; grid-template-columns:repeat(3, 90px); gap:8px; justify-content:center;"></div>
-        </div>
-      `;
-
-      const boardEl = document.getElementById('xoBoard');
-      const statusEl = document.getElementById('xoStatus');
-      const resetBtn = document.getElementById('xoResetBtn');
-      if (!boardEl || !statusEl) return;
-
-      const state = Array(9).fill(null);
-      let gameOver = false;
-      let computerThinking = false;
-
-      const renderBoard = () => {
-        boardEl.innerHTML = '';
-        state.forEach((cell, idx) => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.dataset.index = idx;
-          btn.textContent = cell === 'X' ? '✕' : (cell === 'O' ? '◯' : '');
-          btn.style.cssText = 'width:90px;height:90px;font-size:36px;font-weight:700;background:#1a1a1a;border:1px solid #333;color:#F2BC1B;border-radius:8px;cursor:pointer;';
-          btn.onclick = () => handlePlayerMove(idx);
-          boardEl.appendChild(btn);
-        });
-      };
-
-      const setStatus = (text) => { statusEl.textContent = text; };
-
-      const handlePlayerMove = (idx) => {
-        if (gameOver || computerThinking || state[idx]) return;
-        state[idx] = 'X';
-        renderBoard();
-        const result = checkWinner(state);
-        if (result) return endGame(result);
-        computerThinking = true;
-        setStatus('دور الكمبيوتر...');
-        setTimeout(() => {
-          const bestMove = getBestMove(state, 'O');
-          if (bestMove !== null && state[bestMove] === null) {
-            state[bestMove] = 'O';
-          }
-          renderBoard();
-          const resultAfter = checkWinner(state);
-          if (resultAfter) return endGame(resultAfter);
-          computerThinking = false;
-          setStatus('دورك الآن (✕)');
-        }, 250);
-      };
-
-      const endGame = (result) => {
-        gameOver = true;
-        computerThinking = false;
-        if (result === 'X') setStatus('مبروك! فزت ✨');
-        else if (result === 'O') setStatus('الكمبيوتر فاز 😅');
-        else setStatus('تعادل 👌');
-      };
-
-      const checkWinner = (board) => {
-        const lines = [
-          [0,1,2],[3,4,5],[6,7,8],
-          [0,3,6],[1,4,7],[2,5,8],
-          [0,4,8],[2,4,6]
-        ];
-        for (const [a,b,c] of lines) {
-          if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
-        }
-        if (board.every(cell => cell)) return 'draw';
-        return null;
-      };
-
-      const getBestMove = (board, player) => {
-        let bestScore = -Infinity;
-        let move = null;
-        board.forEach((cell, idx) => {
-          if (!cell) {
-            board[idx] = player;
-            const score = minimax(board, 0, false);
-            board[idx] = null;
-            if (score > bestScore) {
-              bestScore = score;
-              move = idx;
-            }
-          }
-        });
-        return move;
-      };
-
-      const minimax = (board, depth, isMaximizing) => {
-        const result = checkWinner(board);
-        if (result === 'O') return 10 - depth;
-        if (result === 'X') return depth - 10;
-        if (result === 'draw') return 0;
-
-        if (isMaximizing) {
-          let bestScore = -Infinity;
-          for (let i = 0; i < board.length; i++) {
-            if (!board[i]) {
-              board[i] = 'O';
-              bestScore = Math.max(bestScore, minimax(board, depth + 1, false));
-              board[i] = null;
-            }
-          }
-          return bestScore;
-        } else {
-          let bestScore = Infinity;
-          for (let i = 0; i < board.length; i++) {
-            if (!board[i]) {
-              board[i] = 'X';
-              bestScore = Math.min(bestScore, minimax(board, depth + 1, true));
-              board[i] = null;
-            }
-          }
-          return bestScore;
-        }
-      };
-
-      if (resetBtn) {
-        resetBtn.onclick = () => {
-          for (let i = 0; i < state.length; i++) state[i] = null;
-          gameOver = false;
-          computerThinking = false;
-          setStatus('دورك الآن (✕)');
-          renderBoard();
-        };
-      }
-
-      renderBoard();
     }
 
     // Render Staff Interface
