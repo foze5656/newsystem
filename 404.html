@@ -1891,13 +1891,7 @@
     </div>
     <div class="service-item" data-service="carwash"><span class="icon">💧</span> <span class="label">غسيل السيارات</span>
     </div>
-    <div class="service-item" data-service="protection"><span class="icon">🛡️</span> <span class="label">الحمايه والتغيم</span>
-    </div>
-    <div class="service-item" data-service="insurance"><span class="icon">🚧</span> <span class="label">تأمينات</span>
-    </div>
-    <div class="service-item" data-service="annualSubscription"><span class="icon">📅</span> <span class="label">الاشتراك السنوي</span>
-    </div>
-    <div class="service-item" data-service="installments"><span class="icon">💳</span> <span class="label">الاقساط</span>
+    <div class="service-item" data-service="other"><span class="icon">🧩</span> <span class="label">خدمات أخرى</span>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
@@ -2014,6 +2008,12 @@
     (async function initLogin() {
       await loadUsers();
       checkAuthStatus();
+
+      // Check version updates every 1 minute
+      if (window.versionCheckIntervalId) clearInterval(window.versionCheckIntervalId);
+      window.versionCheckIntervalId = setInterval(() => {
+        loadUsers();
+      }, 60 * 1000);
       
       const loginForm = document.getElementById('loginForm');
       const loginError = document.getElementById('loginError');
@@ -2411,6 +2411,106 @@
       }
     });
 
+    const serviceTitles = {
+      'tow': 'خدمة ونشات',
+      'batterySubscription': 'اشتراك بطارية',
+      'newBattery': 'بطارية جديدة',
+      'batteryInstall': 'تركيب بطارية',
+      'fuel': 'خدمة بنزين',
+      'unlock': 'فتح قفل السيارة',
+      'tireSheet': 'شيت التواير',
+      'tireIncrease': 'زيادات التواير',
+      'tire_lop': 'فواتير التواير',
+      'puncture': 'بنشر',
+      'balance': 'ميزان وتركيب',
+      'ringRepair': 'تصليح الرنقات',
+      'mechanical': 'خدمات ميكانيكية',
+      'staff_centers': 'مراكز الطلبات',
+      'driver_status': 'جدول السائقين',
+      'carwash': 'غسيل السيارات',
+      'protection': 'الحمايه والتغيم',
+      'insurance': 'تأمينات',
+      'annualSubscription': 'الاشتراك السنوي',
+      'installments': 'الاقساط',
+      'cardGame': 'لعبة جنجفه',
+      'other': 'خدمات أخرى'
+    };
+
+    function handleServiceSelection(serviceKey) {
+      const title = serviceTitles[serviceKey] || '';
+      const titleEl = document.getElementById('serviceTitle');
+      if (titleEl) titleEl.textContent = title;
+
+      switch(serviceKey) {
+        case 'tow':
+          renderTowInterface();
+          break;
+        case 'batterySubscription':
+          renderBatterySubscriptionInterface();
+          break;
+        case 'newBattery':
+          openFullscreenIframe('https://portaragebatteries.netlify.app/', 'بطارية جديدة');
+          break;
+        case 'batteryInstall':
+          renderBatteryInstallInterface();
+          break;
+        case 'fuel':
+          renderFuelInterface();
+          break;
+        case 'unlock':
+          renderLockInterface();
+          break;
+        case 'tireSheet':
+          openFullscreenIframe('https://portiers.netlify.app/', 'شيت التواير');
+          break;
+        case 'tireIncrease':
+          openFullscreenIframe('https://portaragetiers.netlify.app/', 'زيادات التواير');
+          break;
+        case 'tire_lop':
+          renderLopInterface();
+          break;
+        case 'puncture':
+          renderPunctureService();
+          break;
+        case 'balance':
+          renderBalanceService();
+          break;
+        case 'ringRepair':
+          renderRingRepairInterface();
+          break;
+        case 'mechanical':
+          renderMechanicalInterface();
+          break;
+        case 'staff_centers':
+          renderStaffInterface();
+          break;
+        case 'driver_status':
+          renderDriverStatusInterface();
+          break;
+        case 'carwash':
+          renderCarWashInterface();
+          break;
+        case 'protection':
+          renderProtectionInterface();
+          break;
+        case 'insurance':
+          renderInsuranceInterface();
+          break;
+        case 'annualSubscription':
+          renderAnnualSubscriptionInterface();
+          break;
+        case 'installments':
+          renderInstallmentsInterface();
+          break;
+        case 'cardGame':
+          renderCardGameInterface();
+          break;
+        case 'other':
+          renderOtherServicesInterface();
+          break;
+      }
+    }
+
     // Service Selection
     document.addEventListener('click', (e) => {
       const serviceItem = e.target.closest('.service-item');
@@ -2434,93 +2534,7 @@
         currentService = serviceItem.dataset.service;
         formData = {};
         
-        const serviceTitles = {
-          'tow': 'خدمة ونشات',
-          'batterySubscription': 'اشتراك بطارية',
-          'newBattery': 'بطارية جديدة',
-          'batteryInstall': 'تركيب بطارية',
-          'fuel': 'خدمة بنزين',
-          'unlock': 'فتح قفل السيارة',
-          'tireSheet': 'شيت التواير',
-          'tireIncrease': 'زيادات التواير',
-          'tire_lop': 'فواتير التواير',
-          'puncture': 'بنشر',
-          'balance': 'ميزان وتركيب',
-          'ringRepair': 'تصليح الرنقات',
-          'mechanical': 'خدمات ميكانيكية',
-          'staff_centers': 'مراكز الطلبات',
-          'driver_status': 'جدول السائقين',
-          'carwash': 'غسيل السيارات',
-          'protection': 'الحمايه والتغيم',
-          'insurance': 'تأمينات',
-          'annualSubscription': 'الاشتراك السنوي',
-          'installments': 'الاقساط'
-        };
-        
-        document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
-        
-        switch(currentService) {
-          case 'tow':
-            renderTowInterface();
-            break;
-          case 'batterySubscription':
-            renderBatterySubscriptionInterface();
-            break;
-          case 'newBattery':
-            openFullscreenIframe('https://portaragebatteries.netlify.app/', 'بطارية جديدة');
-            break;
-          case 'batteryInstall':
-            renderBatteryInstallInterface();
-            break;
-          case 'fuel':
-            renderFuelInterface();
-            break;
-          case 'unlock':
-            renderLockInterface();
-            break;
-          case 'tireSheet':
-            openFullscreenIframe('https://portiers.netlify.app/', 'شيت التواير');
-            break;
-          case 'tireIncrease':
-            openFullscreenIframe('https://portaragetiers.netlify.app/', 'زيادات التواير');
-            break;
-          case 'tire_lop':
-            renderLopInterface();
-            break;
-          case 'puncture':
-            renderPunctureService();
-            break;
-          case 'balance':
-            renderBalanceService();
-            break;
-          case 'ringRepair':
-            renderRingRepairInterface();
-            break;
-          case 'mechanical':
-            renderMechanicalInterface();
-            break;
-          case 'staff_centers':
-            renderStaffInterface();
-            break;
-          case 'driver_status':
-            renderDriverStatusInterface();
-            break;
-          case 'carwash':
-            renderCarWashInterface();
-            break;
-          case 'protection':
-            renderProtectionInterface();
-            break;
-          case 'insurance':
-            renderInsuranceInterface();
-            break;
-          case 'annualSubscription':
-            renderAnnualSubscriptionInterface();
-            break;
-          case 'installments':
-            renderInstallmentsInterface();
-            break;
-        }
+        handleServiceSelection(currentService);
       }
     });
 
@@ -2566,6 +2580,132 @@
 
       const payBtn = document.getElementById('installmentsPayBtn');
       if (payBtn) payBtn.onclick = () => openSimpleModal('installmentPayModal');
+    }
+
+    function renderOtherServicesInterface() {
+      const contentArea = document.getElementById('contentArea');
+      if (!contentArea) return;
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">خدمات أخرى</h3>
+          <div class="form-grid" style="grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));">
+            <button class="btn-back" data-other-service="protection">الحمايه والتغيم</button>
+            <button class="btn-back" data-other-service="insurance">تأمينات</button>
+            <button class="btn-back" data-other-service="annualSubscription">الاشتراك السنوي</button>
+            <button class="btn-back" data-other-service="installments">الاقساط</button>
+            <button class="btn-back" data-other-service="cardGame">لعبة جنجفه</button>
+          </div>
+        </div>
+      `;
+
+      contentArea.querySelectorAll('[data-other-service]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-other-service');
+          if (!target) return;
+          currentService = target;
+          formData = {};
+          handleServiceSelection(target);
+        });
+      });
+    }
+
+    function renderCardGameInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <h3 class="section-title" style="margin:0;">لعبة جنجفه</h3>
+            <button id="cardResetBtn" class="btn-back" style="padding:6px 12px;font-size:12px;">إعادة</button>
+          </div>
+          <div id="cardStatus" class="info-box" style="margin-top:8px;">اضغط سحب لتوزيع ورقة</div>
+          <div style="margin-top:12px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+            <div id="playerCard" style="width:150px;height:210px;background:#0f0f0f;border:1px solid #333;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#F2BC1B;font-size:38px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,0.6);">?</div>
+            <div id="cpuCard" style="width:150px;height:210px;background:#0f0f0f;border:1px solid #333;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#F2BC1B;font-size:38px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,0.6);">?</div>
+          </div>
+          <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
+            <button id="cardDrawBtn" class="btn-back" style="padding:8px 16px;font-size:13px;">سحب</button>
+          </div>
+          <div id="cardScore" class="warning-box" style="margin-top:10px; text-align:center;">أنت 0 | الكمبيوتر 0</div>
+        </div>
+      `;
+
+      const playerEl = document.getElementById('playerCard');
+      const cpuEl = document.getElementById('cpuCard');
+      const statusEl = document.getElementById('cardStatus');
+      const scoreEl = document.getElementById('cardScore');
+      const drawBtn = document.getElementById('cardDrawBtn');
+      const resetBtn = document.getElementById('cardResetBtn');
+      if (!playerEl || !cpuEl || !statusEl || !scoreEl || !drawBtn) return;
+
+      const ranks = [
+        { label: 'A', value: 14 }, { label: 'K', value: 13 }, { label: 'Q', value: 12 }, { label: 'J', value: 11 },
+        { label: '10', value: 10 }, { label: '9', value: 9 }, { label: '8', value: 8 }, { label: '7', value: 7 },
+        { label: '6', value: 6 }, { label: '5', value: 5 }, { label: '4', value: 4 }, { label: '3', value: 3 }, { label: '2', value: 2 }
+      ];
+
+      const suits = ['♠', '♥', '♦', '♣'];
+      let playerScore = 0;
+      let cpuScore = 0;
+
+      const drawCard = () => {
+        const rank = ranks[Math.floor(Math.random() * ranks.length)];
+        const suit = suits[Math.floor(Math.random() * suits.length)];
+        return { label: `${rank.label}${suit}`, value: rank.value, suit };
+      };
+
+      const updateScore = () => {
+        scoreEl.textContent = `أنت ${playerScore} | الكمبيوتر ${cpuScore}`;
+      };
+
+      const setCard = (el, card) => {
+        el.textContent = card.label;
+        if (card.suit === '♥' || card.suit === '♦') {
+          el.style.color = '#ef4444';
+          el.style.borderColor = '#ef4444';
+        } else {
+          el.style.color = '#F2BC1B';
+          el.style.borderColor = '#333';
+        }
+      };
+
+      const resetCards = () => {
+        playerEl.textContent = '?';
+        cpuEl.textContent = '?';
+        playerEl.style.color = '#F2BC1B';
+        cpuEl.style.color = '#F2BC1B';
+        playerEl.style.borderColor = '#333';
+        cpuEl.style.borderColor = '#333';
+      };
+
+      drawBtn.onclick = () => {
+        const playerCard = drawCard();
+        const cpuCard = drawCard();
+        setCard(playerEl, playerCard);
+        setCard(cpuEl, cpuCard);
+        if (playerCard.value > cpuCard.value) {
+          playerScore += 1;
+          statusEl.textContent = 'فزت بالجولة!';
+        } else if (playerCard.value < cpuCard.value) {
+          cpuScore += 1;
+          statusEl.textContent = 'الكمبيوتر فاز بالجولة!';
+        } else {
+          statusEl.textContent = 'تعادل!';
+        }
+        updateScore();
+      };
+
+      if (resetBtn) {
+        resetBtn.onclick = () => {
+          playerScore = 0;
+          cpuScore = 0;
+          resetCards();
+          updateScore();
+          statusEl.textContent = 'اضغط سحب لتوزيع ورقة';
+        };
+      }
+
+      resetCards();
+      updateScore();
     }
 
     // Render Staff Interface
