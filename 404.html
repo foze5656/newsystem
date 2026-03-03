@@ -2553,6 +2553,7 @@
       if (window.driverStatusRefreshId) clearInterval(window.driverStatusRefreshId);
 
       const contentArea = document.getElementById('contentArea');
+      window._driverStatusMonthName = getDriverMonthName(window._driverStatusLang || 'ar');
       contentArea.innerHTML = `
         <div class="form-section full-width">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
@@ -2608,6 +2609,7 @@
       if (languageToggle) languageToggle.onclick = () => {
         const nextLang = (window._driverStatusLang || 'ar') === 'ar' ? 'en' : 'ar';
         window._driverStatusLang = nextLang;
+        window._driverStatusUnavailableMessage = buildDriverUnavailableMessage(nextLang);
         updateDriverStatusLanguageUI(nextLang);
         populateDriverTypeFilter(window._driverStatusRows || []);
         renderDriverStatusTable();
@@ -2637,6 +2639,7 @@
         const today = new Date();
         const monthIndex = today.getMonth(); // 0..11
         const sheetName = monthShortNames[monthIndex] || 'Jan';
+        window._driverStatusMonthName = getDriverMonthName(window._driverStatusLang || 'ar');
         const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
         const res = await fetch(sheetUrl, { cache: 'no-cache' });
 
@@ -2668,7 +2671,13 @@
             off2Display: getCellDisplay(c[5]),
             problem: getCellDisplay(c[6])
           };
-        }).filter(r => r.nameEn || r.nameAr || r.type || r.shiftDisplay);
+        })
+        .filter(r => r.nameEn || r.nameAr || r.type || r.shiftDisplay)
+        .filter(r => !isDriverHeaderRow(r));
+
+        const unavailableMessage = buildDriverUnavailableMessage(window._driverStatusLang || 'ar');
+        window._driverStatusUnavailable = drivers.length === 0;
+        window._driverStatusUnavailableMessage = unavailableMessage;
 
         window._driverStatusRows = drivers;
         populateDriverTypeFilter(drivers);
@@ -2676,8 +2685,10 @@
         renderDriverStatusTable();
       } catch (err) {
         console.error(err);
+        window._driverStatusUnavailable = true;
+        window._driverStatusUnavailableMessage = buildDriverUnavailableMessage(window._driverStatusLang || 'ar');
         const tbody = document.querySelector('#driverStatusTable tbody');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="color:#f88;padding:12px">خطأ في تحميل البيانات</td></tr>';
+        if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="color:#fbbf24;padding:12px">${escapeHtml(window._driverStatusUnavailableMessage)}</td></tr>`;
       }
     }
 
@@ -2699,6 +2710,12 @@
       if (!tbody) return;
 
       const rows = window._driverStatusRows || [];
+      if (window._driverStatusUnavailable) {
+        const message = window._driverStatusUnavailableMessage || 'غير متوفر جدول السائقين لهذا الشهر، سيتم التحديث قريباً';
+        tbody.innerHTML = `<tr><td colspan="6" style="color:#fbbf24;padding:12px">${escapeHtml(message)}</td></tr>`;
+        return;
+      }
+
       if (rows.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="color:#999;padding:12px">لا توجد بيانات</td></tr>';
         return;
@@ -2866,9 +2883,10 @@
       const headerOff = document.getElementById('driverHeaderOff');
       const viewSelect = document.getElementById('driverViewFilter');
 
+      const monthName = getDriverMonthName(lang);
       if (lang === 'en') {
         if (toggle) toggle.textContent = 'العربية';
-        if (title) title.textContent = 'Drivers Table';
+        if (title) title.textContent = `Drivers Table - ${monthName}`;
         if (downloadBtn) downloadBtn.textContent = 'Download Image';
         if (sheetBtn) sheetBtn.textContent = 'Open Google Sheet';
         if (viewLabel) viewLabel.textContent = 'View Filter';
@@ -2887,7 +2905,7 @@
         }
       } else {
         if (toggle) toggle.textContent = 'English';
-        if (title) title.textContent = 'جدول السائقين';
+        if (title) title.textContent = `جدول السائقين - ${monthName}`;
         if (downloadBtn) downloadBtn.textContent = 'تحميل كصورة';
         if (sheetBtn) sheetBtn.textContent = 'فتح Google Sheet';
         if (viewLabel) viewLabel.textContent = 'فلتر العرض';
@@ -2905,6 +2923,42 @@
           if (nowOption) nowOption.textContent = 'المتواجدون الآن';
         }
       }
+    }
+
+    function getDriverMonthName(lang) {
+      const now = new Date();
+      try {
+        const locale = lang === 'en' ? 'en' : 'ar';
+        return new Intl.DateTimeFormat(locale, { month: 'long' }).format(now);
+      } catch (e) {
+        const fallback = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+        const fallbackEn = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        return (lang === 'en' ? fallbackEn : fallback)[now.getMonth()];
+      }
+    }
+
+    function buildDriverUnavailableMessage(lang) {
+      if (lang === 'en') return 'Drivers table is not available for this month. It will be updated soon.';
+      return 'غير متوفر جدول السائقين لهذا الشهر، سيتم التحديث قريباً';
+    }
+
+    function isDriverHeaderRow(row) {
+      const normalize = (v) => (v || '').toString().trim().toLowerCase();
+      const nameEn = normalize(row.nameEn);
+      const nameAr = normalize(row.nameAr);
+      const type = normalize(row.type);
+      const shift = normalize(row.shiftDisplay);
+      const off1 = normalize(row.off1Display);
+      const off2 = normalize(row.off2Display);
+      const problem = normalize(row.problem);
+
+      return nameEn === 'drivers name en'
+        && nameAr === 'drivers name ar'
+        && (type === 'type' || type === 'vehicle type')
+        && (shift === 'sheeft time' || shift === 'shift time')
+        && off1 === 'days off'
+        && off2 === 'days off'
+        && (problem === 'problem' || problem === '');
     }
 
     async function exportDriverTableAsImage() {
