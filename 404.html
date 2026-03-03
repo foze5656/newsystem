@@ -2062,14 +2062,19 @@
       });
     })();
 
-    // Auto-refresh the full page every 5 hours
+    // Auto-refresh the full page every 2 minutes with notification
     setInterval(() => {
       try {
-        window.location.reload();
+        if (typeof showToast === 'function') {
+          showToast('🔄 سيتم تحديث الصفحة الآن...');
+        }
+        setTimeout(() => {
+          window.location.reload();
+        }, 1200);
       } catch (e) {
         console.error('Auto refresh failed', e);
       }
-    }, 5 * 60 * 60 * 1000);
+    }, 2 * 60 * 1000);
     
     // ========== ORIGINAL APP CODE ==========
     
