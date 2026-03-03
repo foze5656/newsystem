@@ -1793,6 +1793,20 @@
     </div>
   </div>
 
+  <!-- Version Update Modal (forced refresh) -->
+  <div id="versionUpdateModal" class="logout-modal-overlay hidden">
+    <div class="logout-modal">
+      <div class="logout-modal-icon">🔄</div>
+      <h2 class="logout-modal-title">تحديث النظام</h2>
+      <p id="versionUpdateMessage" class="logout-modal-message">
+        يوجد تحديث جديد للنظام. الرجاء تحديث الصفحة للحصول على آخر نسخة.
+      </p>
+      <div class="logout-modal-buttons">
+        <button id="versionUpdateConfirm" class="logout-modal-btn logout-modal-btn-confirm">تحديث الآن</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Installments How-To Modal -->
   <div id="installmentHowModal" class="modal-overlay hidden" data-modal-id="installmentHowModal">
     <div class="modal installments-how-modal">
@@ -1916,6 +1930,7 @@
     const GOOGLE_SHEET_ID = '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk';
     const USERS_SHEET_NAME = 'users';
     const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${USERS_SHEET_NAME}`;
+    const SITE_VERSION = '1.1';
     
     let usersData = [];
     let isAuthenticated = false;
@@ -1945,6 +1960,12 @@
         
         usersData = [];
         if (data.table && data.table.rows) {
+          const headerRow = data.table.rows[0];
+          if (headerRow && headerRow.c) {
+            const versionCell = headerRow.c[3];
+            const versionValue = versionCell ? (versionCell.v ?? versionCell.f) : '';
+            window._siteVersionFromSheet = (versionValue || '').toString().trim();
+          }
           // Skip header row (index 0) and start from index 1
           for (let i = 1; i < data.table.rows.length; i++) {
             const row = data.table.rows[i];
@@ -1959,9 +1980,11 @@
         }
         
         console.log('✅ Users loaded:', usersData.length);
+        checkSiteVersionGate();
         return true;
       } catch (error) {
         console.error('❌ Error loading users:', error);
+        checkSiteVersionGate();
         return false;
       }
     }
@@ -2061,6 +2084,33 @@
         }
       });
     })();
+
+    function normalizeVersion(value) {
+      return (value || '').toString().trim();
+    }
+
+    function checkSiteVersionGate() {
+      const sheetVersion = normalizeVersion(window._siteVersionFromSheet);
+      const currentVersion = normalizeVersion(SITE_VERSION);
+      if (!sheetVersion || !currentVersion) return;
+      if (sheetVersion !== currentVersion) {
+        showVersionUpdateModal(currentVersion, sheetVersion);
+      }
+    }
+
+    function showVersionUpdateModal(currentVersion, sheetVersion) {
+      const modal = document.getElementById('versionUpdateModal');
+      if (!modal) return;
+      const msg = document.getElementById('versionUpdateMessage');
+      if (msg) {
+        msg.innerHTML = `يوجد تحديث جديد للنظام.<br>الإصدار الحالي: <strong>${escapeHtml(currentVersion)}</strong><br>الإصدار المطلوب: <strong>${escapeHtml(sheetVersion)}</strong><br>الرجاء تحديث الصفحة للحصول على آخر نسخة.`;
+      }
+      modal.classList.remove('hidden');
+      const confirmBtn = document.getElementById('versionUpdateConfirm');
+      if (confirmBtn) {
+        confirmBtn.onclick = () => window.location.reload();
+      }
+    }
 
     // Auto-refresh the full page every 2 minutes with notification
     setInterval(() => {
