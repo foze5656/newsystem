@@ -2595,6 +2595,63 @@
       `;
     }
 
+    async function renderNewBatteryInterface() {
+      const contentArea = document.getElementById('contentArea');
+      if (!contentArea) return;
+
+      setContentAreaEmbedMode(true);
+
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <div class="embedded-service-frame loading" id="newBatteryServiceWrapper">
+            <div class="embedded-service-loader" id="newBatteryServiceLoader">جاري تحميل خدمة البطارية...</div>
+            <iframe id="newBatteryServiceFrame" title="بطارية جديدة" loading="lazy"></iframe>
+          </div>
+        </div>
+      `;
+
+      const iframe = document.getElementById('newBatteryServiceFrame');
+      const wrapper = document.getElementById('newBatteryServiceWrapper');
+      const loader = document.getElementById('newBatteryServiceLoader');
+
+      const candidatePaths = [
+        'new-battery.html',
+        './new-battery.html',
+        '/new-battery.html'
+      ];
+
+      let htmlText = '';
+
+      for (const path of candidatePaths) {
+        try {
+          const response = await fetch(path, { cache: 'no-cache' });
+          if (!response.ok) continue;
+          htmlText = await response.text();
+          if (htmlText && htmlText.trim()) break;
+        } catch (error) {
+          // Try next path.
+        }
+      }
+
+      if (!htmlText) {
+        if (loader) {
+          loader.textContent = 'تعذر تحميل كود خدمة البطارية الجديدة';
+        }
+        return;
+      }
+
+      if (iframe) {
+        iframe.srcdoc = htmlText;
+      }
+
+      if (wrapper) {
+        wrapper.classList.remove('loading');
+      }
+      if (loader) {
+        loader.style.display = 'none';
+      }
+    }
+
     window.closeFullscreenIframe = function() {
       const wrapper = document.getElementById('fullscreenIframeWrapper');
       const container = document.getElementById('fullscreenIframeContainer');
@@ -2770,7 +2827,7 @@
             renderBatterySubscriptionInterface();
             break;
           case 'newBattery':
-            openFullscreenIframe('new-battery.html', 'بطارية جديدة');
+            renderNewBatteryInterface();
             break;
           case 'batteryInstall':
             renderBatteryInstallInterface();
