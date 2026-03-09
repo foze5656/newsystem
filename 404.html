@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ar" dir="rtl" class="h-full">
+<html lang="ar" dir="rtl" class="h-full" style="background:#0a0a0a;">
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,6 +90,7 @@
       overflow: hidden;
       margin: 0;
       padding: 0;
+      background: #0a0a0a;
     }
     
     .dashboard-wrapper {
@@ -929,6 +930,95 @@
       font-weight: 600;
     }
 
+    .driver-gps-credentials {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #F2BC1B;
+      border-radius: 10px;
+      background: #111;
+      display: grid;
+      gap: 8px;
+    }
+
+    .driver-gps-credentials h4 {
+      margin: 0;
+      color: #F2BC1B;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .driver-gps-copy-item {
+      width: 100%;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #1a1a1a;
+      color: #eee;
+      text-align: right;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+
+    .driver-gps-copy-item:hover {
+      border-color: #F2BC1B;
+      background: #232323;
+    }
+
+    .shift-group-row td {
+      background: #151515 !important;
+      color: #F2BC1B !important;
+      font-weight: 700;
+      text-align: center;
+      border-top: 1px solid #F2BC1B;
+      border-bottom: 1px solid #333;
+      padding: 10px 12px;
+    }
+
+    .shift-columns-row td {
+      background: #262626 !important;
+      color: #F2BC1B !important;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      border-bottom: 1px solid #404040;
+      padding: 10px 8px;
+    }
+
+    .export-heading {
+      color: #F2BC1B;
+      font-weight: 700;
+      text-align: center;
+      font-size: 15px;
+      padding: 10px 8px;
+      border-bottom: 1px solid #333;
+      margin-bottom: 6px;
+    }
+
+    .date-hover {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 18px;
+      cursor: default;
+    }
+
+    .date-hover .day-text {
+      display: none;
+      color: #fbbf24;
+      font-weight: 600;
+    }
+
+    .date-hover:hover .date-text {
+      display: none;
+    }
+
+    .date-hover:hover .day-text {
+      display: inline;
+    }
+
     .muted-text {
       color: #999;
       font-size: 13px;
@@ -1589,6 +1679,111 @@
       height: 100%;
       border: none;
     }
+
+    .embedded-service-frame {
+      position: relative;
+      width: 100%;
+      min-height: calc(100vh - 112px);
+      border: none;
+      border-radius: 0;
+      overflow: hidden;
+      background: #0a0a0a;
+      grid-column: 1 / -1;
+    }
+
+    .embedded-service-frame iframe {
+      width: 100%;
+      height: calc(100vh - 112px);
+      border: none;
+      background: #0a0a0a;
+      opacity: 1;
+      transition: opacity 0.2s ease;
+    }
+
+    .embedded-service-frame.loading iframe {
+      opacity: 0;
+    }
+
+    .embedded-service-loader {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #F2BC1B;
+      font-weight: 700;
+      font-size: 16px;
+      background: #0a0a0a;
+      z-index: 2;
+    }
+
+    .content-area.embed-mode {
+      padding: 0;
+      grid-template-columns: 1fr;
+      align-content: stretch;
+    }
+
+    .content-area.embed-mode .form-section {
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+    }
+
+    .export-mode .data-table th {
+      position: static !important;
+      top: auto !important;
+    }
+
+    .gps-login-toast {
+      position: fixed;
+      top: 90px;
+      left: 18px;
+      width: min(320px, calc(100vw - 36px));
+      z-index: 2100;
+      background: linear-gradient(180deg, #131313 0%, #0b0b0b 100%);
+      border: 1px solid #F2BC1B;
+      border-radius: 12px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+      padding: 10px;
+      direction: rtl;
+    }
+
+    .gps-login-toast h4 {
+      margin: 0 0 8px 0;
+      color: #F2BC1B;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .gps-login-item {
+      width: 100%;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #121212;
+      color: #eee;
+      text-align: right;
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .gps-login-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .gps-login-item:hover {
+      border-color: #F2BC1B;
+      background: #1a1a1a;
+    }
+
+    .gps-login-item .label {
+      color: #999;
+      margin-left: 6px;
+    }
     
     /* Wash Cards Compact */
     .wash-cards-grid {
@@ -1729,7 +1924,7 @@
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="h-full">
+ <body class="h-full" style="background:#0a0a0a;">
   
   <!-- Login Page -->
   <div id="loginContainer" class="login-container hidden">
@@ -1902,8 +2097,6 @@
      </div>
      <div class="service-item submenu-item" data-service="installments"><span class="label">الاقساط</span>
      </div>
-      <div class="service-item submenu-item" data-service="games"><span class="label">العاب</span>
-      </div>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
@@ -1931,12 +2124,13 @@
    <div class="fullscreen-iframe-container" id="fullscreenIframeContainer">
    </div>
   </div>
+  <div id="driverGpsPersistentMount" class="hidden"></div>
   <script>
     // ========== LOGIN SYSTEM ==========
     const GOOGLE_SHEET_ID = '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk';
     const USERS_SHEET_NAME = 'users';
     const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${USERS_SHEET_NAME}`;
-    const SITE_VERSION = '1.1';
+    const SITE_VERSION = '1.2';
     
     let usersData = [];
     let isAuthenticated = false;
@@ -2118,14 +2312,30 @@
       }
     }
 
-    // Check version from sheet every hour (no auto refresh)
-    setInterval(() => {
+    // Check site version every hour and refresh only if sheet version differs
+    async function hourlyVersionCheck() {
       try {
-        loadUsers();
+        const resp = await fetch(GOOGLE_SHEET_URL);
+        const text = await resp.text();
+        // Parse Google Sheets JSON response (same approach as loadUsers)
+        const jsonString = text.substring(47).slice(0, -2);
+        const data = JSON.parse(jsonString);
+        const headerRow = data.table && data.table.rows && data.table.rows[0];
+        const versionCell = headerRow && headerRow.c ? headerRow.c[3] : null;
+        const sheetVersion = versionCell ? (versionCell.v ?? versionCell.f) : '';
+        const sheetVersionNorm = normalizeVersion(sheetVersion);
+        const currentVersionNorm = normalizeVersion(SITE_VERSION);
+        if (sheetVersionNorm && sheetVersionNorm !== currentVersionNorm) {
+          showVersionUpdateModal(currentVersionNorm, sheetVersionNorm);
+        }
       } catch (e) {
-        console.error('Version check failed', e);
+        console.error('Hourly version check failed', e);
       }
-    }, 60 * 60 * 1000);
+    }
+
+    // Run immediately and then every hour (60 minutes)
+    hourlyVersionCheck();
+    setInterval(hourlyVersionCheck, 60 * 60 * 1000);
     
     // ========== ORIGINAL APP CODE ==========
     
@@ -2286,10 +2496,86 @@
     }
 
     // Fullscreen iframe functions
+    function setContentAreaEmbedMode(enabled) {
+      const contentArea = document.getElementById('contentArea');
+      if (!contentArea) return;
+      if (enabled) {
+        contentArea.classList.add('embed-mode');
+      } else {
+        contentArea.classList.remove('embed-mode');
+      }
+    }
+
+    function persistDriverGpsIframeIfAny() {
+      const iframe = document.getElementById('driverGpsIframe');
+      const mount = document.getElementById('driverGpsPersistentMount');
+      if (!iframe || !mount) return;
+      mount.appendChild(iframe);
+    }
+
+    function getOrCreateDriverGpsIframe() {
+      let iframe = document.getElementById('driverGpsIframe');
+      if (iframe) return iframe;
+
+      iframe = document.createElement('iframe');
+      iframe.id = 'driverGpsIframe';
+      iframe.src = 'https://zantrack.fm-track.com/';
+      iframe.title = 'GPS السواقين';
+      iframe.loading = 'eager';
+      return iframe;
+    }
+
+    function setDriverGpsCredentialsVisibility(show) {
+      const box = document.getElementById('driverGpsCredentials');
+      if (!box) return;
+      box.classList.toggle('hidden', !show);
+    }
+
+    function syncDriverGpsCredentialsByUrl() {
+      const iframe = document.getElementById('driverGpsIframe');
+      if (!iframe) return;
+
+      try {
+        const href = iframe.contentWindow && iframe.contentWindow.location ? iframe.contentWindow.location.href : '';
+        const isLogin = /\/login(?:$|[?#])/i.test(href || '');
+        setDriverGpsCredentialsVisibility(isLogin);
+      } catch (e) {
+        // Cross-origin in some browsers; keep current state.
+      }
+    }
+
+    function initDriverGpsPanel() {
+      const host = document.getElementById('driverGpsFrameHost');
+      if (!host) return;
+
+      const iframe = getOrCreateDriverGpsIframe();
+      host.appendChild(iframe);
+
+      iframe.onload = () => {
+        syncDriverGpsCredentialsByUrl();
+      };
+
+      const credsBox = document.getElementById('driverGpsCredentials');
+      if (credsBox) {
+        credsBox.querySelectorAll('[data-copy]').forEach(btn => {
+          btn.onclick = async () => {
+            const text = btn.getAttribute('data-copy') || '';
+            await copyToClipboard(text);
+            showToast('تم النسخ');
+          };
+        });
+      }
+
+      // Try to update immediately (if already loaded), and keep checking while open.
+      syncDriverGpsCredentialsByUrl();
+      if (window._driverGpsSyncTimer) clearInterval(window._driverGpsSyncTimer);
+      window._driverGpsSyncTimer = setInterval(syncDriverGpsCredentialsByUrl, 2000);
+    }
+
     function openFullscreenIframe(url, title) {
-      const wrapper = document.getElementById('fullscreenIframeWrapper');
-      const container = document.getElementById('fullscreenIframeContainer');
-      
+      const contentArea = document.getElementById('contentArea');
+      if (!contentArea) return;
+
       // Store state before opening
       lastIframeState = {
         url: url,
@@ -2297,12 +2583,16 @@
         service: currentService,
         formData: { ...formData }
       };
-      
-      container.innerHTML = `<iframe src="${url}" title="${title}"></iframe>`;
-      wrapper.classList.remove('hidden');
-      
-      // Hide the main dashboard
-      document.getElementById('dashboardWrapper').style.display = 'none';
+
+      setContentAreaEmbedMode(true);
+
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <div class="embedded-service-frame">
+            <iframe src="${url}" title="${escapeHtml(title || '')}" loading="lazy"></iframe>
+          </div>
+        </div>
+      `;
     }
 
     window.closeFullscreenIframe = function() {
@@ -2440,6 +2730,12 @@
         
         currentService = serviceItem.dataset.service;
         formData = {};
+        persistDriverGpsIframeIfAny();
+        if (window._driverGpsSyncTimer) {
+          clearInterval(window._driverGpsSyncTimer);
+          window._driverGpsSyncTimer = null;
+        }
+        setContentAreaEmbedMode(false);
         
         const serviceTitles = {
           'tow': 'خدمة ونشات',
@@ -2461,8 +2757,7 @@
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات',
           'annualSubscription': 'الاشتراك السنوي',
-          'installments': 'الاقساط',
-          'games': 'العاب'
+          'installments': 'الاقساط'
         };
         
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
@@ -2475,7 +2770,7 @@
             renderBatterySubscriptionInterface();
             break;
           case 'newBattery':
-            openFullscreenIframe('https://portaragebatteries.netlify.app/', 'بطارية جديدة');
+            openFullscreenIframe('new-battery.html', 'بطارية جديدة');
             break;
           case 'batteryInstall':
             renderBatteryInstallInterface();
@@ -2528,9 +2823,6 @@
           case 'installments':
             renderInstallmentsInterface();
             break;
-          case 'games':
-            renderGamesInterface();
-            break;
         }
       }
     });
@@ -2577,38 +2869,6 @@
 
       const payBtn = document.getElementById('installmentsPayBtn');
       if (payBtn) payBtn.onclick = () => openSimpleModal('installmentPayModal');
-    }
-
-    function renderGamesInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="form-section full-width" style="padding:0; overflow:hidden;">
-          <div style="padding:10px 12px; border-bottom:1px solid #333; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-            <h3 class="section-title" style="margin:0;">العاب</h3>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="btn-back" data-game-url="https://seenjeemkw.com/start-game" data-game-title="سين جيم" style="padding:6px 12px; font-size:12px;">سين جيم</button>
-              <button class="btn-back" data-game-url="https://mkhmkh.com/" data-game-title="مخمخ" style="padding:6px 12px; font-size:12px;">مخمخ</button>
-              <button class="btn-back" data-game-url="https://tarbaa.com/" data-game-title="تربعة" style="padding:6px 12px; font-size:12px;">تربعة</button>
-            </div>
-          </div>
-          <div style="height:70vh; min-height:520px;">
-            <iframe id="gamesIframe" src="https://seenjeemkw.com/start-game" title="سين جيم" style="width:100%; height:100%; border:0;"></iframe>
-          </div>
-        </div>
-      `;
-
-      const iframe = document.getElementById('gamesIframe');
-      const buttons = contentArea.querySelectorAll('[data-game-url]');
-      buttons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const url = btn.getAttribute('data-game-url');
-          const title = btn.getAttribute('data-game-title') || 'العاب';
-          if (iframe && url) {
-            iframe.src = url;
-            iframe.title = title;
-          }
-        });
-      });
     }
 
     // Render Staff Interface
@@ -2676,34 +2936,49 @@
                 <option value="all">الكل</option>
               </select>
             </div>
+            <div id="driverShiftDownloadFilterGroup" class="filter-group" style="display:none;">
+              <label id="driverShiftFilterLabel" for="driverShiftDownloadFilter">فلتر الشفت</label>
+              <select id="driverShiftDownloadFilter" class="form-control">
+                <option value="all">كل الأوقات</option>
+                <option value="morning">Morning Shift</option>
+                <option value="evening">Evening Shift</option>
+                <option value="night">Night Shift</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="form-section full-width">
           <div class="table-scroll" style="max-height:420px;">
             <table class="data-table" id="driverStatusTable">
-              <thead>
-                <tr>
-                  <th id="driverHeaderIndex">#</th>
-                  <th id="driverHeaderName">اسم السائق</th>
-                  <th id="driverHeaderType">النوع</th>
-                  <th id="driverHeaderShift">وقت بداية الدوام</th>
-                  <th id="driverHeaderStatus" class="export-hide">الحالة</th>
-                  <th id="driverHeaderOff" class="export-hide">الإجازات</th>
-                </tr>
-              </thead>
               <tbody></tbody>
             </table>
           </div>
+        </div>
+        <div id="driverGpsSection" class="form-section full-width hidden" style="padding:0; overflow:hidden;">
+          <div id="driverGpsCredentials" class="driver-gps-credentials hidden">
+            <h4 id="driverGpsCredsTitle">بيانات الدخول (اضغط للنسخ)</h4>
+            <button type="button" class="driver-gps-copy-item" data-copy="portarage@gmail.com">
+              <span id="driverGpsUserLabel" style="color:#999;">اسم المستخدم:</span>
+              <strong>portarage@gmail.com</strong>
+            </button>
+            <button type="button" class="driver-gps-copy-item" data-copy="Mannaei71285556">
+              <span id="driverGpsPassLabel" style="color:#999;">كلمة المرور:</span>
+              <strong>Mannaei71285556</strong>
+            </button>
+          </div>
+          <div id="driverGpsFrameHost" class="embedded-service-frame"></div>
         </div>
       `;
 
       const viewFilter = document.getElementById('driverViewFilter');
       const typeFilter = document.getElementById('driverTypeFilter');
+      const shiftFilter = document.getElementById('driverShiftDownloadFilter');
       const languageToggle = document.getElementById('driverLanguageToggle');
       const downloadBtn = document.getElementById('driverDownloadBtn');
       const sheetBtn = document.getElementById('driverSheetBtn');
       if (viewFilter) viewFilter.onchange = () => renderDriverStatusTable();
       if (typeFilter) typeFilter.onchange = () => renderDriverStatusTable();
+      if (shiftFilter) shiftFilter.onchange = () => renderDriverStatusTable();
       if (languageToggle) languageToggle.onclick = () => {
         const nextLang = (window._driverStatusLang || 'ar') === 'ar' ? 'en' : 'ar';
         window._driverStatusLang = nextLang;
@@ -2720,6 +2995,8 @@
       const isIdris = currentUser === 'idris';
       if (downloadBtn) downloadBtn.style.display = isIdris ? 'inline-flex' : 'none';
       if (sheetBtn) sheetBtn.style.display = isIdris ? 'inline-flex' : 'none';
+      const shiftDownloadFilterGroup = document.getElementById('driverShiftDownloadFilterGroup');
+      if (shiftDownloadFilterGroup) shiftDownloadFilterGroup.style.display = isIdris ? 'flex' : 'none';
       if (downloadBtn && isIdris) downloadBtn.onclick = () => exportDriverTableAsImage();
       if (sheetBtn && isIdris) sheetBtn.onclick = () => {
         const sheetId = '1nhjZLD1VoYYusxKi4wUFIP3fdToVlrIREy31WZdipWo';
@@ -2821,17 +3098,21 @@
 
       const viewFilter = document.getElementById('driverViewFilter');
       const typeFilter = document.getElementById('driverTypeFilter');
+      const shiftFilter = document.getElementById('driverShiftDownloadFilter');
       const view = viewFilter ? viewFilter.value : 'all';
       const type = typeFilter ? typeFilter.value : 'all';
+      const shift = shiftFilter ? shiftFilter.value : 'all';
       const lang = window._driverStatusLang || 'ar';
       const now = new Date();
 
       const computed = rows.map(r => {
         const status = getDriverStatus(r, now);
-        return { ...r, status };
+        const shiftCategory = getShiftCategory(r, now);
+        return { ...r, status, shiftCategory };
       }).filter(r => {
         if (type !== 'all' && !matchesDriverTypeFilter(r.type, type)) return false;
         if (view === 'now' && !(r.status.key === 'in' || r.status.key === 'soon' || r.status.key === 'ending')) return false;
+        if (shift !== 'all' && r.shiftCategory !== shift) return false;
         return true;
       });
 
@@ -2841,29 +3122,96 @@
       }
 
       tbody.innerHTML = '';
-      computed.forEach((r, idx) => {
-        const tr = document.createElement('tr');
-        const shiftDisplay = formatShiftDisplay(r, now);
-        const daysOff = formatDaysOffDisplay(r);
-        const name = getDriverNameByLanguage(r, lang);
-        const typeDisplay = formatDriverType(r.type, lang);
-        const problemText = (r.problem || '').toString().trim();
-        const statusLabel = problemText ? (lang === 'en' ? 'Out of Service' : 'متعطل') : getDriverStatusLabel(r.status.key, lang);
-        tr.innerHTML = `
-          <td>${idx + 1}</td>
-          <td>${escapeHtml(name || '-')}</td>
-          <td>${escapeHtml(typeDisplay || '-')}</td>
-          <td>${escapeHtml(shiftDisplay)}</td>
-          <td class="export-hide"><span class="status-badge ${problemText ? 'status-problem' : `status-${r.status.key}`}" ${problemText ? `data-problem="${escapeHtml(problemText)}"` : ''}>${statusLabel}</span></td>
-          <td class="export-hide">${escapeHtml(daysOff)}</td>
+      const groupOrder = ['morning', 'evening', 'night'];
+      const groupsToRender = shift === 'all' ? groupOrder : groupOrder.filter(k => k === shift);
+
+      groupsToRender.forEach(groupKey => {
+        const sectionRows = computed.filter(r => r.shiftCategory === groupKey);
+        if (sectionRows.length === 0) return;
+
+        const headerRow = document.createElement('tr');
+        headerRow.className = 'shift-group-row';
+        headerRow.innerHTML = `<td colspan="6">${escapeHtml(getShiftSectionTitle(groupKey, lang))}</td>`;
+        tbody.appendChild(headerRow);
+
+        const columns = getDriverColumnsRowLabels(lang);
+        const columnsRow = document.createElement('tr');
+        columnsRow.className = 'shift-columns-row';
+        columnsRow.innerHTML = `
+          <td>${escapeHtml(columns.index)}</td>
+          <td>${escapeHtml(columns.name)}</td>
+          <td>${escapeHtml(columns.type)}</td>
+          <td>${escapeHtml(columns.shift)}</td>
+          <td class="export-hide">${escapeHtml(columns.status)}</td>
+          <td class="export-hide">${escapeHtml(columns.off)}</td>
         `;
-        tbody.appendChild(tr);
+        tbody.appendChild(columnsRow);
+
+        sectionRows.forEach((r, idx) => {
+          const tr = document.createElement('tr');
+          const shiftDisplay = formatShiftDisplay(r, now);
+          const daysOff = formatDaysOffDisplay(r, lang);
+          const name = getDriverNameByLanguage(r, lang);
+          const typeDisplay = formatDriverType(r.type, lang);
+          const problemText = (r.problem || '').toString().trim();
+          const statusLabel = problemText ? (lang === 'en' ? 'Out of Service' : 'متعطل') : getDriverStatusLabel(r.status.key, lang);
+          tr.setAttribute('data-shift-category', r.shiftCategory || 'unknown');
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td>${escapeHtml(name || '-')}</td>
+            <td>${escapeHtml(typeDisplay || '-')}</td>
+            <td>${escapeHtml(shiftDisplay)}</td>
+            <td class="export-hide"><span class="status-badge ${problemText ? 'status-problem' : `status-${r.status.key}`}" ${problemText ? `data-problem="${escapeHtml(problemText)}"` : ''}>${statusLabel}</span></td>
+            <td class="export-hide">${daysOff}</td>
+          `;
+          tbody.appendChild(tr);
+        });
       });
 
       tbody.querySelectorAll('.status-problem').forEach(el => {
         el.onclick = () => openDriverProblemModal(el.getAttribute('data-problem') || '');
         el.title = 'اضغط لعرض السبب';
       });
+    }
+
+    function getDriverColumnsRowLabels(lang) {
+      if (lang === 'en') {
+        return {
+          index: '#',
+          name: 'Driver Name',
+          type: 'Type',
+          shift: 'Shift Start',
+          status: 'Status',
+          off: 'Days Off'
+        };
+      }
+
+      return {
+        index: '#',
+        name: 'اسم السائق',
+        type: 'النوع',
+        shift: 'وقت بداية الدوام',
+        status: 'الحالة',
+        off: 'الإجازات'
+      };
+    }
+
+    function getShiftSectionTitle(key, lang) {
+      if (lang === 'en') {
+        const enMap = {
+          morning: 'Morning Shift',
+          evening: 'Evening Shift',
+          night: 'Night Shift'
+        };
+        return enMap[key] || 'Shift';
+      }
+
+      const arMap = {
+        morning: 'الشفت الصباحي',
+        evening: 'الشفت المسائي',
+        night: 'الشفت الليلي'
+      };
+      return arMap[key] || 'الشفت';
     }
 
     function getDriverNameByLanguage(row, lang) {
@@ -2968,11 +3316,16 @@
 
     function updateDriverStatusLanguageUI(lang) {
       const toggle = document.getElementById('driverLanguageToggle');
+      const gpsToggleBtn = document.getElementById('driverGpsToggleBtn');
+      const gpsCredsTitle = document.getElementById('driverGpsCredsTitle');
+      const gpsUserLabel = document.getElementById('driverGpsUserLabel');
+      const gpsPassLabel = document.getElementById('driverGpsPassLabel');
       const title = document.getElementById('driverTitle');
       const downloadBtn = document.getElementById('driverDownloadBtn');
       const sheetBtn = document.getElementById('driverSheetBtn');
       const viewLabel = document.getElementById('driverViewFilterLabel');
       const typeLabel = document.getElementById('driverTypeFilterLabel');
+      const shiftFilterLabel = document.getElementById('driverShiftFilterLabel');
       const headerIndex = document.getElementById('driverHeaderIndex');
       const headerName = document.getElementById('driverHeaderName');
       const headerType = document.getElementById('driverHeaderType');
@@ -2980,15 +3333,21 @@
       const headerStatus = document.getElementById('driverHeaderStatus');
       const headerOff = document.getElementById('driverHeaderOff');
       const viewSelect = document.getElementById('driverViewFilter');
+      const shiftSelect = document.getElementById('driverShiftDownloadFilter');
 
       const monthName = getDriverMonthName(lang);
       if (lang === 'en') {
         if (toggle) toggle.textContent = 'العربية';
+        if (gpsToggleBtn) gpsToggleBtn.textContent = 'Drivers GPS';
+        if (gpsCredsTitle) gpsCredsTitle.textContent = 'Login Credentials (click to copy)';
+        if (gpsUserLabel) gpsUserLabel.textContent = 'Username:';
+        if (gpsPassLabel) gpsPassLabel.textContent = 'Password:';
         if (title) title.textContent = `Drivers Table - ${monthName}`;
         if (downloadBtn) downloadBtn.textContent = 'Download Image';
         if (sheetBtn) sheetBtn.textContent = 'Open Google Sheet';
         if (viewLabel) viewLabel.textContent = 'View Filter';
         if (typeLabel) typeLabel.textContent = 'Vehicle Type';
+        if (shiftFilterLabel) shiftFilterLabel.textContent = 'Shift Filter';
         if (headerIndex) headerIndex.textContent = '#';
         if (headerName) headerName.textContent = 'Driver Name';
         if (headerType) headerType.textContent = 'Type';
@@ -3001,13 +3360,28 @@
           if (allOption) allOption.textContent = 'All';
           if (nowOption) nowOption.textContent = 'Available Now';
         }
+        if (shiftSelect) {
+          const allShift = shiftSelect.querySelector('option[value="all"]');
+          const morningShift = shiftSelect.querySelector('option[value="morning"]');
+          const eveningShift = shiftSelect.querySelector('option[value="evening"]');
+          const nightShift = shiftSelect.querySelector('option[value="night"]');
+          if (allShift) allShift.textContent = 'All Shifts';
+          if (morningShift) morningShift.textContent = 'Morning Shift';
+          if (eveningShift) eveningShift.textContent = 'Evening Shift';
+          if (nightShift) nightShift.textContent = 'Night Shift';
+        }
       } else {
         if (toggle) toggle.textContent = 'English';
+        if (gpsToggleBtn) gpsToggleBtn.textContent = 'GPS السواقين';
+        if (gpsCredsTitle) gpsCredsTitle.textContent = 'بيانات الدخول (اضغط للنسخ)';
+        if (gpsUserLabel) gpsUserLabel.textContent = 'اسم المستخدم:';
+        if (gpsPassLabel) gpsPassLabel.textContent = 'كلمة المرور:';
         if (title) title.textContent = `جدول السائقين - ${monthName}`;
         if (downloadBtn) downloadBtn.textContent = 'تحميل كصورة';
         if (sheetBtn) sheetBtn.textContent = 'فتح Google Sheet';
         if (viewLabel) viewLabel.textContent = 'فلتر العرض';
         if (typeLabel) typeLabel.textContent = 'نوع المركبة';
+        if (shiftFilterLabel) shiftFilterLabel.textContent = 'فلتر الشفت';
         if (headerIndex) headerIndex.textContent = '#';
         if (headerName) headerName.textContent = 'اسم السائق';
         if (headerType) headerType.textContent = 'النوع';
@@ -3019,6 +3393,16 @@
           const nowOption = viewSelect.querySelector('option[value="now"]');
           if (allOption) allOption.textContent = 'الكل';
           if (nowOption) nowOption.textContent = 'المتواجدون الآن';
+        }
+        if (shiftSelect) {
+          const allShift = shiftSelect.querySelector('option[value="all"]');
+          const morningShift = shiftSelect.querySelector('option[value="morning"]');
+          const eveningShift = shiftSelect.querySelector('option[value="evening"]');
+          const nightShift = shiftSelect.querySelector('option[value="night"]');
+          if (allShift) allShift.textContent = 'كل الأوقات';
+          if (morningShift) morningShift.textContent = 'صباحي (6-12)';
+          if (eveningShift) eveningShift.textContent = 'مسائي (12-3)';
+          if (nightShift) nightShift.textContent = 'ليلي (بعد 3)';
         }
       }
     }
@@ -3069,8 +3453,14 @@
       const previousMaxHeight = scroll.style.maxHeight;
       const previousOverflow = scroll.style.overflowY;
       scroll.classList.add('export-mode');
+      const titleEl = document.getElementById('driverTitle');
+      const exportHeading = document.createElement('div');
+      exportHeading.className = 'export-heading';
+      exportHeading.textContent = titleEl ? titleEl.textContent : 'Drivers Table';
+      scroll.prepend(exportHeading);
       scroll.style.maxHeight = 'none';
       scroll.style.overflowY = 'visible';
+      scroll.scrollTop = 0;
 
       try {
         await ensureHtml2Canvas();
@@ -3090,7 +3480,17 @@
         scroll.style.maxHeight = previousMaxHeight;
         scroll.style.overflowY = previousOverflow;
         scroll.classList.remove('export-mode');
+        if (exportHeading && exportHeading.parentNode) exportHeading.parentNode.removeChild(exportHeading);
       }
+    }
+
+    function getShiftCategory(row, now) {
+      const shiftStart = parseShiftTimeToDate(row.shiftRaw, row.shiftDisplay, now);
+      if (!shiftStart) return 'unknown';
+      const minutes = shiftStart.getHours() * 60 + shiftStart.getMinutes();
+      if (minutes >= 6 * 60 && minutes < 12 * 60) return 'morning';
+      if (minutes >= 12 * 60 && minutes < 15 * 60) return 'evening';
+      return 'night';
     }
 
     function ensureHtml2Canvas() {
@@ -3150,25 +3550,7 @@
 
     function parseOffDate(value) {
       if (!value) return null;
-      if (value instanceof Date) return value;
-      if (typeof value === 'number') {
-        if (value > 10000000000) return new Date(value);
-      }
-      if (typeof value === 'string') {
-        const g = parseGoogleDate(value);
-        if (g) return g;
-        const iso = new Date(value);
-        if (!isNaN(iso)) return iso;
-        const m = value.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-        if (m) {
-          const day = parseInt(m[1], 10);
-          const month = parseInt(m[2], 10) - 1;
-          const yearRaw = parseInt(m[3], 10);
-          const year = yearRaw < 100 ? 2000 + yearRaw : yearRaw;
-          return new Date(year, month, day);
-        }
-      }
-      return null;
+      return parseAnyDate(value);
     }
 
     function isSameDate(a, b) {
@@ -3284,29 +3666,84 @@
       return lang === 'en' ? formatted : convertAmPmToArabic(formatted);
     }
 
-    function formatDaysOffDisplay(row) {
+    function formatDaysOffDisplay(row, lang = (window._driverStatusLang || 'ar')) {
       const list = [];
-      const d1 = formatAnyDateForDisplay(row.off1Display || row.off1Raw);
-      const d2 = formatAnyDateForDisplay(row.off2Display || row.off2Raw);
+      const d1 = buildHoverDateHtml(row.off1Display || row.off1Raw, lang);
+      const d2 = buildHoverDateHtml(row.off2Display || row.off2Raw, lang);
       if (d1) list.push(d1);
       if (d2) list.push(d2);
-      return list.length ? list.join(' ، ') : '-';
+      return list.length ? list.join(lang === 'en' ? ' , ' : ' ، ') : '-';
     }
 
-    function formatAnyDateForDisplay(value) {
+    function formatAnyDateForDisplay(value, lang = (window._driverStatusLang || 'ar')) {
       if (!value) return '';
-      if (value instanceof Date) return value.toLocaleDateString('ar-KW');
-      if (typeof value === 'number' && value > 10000000000) {
-        return new Date(value).toLocaleDateString('ar-KW');
+      const parsed = parseAnyDate(value);
+      if (parsed) return formatEnglishDate(parsed, lang);
+      if (typeof value === 'string') return value.replace(/\\/g, '/').trim();
+      return String(value);
+    }
+
+    function buildHoverDateHtml(value, lang = (window._driverStatusLang || 'ar')) {
+      const text = formatAnyDateForDisplay(value, lang);
+      if (!text) return '';
+      const parsed = parseAnyDate(value);
+      if (!parsed) {
+        return `<span class="date-hover"><span class="date-text">${escapeHtml(text)}</span></span>`;
+      }
+      const dayName = formatEnglishDayName(parsed, lang);
+      return `<span class="date-hover"><span class="date-text">${escapeHtml(text)}</span><span class="day-text">${escapeHtml(dayName)}</span></span>`;
+    }
+
+    function formatEnglishDate(date, lang = 'en') {
+      const locale = lang === 'en' ? 'en-GB' : 'ar-KW';
+      return new Intl.DateTimeFormat(locale, {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).format(date);
+    }
+
+    function formatEnglishDayName(date, lang = 'en') {
+      const locale = lang === 'en' ? 'en-GB' : 'ar-KW';
+      return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(date);
+    }
+
+    function parseAnyDate(value) {
+      if (!value) return null;
+      if (value instanceof Date) return value;
+      if (typeof value === 'number') {
+        if (value > 10000000000) return new Date(value);
       }
       if (typeof value === 'string') {
         const g = parseGoogleDate(value);
-        if (g) return g.toLocaleDateString('ar-KW');
+        if (g) return g;
+        const dm = parseDayMonthYearString(value);
+        if (dm) return dm;
+        const iso = value.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})/);
+        if (iso) {
+          const year = parseInt(iso[1], 10);
+          const month = parseInt(iso[2], 10) - 1;
+          const day = parseInt(iso[3], 10);
+          return new Date(year, month, day);
+        }
         const d = new Date(value);
-        if (!isNaN(d)) return d.toLocaleDateString('ar-KW');
-        return value;
+        if (!isNaN(d)) return d;
       }
-      return String(value);
+      return null;
+    }
+
+    function parseDayMonthYearString(value) {
+      if (typeof value !== 'string') return null;
+      const cleaned = value.trim().replace(/\\/g, '/');
+      const match = cleaned.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+      if (!match) return null;
+      const day = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      const yearRaw = parseInt(match[3], 10);
+      const year = yearRaw < 100 ? 2000 + yearRaw : yearRaw;
+      if (month < 0 || month > 11) return null;
+      if (day < 1 || day > 31) return null;
+      return new Date(year, month, day);
     }
 
     function parseGoogleDate(value) {
