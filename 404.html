@@ -2595,256 +2595,6 @@
       `;
     }
 
-    function renderNewBatteryInterface() {
-      const contentArea = document.getElementById('contentArea');
-      if (!contentArea) return;
-
-      if (!document.getElementById('newBatteryScopedStyles')) {
-        const style = document.createElement('style');
-        style.id = 'newBatteryScopedStyles';
-        style.textContent = `
-          .nb-app{background:#111;border:1px solid #2a2a2a;border-radius:16px;padding:14px;color:#F2BC1B}
-          .nb-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-          .nb-title{font-size:18px;font-weight:700}
-          .nb-mode-wrap{display:flex;gap:8px;flex-wrap:wrap}
-          .nb-mode{background:#000;border:1px solid #F2BC1B;color:#F2BC1B;border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:700}
-          .nb-mode.active{background:#F2BC1B;color:#000}
-          .nb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-          .nb-field label{display:block;margin-bottom:6px;font-weight:700;font-size:13px}
-          .nb-input{width:100%;background:#000;color:#F2BC1B;border:1px solid #3a3a3a;border-radius:10px;padding:10px 12px;outline:none}
-          .nb-input:focus{border-color:#F2BC1B;box-shadow:0 0 0 3px rgba(242,188,27,.15)}
-          .nb-results{margin-top:12px;background:#0a0a0a;border:1px solid #252525;border-radius:12px;padding:10px;max-height:62vh;overflow:auto}
-          .nb-empty{text-align:center;color:#a8a8a8;padding:24px 10px}
-          .nb-card{border:1px solid #2f2f2f;border-radius:12px;padding:10px;margin-bottom:10px;background:#111}
-          .nb-card-title{font-weight:700;margin-bottom:8px}
-          .nb-size-pill{display:inline-block;background:#F2BC1B;color:#000;font-weight:700;padding:6px 10px;border-radius:999px;margin-bottom:8px}
-          .nb-table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:10px}
-          .nb-table th,.nb-table td{padding:8px;border-bottom:1px solid #232323;text-align:center;font-size:13px}
-          .nb-table th{background:#F2BC1B;color:#000}
-          .nb-table td{color:#F2BC1B}
-          .nb-copy{background:#1f8f3d;color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer}
-          .nb-note{margin-top:8px;background:#6e1f1f;color:#fff;border-radius:10px;padding:10px;font-size:12px;line-height:1.8}
-        `;
-        document.head.appendChild(style);
-      }
-
-      setContentAreaEmbedMode(false);
-
-      contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <div class="nb-app">
-            <div class="nb-head">
-              <div class="nb-title">🔋 بطارية جديدة - الكود والتصميم كامل</div>
-              <div class="nb-mode-wrap">
-                <button id="nbModeSize" class="nb-mode active">البحث بالمقاس</button>
-                <button id="nbModeCar" class="nb-mode">البحث بالسيارة</button>
-              </div>
-            </div>
-
-            <div id="nbSizeFilters" class="nb-grid">
-              <div class="nb-field" style="grid-column:1/-1;">
-                <label>مقاس البطارية</label>
-                <input id="nbSizeInput" class="nb-input" placeholder="اكتب المقاس مثل DA95 أو LN5">
-              </div>
-            </div>
-
-            <div id="nbCarFilters" class="nb-grid" style="display:none;">
-              <div class="nb-field">
-                <label>الشركة المصنعة</label>
-                <input id="nbMakeInput" class="nb-input" list="nbMakeList" placeholder="اختر الشركة">
-                <datalist id="nbMakeList"></datalist>
-              </div>
-              <div class="nb-field">
-                <label>الموديل</label>
-                <input id="nbModelInput" class="nb-input" list="nbModelList" placeholder="اختر الموديل">
-                <datalist id="nbModelList"></datalist>
-              </div>
-              <div class="nb-field">
-                <label>السنة</label>
-                <input id="nbYearInput" class="nb-input" list="nbYearList" placeholder="اختر السنة">
-                <datalist id="nbYearList"></datalist>
-              </div>
-            </div>
-
-            <div id="nbResults" class="nb-results">
-              <div class="nb-empty">ابدأ البحث لعرض النتائج</div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      const state = {
-        mode: 'size',
-        make: '',
-        model: '',
-        year: ''
-      };
-
-      const el = {
-        modeSize: document.getElementById('nbModeSize'),
-        modeCar: document.getElementById('nbModeCar'),
-        sizeFilters: document.getElementById('nbSizeFilters'),
-        carFilters: document.getElementById('nbCarFilters'),
-        sizeInput: document.getElementById('nbSizeInput'),
-        makeInput: document.getElementById('nbMakeInput'),
-        modelInput: document.getElementById('nbModelInput'),
-        yearInput: document.getElementById('nbYearInput'),
-        makeList: document.getElementById('nbMakeList'),
-        modelList: document.getElementById('nbModelList'),
-        yearList: document.getElementById('nbYearList'),
-        results: document.getElementById('nbResults')
-      };
-
-      const uniq = (arr) => [...new Set(arr.filter(Boolean))];
-
-      const buildStockText = (battery) => {
-        const parts = [];
-        if (battery.fkStock > 0) parts.push(`${battery.fkSupplierName}: ${battery.fkStock}`);
-        if (battery.mStock > 0) parts.push(`${battery.mSupplierName}: ${battery.mStock}`);
-        return parts.length ? parts.join(' | ') : 'غير متوفر';
-      };
-
-      const copyMessage = async (brand, size, salePrice) => {
-        const message = `متوفرة بطارية ${brand} مقاس ${size} السعر مع رسوم التركيب ${salePrice} دك`;
-        await copyToClipboard(message);
-        showToast('تم نسخ الرسالة');
-      };
-
-      const renderTable = (list, title, sizeLabel = '') => {
-        if (!list.length) {
-          el.results.innerHTML = `<div class="nb-empty">لا توجد بطاريات متوفرة</div>`;
-          return;
-        }
-
-        el.results.innerHTML = `
-          <div class="nb-card">
-            <div class="nb-card-title">${escapeHtml(title)}</div>
-            ${sizeLabel ? `<div class="nb-size-pill">${escapeHtml(sizeLabel)}</div>` : ''}
-            <table class="nb-table">
-              <thead>
-                <tr>
-                  <th>الماركة</th>
-                  <th>المقاس</th>
-                  <th>سعر البيع</th>
-                  <th>المخزون الرئيسي</th>
-                  <th>نسخ</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${list.map((battery, idx) => `
-                  <tr>
-                    <td>${escapeHtml(battery.brand || '-')}</td>
-                    <td>${escapeHtml(battery.size || '-')}</td>
-                    <td>${battery.salePrice || 0} دك</td>
-                    <td>${escapeHtml(buildStockText(battery))}</td>
-                    <td><button class="nb-copy" data-copy-index="${idx}">نسخ</button></td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-            <div class="nb-note">
-              زيادة 15 د.ك: إذا البطارية تحت الكشن<br>
-              زيادة 10 د.ك: المناطق البعيدة<br>
-              زيادة 5 د.ك: بعض المناطق الخارجية
-            </div>
-          </div>
-        `;
-
-        el.results.querySelectorAll('[data-copy-index]').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const battery = list[Number(btn.getAttribute('data-copy-index'))];
-            if (!battery) return;
-            await copyMessage(battery.brand || 'بطارية', battery.size || '-', battery.salePrice || 0);
-          });
-        });
-      };
-
-      const renderBySize = () => {
-        const sizeText = (el.sizeInput.value || '').trim().toUpperCase();
-        if (!sizeText) {
-          el.results.innerHTML = '<div class="nb-empty">اكتب المقاس لعرض النتائج</div>';
-          return;
-        }
-
-        const list = batteryData.filter(b => (b.size || '').toUpperCase().includes(sizeText));
-        renderTable(list, `نتائج البحث بالمقاس: ${sizeText}`, sizeText);
-      };
-
-      const fillMakeList = () => {
-        const makes = uniq(carData.map(c => (c.make || '').trim())).sort();
-        el.makeList.innerHTML = makes.map(m => `<option value="${escapeHtml(m)}"></option>`).join('');
-      };
-
-      const fillModelList = () => {
-        const models = uniq(carData.filter(c => c.make === state.make).map(c => (c.model || '').trim())).sort();
-        el.modelList.innerHTML = models.map(m => `<option value="${escapeHtml(m)}"></option>`).join('');
-      };
-
-      const fillYearList = () => {
-        const years = uniq(carData.filter(c => c.make === state.make && c.model === state.model).map(c => (c.year || '').trim()))
-          .sort((a, b) => Number(b) - Number(a));
-        el.yearList.innerHTML = years.map(y => `<option value="${escapeHtml(y)}"></option>`).join('');
-      };
-
-      const renderByCar = () => {
-        if (!state.make || !state.model || !state.year) {
-          el.results.innerHTML = '<div class="nb-empty">اختر الشركة والموديل والسنة</div>';
-          return;
-        }
-
-        const matchedCars = carData.filter(c => c.make === state.make && c.model === state.model && c.year === state.year);
-        const sizes = uniq(matchedCars.map(c => c.bat)).map(s => (s || '').toUpperCase());
-        const list = batteryData.filter(b => sizes.includes((b.size || '').toUpperCase()));
-        renderTable(list, `نتائج ${state.make} ${state.model} ${state.year}`);
-      };
-
-      el.modeSize.addEventListener('click', () => {
-        state.mode = 'size';
-        el.modeSize.classList.add('active');
-        el.modeCar.classList.remove('active');
-        el.sizeFilters.style.display = 'grid';
-        el.carFilters.style.display = 'none';
-        renderBySize();
-      });
-
-      el.modeCar.addEventListener('click', () => {
-        state.mode = 'car';
-        el.modeCar.classList.add('active');
-        el.modeSize.classList.remove('active');
-        el.sizeFilters.style.display = 'none';
-        el.carFilters.style.display = 'grid';
-        renderByCar();
-      });
-
-      el.sizeInput.addEventListener('input', renderBySize);
-
-      el.makeInput.addEventListener('input', () => {
-        state.make = (el.makeInput.value || '').trim();
-        state.model = '';
-        state.year = '';
-        el.modelInput.value = '';
-        el.yearInput.value = '';
-        fillModelList();
-        fillYearList();
-        renderByCar();
-      });
-
-      el.modelInput.addEventListener('input', () => {
-        state.model = (el.modelInput.value || '').trim();
-        state.year = '';
-        el.yearInput.value = '';
-        fillYearList();
-        renderByCar();
-      });
-
-      el.yearInput.addEventListener('input', () => {
-        state.year = (el.yearInput.value || '').trim();
-        renderByCar();
-      });
-
-      fillMakeList();
-    }
-
     window.closeFullscreenIframe = function() {
       const wrapper = document.getElementById('fullscreenIframeWrapper');
       const container = document.getElementById('fullscreenIframeContainer');
@@ -3081,6 +2831,303 @@
     function renderBatterySubscriptionInterface() {
       renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
         '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
+    }
+
+    // Render New Battery Interface - Embedded System
+    function renderNewBatteryInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <style>
+          .battery-system-container {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+          }
+          .battery-search-section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.2);
+            border: 2px solid #333;
+          }
+          .battery-search-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 1.2rem;
+            text-align: center;
+          }
+          .battery-dropdown-group {
+            margin-bottom: 1rem;
+            position: relative;
+          }
+          .battery-dropdown-label {
+            display: block;
+            color: #FFC107;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+          }
+          .battery-dropdown-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 2px solid #333;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            background: #000;
+            color: #FFC107;
+            font-weight: 600;
+            cursor: pointer;
+          }
+          .battery-dropdown-input:focus {
+            outline: none;
+            border-color: #FFC107;
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.2);
+          }
+          .battery-dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #000;
+            border: 2px solid #FFC107;
+            border-radius: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            margin-top: 0.3rem;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+          }
+          .battery-dropdown-list.show {
+            display: block;
+          }
+          .battery-dropdown-item {
+            padding: 0.7rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #333;
+            color: #FFC107;
+            font-weight: 600;
+            font-size: 0.9rem;
+          }
+          .battery-dropdown-item:last-child {
+            border-bottom: none;
+          }
+          .battery-dropdown-item:hover {
+            background: #FFC107;
+            color: #000;
+          }
+          .battery-results-container {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: none;
+            border: 2px solid #333;
+            overflow-y: auto;
+            max-height: 60vh;
+          }
+          .battery-results-container.show {
+            display: block;
+          }
+          .battery-result-item {
+            background: #000;
+            border: 2px solid #FFC107;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+          }
+          .battery-result-item:last-child {
+            margin-bottom: 0;
+          }
+          .battery-result-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 0.8rem;
+          }
+          .battery-size-box {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+          }
+          .battery-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 1rem;
+          }
+          .battery-table thead {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+          }
+          .battery-table th {
+            padding: 0.7rem 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border-left: 2px solid rgba(0, 0, 0, 0.2);
+          }
+          .battery-table th:last-child {
+            border-left: none;
+          }
+          .battery-table td {
+            padding: 0.6rem 0.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            border-left: 2px solid #1a1a1a;
+            color: #FFC107;
+            border-bottom: 1px solid #333;
+          }
+          .battery-table td:last-child {
+            border-left: none;
+          }
+          .battery-table tbody tr:hover {
+            background: #1a1a1a;
+          }
+          .battery-brand {
+            font-weight: bold;
+            text-align: right;
+          }
+          .battery-price {
+            font-weight: bold;
+            color: #FFD54F;
+          }
+          .battery-no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+          }
+        </style>
+        <div class="battery-system-container">
+          <div class="battery-search-section">
+            <div class="battery-search-title">🔋 ابحث عن بطارية السيارة</div>
+            <div class="battery-dropdown-group">
+              <label class="battery-dropdown-label">المقاس</label>
+              <input type="text" class="battery-dropdown-input" id="batterySearchInput" placeholder="ابحث عن مقاس البطارية..." autocomplete="off">
+              <div class="battery-dropdown-list" id="batteryDropdownList"></div>
+            </div>
+          </div>
+          <div class="battery-results-container" id="batteryResultsContainer">
+            <div id="batteryResultsContent"></div>
+          </div>
+        </div>
+      `;
+
+      // Initialize battery search
+      initBatterySearch();
+    }
+
+    function initBatterySearch() {
+      const searchInput = document.getElementById('batterySearchInput');
+      const dropdownList = document.getElementById('batteryDropdownList');
+      const resultsContainer = document.getElementById('batteryResultsContainer');
+      const resultsContent = document.getElementById('batteryResultsContent');
+
+      // Populate battery sizes
+      if (batteryData && batteryData.length > 0) {
+        const sizes = [...new Set(batteryData.map(b => b.size))].sort();
+        dropdownList.innerHTML = sizes.map(size => 
+          `<div class="battery-dropdown-item" onclick="selectBatterySize('${size}')">${size}</div>`
+        ).join('');
+      }
+
+      searchInput.addEventListener('focus', () => {
+        dropdownList.classList.add('show');
+      });
+
+      searchInput.addEventListener('input', (e) => {
+        const searchText = e.target.value.toUpperCase();
+        const items = dropdownList.querySelectorAll('.battery-dropdown-item');
+        items.forEach(item => {
+          if (searchText === '' || item.textContent.toUpperCase().includes(searchText)) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+        dropdownList.classList.add('show');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.battery-dropdown-group')) {
+          dropdownList.classList.remove('show');
+        }
+      });
+    }
+
+    function selectBatterySize(size) {
+      const searchInput = document.getElementById('batterySearchInput');
+      const dropdownList = document.getElementById('batteryDropdownList');
+      const resultsContainer = document.getElementById('batteryResultsContainer');
+      const resultsContent = document.getElementById('batteryResultsContent');
+
+      searchInput.value = size;
+      dropdownList.classList.remove('show');
+
+      // Get batteries for this size
+      const batteries = batteryData.filter(b => 
+        b.size.toUpperCase() === size.toUpperCase() &&
+        (b.fkStock > 0 || b.mStock > 0 || b.drivers.length > 0)
+      );
+
+      if (batteries.length === 0) {
+        resultsContent.innerHTML = '<div class="battery-no-results">❌ لا توجد بطاريات متوفرة لهذا المقاس</div>';
+      } else {
+        resultsContent.innerHTML = batteries.map(battery => {
+          const warehouseTotal = battery.fkStock + battery.mStock;
+          const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+          
+          let driversHTML = '';
+          if (battery.drivers.length > 0) {
+            driversHTML = battery.drivers.map(driver => 
+              `<div style="padding: 0.3rem 0.6rem; background: #FFC107; color: #000; border-radius: 6px; font-size: 0.7rem; font-weight: bold; margin: 0.2rem;">
+                ${driver.name}: ${driver.fk + driver.m}
+              </div>`
+            ).join('');
+          }
+
+          return `
+            <div class="battery-result-item">
+              <div class="battery-result-title">🔋 ${battery.brand} - ${battery.size}</div>
+              <div class="battery-size-box">${battery.size}</div>
+              <table class="battery-table">
+                <thead>
+                  <tr>
+                    <th>الماركة</th>
+                    <th>السعر</th>
+                    <th>المخزون الرئيسي</th>
+                    <th>السائقين</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="battery-brand">${battery.brand}</td>
+                    <td class="battery-price">${battery.salePrice} د.ك</td>
+                    <td>${warehouseTotal > 0 ? warehouseTotal : '-'}</td>
+                    <td>${driversTotal > 0 ? driversTotal : '-'}</td>
+                  </tr>
+                </tbody>
+              </table>
+              ${driversHTML ? `<div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem;">${driversHTML}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      resultsContainer.classList.add('show');
     }
 
     // Render Installments Interface
