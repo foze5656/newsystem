@@ -2595,60 +2595,6 @@
       `;
     }
 
-    function getNewBatteryInlineHtml() {
-      return `<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بطارية جديدة</title>
-  <style>
-    body{margin:0;background:#000;color:#FFC107;font-family:Segoe UI,Tahoma,sans-serif}
-    .wrap{max-width:1200px;margin:0 auto;padding:16px}
-    .card{background:#111;border:2px solid #FFC107;border-radius:12px;padding:16px}
-    .title{font-size:22px;font-weight:700;margin-bottom:12px}
-    iframe{width:100%;height:85vh;border:0;border-radius:10px;background:#000}
-    .note{color:#aaa;font-size:13px;margin-top:8px}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <div class="title">⚡ سيستم البطاريات ⚡</div>
-      <iframe src="https://docs.google.com/spreadsheets/d/1WghSWhC-NJ0h--afoaR0ydzTP8ULw7N3tBDgToXoLVk/edit"></iframe>
-      <div class="note">هذه نسخة مدمجة ثابتة لخدمة بطارية جديدة.</div>
-    </div>
-  </div>
-</body>
-</html>`;
-    }
-
-    async function renderNewBatteryCodeInterface() {
-      const contentArea = document.getElementById('contentArea');
-      if (!contentArea) return;
-
-      setContentAreaEmbedMode(true);
-      contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <div class="embedded-service-frame">
-            <iframe id="newBatteryCodeFrame" title="بطارية جديدة" loading="lazy"></iframe>
-          </div>
-        </div>
-      `;
-
-      const frame = document.getElementById('newBatteryCodeFrame');
-      if (!frame) return;
-
-      try {
-        const res = await fetch('new-battery.html', { cache: 'no-store' });
-        const html = await res.text();
-        const looksLikeMainApp = /service-item|اختر خدمة من القائمة|dashboardWrapper/i.test(html || '');
-        frame.srcdoc = looksLikeMainApp ? getNewBatteryInlineHtml() : html;
-      } catch (e) {
-        frame.srcdoc = getNewBatteryInlineHtml();
-      }
-    }
-
     window.closeFullscreenIframe = function() {
       const wrapper = document.getElementById('fullscreenIframeWrapper');
       const container = document.getElementById('fullscreenIframeContainer');
@@ -2824,7 +2770,7 @@
             renderBatterySubscriptionInterface();
             break;
           case 'newBattery':
-            renderNewBatteryCodeInterface();
+            openFullscreenIframe('new-battery.html', 'بطارية جديدة');
             break;
           case 'batteryInstall':
             renderBatteryInstallInterface();
