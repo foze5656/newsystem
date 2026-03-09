@@ -2851,14 +2851,727 @@
     function renderNewBatteryInterface() {
       const contentArea = document.getElementById('contentArea');
       setContentAreaEmbedMode(true);
+      
+      // Get current user type
+      const currentUserType = localStorage.getItem('userType') || 'Call Center';
+      const isStaff = currentUserType === 'Call Center';
+      
       contentArea.innerHTML = `
-        <iframe 
-          src="https://portaragebatteries.netlify.app/" 
-          style="width: 100%; height: 100%; border: none; box-shadow: 0 4px 20px rgba(255, 193, 7, 0.3);"
-          title="نظام البطاريات"
-          sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals">
-        </iframe>
+        <style>
+          .battery-full-system {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+          }
+          .battery-main-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1.5rem;
+            background: #000;
+          }
+          .battery-search-mode-selector {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #333;
+            display: ${isStaff ? 'none' : 'flex'};
+            gap: 0.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
+          }
+          .battery-mode-btn {
+            background: #000;
+            color: #FFC107;
+            border: 2px solid #FFC107;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+          }
+          .battery-mode-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 193, 7, 0.3);
+          }
+          .battery-mode-btn.active {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+          }
+          .battery-search-section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.2);
+            border: 2px solid #333;
+            display: none;
+          }
+          .battery-search-section.active {
+            display: block;
+          }
+          .battery-search-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 1.5rem;
+            text-align: center;
+          }
+          .battery-dropdown-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+          }
+          .battery-dropdown-label {
+            display: block;
+            color: #FFC107;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+          }
+          .battery-dropdown-input {
+            width: 100%;
+            padding: 0.7rem 2.5rem 0.7rem 1rem;
+            border: 2px solid #333;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            background: #000;
+            color: #FFC107;
+            font-weight: 600;
+            cursor: pointer;
+          }
+          .battery-dropdown-input:focus {
+            outline: none;
+            border-color: #FFC107;
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.2);
+          }
+          .battery-dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #000;
+            border: 2px solid #FFC107;
+            border-radius: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            margin-top: 0.5rem;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+          }
+          .battery-dropdown-list.show {
+            display: block;
+          }
+          .battery-dropdown-item {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #333;
+            color: #FFC107;
+            font-weight: 600;
+            font-size: 0.9rem;
+          }
+          .battery-dropdown-item:hover {
+            background: #FFC107;
+            color: #000;
+          }
+          .battery-results-section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.2);
+            display: none;
+            margin-bottom: 1.5rem;
+            border: 2px solid #333;
+          }
+          .battery-results-section.show {
+            display: block;
+          }
+          .battery-result {
+            background: #000;
+            border: 2px solid #FFC107;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+          }
+          .battery-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 0.8rem;
+          }
+          .battery-size-box {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+            margin-bottom: 0.8rem;
+          }
+          .battery-prices-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+          }
+          .battery-prices-table thead {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+          }
+          .battery-prices-table th {
+            padding: 0.8rem 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border-left: 2px solid rgba(0, 0, 0, 0.2);
+          }
+          .battery-prices-table td {
+            padding: 0.7rem 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            border-left: 2px solid #1a1a1a;
+            color: #FFC107;
+            border-bottom: 2px solid #1a1a1a;
+          }
+          .battery-prices-table tbody tr:hover {
+            background: #1a1a1a;
+          }
+          .battery-brand-cell {
+            font-weight: bold;
+            color: #FFC107;
+            text-align: right;
+          }
+          .battery-price-cell {
+            font-weight: bold;
+            color: #FFD54F;
+          }
+          .battery-copy-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+          }
+          .battery-copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+          }
+          .battery-dashboard {
+            display: ${isStaff ? 'none' : 'block'};
+          }
+          .battery-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+          }
+          .battery-stat-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            transition: all 0.3s;
+          }
+          .battery-stat-card:hover {
+            border-color: #FFC107;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+          }
+          .battery-stat-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.7rem;
+          }
+          .battery-stat-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 0.4rem;
+          }
+          .battery-stat-label {
+            color: #999;
+            font-size: 0.8rem;
+          }
+        </style>
+        
+        <div class="battery-full-system">
+          <div class="battery-main-content">
+            ${!isStaff ? `
+              <div class="battery-dashboard">
+                <div class="battery-stats-grid">
+                  <div class="battery-stat-card">
+                    <div class="battery-stat-icon">🔋</div>
+                    <div class="battery-stat-value" id="batteryTotalCount">0</div>
+                    <div class="battery-stat-label">إجمالي البطاريات</div>
+                  </div>
+                  <div class="battery-stat-card">
+                    <div class="battery-stat-icon">📦</div>
+                    <div class="battery-stat-value" id="batteryWarehouseStock">0</div>
+                    <div class="battery-stat-label">المخزون الرئيسي</div>
+                  </div>
+                  <div class="battery-stat-card">
+                    <div class="battery-stat-icon">🚚</div>
+                    <div class="battery-stat-value" id="batteryDriversStock">0</div>
+                    <div class="battery-stat-label">مخزون السائقين</div>
+                  </div>
+                  <div class="battery-stat-card">
+                    <div class="battery-stat-icon">⚠️</div>
+                    <div class="battery-stat-value" id="batteryLowStock">0</div>
+                    <div class="battery-stat-label">بطاريات منخفضة</div>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+            
+            <div class="battery-search-mode-selector">
+              <button class="battery-mode-btn active" onclick="batterySystemSwitchMode('size')">
+                🔋 البحث بمقاس البطارية
+              </button>
+              <button class="battery-mode-btn" onclick="batterySystemSwitchMode('car')">
+                🚗 البحث بأسماء السيارات
+              </button>
+            </div>
+            
+            <div class="battery-search-section active" id="batterySizeSearchSection">
+              <div class="battery-search-title">🔋 ابحث عن مقاس البطارية</div>
+              <div class="battery-dropdown-group">
+                <label class="battery-dropdown-label">🔋 اختر أو اكتب مقاس البطارية</label>
+                <input type="text" id="batterySizeInput" class="battery-dropdown-input" 
+                       placeholder="مثال: DA95, LN5, 70D23L..." autocomplete="off">
+                <div class="battery-dropdown-list" id="batterySizeList"></div>
+              </div>
+            </div>
+            
+            <div class="battery-search-section" id="batteryCarSearchSection">
+              <div class="battery-search-title">🚗 ابحث عن بطارية سيارتك</div>
+              <div class="battery-dropdown-group">
+                <label class="battery-dropdown-label">🚗 اختر الشركة المصنعة</label>
+                <input type="text" id="batteryMakeInput" class="battery-dropdown-input" 
+                       placeholder="اكتب أو اختر الشركة..." autocomplete="off">
+                <div class="battery-dropdown-list" id="batteryMakeList"></div>
+              </div>
+              <div class="battery-dropdown-group" id="batteryModelGroup" style="display: none;">
+                <label class="battery-dropdown-label">🚙 اختر الموديل</label>
+                <input type="text" id="batteryModelInput" class="battery-dropdown-input" 
+                       placeholder="اختر الموديل..." autocomplete="off">
+                <div class="battery-dropdown-list" id="batteryModelList"></div>
+              </div>
+              <div class="battery-dropdown-group" id="batteryYearGroup" style="display: none;">
+                <label class="battery-dropdown-label">📅 اختر السنة</label>
+                <input type="text" id="batteryYearInput" class="battery-dropdown-input" 
+                       placeholder="اختر السنة..." autocomplete="off">
+                <div class="battery-dropdown-list" id="batteryYearList"></div>
+              </div>
+            </div>
+            
+            <div class="battery-results-section" id="batteryResults"></div>
+          </div>
+        </div>
       `;
+      
+      // Initialize battery system
+      initBatterySystem(isStaff);
+    }
+
+    // Battery System Variables
+    let batteryCarData = [];
+    let batteryInventoryData = [];
+    let batteryDriversNames = {};
+    let batteryCurrentMode = 'size';
+    let batterySelectedMake = '';
+    let batterySelectedModel = '';
+    let batterySelectedYear = '';
+    
+    const BATTERY_CAR_SHEET_ID = '1tUjEj-1FtAqewhJiRcC4dgGwgrxhb5OjKxGWEojFzlg';
+    const BATTERY_INVENTORY_SHEET_ID = '1WghSWhC-NJ0h--afoaR0ydzTP8ULw7N3tBDgToXoLVk';
+    const BATTERY_CAR_SHEET_URL = `https://docs.google.com/spreadsheets/d/${BATTERY_CAR_SHEET_ID}/export?format=csv&gid=0`;
+    const BATTERY_INVENTORY_SHEET_URL = `https://docs.google.com/spreadsheets/d/${BATTERY_INVENTORY_SHEET_ID}/export?format=csv&gid=0`;
+
+    function parseCSVLineBattery(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim().replace(/^"|"$/g, ''));
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim().replace(/^"|"$/g, ''));
+      return result;
+    }
+
+    async function initBatterySystem(isStaff) {
+      // Load data
+      await Promise.all([
+        loadBatteryCarData(),
+        loadBatteryInventoryData(),
+        loadBatteryDriversData()
+      ]);
+      
+      // Initialize UI
+      populateBatterySizeDropdown();
+      populateBatteryMakeDropdown();
+      
+      if (!isStaff) {
+        updateBatteryDashboard();
+      }
+      
+      // Setup event listeners
+      setupBatteryEventListeners();
+    }
+
+    async function loadBatteryCarData() {
+      try {
+        const response = await fetch(BATTERY_CAR_SHEET_URL);
+        const text = await response.text();
+        const rows = text.split('\n').filter(row => row.trim());
+        
+        batteryCarData = [];
+        for (let i = 1; i < rows.length; i++) {
+          const cols = parseCSVLineBattery(rows[i]);
+          if (cols[0] && cols[3]) {
+            batteryCarData.push({
+              make: cols[0].trim(),
+              model: cols[1].trim(),
+              year: cols[2].trim(),
+              bat: cols[3].trim(),
+              count: parseInt(cols[4]) || 1
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error loading car data:', error);
+      }
+    }
+
+    async function loadBatteryInventoryData() {
+      try {
+        const response = await fetch(BATTERY_INVENTORY_SHEET_URL);
+        const text = await response.text();
+        const rows = text.split('\n').filter(row => row.trim());
+        const headers = parseCSVLineBattery(rows[0]);
+        
+        batteryInventoryData = [];
+        for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+          const cols = parseCSVLineBattery(rows[rowIndex]);
+          
+          const battery = {
+            size: cols[0] || '',
+            brand: cols[1] || '',
+            tradeName: cols[2] || '',
+            price: parseFloat(cols[3]) || 0,
+            salePrice: parseFloat(cols[4]) || 0,
+            fkStock: parseFloat(cols[5]) || 0,
+            mStock: parseFloat(cols[6]) || 0,
+            drivers: []
+          };
+          
+          for (let colIndex = 7; colIndex < headers.length; colIndex += 2) {
+            const driverHeader = headers[colIndex];
+            if (driverHeader && driverHeader.trim() !== '' && driverHeader.toLowerCase() !== 'total') {
+              const driverEnglishName = driverHeader.trim();
+              const fkQty = parseFloat(cols[colIndex]) || 0;
+              const mQty = parseFloat(cols[colIndex + 1]) || 0;
+              
+              if (fkQty > 0 || mQty > 0) {
+                const driverArabicName = batteryDriversNames[driverEnglishName] || driverEnglishName;
+                battery.drivers.push({
+                  name: driverArabicName,
+                  fk: fkQty,
+                  m: mQty
+                });
+              }
+            }
+          }
+          
+          if (battery.size) {
+            batteryInventoryData.push(battery);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading inventory data:', error);
+      }
+    }
+
+    async function loadBatteryDriversData() {
+      batteryDriversNames = {
+        'NYAZ': 'نياز',
+        'Muthu': 'موتو',
+        'Ganesh': 'جانيش',
+        'Iresh-KESAVAN': 'اريش-كيسافان',
+        'GUFRAN': 'غفران',
+        'edeson alpert': 'إيديسون ألبرت',
+        'Irfan': 'عرفان',
+        'Albert': 'ألبرت',
+        'Lakshman': 'لاكشمان',
+        'santheel': 'سانتيل',
+        'ARVENTH': 'أرفنت',
+        'MortaDA/Santhosh': 'مرتضى / سانتوش',
+        'Mayura': 'مايورا',
+        'yusuf & rahimah allah': 'يوسف و رحمة الله',
+        'Ali and Sayed': 'علي وسيد',
+        'Sayid and Ramos': 'سيد ورامو',
+        'bala': 'بالا',
+        'Durga Prasad': 'دورجا براساد'
+      };
+    }
+
+    function populateBatterySizeDropdown() {
+      const sizes = [...new Set(batteryInventoryData.map(b => b.size))].sort();
+      const sizeList = document.getElementById('batterySizeList');
+      if (sizeList) {
+        sizeList.innerHTML = sizes.map(size => 
+          `<div class="battery-dropdown-item" onclick="batterySelectSize('${size}')">${size}</div>`
+        ).join('');
+      }
+    }
+
+    function populateBatteryMakeDropdown() {
+      const makes = [...new Set(batteryCarData.map(c => c.make))].sort();
+      const makeList = document.getElementById('batteryMakeList');
+      if (makeList) {
+        makeList.innerHTML = makes.map(make => 
+          `<div class="battery-dropdown-item" onclick="batterySelectMake('${make}')">${make}</div>`
+        ).join('');
+      }
+    }
+
+    function setupBatteryEventListeners() {
+      const sizeInput = document.getElementById('batterySizeInput');
+      const sizeList = document.getElementById('batterySizeList');
+      
+      if (sizeInput && sizeList) {
+        sizeInput.addEventListener('focus', () => sizeList.classList.add('show'));
+        sizeInput.addEventListener('input', (e) => {
+          const searchText = e.target.value.toUpperCase();
+          const items = sizeList.querySelectorAll('.battery-dropdown-item');
+          items.forEach(item => {
+            item.style.display = searchText === '' || item.textContent.toUpperCase().includes(searchText) ? 'block' : 'none';
+          });
+          sizeList.classList.add('show');
+        });
+      }
+      
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.battery-dropdown-group')) {
+          document.querySelectorAll('.battery-dropdown-list').forEach(list => {
+            list.classList.remove('show');
+          });
+        }
+      });
+    }
+
+    function batterySystemSwitchMode(mode) {
+      batteryCurrentMode = mode;
+      
+      document.querySelectorAll('.battery-mode-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('batterySizeSearchSection').classList.toggle('active', mode === 'size');
+      document.getElementById('batteryCarSearchSection').classList.toggle('active', mode === 'car');
+      document.getElementById('batteryResults').classList.remove('show');
+    }
+
+    function batterySelectSize(size) {
+      const sizeInput = document.getElementById('batterySizeInput');
+      const sizeList = document.getElementById('batterySizeList');
+      const resultsDiv = document.getElementById('batteryResults');
+      
+      if (sizeInput) sizeInput.value = size;
+      if (sizeList) sizeList.classList.remove('show');
+      
+      const batteries = batteryInventoryData.filter(b => 
+        b.size.toUpperCase() === size.toUpperCase() &&
+        (b.fkStock > 0 || b.mStock > 0 || b.drivers.length > 0)
+      );
+      
+      if (batteries.length === 0) {
+        resultsDiv.innerHTML = `
+          <div style="text-align: center; padding: 3rem; color: #FFC107;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
+            <div style="font-size: 1.4rem; font-weight: bold;">لا توجد نتائج</div>
+          </div>
+        `;
+      } else {
+        const userType = localStorage.getItem('userType') || 'Call Center';
+        const showPurchasePrice = userType !== 'Call Center';
+        const showCopyButton = userType === 'Call Center';
+        
+        resultsDiv.innerHTML = `
+          <div class="battery-result">
+            <div class="battery-title">🔋 بطارية بمقاس ${size}</div>
+            <div class="battery-size-box">${size}</div>
+            <table class="battery-prices-table">
+              <thead>
+                <tr>
+                  <th>الماركة</th>
+                  <th>المقاس</th>
+                  ${showPurchasePrice ? '<th>سعر الشراء</th>' : ''}
+                  <th>سعر البيع</th>
+                  <th>المخزون الرئيسي</th>
+                  <th>مخزون السائقين</th>
+                  ${showCopyButton ? '<th>نسخ</th>' : ''}
+                </tr>
+              </thead>
+              <tbody>
+                ${batteries.map(battery => {
+                  const warehouseTotal = battery.fkStock + battery.mStock;
+                  const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                  
+                  return `
+                    <tr>
+                      <td class="battery-brand-cell">${battery.brand}</td>
+                      <td class="battery-price-cell">${battery.size}</td>
+                      ${showPurchasePrice ? `<td class="battery-price-cell">${battery.price} دك</td>` : ''}
+                      <td class="battery-price-cell">${battery.salePrice} دك</td>
+                      <td>${warehouseTotal > 0 ? warehouseTotal : '-'}</td>
+                      <td>${driversTotal > 0 ? driversTotal : '-'}</td>
+                      ${showCopyButton ? `<td><button class="battery-copy-btn" onclick="batteryCopyMessage('${battery.brand}', '${battery.size}', ${battery.salePrice})">📋 نسخ</button></td>` : ''}
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+      
+      resultsDiv.classList.add('show');
+    }
+
+    function batterySelectMake(make) {
+      batterySelectedMake = make;
+      const makeInput = document.getElementById('batteryMakeInput');
+      const makeList = document.getElementById('batteryMakeList');
+      const modelGroup = document.getElementById('batteryModelGroup');
+      
+      if (makeInput) makeInput.value = make;
+      if (makeList) makeList.classList.remove('show');
+      if (modelGroup) modelGroup.style.display = 'block';
+      
+      const models = [...new Set(batteryCarData.filter(c => c.make === make).map(c => c.model))].sort();
+      const modelList = document.getElementById('batteryModelList');
+      if (modelList) {
+        modelList.innerHTML = models.map(model => 
+          `<div class="battery-dropdown-item" onclick="batterySelectModel('${model}')">${model}</div>`
+        ).join('');
+      }
+    }
+
+    function batterySelectModel(model) {
+      batterySelectedModel = model;
+      const modelInput = document.getElementById('batteryModelInput');
+      const modelList = document.getElementById('batteryModelList');
+      const yearGroup = document.getElementById('batteryYearGroup');
+      
+      if (modelInput) modelInput.value = model;
+      if (modelList) modelList.classList.remove('show');
+      if (yearGroup) yearGroup.style.display = 'block';
+      
+      const years = [...new Set(batteryCarData.filter(c => c.make === batterySelectedMake && c.model === model).map(c => c.year))].sort((a, b) => b - a);
+      const yearList = document.getElementById('batteryYearList');
+      if (yearList) {
+        yearList.innerHTML = years.map(year => 
+          `<div class="battery-dropdown-item" onclick="batterySelectYear('${year}')">${year}</div>`
+        ).join('');
+      }
+    }
+
+    function batterySelectYear(year) {
+      batterySelectedYear = year;
+      const yearInput = document.getElementById('batteryYearInput');
+      const yearList = document.getElementById('batteryYearList');
+      
+      if (yearInput) yearInput.value = year;
+      if (yearList) yearList.classList.remove('show');
+      
+      const matchingCars = batteryCarData.filter(c => 
+        c.make === batterySelectedMake && 
+        c.model === batterySelectedModel && 
+        c.year === batterySelectedYear
+      );
+      
+      if (matchingCars.length > 0 && matchingCars[0].bat) {
+        batterySelectSize(matchingCars[0].bat);
+      }
+    }
+
+    function batteryCopyMessage(brand, size, salePrice) {
+      let message = `متوفرة بطارية ${brand} مقاس ${size} السعر ${salePrice} دك`;
+      
+      const textarea = document.createElement('textarea');
+      textarea.value = message;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      try {
+        document.execCommand('copy');
+        event.target.textContent = '✅ تم';
+        setTimeout(() => {
+          event.target.textContent = '📋 نسخ';
+        }, 2000);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+      
+      document.body.removeChild(textarea);
+    }
+
+    function updateBatteryDashboard() {
+      let totalBatteries = 0;
+      let warehouseStock = 0;
+      let driversStock = 0;
+      let lowStockCount = 0;
+      
+      batteryInventoryData.forEach(battery => {
+        const warehouseTotal = battery.fkStock + battery.mStock;
+        warehouseStock += warehouseTotal;
+        
+        battery.drivers.forEach(driver => {
+          driversStock += driver.fk + driver.m;
+        });
+        
+        const totalStock = warehouseTotal + battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+        totalBatteries += totalStock;
+        
+        if (totalStock <= 5) {
+          lowStockCount++;
+        }
+      });
+      
+      const totalEl = document.getElementById('batteryTotalCount');
+      const warehouseEl = document.getElementById('batteryWarehouseStock');
+      const driversEl = document.getElementById('batteryDriversStock');
+      const lowStockEl = document.getElementById('batteryLowStock');
+      
+      if (totalEl) totalEl.textContent = totalBatteries;
+      if (warehouseEl) warehouseEl.textContent = warehouseStock;
+      if (driversEl) driversEl.textContent = driversStock;
+      if (lowStockEl) lowStockEl.textContent = lowStockCount;
     }
 
     // Render Installments Interface
