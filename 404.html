@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>CleanHub — Kuwait</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
 :root{
   --bg:#070B14;--surface:#0E1526;--card:#131D30;--card2:#172035;
@@ -24,8 +25,40 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
 .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.4;animation:orbF 8s ease-in-out infinite;}
 .orb1{width:300px;height:300px;background:radial-gradient(circle,rgba(0,229,176,.25),transparent 70%);top:-80px;right:-80px;}
 .orb2{width:250px;height:250px;background:radial-gradient(circle,rgba(74,184,255,.15),transparent 70%);bottom:20%;left:-60px;animation-delay:3s;}
-.orb3{width:200px;height:200px;background:radial-gradient(circle,rgba(255,209,102,.1),transparent 70%);bottom:-40px;right:20%;animation-delay:5s;}
-@keyframes orbF{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.05)}}
+.icon-bell::before{content:'\f0f3';font-family:'FontAwesome';font-size:16px;}
+.icon-user::before{content:'\f007';font-family:'FontAwesome';font-size:16px;}
+.icon-home::before{content:'\f015';font-family:'FontAwesome';font-size:16px;}
+.icon-sparkles::before{content:'\f005';font-family:'FontAwesome';font-size:16px;color:#00E5B0;}
+.icon-couch::before{content:'\f4b8';font-family:'FontAwesome';font-size:16px;}
+.icon-building::before{content:'\f1ad';font-family:'FontAwesome';font-size:16px;}
+.icon-wrench::before{content:'\f0ad';font-family:'FontAwesome';font-size:16px;}
+.icon-star::before{content:'\f005';font-family:'FontAwesome';font-size:12px;color:#FFD166;}
+.icon-map::before{content:'\f041';font-family:'FontAwesome';font-size:16px;}
+.icon-money::before{content:'\f155';font-family:'FontAwesome';font-size:16px;}
+.icon-calendar::before{content:'\f073';font-family:'FontAwesome';font-size:16px;}
+.icon-person::before{content:'\f007';font-family:'FontAwesome';font-size:16px;}
+.icon-settings::before{content:'\f013';font-family:'FontAwesome';font-size:16px;}
+.icon-search::before{content:'\f002';font-family:'FontAwesome';font-size:16px;}
+.icon-chat::before{content:'\f086';font-family:'FontAwesome';font-size:16px;}
+.icon-phone::before{content:'\f095';font-family:'FontAwesome';font-size:16px;}
+.icon-clock::before{content:'\f017';font-family:'FontAwesome';font-size:16px;}
+.icon-check::before{content:'\f00c';font-family:'FontAwesome';font-size:16px;}
+.icon-flag::before{content:'\f024';font-family:'FontAwesome';font-size:16px;}
+.icon-gift::before{content:'\f06b';font-family:'FontAwesome';font-size:16px;}
+.icon-support::before{content:'\f1cd';font-family:'FontAwesome';font-size:16px;}
+.icon-reviews::before{content:'\f27b';font-family:'FontAwesome';font-size:16px;}
+.icon-profile::before{content:'\f2bd';font-family:'FontAwesome';font-size:16px;}
+.icon-logout::before{content:'\f2f5';font-family:'FontAwesome';font-size:16px;}
+.icon-globe::before{content:'\f0ac';font-family:'FontAwesome';font-size:16px;}
+.icon-bed::before{content:'\f236';font-family:'FontAwesome';font-size:16px;}
+.icon-car::before{content:'\f1b9';font-family:'FontAwesome';font-size:16px;}
+.icon-credit::before{content:'\f09d';font-family:'FontAwesome';font-size:16px;}
+.icon-shield::before{content:'\f3ed';font-family:'FontAwesome';font-size:16px;color:#00E5B0;}
+.icon-logout::before{content:'\f2f5';font-family:'FontAwesome';font-size:16px;}
+.icon-bed::before{content:'\f236';font-family:'FontAwesome';font-size:16px;}
+.icon-car::before{content:'\f1b9';font-family:'FontAwesome';font-size:16px;}
+.icon-credit::before{content:'\f09d';font-family:'FontAwesome';font-size:16px;}
+.icon-shield::before{content:'\f3ed';font-family:'FontAwesome';font-size:16px;}
 .topbar{background:rgba(7,11,20,0.92);backdrop-filter:blur(24px);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--border);flex-shrink:0;}
 .logo{font-size:20px;font-weight:700;letter-spacing:-.3px;}
 .logo-c{color:var(--mint);}.logo-b{color:var(--text);}
@@ -252,13 +285,13 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
   <div class="topbar">
     <div class="logo"><span class="logo-c">Clean</span><span class="logo-b">Hub</span></div>
     <div class="tbtns">
-      <div class="ticon" onclick="toast('🔔 لا يوجد إشعارات')">🔔</div>
-      <div class="ticon" onclick="go('s-profile')">👤</div>
+      <div class="ticon" onclick="toast('لا يوجد إشعارات')"><span class="icon-bell">🔔</span></div>
+      <div class="ticon" onclick="go('s-profile')"><span class="icon-user">👤</span></div>
     </div>
   </div>
   <div class="hero" style="position:relative;z-index:1">
     <div class="hero-grid"></div>
-    <div class="hero-tag"><span class="hero-dot"></span>🇰🇼 خدمات التنظيف في الكويت</div>
+    <div class="hero-tag"><span class="hero-dot"></span><span class="icon-flag"></span> خدمات التنظيف في الكويت</div>
     <div class="hero-title">نظّف بيتك<br>بضغطة <em>واحدة</em></div>
     <div class="hero-sub">قارن بين أفضل شركات التنظيف واحجز بأسعار شفافة</div>
     <div class="hero-search">
@@ -270,20 +303,20 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
   <div class="stats">
     <div class="stat"><div class="stat-n"><b>48</b>+</div><div class="stat-l">شركة معتمدة</div></div>
     <div class="stat"><div class="stat-n"><b>2.4</b>K</div><div class="stat-l">حجز ناجح</div></div>
-    <div class="stat"><div class="stat-n"><b>4.8</b>⭐</div><div class="stat-l">متوسط التقييم</div></div>
+    <div class="stat"><div class="stat-n"><b>4.8</b><span class="icon-star"></span></div><div class="stat-l">متوسط التقييم</div></div>
   </div>
   <div class="sec">
     <div class="sec-hd"><div class="sec-t">اختر الخدمة</div><div class="sec-a">الكل</div></div>
     <div class="srv-row">
-      <div class="srv-c" onclick="pickSrv(this,'تنظيف منزلي شامل')"><span class="srv-ic">🏠</span><div class="srv-nm">تنظيف منزلي</div><div class="srv-pr">من 15 د.ك</div></div>
-      <div class="srv-c" onclick="pickSrv(this,'تنظيف عميق')"><span class="srv-ic">✨</span><div class="srv-nm">تنظيف عميق</div><div class="srv-pr">من 25 د.ك</div></div>
-      <div class="srv-c" onclick="pickSrv(this,'غسيل سجاد وكنب')"><span class="srv-ic">🛋️</span><div class="srv-nm">سجاد وكنب</div><div class="srv-pr">من 20 د.ك</div></div>
-      <div class="srv-c" onclick="pickSrv(this,'تنظيف ما بعد بناء')"><span class="srv-ic">🏗️</span><div class="srv-nm">بعد البناء</div><div class="srv-pr">من 40 د.ك</div></div>
-      <div class="srv-c" onclick="pickSrv(this,'تنظيف مكاتب')"><span class="srv-ic">🏢</span><div class="srv-nm">مكاتب</div><div class="srv-pr">من 30 د.ك</div></div>
+      <div class="srv-c" onclick="pickSrv(this,'تنظيف منزلي شامل')"><span class="srv-ic icon-home"></span><div class="srv-nm">تنظيف منزلي</div><div class="srv-pr">من 15 د.ك</div></div>
+      <div class="srv-c" onclick="pickSrv(this,'تنظيف عميق')"><span class="srv-ic icon-sparkles"></span><div class="srv-nm">تنظيف عميق</div><div class="srv-pr">من 25 د.ك</div></div>
+      <div class="srv-c" onclick="pickSrv(this,'غسيل سجاد وكنب')"><span class="srv-ic icon-couch"></span><div class="srv-nm">سجاد وكنب</div><div class="srv-pr">من 20 د.ك</div></div>
+      <div class="srv-c" onclick="pickSrv(this,'تنظيف ما بعد بناء')"><span class="srv-ic icon-wrench"></span><div class="srv-nm">بعد البناء</div><div class="srv-pr">من 40 د.ك</div></div>
+      <div class="srv-c" onclick="pickSrv(this,'تنظيف مكاتب')"><span class="srv-ic icon-building"></span><div class="srv-nm">مكاتب</div><div class="srv-pr">من 30 د.ك</div></div>
     </div>
   </div>
   <div class="sec" style="padding-top:16px">
-    <div class="promo"><div><div class="promo-l">خصم 20% 🎉</div><div class="promo-s">على أول حجز لك هذا الشهر</div></div><div style="font-size:42px">💎</div></div>
+    <div class="promo"><div><div class="promo-l">خصم 20% <span class="icon-gift"></span></div><div class="promo-s">على أول حجز لك هذا الشهر</div></div><div style="font-size:42px"><span class="icon-gift"></span></div></div>
   </div>
   <div class="sec">
     <div class="sec-hd"><div class="sec-t">أفضل الشركات</div><div class="sec-a" onclick="go('s-compare')">مقارنة</div></div>
@@ -293,15 +326,15 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
       <div class="ftab" onclick="setFt(this)">مكاتب</div>
       <div class="ftab" onclick="setFt(this)">تجاري</div>
     </div>
-    <div onclick="showCo('sparkle')" class="co"><div class="co-av" style="background:rgba(0,229,176,.1)">✨</div><div class="co-inf"><div class="co-nm">Sparkle Clean</div><div class="co-mt">منازل · مكاتب · تجاري</div><div class="co-ft"><span><span class="stars">★★★★★</span> <span style="font-size:12px;color:var(--muted2)">4.9 (312)</span></span><span class="badge b-ok">متاح الآن</span></div><div class="co-p">10–50 د.ك</div></div></div>
-    <div onclick="showCo('crystal')" class="co"><div class="co-av" style="background:rgba(74,184,255,.1)">💎</div><div class="co-inf"><div class="co-nm">Crystal Pro</div><div class="co-mt">منازل · سجاد · كنب</div><div class="co-ft"><span><span class="stars">★★★★★</span> <span style="font-size:12px;color:var(--muted2)">4.8 (198)</span></span><span class="badge b-ok">متاح الآن</span></div><div class="co-p">15–45 د.ك</div></div></div>
-    <div onclick="showCo('shine')" class="co"><div class="co-av" style="background:rgba(255,107,138,.1)">🌟</div><div class="co-inf"><div class="co-nm">Shine Kuwait</div><div class="co-mt">مكاتب · تجاري · مستشفيات</div><div class="co-ft"><span><span class="stars">★★★★☆</span> <span style="font-size:12px;color:var(--muted2)">4.6 (241)</span></span><span class="badge b-no">مشغول</span></div><div class="co-p">20–80 د.ك</div></div></div>
+    <div onclick="showCo('sparkle')" class="co"><div class="co-av" style="background:rgba(0,229,176,.1)"><span class="icon-sparkles"></span></div><div class="co-inf"><div class="co-nm">Sparkle Clean</div><div class="co-mt">منازل · مكاتب · تجاري</div><div class="co-ft"><span><span class="stars">★★★★★</span> <span style="font-size:12px;color:var(--muted2)">4.9 (312)</span></span><span class="badge b-ok">متاح الآن</span></div><div class="co-p">10–50 د.ك</div></div></div>
+    <div onclick="showCo('crystal')" class="co"><div class="co-av" style="background:rgba(74,184,255,.1)"><span class="icon-gift"></span></div><div class="co-inf"><div class="co-nm">Crystal Pro</div><div class="co-mt">منازل · سجاد · كنب</div><div class="co-ft"><span><span class="stars">★★★★★</span> <span style="font-size:12px;color:var(--muted2)">4.8 (198)</span></span><span class="badge b-ok">متاح الآن</span></div><div class="co-p">15–45 د.ك</div></div></div>
+    <div onclick="showCo('shine')" class="co"><div class="co-av" style="background:rgba(255,107,138,.1)"><span class="icon-star"></span></div><div class="co-inf"><div class="co-nm">Shine Kuwait</div><div class="co-mt">مكاتب · تجاري · مستشفيات</div><div class="co-ft"><span><span class="stars">★★★★☆</span> <span style="font-size:12px;color:var(--muted2)">4.6 (241)</span></span><span class="badge b-no">مشغول</span></div><div class="co-p">20–80 د.ك</div></div></div>
   </div>
 </div>
 
 <!-- COMPARE -->
 <div class="screen" id="s-compare">
-  <div class="topbar"><div class="logo"><span class="logo-c">مقارنة</span><span class="logo-b"> الشركات</span></div><div class="ticon" onclick="toast('⚙️ قريباً')">⚙️</div></div>
+  <div class="topbar"><div class="logo"><span class="logo-c">مقارنة</span><span class="logo-b"> الشركات</span></div><div class="ticon" onclick="toast('قريباً')"><span class="icon-settings"></span></div></div>
   <div style="padding:16px 18px 0">
     <div class="ftabs" style="margin-bottom:14px">
       <div class="ftab active" onclick="setFt(this)">الكل</div>
@@ -309,8 +342,8 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
       <div class="ftab" onclick="setFt(this)">الأقل سعراً</div>
       <div class="ftab" onclick="setFt(this)">متاح الآن</div>
     </div>
-    <div onclick="showCo('sparkle')" class="co"><div class="co-av" style="background:rgba(0,229,176,.1)">✨</div><div class="co-inf"><div class="co-nm">Sparkle Clean</div><div class="co-mt">2-4 ساعات</div><div class="tags"><span class="tag">منازل</span><span class="tag">مكاتب</span><span class="tag">تجاري</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">10–50 د.ك</div></div></div>
-    <div onclick="showCo('crystal')" class="co"><div class="co-av" style="background:rgba(74,184,255,.1)">💎</div><div class="co-inf"><div class="co-nm">Crystal Pro</div><div class="co-mt">3-5 ساعات</div><div class="tags"><span class="tag">سجاد</span><span class="tag">كنب</span><span class="tag">ستائر</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">15–45 د.ك</div></div></div>
+    <div onclick="showCo('sparkle')" class="co"><div class="co-av" style="background:rgba(0,229,176,.1)"><span class="icon-sparkles"></span></div><div class="co-inf"><div class="co-nm">Sparkle Clean</div><div class="co-mt">2-4 ساعات</div><div class="tags"><span class="tag">منازل</span><span class="tag">مكاتب</span><span class="tag">تجاري</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">10–50 د.ك</div></div></div>
+    <div onclick="showCo('crystal')" class="co"><div class="co-av" style="background:rgba(74,184,255,.1)"><span class="icon-gift"></span></div><div class="co-inf"><div class="co-nm">Crystal Pro</div><div class="co-mt">3-5 ساعات</div><div class="tags"><span class="tag">سجاد</span><span class="tag">كنب</span><span class="tag">ستائر</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">15–45 د.ك</div></div></div>
     <div onclick="showCo('shine')" class="co"><div class="co-av" style="background:rgba(255,107,138,.1)">🌟</div><div class="co-inf"><div class="co-nm">Shine Kuwait</div><div class="co-mt">4-8 ساعات</div><div class="tags"><span class="tag">مكاتب</span><span class="tag">تجاري</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★☆</span><span class="badge b-no">مشغول</span></div><div class="co-p">20–80 د.ك</div></div></div>
     <div onclick="showCo('fresh')" class="co"><div class="co-av" style="background:rgba(0,229,176,.08)">🌿</div><div class="co-inf"><div class="co-nm">Fresh & Green</div><div class="co-mt">2-3 ساعات</div><div class="tags"><span class="tag">منازل</span><span class="tag">بيئي</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★☆</span><span class="badge b-ok">متاح</span></div><div class="co-p">18–40 د.ك</div></div></div>
     <div onclick="showCo('elite')" class="co"><div class="co-av" style="background:rgba(255,209,102,.1)">👑</div><div class="co-inf"><div class="co-nm">Elite Cleaning</div><div class="co-mt">3-6 ساعات</div><div class="tags"><span class="tag">فلل</span><span class="tag">قصور</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">35–150 د.ك</div></div></div>
@@ -322,10 +355,10 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
   <div class="topbar"><div class="logo"><span class="logo-c">احجز</span><span class="logo-b"> خدمة</span></div></div>
   <div id="bk-form">
     <div class="bform">
-      <div class="fg"><label class="fl">🏠 نوع العقار</label><select class="fs"><option>شقة سكنية</option><option>فيلا</option><option>مكتب</option><option>محل تجاري</option></select></div>
+      <div class="fg"><label class="fl"><span class="icon-home"></span> نوع العقار</label><select class="fs"><option>شقة سكنية</option><option>فيلا</option><option>مكتب</option><option>محل تجاري</option></select></div>
       <div class="fg"><label class="fl">🧹 نوع الخدمة</label><select class="fs"><option>تنظيف شامل</option><option>تنظيف عميق</option><option>غسيل سجاد وكنب</option><option>تنظيف ما بعد بناء</option><option>تنظيف مكاتب</option></select></div>
       <div class="fg"><label class="fl">📐 المساحة (م²)</label><input type="number" class="fi" value="120" id="bk-area" oninput="calcP()"></div>
-      <div class="fg"><label class="fl">🛏️ عدد الغرف</label><div class="ctr"><button class="cbtn" onclick="chgR(-1)">−</button><span class="cval" id="room-n">3</span><button class="cbtn" onclick="chgR(1)">+</button></div></div>
+      <div class="fg"><label class="fl"><span class="icon-bed"></span> عدد الغرف</label><div class="ctr"><button class="cbtn" onclick="chgR(-1)">−</button><span class="cval" id="room-n">3</span><button class="cbtn" onclick="chgR(1)">+</button></div></div>
       <div class="fg"><label class="fl">📅 التاريخ</label><input type="date" class="fi" id="bk-date"></div>
       <div class="fg"><label class="fl">⏰ الوقت</label>
         <div class="tgrid">
@@ -534,12 +567,12 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
     </div>
     <div class="sec-t" style="margin-bottom:10px">عن الشركة</div>
     <div style="font-size:13px;color:var(--muted2);line-height:1.8;margin-bottom:18px" id="dl-about"></div>
-    <div class="sec-t" style="margin-bottom:12px">⭐ آراء العملاء</div>
-    <div class="rv"><div class="rv-hd"><div class="rv-av">👩</div><div><div class="rv-nm">فاطمة العلي</div><div class="rv-dt">⭐⭐⭐⭐⭐ · منذ 3 أيام</div></div></div><div class="rv-tx">خدمة ممتازة جداً! الفريق كان محترف ومنظم. البيت نظيف تماماً والرائحة رائعة 👍</div></div>
-    <div class="rv"><div class="rv-hd"><div class="rv-av">👨</div><div><div class="rv-nm">محمد الرشيد</div><div class="rv-dt">⭐⭐⭐⭐⭐ · أسبوع</div></div></div><div class="rv-tx">أفضل شركة تنظيف في الكويت. وصلوا في الوقت المحدد وأنجزوا باحترافية.</div></div>
+    <div class="sec-t" style="margin-bottom:12px">آراء العملاء</div>
+    <div class="rv"><div class="rv-hd"><div class="rv-av icon-person"></div><div><div class="rv-nm">فاطمة العلي</div><div class="rv-dt">★★★★★ · منذ 3 أيام</div></div></div><div class="rv-tx">خدمة ممتازة جداً! الفريق كان محترف ومنظم. البيت نظيف تماماً والرائحة رائعة.</div></div>
+    <div class="rv"><div class="rv-hd"><div class="rv-av icon-person"></div><div><div class="rv-nm">محمد الرشيد</div><div class="rv-dt">★★★★★ · أسبوع</div></div></div><div class="rv-tx">أفضل شركة تنظيف في الكويت. وصلوا في الوقت المحدد وأنجزوا باحترافية.</div></div>
     <div style="height:12px"></div>
-    <button class="btn btn-mint" onclick="go('s-book')">📅 احجز الآن</button>
-    <button class="btn btn-ghost" onclick="openCoChat()">💬 تواصل مع الشركة</button>
+    <button class="btn btn-mint" onclick="go('s-book')"><span class="icon-calendar"></span> احجز الآن</button>
+    <button class="btn btn-ghost" onclick="openCoChat()"><span class="icon-chat"></span> تواصل مع الشركة</button>
   </div>
 </div>
 
@@ -550,22 +583,22 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
     <div class="chat-list-area">
       <!-- AI -->
       <div class="chat-row" onclick="openChat('ai','🤖 مساعد CleanHub الذكي')">
-        <div class="ch-av" style="background:linear-gradient(135deg,rgba(0,229,176,.2),rgba(74,184,255,.15));border:1px solid rgba(0,229,176,.3)">🤖<div class="ch-online"></div></div>
+        <div class="ch-av" style="background:linear-gradient(135deg,rgba(0,229,176,.2),rgba(74,184,255,.15));border:1px solid rgba(0,229,176,.3)"><span class="icon-chat"></span><div class="ch-online"></div></div>
         <div style="flex:1"><div class="ch-nm">مساعد CleanHub الذكي 🧠</div><div class="ch-pv">اسألني أي سؤال!</div></div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><div class="ch-t">الآن</div><div class="unrd">1</div></div>
       </div>
       <div class="chat-row" onclick="openChat('sparkle','✨ Sparkle Clean')">
-        <div class="ch-av" style="background:rgba(0,229,176,.08)">✨<div class="ch-online"></div></div>
+        <div class="ch-av" style="background:rgba(0,229,176,.08)"><span class="icon-sparkles"></span><div class="ch-online"></div></div>
         <div style="flex:1"><div class="ch-nm">Sparkle Clean</div><div class="ch-pv">سيصل الفريق الساعة 10 ص</div></div>
         <div class="ch-t">أمس</div>
       </div>
       <div class="chat-row" onclick="openChat('crystal','💎 Crystal Pro')">
-        <div class="ch-av" style="background:rgba(74,184,255,.08)">💎</div>
+        <div class="ch-av" style="background:rgba(74,184,255,.08)"><span class="icon-gift"></span></div>
         <div style="flex:1"><div class="ch-nm">Crystal Pro</div><div class="ch-pv">شكراً لاختياركم خدماتنا</div></div>
         <div class="ch-t">الأحد</div>
       </div>
-      <div class="chat-row" onclick="openChat('support','🎧 دعم CleanHub')">
-        <div class="ch-av" style="background:rgba(255,209,102,.08)">🎧<div class="ch-online"></div></div>
+      <div class="chat-row" onclick="openChat('support','دعم CleanHub')">
+        <div class="ch-av" style="background:rgba(255,209,102,.08)"><span class="icon-support"></span><div class="ch-online"></div></div>
         <div style="flex:1"><div class="ch-nm">دعم CleanHub</div><div class="ch-pv">كيف يمكنني مساعدتك؟</div></div>
         <div class="ch-t">الإثنين</div>
       </div>
@@ -576,8 +609,8 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
     <div class="cw-hd">
       <div style="width:34px;height:34px;background:rgba(255,255,255,.07);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--text);flex-shrink:0" onclick="closeChat()">←</div>
       <div class="cw-av" id="cw-av">🤖<div class="cw-online"></div></div>
-      <div style="flex:1"><div class="cw-title" id="cw-title">مساعد CleanHub</div><div class="cw-status" id="cw-status">● مدعوم بالذكاء الاصطناعي</div></div>
-      <div class="ticon" style="background:transparent">📞</div>
+      <div style="flex:1"><div class="cw-title" id="cw-title">مساعد CleanHub</div><div class="cw-status" id="cw-status">خدمة العملاء</div></div>
+      <div class="ticon" style="background:transparent"><span class="icon-phone"></span></div>
     </div>
     <div class="cw-msgs" id="cw-msgs"></div>
     <div id="quick-row" class="quick-btns">
@@ -606,22 +639,22 @@ html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidd
     <div class="bk-item"><div class="bk-hd"><div class="bk-sv">غسيل كنب وسجاد</div><span class="bk-st st-done">مكتمل ✓</span></div><div class="bk-co">💎 Crystal Pro</div><div class="bk-dt">📅 الخميس 5 مارس · 2:00 م</div><div class="bk-pr">35 د.ك</div></div>
   </div>
   <div class="menu-wrap">
-    <div class="mi" onclick="toast('⭐ تقييماتي')"><div class="mi-ic">⭐</div><div class="mi-tx">تقييماتي</div><div class="mi-ar">←</div></div>
-    <div class="mi" onclick="toast('💳 طرق الدفع')"><div class="mi-ic">💳</div><div class="mi-tx">طرق الدفع</div><div class="mi-ar">←</div></div>
-    <div class="mi" onclick="toast('📍 عناويني')"><div class="mi-ic">📍</div><div class="mi-tx">عناويني</div><div class="mi-ar">←</div></div>
-    <div class="mi" onclick="toast('🔔 الإشعارات')"><div class="mi-ic">🔔</div><div class="mi-tx">الإشعارات</div><div class="mi-ar">←</div></div>
-    <div class="mi" onclick="toast('🌐 تغيير اللغة')"><div class="mi-ic">🌐</div><div class="mi-tx">اللغة</div><div class="mi-ar">←</div></div>
-    <div class="mi" onclick="toast('🚪 تم تسجيل الخروج')" style="border-color:rgba(255,107,138,.15)"><div class="mi-ic" style="background:rgba(255,107,138,.08)">🚪</div><div class="mi-tx" style="color:var(--rose)">تسجيل الخروج</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('تقييماتي')"><div class="mi-ic icon-reviews"></div><div class="mi-tx">تقييماتي</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('طرق الدفع')"><div class="mi-ic icon-credit"></div><div class="mi-tx">طرق الدفع</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('عناويني')"><div class="mi-ic icon-map"></div><div class="mi-tx">عناويني</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('الإشعارات')"><div class="mi-ic icon-bell"></div><div class="mi-tx">الإشعارات</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('تغيير اللغة')"><div class="mi-ic icon-globe"></div><div class="mi-tx">اللغة</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('تم تسجيل الخروج')" style="border-color:rgba(255,107,138,.15)"><div class="mi-ic icon-logout" style="background:rgba(255,107,138,.08);color:var(--rose)"></div><div class="mi-tx" style="color:var(--rose)">تسجيل الخروج</div><div class="mi-ar">←</div></div>
   </div>
 </div>
 
 <!-- BOTTOM NAV -->
 <div class="nav">
-  <div class="ni active" id="ni-home" onclick="go('s-home')"><div class="ni-ic">🏠</div><div class="ni-lb">الرئيسية</div></div>
-  <div class="ni" id="ni-compare" onclick="go('s-compare')"><div class="ni-ic">🔍</div><div class="ni-lb">مقارنة</div></div>
-  <div class="ni" id="ni-book" onclick="go('s-book')"><div class="ni-ic">📅</div><div class="ni-lb">حجز</div></div>
-  <div class="ni" id="ni-chat" onclick="go('s-chat')"><div class="ni-ic">💬</div><div class="ni-lb">رسائل</div></div>
-  <div class="ni" id="ni-profile" onclick="go('s-profile')"><div class="ni-ic">👤</div><div class="ni-lb">حسابي</div></div>
+  <div class="ni active" id="ni-home" onclick="go('s-home')"><div class="ni-ic icon-home"></div><div class="ni-lb">الرئيسية</div></div>
+  <div class="ni" id="ni-compare" onclick="go('s-compare')"><div class="ni-ic icon-search"></div><div class="ni-lb">مقارنة</div></div>
+  <div class="ni" id="ni-book" onclick="go('s-book')"><div class="ni-ic icon-calendar"></div><div class="ni-lb">حجز</div></div>
+  <div class="ni" id="ni-chat" onclick="go('s-chat')"><div class="ni-ic icon-chat"></div><div class="ni-lb">رسائل</div></div>
+  <div class="ni" id="ni-profile" onclick="go('s-profile')"><div class="ni-ic icon-user"></div><div class="ni-lb">حسابي</div></div>
 </div>
 </div>
 
@@ -704,13 +737,13 @@ function openChat(type,title){
   chatT=type;aiHist=[];
   document.getElementById('cl-wrap').style.display='none';
   const cw=document.getElementById('cw');cw.classList.add('open');
-  const icons={ai:'🤖',sparkle:'✨',crystal:'💎',support:'🎧'};
+  const icons={ai:'icon-chat',sparkle:'icon-sparkles',crystal:'icon-gift',support:'icon-support'};
   document.getElementById('cw-av').textContent=icons[type]||'💬';
   document.getElementById('cw-title').textContent=title;
-  document.getElementById('cw-status').textContent=type==='ai'?'● مدعوم بالذكاء الاصطناعي':'● متصل الآن';
+  document.getElementById('cw-status').textContent=type==='ai'?'خدمة العملاء':'متصل الآن';
   document.getElementById('quick-row').style.display=type==='ai'?'flex':'none';
   const msgs=document.getElementById('cw-msgs');msgs.innerHTML='';
-  const greetings={ai:'👋 مرحباً! أنا مساعد CleanHub الذكي.\n\nيمكنني مساعدتك في:\n• أسعار وأنواع خدمات التنظيف\n• مقارنة الشركات والتوصية بالأفضل\n• نصائح للحفاظ على نظافة منزلك\n\nبماذا يمكنني مساعدتك؟ 😊',sparkle:'مرحباً! شكراً لتواصلك مع Sparkle Clean ✨\nسيصل فريقنا يوم الثلاثاء. هل لديك طلبات خاصة؟',crystal:'أهلاً بك في Crystal Pro 💎\nكيف يمكننا مساعدتك؟',support:'مرحباً! فريق دعم CleanHub 🎧\nكيف يمكنني مساعدتك؟'};
+  const greetings={ai:'مرحباً بك في CleanHub\n\nيمكننا مساعدتك في:\n• أسعار وأنواع خدمات التنظيف\n• مقارنة الشركات والتوصية بالأفضل\n• نصائح للحفاظ على نظافة منزلك\n\nبماذا يمكننا مساعدتك؟',sparkle:'مرحباً! شكراً لتواصلك مع Sparkle Clean\nسيصل فريقنا يوم الثلاثاء. هل لديك طلبات خاصة؟',crystal:'أهلاً بك في Crystal Pro\nكيف يمكننا مساعدتك؟',support:'مرحباً! فريق دعم CleanHub\nكيف يمكننا مساعدتك؟'};
   appendM(type==='ai'?'ai':'co',greetings[type]||'مرحباً!');
 }
 function closeChat(){document.getElementById('cw').classList.remove('open');document.getElementById('cl-wrap').style.display='block';}
@@ -727,16 +760,16 @@ function rmTyp(){const t=document.getElementById('typ');if(t)t.remove();}
 async function sendMsg(){
   const inp=document.getElementById('ci');const text=inp.value.trim();if(!text)return;
   inp.value='';appendM('user',text);
-  document.getElementById('cw-status').textContent='● يكتب...';
+  document.getElementById('cw-status').textContent='يكتب...';
   if(chatT==='ai'){await callAI(text);}
-  else{showTyp();await sl(1200);rmTyp();const r=['شكراً على رسالتك! سنرد قريباً 😊','بالتأكيد! سأوصل سؤالك للفريق 👍','تم استلام رسالتك. هل تريد حجز موعد؟ 📅'];appendM('co',r[Math.floor(Math.random()*r.length)]);document.getElementById('cw-status').textContent='● متصل الآن';}
+  else{showTyp();await sl(1200);rmTyp();const r=['شكراً على رسالتك! سنرد قريباً','بالتأكيد! سأوصل سؤالك للفريق','تم استلام رسالتك. هل تريد حجز موعد؟'];appendM('co',r[Math.floor(Math.random()*r.length)]);document.getElementById('cw-status').textContent='متصل الآن';}
 }
 function quickS(el){document.getElementById('ci').value=el.textContent;sendMsg();}
 async function callAI(msg){
   showTyp();
   aiHist.push({role:'user',content:msg});
   try{
-    // البحث في جوجل باستخدام CORS proxy + DuckDuckGo API
+    // البحث في جوجل باستخدام CORS proxy
     const proxyUrl = 'https://api.allorigins.win/get?url=';
     const searchQuery = encodeURIComponent(msg + ' خدمات تنظيف الكويت');
     const searchUrl = `https://www.google.com/search?q=${searchQuery}&num=5&hl=ar&safe=active`;
@@ -767,15 +800,15 @@ async function callAI(msg){
       }
 
       if (results.length > 0) {
-        let reply = '🔍 نتائج البحث عن "' + msg + '":\n\n';
+        let reply = 'نتائج البحث عن "' + msg + '":\n\n';
 
         results.forEach((result, index) => {
-          reply += `${index + 1}. **${result.title}**\n`;
+          reply += `${index + 1}. ${result.title}\n`;
           reply += `${result.description}\n`;
-          reply += `🔗 رابط البحث\n\n`;
+          reply += `رابط البحث\n\n`;
         });
 
-        reply += '💡 لمزيد من التفاصيل، يمكنك البحث مباشرة في جوجل! 🧹';
+        reply += 'لمزيد من التفاصيل، يمكنك البحث مباشرة في جوجل.';
 
         aiHist.push({role:'assistant',content:reply});
         appendM('ai',reply);
@@ -786,32 +819,32 @@ async function callAI(msg){
       throw new Error('Invalid response');
     }
 
-    document.getElementById('cw-status').textContent='● متصل بجوجل';
+    document.getElementById('cw-status').textContent='متصل بالإنترنت';
   }catch(e){
     console.log('Search failed:', e);
     rmTyp();
 
-    // البحث المحلي الذكي كاحتياطي
+    // البحث المحلي المهني كاحتياطي
     const lowerMsg = msg.toLowerCase();
     let reply = '';
 
     if (lowerMsg.includes('تنظيف') || lowerMsg.includes('نظف')) {
-      reply = '🧹 خدمات التنظيف في الكويت:\n\n• تنظيف شامل للمنازل (من 15 د.ك)\n• تنظيف عميق ومعقم (من 25 د.ك)\n• غسيل وتنظيف السجاد والكنب (من 20 د.ك)\n• تنظيف المكاتب والشركات (من 30 د.ك)\n• تنظيف بعد البناء والترميم (من 40 د.ك)\n\n✨ جميع خدماتنا مع ضمان الجودة وأفضل الشركات المعتمدة!';
+      reply = 'خدمات التنظيف في CleanHub:\n\n• تنظيف شامل للمنازل (من 15 د.ك)\n• تنظيف عميق ومعقم (من 25 د.ك)\n• غسيل وتنظيف السجاد والكنب (من 20 د.ك)\n• تنظيف المكاتب والشركات (من 30 د.ك)\n• تنظيف بعد البناء والترميم (من 40 د.ك)\n\nجميع خدماتنا مع ضمان الجودة وأفضل الشركات المعتمدة.';
     } else if (lowerMsg.includes('سعر') || lowerMsg.includes('كم')) {
-      reply = '💰 أسعار خدمات CleanHub:\n\n🏠 تنظيف المنزل الشامل: 15-35 د.ك\n🛁 التنظيف العميق: 25-50 د.ك\n🛋️ غسيل السجاد: 20-40 د.ك للمتر المربع\n🏢 تنظيف المكتب: 30-60 د.ك\n🔨 تنظيف ما بعد البناء: 40-80 د.ك\n\n💳 طرق دفع مرنة: K-NET، فيزا، ماستركارد، تابي (أقساط)';
+      reply = 'أسعار خدمات CleanHub:\n\n• تنظيف المنزل الشامل: 15-35 د.ك\n• التنظيف العميق: 25-50 د.ك\n• غسيل السجاد: 20-40 د.ك للمتر المربع\n• تنظيف المكتب: 30-60 د.ك\n• تنظيف ما بعد البناء: 40-80 د.ك\n\nطرق دفع مرنة: K-NET، فيزا، ماستركارد، تابي (أقساط)';
     } else if (lowerMsg.includes('شركة') || lowerMsg.includes('أفضل')) {
-      reply = '⭐ أفضل شركات التنظيف في الكويت:\n\n🥇 Sparkle Clean (4.9⭐) - متخصصون في المنازل\n🥈 Crystal Pro (4.8⭐) - خدمات شاملة\n🥉 Elite Cleaning (4.7⭐) - تنظيف المكاتب\n🏅 Shine Kuwait (4.6⭐) - خدمات سريعة\n🏅 Fresh & Green (4.5⭐) - صديقة للبيئة\n\nجميع الشركات معتمدة ولها تقييمات ممتازة! 🏆';
+      reply = 'أفضل شركات التنظيف في الكويت:\n\n• Sparkle Clean (4.9 نجوم) - متخصصون في المنازل\n• Crystal Pro (4.8 نجوم) - خدمات شاملة\n• Elite Cleaning (4.7 نجوم) - تنظيف المكاتب\n• Shine Kuwait (4.6 نجوم) - خدمات سريعة\n• Fresh & Green (4.5 نجوم) - صديقة للبيئة\n\nجميع الشركات معتمدة ولها تقييمات ممتازة.';
     } else if (lowerMsg.includes('حجز') || lowerMsg.includes('موعد')) {
-      reply = '📅 لحجز خدمة التنظيف:\n\n1. اختر نوع الخدمة المطلوبة\n2. حدد المنطقة والتاريخ المناسب\n3. أضف تفاصيل إضافية (مساحة، عدد الغرف، إلخ)\n4. اختر طريقة الدفع\n5. سنؤكد الحجز خلال دقائق!\n\n📞 أو اتصل بنا مباشرة للحجز الفوري!';
+      reply = 'لحجز خدمة التنظيف:\n\n1. اختر نوع الخدمة المطلوبة\n2. حدد المنطقة والتاريخ المناسب\n3. أضف تفاصيل إضافية (مساحة، عدد الغرف، إلخ)\n4. اختر طريقة الدفع\n5. سنؤكد الحجز خلال دقائق\n\nأو اتصل بنا مباشرة للحجز الفوري.';
     } else if (lowerMsg.includes('منطقة') || lowerMsg.includes('حي')) {
-      reply = '📍 نغطي جميع مناطق الكويت:\n\n🏙️ العاصمة والمناطق المجاورة\n🏘️ حولي والسالمية\n🏚️ الفروانية ومبارك الكبير\n🏭 الأحمدي والجهراء\n🏗️ جميع المناطق الصناعية والتجارية\n\n🚗 خدمة التوصيل والتنظيف في نفس اليوم المتاحة!';
+      reply = 'نغطي جميع مناطق الكويت:\n\n• العاصمة والمناطق المجاورة\n• حولي والسالمية\n• الفروانية ومبارك الكبير\n• الأحمدي والجهراء\n• جميع المناطق الصناعية والتجارية\n\nخدمة التوصيل والتنظيف في نفس اليوم متاحة.';
     } else {
-      reply = '🤖 مرحباً! أنا مساعد CleanHub لخدمات التنظيف في الكويت\n\nيمكنني مساعدتك في:\n• 🔍 البحث عن خدمات التنظيف\n• 💰 معرفة الأسعار والعروض\n• 📅 حجز المواعيد\n• ⭐ تقييم أفضل الشركات\n• 📍 المناطق المغطاة\n\nما الذي تبحث عنه اليوم؟ 🧹✨';
+      reply = 'مرحباً بك في CleanHub\n\nيمكننا مساعدتك في:\n• البحث عن خدمات التنظيف\n• معرفة الأسعار والعروض\n• حجز المواعيد\n• تقييم أفضل الشركات\n• المناطق المغطاة\n\nما الذي تبحث عنه اليوم؟';
     }
 
     aiHist.push({role:'assistant',content:reply});
     appendM('ai',reply);
-    document.getElementById('cw-status').textContent='● مساعد ذكي';
+    document.getElementById('cw-status').textContent='مساعد خدمة العملاء';
   }
 }
 function sl(ms){return new Promise(r=>setTimeout(r,ms));}
