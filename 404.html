@@ -2115,7 +2115,12 @@
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
     <header class="header-bar">
-     <h2 id="serviceTitle">اختر خدمة من القائمة</h2>
+     <div style="display: flex; align-items: center; gap: 10px;">
+       <button id="backButton" class="btn-back" style="display: none;" onclick="showServicesOverview()">
+         <span>←</span> <span>رجوع</span>
+       </button>
+       <h2 id="serviceTitle">اختر خدمة من القائمة</h2>
+     </div>
      <div style="display: flex; align-items: center; gap: 15px;">
        <div class="status"><span class="status-dot"></span> <span>متصل</span></div>
        <button id="logoutButton" class="logout-btn" style="display: none;">تسجيل الخروج</button>
@@ -2520,11 +2525,25 @@
       }
     }
 
-    function persistDriverGpsIframeIfAny() {
-      const iframe = document.getElementById('driverGpsIframe');
-      const mount = document.getElementById('driverGpsPersistentMount');
-      if (!iframe || !mount) return;
-      mount.appendChild(iframe);
+    function showServicesOverview() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
+          <div style="font-size: 48px; margin-bottom: 16px;">
+           🌙
+          </div>
+          <h3 style="color: #F2BC1B; font-size: 18px; margin-bottom: 8px;">مبارك عليكم الشهر </h3>
+          <p style="color: #999; font-size: 14px;">اختر خدمة الي محتاجها من القائمه الي على اليمين </p>
+        </div>
+      `;
+      document.getElementById('serviceTitle').textContent = 'اختر خدمة من القائمة';
+      document.getElementById('backButton').style.display = 'none';
+      // Clear active states
+      document.querySelectorAll('.service-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      currentService = null;
+      setContentAreaEmbedMode(false);
     }
 
     function getOrCreateDriverGpsIframe() {
@@ -2751,6 +2770,9 @@
         }
         setContentAreaEmbedMode(false);
         
+        // Show back button
+        document.getElementById('backButton').style.display = 'flex';
+        
         const serviceTitles = {
           'tow': 'خدمة ونشات',
           'batterySubscription': 'اشتراك بطارية',
@@ -2836,6 +2858,20 @@
             break;
           case 'installments':
             renderInstallmentsInterface();
+            break;
+          default:
+            // Placeholder for services without specific render functions
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = `
+              <div class="form-section full-width">
+                <h3 class="section-title">${serviceTitles[currentService] || currentService}</h3>
+                <div style="text-align: center; padding: 40px 20px;">
+                  <div style="font-size: 48px; margin-bottom: 16px;">🚧</div>
+                  <p style="color: #999; font-size: 14px;">هذه الخدمة قيد التطوير</p>
+                  <button class="btn-primary" onclick="showServicesOverview()">العودة للخدمات</button>
+                </div>
+              </div>
+            `;
             break;
         }
       }
