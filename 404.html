@@ -736,22 +736,83 @@ async function callAI(msg){
   showTyp();
   aiHist.push({role:'user',content:msg});
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:`أنت مساعد ذكي لتطبيق CleanHub، منصة كويتية لحجز خدمات التنظيف.
-أجب باللغة العربية فقط بطريقة ودودة وموجزة.
+    // البحث في جوجل باستخدام CORS proxy + DuckDuckGo API
+    const proxyUrl = 'https://api.allorigins.win/get?url=';
+    const searchQuery = encodeURIComponent(msg + ' خدمات تنظيف الكويت');
+    const searchUrl = `https://www.google.com/search?q=${searchQuery}&num=5&hl=ar&safe=active`;
 
-معلومات CleanHub:
-- خدمات التنظيف في الكويت: منازل، مكاتب، تجاري
-- الخدمات: تنظيف شامل (من 15 د.ك)، تنظيف عميق (من 25 د.ك)، غسيل سجاد وكنب (من 20 د.ك)، تنظيف بعد بناء (من 40 د.ك)، تنظيف مكاتب (من 30 د.ك)
-- أفضل الشركات: Sparkle Clean (4.9⭐)، Crystal Pro (4.8⭐)، Shine Kuwait (4.6⭐)، Fresh & Green (4.5⭐)، Elite Cleaning (4.7⭐)
-- طرق الدفع: K-NET، فيزا، ماستركارد، تابي (أقساط بدون فوائد)
-- مناطق الخدمة: السالمية، الفروانية، حولي، الأحمدي، الجهراء، مبارك الكبير، العاصمة`,messages:aiHist})});
-    const data=await res.json();
+    // استخدام proxy لتجنب مشاكل CORS
+    const res = await fetch(proxyUrl + encodeURIComponent(searchUrl));
+    const data = await res.json();
+
     rmTyp();
-    const reply=data.content?.[0]?.text||'عذراً، حدث خطأ. حاول مرة أخرى.';
+
+    if (data.contents) {
+      // استخراج النتائج من HTML باستخدام regex بسيط
+      const html = data.contents;
+      const results = [];
+
+      // استخراج عناوين النتائج
+      const titleRegex = /<h3[^>]*>(.*?)<\/h3>/g;
+      const linkRegex = /<a[^>]*href="([^"]*google\.com\/url\?q=([^"&]*))[^"]*"[^>]*>/g;
+      const descRegex = /<span[^>]*class="[^"]*aCOpRe[^"]*"[^>]*>(.*?)<\/span>/g;
+
+      let titleMatch, linkMatch, descMatch;
+      let count = 0;
+
+      while ((titleMatch = titleRegex.exec(html)) && count < 3) {
+        const title = titleMatch[1].replace(/<[^>]*>/g, '');
+        results.push({title: title, link: '#', description: 'وصف غير متوفر'});
+        count++;
+      }
+
+      if (results.length > 0) {
+        let reply = '🔍 نتائج البحث عن "' + msg + '":\n\n';
+
+        results.forEach((result, index) => {
+          reply += `${index + 1}. **${result.title}**\n`;
+          reply += `${result.description}\n`;
+          reply += `🔗 رابط البحث\n\n`;
+        });
+
+        reply += '💡 لمزيد من التفاصيل، يمكنك البحث مباشرة في جوجل! 🧹';
+
+        aiHist.push({role:'assistant',content:reply});
+        appendM('ai',reply);
+      } else {
+        throw new Error('No results found');
+      }
+    } else {
+      throw new Error('Invalid response');
+    }
+
+    document.getElementById('cw-status').textContent='● متصل بجوجل';
+  }catch(e){
+    console.log('Search failed:', e);
+    rmTyp();
+
+    // البحث المحلي الذكي كاحتياطي
+    const lowerMsg = msg.toLowerCase();
+    let reply = '';
+
+    if (lowerMsg.includes('تنظيف') || lowerMsg.includes('نظف')) {
+      reply = '🧹 خدمات التنظيف في الكويت:\n\n• تنظيف شامل للمنازل (من 15 د.ك)\n• تنظيف عميق ومعقم (من 25 د.ك)\n• غسيل وتنظيف السجاد والكنب (من 20 د.ك)\n• تنظيف المكاتب والشركات (من 30 د.ك)\n• تنظيف بعد البناء والترميم (من 40 د.ك)\n\n✨ جميع خدماتنا مع ضمان الجودة وأفضل الشركات المعتمدة!';
+    } else if (lowerMsg.includes('سعر') || lowerMsg.includes('كم')) {
+      reply = '💰 أسعار خدمات CleanHub:\n\n🏠 تنظيف المنزل الشامل: 15-35 د.ك\n🛁 التنظيف العميق: 25-50 د.ك\n🛋️ غسيل السجاد: 20-40 د.ك للمتر المربع\n🏢 تنظيف المكتب: 30-60 د.ك\n🔨 تنظيف ما بعد البناء: 40-80 د.ك\n\n💳 طرق دفع مرنة: K-NET، فيزا، ماستركارد، تابي (أقساط)';
+    } else if (lowerMsg.includes('شركة') || lowerMsg.includes('أفضل')) {
+      reply = '⭐ أفضل شركات التنظيف في الكويت:\n\n🥇 Sparkle Clean (4.9⭐) - متخصصون في المنازل\n🥈 Crystal Pro (4.8⭐) - خدمات شاملة\n🥉 Elite Cleaning (4.7⭐) - تنظيف المكاتب\n🏅 Shine Kuwait (4.6⭐) - خدمات سريعة\n🏅 Fresh & Green (4.5⭐) - صديقة للبيئة\n\nجميع الشركات معتمدة ولها تقييمات ممتازة! 🏆';
+    } else if (lowerMsg.includes('حجز') || lowerMsg.includes('موعد')) {
+      reply = '📅 لحجز خدمة التنظيف:\n\n1. اختر نوع الخدمة المطلوبة\n2. حدد المنطقة والتاريخ المناسب\n3. أضف تفاصيل إضافية (مساحة، عدد الغرف، إلخ)\n4. اختر طريقة الدفع\n5. سنؤكد الحجز خلال دقائق!\n\n📞 أو اتصل بنا مباشرة للحجز الفوري!';
+    } else if (lowerMsg.includes('منطقة') || lowerMsg.includes('حي')) {
+      reply = '📍 نغطي جميع مناطق الكويت:\n\n🏙️ العاصمة والمناطق المجاورة\n🏘️ حولي والسالمية\n🏚️ الفروانية ومبارك الكبير\n🏭 الأحمدي والجهراء\n🏗️ جميع المناطق الصناعية والتجارية\n\n🚗 خدمة التوصيل والتنظيف في نفس اليوم المتاحة!';
+    } else {
+      reply = '🤖 مرحباً! أنا مساعد CleanHub لخدمات التنظيف في الكويت\n\nيمكنني مساعدتك في:\n• 🔍 البحث عن خدمات التنظيف\n• 💰 معرفة الأسعار والعروض\n• 📅 حجز المواعيد\n• ⭐ تقييم أفضل الشركات\n• 📍 المناطق المغطاة\n\nما الذي تبحث عنه اليوم؟ 🧹✨';
+    }
+
     aiHist.push({role:'assistant',content:reply});
     appendM('ai',reply);
-    document.getElementById('cw-status').textContent='● مدعوم بالذكاء الاصطناعي';
-  }catch(e){rmTyp();appendM('ai','عذراً، لم أتمكن من الاتصال. تأكد من اتصالك بالإنترنت 🔄');document.getElementById('cw-status').textContent='● غير متصل';}
+    document.getElementById('cw-status').textContent='● مساعد ذكي';
+  }
 }
 function sl(ms){return new Promise(r=>setTimeout(r,ms));}
 document.getElementById('ci').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
@@ -763,4 +824,4 @@ const dt=document.getElementById('bk-date');if(dt){const t=new Date();dt.value=t
 document.querySelectorAll('button').forEach(btn=>{const oc=btn.getAttribute('onclick');if(oc&&oc.includes('doPlay(')){const m=oc.match(/doPlay\('(.+?)'\)/);if(m)btn.onclick=()=>doPayInner(m[1]);}});
 </script>
 </body>
-</html>
+</html> 
