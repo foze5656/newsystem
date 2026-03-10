@@ -8000,6 +8000,18 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const dateOnly = normalizeDateStr(datetimeVal);
       const timeOnly = normalizeTimeStr(datetimeVal.split('T')[1] || '');
 
+      // تنسيق التاريخ والوقت بشكل جميل
+      const dateObj = new Date(dateOnly + 'T00:00:00');
+      const dayOfWeek = dateObj.toLocaleDateString('ar-EG', { weekday: 'long' });
+      const formattedDate = dateObj.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+      const timeParts = timeOnly.split(':').map(Number);
+      const hours = timeParts[0];
+      const minutes = timeParts[1];
+      const period = hours >= 12 ? 'مساءً' : 'صباحاً';
+      const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+      const displayTime = `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+      const beautifulDateTime = `${dayOfWeek} ${formattedDate} - ${displayTime}`;
+
       await loadCarWashAppointments(dateOnly);
       const conflict = carWashData.some(apt => normalizeDateStr(apt.date) === dateOnly && normalizeTimeStr(apt.time) === timeOnly);
       if (conflict) {
@@ -8032,7 +8044,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         // Loading then success states to mirror mechanical flow
         setModalMessage(message, 'loading', '⏳ جاري التسجيل...');
         await new Promise(resolve => setTimeout(resolve, 800));
-        setModalMessage(message, 'success', '✓ تم حفظ الموعد بنجاح!');
+        setModalMessage(message, 'success', `✓ تم حفظ الموعد بنجاح!<br>📅 <strong>${beautifulDateTime}</strong>`);
 
         if (document.getElementById('appointmentDateTime')) {
           document.getElementById('appointmentDateTime').value = `${dateOnly}T${timeOnly}`;
@@ -8303,6 +8315,18 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const dateOnly = normalizeDateStr(datetimeVal);
       const timeOnly = normalizeTimeStr(datetimeVal.split('T')[1] || '');
 
+      // تنسيق التاريخ والوقت بشكل جميل
+      const dateObj = new Date(dateOnly + 'T00:00:00');
+      const dayOfWeek = dateObj.toLocaleDateString('ar-EG', { weekday: 'long' });
+      const formattedDate = dateObj.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+      const timeParts = timeOnly.split(':').map(Number);
+      const hours = timeParts[0];
+      const minutes = timeParts[1];
+      const period = hours >= 12 ? 'مساءً' : 'صباحاً';
+      const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+      const displayTime = `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+      const beautifulDateTime = `${dayOfWeek} ${formattedDate} - ${displayTime}`;
+
       const rows = window._mechAppointmentsRaw || await loadMechanicalAppointmentsData();
       const dataRows = (rows || []).slice(1);
       const conflict = dataRows.some(r =>
@@ -8359,8 +8383,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         // Wait a moment to show the loading state
         await new Promise(resolve => setTimeout(resolve, 800));
         
-        // Show success message with checkmark
-        setModalMessage(message, 'success', '✓ تم تسجيل الموعد بنجاح!');
+        // Show success message with checkmark and formatted date/time
+        setModalMessage(message, 'success', `✓ تم تسجيل الموعد بنجاح!<br>📅 <strong>${beautifulDateTime}</strong>`);
         
         await loadMechanicalAppointmentsData();
         await renderMechanicalAppointments();
