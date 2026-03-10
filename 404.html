@@ -2,1888 +2,765 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>CleanHub - خدمات التنظيف في الكويت</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>CleanHub — Kuwait</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --primary: #00C9A7;
-    --primary-dark: #00A388;
-    --primary-light: #E0FBF5;
-    --secondary: #1A1F36;
-    --accent: #FFD166;
-    --danger: #FF6B6B;
-    --bg: #F4F7FB;
-    --card: #FFFFFF;
-    --text: #1A1F36;
-    --text-muted: #8892A4;
-    --border: #E8ECF4;
-    --shadow: 0 4px 24px rgba(0,201,167,0.10);
-    --shadow-card: 0 2px 16px rgba(26,31,54,0.08);
-    --radius: 20px;
-    --radius-sm: 12px;
-    --nav-h: 70px;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  html, body {
-    font-family: 'Cairo', 'Tajawal', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    height: 100%;
-    overflow: hidden;
-    user-select: none;
-  }
-
-  /* App Shell */
-  #app {
-    max-width: 430px;
-    margin: 0 auto;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    background: var(--bg);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 60px rgba(0,0,0,0.15);
-  }
-
-  /* Screens */
-  .screen {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: calc(var(--nav-h) + 16px);
-    scroll-behavior: smooth;
-    display: none;
-  }
-  .screen.active { display: block; }
-  .screen::-webkit-scrollbar { display: none; }
-
-  /* Top Bar */
-  .topbar {
-    background: white;
-    padding: 16px 20px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .topbar-logo {
-    font-family: 'Tajawal', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--primary);
-    letter-spacing: -0.5px;
-  }
-  .topbar-logo span { color: var(--secondary); }
-  .topbar-icon {
-    width: 40px; height: 40px;
-    background: var(--primary-light);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    font-size: 18px;
-    transition: transform 0.2s;
-  }
-  .topbar-icon:active { transform: scale(0.92); }
-
-  /* Bottom Nav */
-  .bottom-nav {
-    height: var(--nav-h);
-    background: white;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 0 8px;
-    position: relative;
-    z-index: 200;
-    flex-shrink: 0;
-  }
-  .nav-item {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 3px; cursor: pointer; padding: 8px 16px;
-    border-radius: 16px; transition: all 0.25s;
-    min-width: 60px;
-  }
-  .nav-item.active { background: var(--primary-light); }
-  .nav-icon { font-size: 22px; transition: transform 0.25s; }
-  .nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); transition: color 0.25s; }
-  .nav-item.active .nav-label { color: var(--primary); }
-  .nav-item.active .nav-icon { transform: translateY(-2px); }
-
-  /* Hero Section */
-  .hero {
-    background: linear-gradient(135deg, var(--secondary) 0%, #2D3561 100%);
-    padding: 28px 20px 32px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -40px; left: -40px;
-    width: 200px; height: 200px;
-    background: var(--primary);
-    border-radius: 50%;
-    opacity: 0.08;
-  }
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: -60px; right: -30px;
-    width: 160px; height: 160px;
-    background: var(--accent);
-    border-radius: 50%;
-    opacity: 0.07;
-  }
-  .hero-greeting { color: rgba(255,255,255,0.65); font-size: 14px; margin-bottom: 4px; }
-  .hero-name { color: white; font-size: 22px; font-weight: 700; margin-bottom: 16px; }
-  .hero-search {
-    background: white;
-    border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    display: flex; align-items: center; gap: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  }
-  .hero-search input {
-    flex: 1; border: none; outline: none;
-    font-family: 'Cairo', sans-serif;
-    font-size: 14px; color: var(--text);
-    background: transparent;
-    direction: rtl;
-  }
-  .hero-search input::placeholder { color: var(--text-muted); }
-  .search-btn {
-    background: var(--primary);
-    color: white; border: none;
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    cursor: pointer; font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: transform 0.2s;
-  }
-  .search-btn:active { transform: scale(0.92); }
-
-  /* Section */
-  .section { padding: 20px 20px 0; }
-  .section-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 14px;
-  }
-  .section-title { font-size: 17px; font-weight: 700; color: var(--text); }
-  .see-all { font-size: 13px; color: var(--primary); font-weight: 600; cursor: pointer; }
-
-  /* Service Cards - Horizontal Scroll */
-  .services-scroll {
-    display: flex; gap: 12px;
-    overflow-x: auto; padding-bottom: 4px;
-    scrollbar-width: none;
-    margin: 0 -20px; padding: 0 20px 4px;
-  }
-  .services-scroll::-webkit-scrollbar { display: none; }
-  .service-card {
-    flex-shrink: 0;
-    background: white;
-    border-radius: var(--radius);
-    padding: 18px 16px;
-    width: 130px;
-    text-align: center;
-    box-shadow: var(--shadow-card);
-    cursor: pointer;
-    transition: all 0.25s;
-    border: 2px solid transparent;
-  }
-  .service-card:active { transform: scale(0.95); }
-  .service-card.selected { border-color: var(--primary); background: var(--primary-light); }
-  .service-icon { font-size: 32px; margin-bottom: 8px; display: block; }
-  .service-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
-  .service-price { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-
-  /* Company Cards */
-  .company-card {
-    background: white;
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 12px;
-    box-shadow: var(--shadow-card);
-    cursor: pointer;
-    transition: all 0.25s;
-    display: flex; align-items: center; gap: 14px;
-  }
-  .company-card:active { transform: scale(0.98); }
-  .company-logo {
-    width: 58px; height: 58px;
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 26px;
-    flex-shrink: 0;
-  }
-  .company-info { flex: 1; }
-  .company-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
-  .company-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-  .company-footer { display: flex; align-items: center; justify-content: space-between; }
-  .rating {
-    display: flex; align-items: center; gap: 4px;
-    font-size: 13px; font-weight: 600; color: var(--text);
-  }
-  .rating-stars { color: var(--accent); font-size: 12px; }
-  .badge {
-    font-size: 11px; font-weight: 600;
-    padding: 3px 10px; border-radius: 20px;
-  }
-  .badge-available { background: #E0FBF5; color: var(--primary-dark); }
-  .badge-busy { background: #FFF0F0; color: var(--danger); }
-  .price-range { font-size: 12px; color: var(--primary); font-weight: 700; }
-
-  /* Stats Bar */
-  .stats-bar {
-    background: var(--primary);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    display: flex; align-items: center; justify-content: space-around;
-    margin: 0 20px 20px;
-    position: relative; overflow: hidden;
-  }
-  .stats-bar::before {
-    content: '✨';
-    position: absolute; right: 16px; top: 50%;
-    transform: translateY(-50%);
-    font-size: 40px; opacity: 0.15;
-  }
-  .stat-item { text-align: center; }
-  .stat-num { font-size: 20px; font-weight: 900; color: white; }
-  .stat-label { font-size: 10px; color: rgba(255,255,255,0.8); font-weight: 500; }
-  .stat-divider { width: 1px; height: 30px; background: rgba(255,255,255,0.3); }
-
-  /* Filter Tabs */
-  .filter-tabs {
-    display: flex; gap: 8px;
-    overflow-x: auto; padding-bottom: 2px;
-    scrollbar-width: none;
-    margin: 0 -20px; padding: 0 20px 2px;
-  }
-  .filter-tabs::-webkit-scrollbar { display: none; }
-  .filter-tab {
-    flex-shrink: 0;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
-    border: 2px solid var(--border);
-    background: white; color: var(--text-muted);
-  }
-  .filter-tab.active {
-    background: var(--primary);
-    color: white; border-color: var(--primary);
-  }
-
-  /* Booking Screen */
-  .booking-form { padding: 20px; }
-  .form-group { margin-bottom: 18px; }
-  .form-label { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; display: block; }
-  .form-input, .form-select {
-    width: 100%; padding: 14px 16px;
-    border: 2px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: 'Cairo', sans-serif;
-    font-size: 14px; color: var(--text);
-    background: white; outline: none;
-    transition: border-color 0.2s;
-    appearance: none;
-    direction: rtl;
-  }
-  .form-input:focus, .form-select:focus { border-color: var(--primary); }
-
-  /* Room Counter */
-  .room-counter {
-    display: flex; align-items: center; justify-content: space-between;
-    background: white; border: 2px solid var(--border);
-    border-radius: var(--radius-sm); padding: 12px 16px;
-  }
-  .counter-btn {
-    width: 36px; height: 36px;
-    background: var(--primary-light);
-    color: var(--primary); border: none;
-    border-radius: 10px; font-size: 20px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s; font-weight: 700;
-  }
-  .counter-btn:active { transform: scale(0.9); background: var(--primary); color: white; }
-  .counter-val { font-size: 18px; font-weight: 700; color: var(--text); }
-
-  /* Time Slots */
-  .time-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-  }
-  .time-slot {
-    padding: 10px 8px; text-align: center;
-    border: 2px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
-    background: white;
-  }
-  .time-slot.selected { background: var(--primary); color: white; border-color: var(--primary); }
-  .time-slot.unavailable { opacity: 0.4; cursor: not-allowed; background: var(--bg); }
-  .time-slot:not(.unavailable):active { transform: scale(0.95); }
-
-  /* CTA Button */
-  .btn-primary {
-    width: 100%; padding: 16px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white; border: none; border-radius: var(--radius-sm);
-    font-family: 'Cairo', sans-serif;
-    font-size: 16px; font-weight: 700;
-    cursor: pointer; transition: all 0.25s;
-    box-shadow: 0 4px 20px rgba(0,201,167,0.35);
-  }
-  .btn-primary:active { transform: scale(0.98); box-shadow: none; }
-  .btn-secondary {
-    width: 100%; padding: 14px;
-    background: var(--primary-light);
-    color: var(--primary); border: none;
-    border-radius: var(--radius-sm);
-    font-family: 'Cairo', sans-serif;
-    font-size: 15px; font-weight: 700;
-    cursor: pointer; transition: all 0.25s;
-    margin-top: 10px;
-  }
-
-  /* Company Detail */
-  .company-detail-header {
-    background: linear-gradient(135deg, var(--secondary), #2D3561);
-    padding: 24px 20px 28px;
-    color: white;
-    position: relative;
-    overflow: hidden;
-  }
-  .back-btn {
-    width: 38px; height: 38px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 18px; margin-bottom: 16px;
-    transition: background 0.2s;
-  }
-  .back-btn:active { background: rgba(255,255,255,0.25); }
-  .detail-logo-row { display: flex; align-items: center; gap: 14px; }
-  .detail-logo {
-    width: 64px; height: 64px;
-    border-radius: 18px; background: white;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 30px; flex-shrink: 0;
-  }
-  .detail-name { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
-  .detail-sub { font-size: 13px; opacity: 0.75; }
-  .detail-rating-row {
-    display: flex; align-items: center; gap: 8px; margin-top: 8px;
-  }
-  .detail-stars { color: var(--accent); font-size: 14px; }
-  .detail-reviews { font-size: 13px; opacity: 0.75; }
-
-  /* Review Card */
-  .review-card {
-    background: white; border-radius: var(--radius-sm);
-    padding: 14px 16px; margin-bottom: 10px;
-    box-shadow: var(--shadow-card);
-  }
-  .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .reviewer-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%; background: var(--primary-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; flex-shrink: 0;
-  }
-  .reviewer-name { font-size: 14px; font-weight: 600; }
-  .reviewer-date { font-size: 11px; color: var(--text-muted); }
-  .review-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-
-  /* Chat Screen */
-  .chat-list { padding: 16px 20px; }
-  .chat-item {
-    display: flex; align-items: center; gap: 12px;
-    background: white; border-radius: var(--radius-sm);
-    padding: 14px; margin-bottom: 10px;
-    cursor: pointer; box-shadow: var(--shadow-card);
-    transition: all 0.2s;
-  }
-  .chat-item:active { transform: scale(0.98); }
-  .chat-avatar {
-    width: 48px; height: 48px;
-    border-radius: 50%; background: var(--primary-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; flex-shrink: 0; position: relative;
-  }
-  .online-dot {
-    width: 12px; height: 12px;
-    background: var(--primary); border-radius: 50%;
-    border: 2px solid white;
-    position: absolute; bottom: 0; left: 0;
-  }
-  .chat-info { flex: 1; }
-  .chat-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
-  .chat-preview { font-size: 12px; color: var(--text-muted); }
-  .chat-time { font-size: 11px; color: var(--text-muted); }
-  .unread-badge {
-    background: var(--primary); color: white;
-    width: 20px; height: 20px; border-radius: 50%;
-    font-size: 11px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  /* Chat Window */
-  .chat-window { display: flex; flex-direction: column; height: 100%; }
-  .chat-messages {
-    flex: 1; overflow-y: auto; padding: 16px;
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .message {
-    max-width: 75%; padding: 10px 14px;
-    border-radius: 16px; font-size: 13px; line-height: 1.5;
-  }
-  .message.received {
-    background: white; color: var(--text);
-    border-bottom-right-radius: 4px;
-    box-shadow: var(--shadow-card);
-    align-self: flex-end;
-  }
-  .message.sent {
-    background: var(--primary); color: white;
-    border-bottom-left-radius: 4px;
-    align-self: flex-start;
-  }
-  .msg-time { font-size: 10px; opacity: 0.6; margin-top: 4px; }
-  .chat-input-row {
-    padding: 12px 16px;
-    background: white;
-    border-top: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .chat-input {
-    flex: 1; padding: 10px 14px;
-    border: 2px solid var(--border);
-    border-radius: 20px;
-    font-family: 'Cairo', sans-serif; font-size: 13px;
-    outline: none; direction: rtl;
-    transition: border-color 0.2s;
-  }
-  .chat-input:focus { border-color: var(--primary); }
-  .send-btn {
-    width: 40px; height: 40px;
-    background: var(--primary); color: white;
-    border: none; border-radius: 50%;
-    cursor: pointer; font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s;
-  }
-  .send-btn:active { transform: scale(0.9); }
-
-  /* Profile Screen */
-  .profile-header {
-    background: linear-gradient(135deg, var(--secondary), #2D3561);
-    padding: 30px 20px 24px; text-align: center;
-  }
-  .profile-avatar-wrap { position: relative; display: inline-block; margin-bottom: 12px; }
-  .profile-avatar {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: var(--primary-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 36px; border: 3px solid var(--primary);
-  }
-  .edit-avatar {
-    position: absolute; bottom: 0; left: 0;
-    width: 26px; height: 26px; border-radius: 50%;
-    background: var(--primary); color: white;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; cursor: pointer;
-  }
-  .profile-name { color: white; font-size: 20px; font-weight: 700; }
-  .profile-phone { color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 4px; }
-
-  .menu-list { padding: 20px; }
-  .menu-item {
-    background: white; border-radius: var(--radius-sm);
-    padding: 16px; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 12px;
-    cursor: pointer; box-shadow: var(--shadow-card);
-    transition: all 0.2s;
-  }
-  .menu-item:active { transform: scale(0.98); }
-  .menu-icon {
-    width: 42px; height: 42px;
-    border-radius: 12px; background: var(--primary-light);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; flex-shrink: 0;
-  }
-  .menu-text { flex: 1; font-size: 15px; font-weight: 600; }
-  .menu-arrow { color: var(--text-muted); font-size: 14px; }
-
-  /* Booking History */
-  .booking-item {
-    background: white; border-radius: var(--radius);
-    padding: 16px; margin-bottom: 12px;
-    box-shadow: var(--shadow-card);
-  }
-  .booking-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .booking-service { font-size: 15px; font-weight: 700; }
-  .booking-status {
-    font-size: 11px; font-weight: 700;
-    padding: 4px 10px; border-radius: 20px;
-  }
-  .status-done { background: #E0FBF5; color: var(--primary-dark); }
-  .status-upcoming { background: #FFF8E7; color: #E59A00; }
-  .booking-company { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
-  .booking-date { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
-  .booking-price { font-size: 16px; font-weight: 800; color: var(--primary); margin-top: 8px; }
-
-  /* Notification */
-  .notif {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-    background: var(--secondary); color: white;
-    padding: 12px 20px; border-radius: 14px;
-    font-size: 13px; font-weight: 600;
-    z-index: 1000; opacity: 0; pointer-events: none;
-    transition: opacity 0.3s;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    white-space: nowrap;
-  }
-  .notif.show { opacity: 1; }
-
-  /* Promo Banner */
-  .promo-banner {
-    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  .promo-text { color: white; }
-  .promo-title { font-size: 15px; font-weight: 800; margin-bottom: 2px; }
-  .promo-sub { font-size: 12px; opacity: 0.85; }
-  .promo-emoji { font-size: 40px; }
-
-  /* Tags */
-  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-  .tag {
-    font-size: 11px; font-weight: 600;
-    padding: 3px 10px; border-radius: 20px;
-    background: var(--primary-light); color: var(--primary-dark);
-  }
-
-  /* Divider */
-  .divider { height: 1px; background: var(--border); margin: 16px 0; }
-
-  /* Payment Method Cards */
-  .pay-method-card {
-    background: white; border-radius: var(--radius-sm);
-    padding: 14px 16px; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 14px;
-    cursor: pointer; box-shadow: var(--shadow-card);
-    border: 2px solid transparent; transition: all 0.2s;
-  }
-  .pay-method-card:active { transform: scale(0.98); }
-  .pay-method-card.selected { border-color: var(--primary); }
-  .pay-method-logo {
-    width: 56px; height: 36px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .pay-method-info { flex: 1; }
-  .pay-method-name { font-size: 14px; font-weight: 700; }
-  .pay-method-sub { font-size: 12px; color: var(--text-muted); }
-  .pay-radio {
-    width: 22px; height: 22px;
-    border-radius: 50%; border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: all 0.2s;
-  }
-  .pay-radio.selected { border-color: var(--primary); background: var(--primary); }
-  .radio-inner { width: 8px; height: 8px; background: white; border-radius: 50%; }
-
-  /* Tabby installments */
-  .tabby-inst {
-    background: rgba(255,255,255,0.15);
-    border-radius: 10px; padding: 10px 6px; text-align: center;
-    border: 2px solid rgba(255,255,255,0.2); transition: all 0.2s;
-  }
-  .tabby-inst.active { background: white; border-color: white; }
-  .tabby-inst.active .tabby-inst-num { color: #3DBFA8; }
-  .tabby-inst.active .tabby-inst-amt { color: #27A08E; }
-  .tabby-inst-num { font-size: 10px; color: rgba(255,255,255,0.8); font-weight: 600; margin-bottom: 4px; }
-  .tabby-inst-amt { font-size: 13px; font-weight: 900; color: white; }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  /* Fade in animation */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .screen.active > * { animation: fadeUp 0.35s ease forwards; }
-
-  /* Booking success */
-  .success-screen {
-    display: none; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 40px 20px; text-align: center;
-  }
-  .success-screen.active { display: flex; }
-  .success-icon { font-size: 72px; margin-bottom: 20px; animation: bounce 0.6s ease; }
-  @keyframes bounce {
-    0% { transform: scale(0); }
-    60% { transform: scale(1.15); }
-    100% { transform: scale(1); }
-  }
-  .success-title { font-size: 24px; font-weight: 900; color: var(--text); margin-bottom: 8px; }
-  .success-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 30px; }
+:root{
+  --bg:#070B14;--surface:#0E1526;--card:#131D30;--card2:#172035;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --mint:#00E5B0;--mint2:#00C49A;--mint-glow:rgba(0,229,176,0.15);
+  --gold:#FFD166;--rose:#FF6B8A;--sky:#4AB8FF;--knet:#1B5EC4;--tabby:#3DC8AE;
+  --muted:#5A6580;--muted2:#8292B0;--text:rgba(255,255,255,0.92);--text2:rgba(255,255,255,0.6);
+  --nav:66px;--r:16px;--rs:11px;--font:'IBM Plex Sans Arabic',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{font-family:var(--font);background:var(--bg);height:100%;overflow:hidden;color:var(--text);}
+#app{max-width:430px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;display:none;padding-bottom:calc(var(--nav)+8px);}
+.screen.active{display:block;}
+.screen::-webkit-scrollbar{display:none;}
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.4;animation:orbF 8s ease-in-out infinite;}
+.orb1{width:300px;height:300px;background:radial-gradient(circle,rgba(0,229,176,.25),transparent 70%);top:-80px;right:-80px;}
+.orb2{width:250px;height:250px;background:radial-gradient(circle,rgba(74,184,255,.15),transparent 70%);bottom:20%;left:-60px;animation-delay:3s;}
+.orb3{width:200px;height:200px;background:radial-gradient(circle,rgba(255,209,102,.1),transparent 70%);bottom:-40px;right:20%;animation-delay:5s;}
+@keyframes orbF{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.05)}}
+.topbar{background:rgba(7,11,20,0.92);backdrop-filter:blur(24px);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--border);flex-shrink:0;}
+.logo{font-size:20px;font-weight:700;letter-spacing:-.3px;}
+.logo-c{color:var(--mint);}.logo-b{color:var(--text);}
+.tbtns{display:flex;gap:8px;}
+.ticon{width:38px;height:38px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;}
+.ticon:active{background:var(--mint-glow);border-color:rgba(0,229,176,.3);}
+.nav{height:var(--nav);background:rgba(7,11,20,0.97);backdrop-filter:blur(24px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;flex-shrink:0;z-index:200;padding:0 6px;}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:12px;cursor:pointer;transition:all .25s;min-width:58px;}
+.ni.active{background:var(--mint-glow);}
+.ni-ic{font-size:20px;transition:transform .25s;}
+.ni.active .ni-ic{transform:translateY(-2px);}
+.ni-lb{font-size:10px;font-weight:600;color:var(--muted2);transition:color .25s;}
+.ni.active .ni-lb{color:var(--mint);}
+.hero{padding:28px 18px 30px;position:relative;background:linear-gradient(160deg,#0A1022 0%,#0C1828 50%,#090F1C 100%);overflow:hidden;}
+.hero-grid{position:absolute;inset:0;opacity:.025;background-image:linear-gradient(rgba(0,229,176,1) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,176,1) 1px,transparent 1px);background-size:36px 36px;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(0,229,176,.1);border:1px solid rgba(0,229,176,.25);color:var(--mint);font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;margin-bottom:14px;}
+.hero-dot{width:6px;height:6px;background:var(--mint);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-title{font-size:26px;font-weight:700;line-height:1.25;margin-bottom:8px;}
+.hero-title em{font-style:normal;color:var(--mint);}
+.hero-sub{font-size:13px;color:var(--muted2);margin-bottom:22px;line-height:1.7;}
+.hero-search{background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;transition:border-color .2s;}
+.hero-search:focus-within{border-color:rgba(0,229,176,.4);}
+.hero-search input{flex:1;border:none;outline:none;background:transparent;font-family:var(--font);font-size:13px;color:var(--text);direction:rtl;}
+.hero-search input::placeholder{color:var(--muted);}
+.sbtn{background:var(--mint);color:#070B14;border:none;width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:800;transition:transform .15s;flex-shrink:0;}
+.sbtn:active{transform:scale(.9);}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 18px 0;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 10px;text-align:center;}
+.stat-n{font-size:20px;font-weight:700;color:var(--text);}
+.stat-n b{color:var(--mint);}
+.stat-l{font-size:10px;color:var(--muted2);margin-top:3px;}
+.sec{padding:20px 18px 0;}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.sec-t{font-size:15px;font-weight:700;color:var(--text);}
+.sec-a{font-size:12px;color:var(--mint);font-weight:600;cursor:pointer;}
+.srv-row{display:flex;gap:10px;overflow-x:auto;margin:0 -18px;padding:2px 18px 6px;scrollbar-width:none;}
+.srv-row::-webkit-scrollbar{display:none;}
+.srv-c{flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 14px;width:116px;text-align:center;cursor:pointer;transition:all .25s;}
+.srv-c:active{transform:scale(.94);}
+.srv-c.sel{background:rgba(0,229,176,.08);border-color:rgba(0,229,176,.4);}
+.srv-ic{font-size:28px;display:block;margin-bottom:8px;}
+.srv-nm{font-size:12px;font-weight:600;color:var(--text2);line-height:1.35;}
+.srv-pr{font-size:11px;color:var(--muted2);margin-top:4px;}
+.promo{background:linear-gradient(135deg,rgba(0,229,176,.12),rgba(74,184,255,.08));border:1px solid rgba(0,229,176,.2);border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;}
+.promo-l{font-size:15px;font-weight:700;color:var(--mint);}
+.promo-s{font-size:12px;color:var(--muted2);margin-top:2px;}
+.ftabs{display:flex;gap:8px;overflow-x:auto;margin:0 -18px;padding:0 18px 4px;scrollbar-width:none;}
+.ftabs::-webkit-scrollbar{display:none;}
+.ftab{flex-shrink:0;padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:1px solid var(--border);background:transparent;color:var(--muted2);}
+.ftab.active{background:var(--mint);color:#070B14;border-color:var(--mint);}
+.co{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:10px;cursor:pointer;transition:all .2s;display:flex;gap:13px;align-items:center;}
+.co:active{transform:scale(.98);background:var(--card2);}
+.co-av{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.co-inf{flex:1;}
+.co-nm{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.co-mt{font-size:12px;color:var(--muted2);margin-bottom:6px;}
+.co-ft{display:flex;align-items:center;justify-content:space-between;}
+.stars{color:var(--gold);font-size:11px;}
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.b-ok{background:rgba(0,229,176,.12);color:var(--mint);}
+.b-no{background:rgba(255,107,138,.12);color:var(--rose);}
+.co-p{font-size:12px;color:var(--mint);font-weight:700;margin-top:4px;}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(0,229,176,.08);color:rgba(0,229,176,.8);border:1px solid rgba(0,229,176,.15);}
+.bform{padding:18px;}
+.fg{margin-bottom:16px;}
+.fl{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:7px;display:block;}
+.fi,.fs{width:100%;padding:13px 15px;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);font-family:var(--font);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;appearance:none;direction:rtl;}
+.fi::placeholder{color:var(--muted);}
+.fi:focus,.fs:focus{border-color:rgba(0,229,176,.45);}
+.fs option{background:var(--card);color:var(--text);}
+.ctr{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;}
+.cbtn{width:34px;height:34px;background:rgba(0,229,176,.1);color:var(--mint);border:none;border-radius:9px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-weight:700;}
+.cbtn:active{background:var(--mint);color:#070B14;}
+.cval{font-size:17px;font-weight:700;color:var(--text);}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tslot{padding:10px 6px;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-weight:600;color:var(--muted2);cursor:pointer;transition:all .2s;}
+.tslot.sel{background:rgba(0,229,176,.1);color:var(--mint);border-color:rgba(0,229,176,.4);}
+.tslot.off{opacity:.3;cursor:not-allowed;}
+.tslot:not(.off):active{transform:scale(.95);}
+.pest{background:rgba(0,229,176,.07);border:1px solid rgba(0,229,176,.2);border-radius:var(--rs);padding:14px 16px;margin-bottom:18px;}
+.pest-l{font-size:11px;color:var(--muted2);margin-bottom:4px;}
+.pest-n{font-size:28px;font-weight:700;color:var(--mint);}
+.pest-s{font-size:11px;color:var(--muted);margin-top:2px;}
+.btn{width:100%;padding:14px;border:none;border-radius:var(--rs);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-mint{background:var(--mint);color:#070B14;box-shadow:0 4px 24px rgba(0,229,176,.25);}
+.btn-mint:active{transform:scale(.98);}
+.btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border);margin-top:10px;}
+.btn-tabby{background:linear-gradient(135deg,var(--tabby),#27A08E);color:white;box-shadow:0 4px 24px rgba(61,200,174,.25);}
+.btn-knet{background:linear-gradient(135deg,#1B5EC4,#0D3A8A);color:white;}
+.co-dh{background:linear-gradient(160deg,#0A1428,#0D1C35);padding:20px 18px 24px;position:relative;overflow:hidden;}
+.co-dh::before{content:'';position:absolute;bottom:-50px;left:-30px;width:160px;height:160px;background:rgba(0,229,176,.05);border-radius:50%;}
+.bk{width:36px;height:36px;background:rgba(255,255,255,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--text);margin-bottom:16px;transition:all .2s;}
+.bk:active{background:rgba(0,229,176,.15);}
+.dl-row{display:flex;align-items:center;gap:14px;}
+.dl-av{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.dl-nm{font-size:20px;font-weight:700;color:var(--text);}
+.dl-sb{font-size:12px;color:var(--muted2);margin-top:3px;}
+.dl-st{color:var(--gold);font-size:12px;margin-top:6px;}
+.ptable{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;margin-bottom:18px;}
+.prow{display:flex;justify-content:space-between;padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border);}
+.prow:last-child{border-bottom:none;}
+.prow span:first-child{color:var(--muted2);}
+.prow span:last-child{color:var(--text);font-weight:700;}
+.rv{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px;margin-bottom:10px;}
+.rv-hd{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.rv-av{width:34px;height:34px;border-radius:50%;background:rgba(0,229,176,.1);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.rv-nm{font-size:13px;font-weight:700;color:var(--text);}
+.rv-dt{font-size:11px;color:var(--muted2);}
+.rv-tx{font-size:12px;color:var(--muted2);line-height:1.7;}
+.order-sum{background:linear-gradient(135deg,#0A1930,#0D2040);border:1px solid rgba(0,229,176,.15);border-radius:var(--r);padding:18px;margin-bottom:20px;}
+.pay-m{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px 15px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s;}
+.pay-m.sel-p{border-color:rgba(0,229,176,.5);background:rgba(0,229,176,.05);}
+.pay-m:active{transform:scale(.98);}
+.pay-logo{width:52px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pay-nm{font-size:14px;font-weight:700;color:var(--text);}
+.pay-sb{font-size:11px;color:var(--muted2);}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.radio.on{border-color:var(--mint);background:var(--mint);}
+.radio-d{width:7px;height:7px;background:#070B14;border-radius:50%;}
+.knet-hd{background:linear-gradient(135deg,#0A1F5C,#1B5EC4);padding:18px 18px 20px;}
+.visa-hd{background:linear-gradient(135deg,#0E1530,#1A2855);padding:18px 18px 20px;}
+.tabby-hd{background:linear-gradient(135deg,#062520,#0D4038);padding:18px 18px 24px;}
+.secure-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px;}
+.card-prev{background:linear-gradient(135deg,#4776E6,#8E54E9);border-radius:14px;padding:18px;color:white;position:relative;overflow:hidden;margin-bottom:6px;}
+.card-prev::before{content:'';position:absolute;top:-20px;right:-20px;width:90px;height:90px;background:rgba(255,255,255,.08);border-radius:50%;}
+.card-prev::after{content:'';position:absolute;bottom:-25px;left:-15px;width:110px;height:110px;background:rgba(255,255,255,.05);border-radius:50%;}
+.card-num{font-size:17px;font-weight:700;letter-spacing:3px;font-family:monospace;margin:10px 0;}
+.t-insts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:16px;}
+.t-inst{background:rgba(255,255,255,.1);border-radius:9px;padding:9px 4px;text-align:center;border:2px solid transparent;}
+.t-inst.act{background:white;}
+.t-inst-n{font-size:10px;color:rgba(255,255,255,.7);font-weight:600;margin-bottom:3px;}
+.t-inst.act .t-inst-n{color:var(--tabby);}
+.t-inst-a{font-size:12px;font-weight:900;color:white;}
+.t-inst.act .t-inst-a{color:#0D4038;}
+.proc{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:40px 20px;text-align:center;}
+.proc-ring{width:72px;height:72px;border-radius:50%;border:3px solid rgba(0,229,176,.15);border-top-color:var(--mint);animation:spin 1s linear infinite;margin:0 auto 24px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pbar-wrap{width:100%;max-width:240px;height:5px;background:rgba(255,255,255,.07);border-radius:10px;margin-top:20px;overflow:hidden;}
+.pbar{height:100%;background:var(--mint);border-radius:10px;width:0;transition:width .4s ease;}
+.pay-suc{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:36px 20px;text-align:center;}
+.suc-ring{width:90px;height:90px;border-radius:50%;background:rgba(0,229,176,.12);border:2px solid rgba(0,229,176,.3);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 20px;animation:popIn .5s ease;}
+@keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.rcpt{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;width:100%;margin-bottom:22px;text-align:right;}
+.rcpt-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border);}
+.rcpt-row:last-child{border:none;}
+.rcpt-row span:first-child{color:var(--muted2);}
+.rcpt-row span:last-child{font-weight:700;}
+.prof-hd{background:linear-gradient(160deg,#0A1428,#0D1C35);padding:28px 18px 24px;text-align:center;}
+.prof-av{width:76px;height:76px;border-radius:50%;background:rgba(0,229,176,.1);border:2px solid rgba(0,229,176,.3);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px;position:relative;}
+.prof-edit{position:absolute;bottom:0;left:0;width:24px;height:24px;background:var(--mint);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;}
+.prof-nm{font-size:20px;font-weight:700;color:var(--text);}
+.prof-ph{font-size:13px;color:var(--muted2);margin-top:4px;}
+.menu-wrap{padding:20px 18px;}
+.mi{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:15px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
+.mi:active{transform:scale(.98);}
+.mi-ic{width:40px;height:40px;border-radius:10px;background:rgba(0,229,176,.08);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.mi-tx{flex:1;font-size:14px;font-weight:600;color:var(--text);}
+.mi-ar{color:var(--muted);font-size:13px;}
+.bk-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;}
+.bk-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.bk-sv{font-size:14px;font-weight:700;color:var(--text);}
+.bk-st{font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;}
+.st-done{background:rgba(0,229,176,.1);color:var(--mint);}
+.st-up{background:rgba(255,209,102,.1);color:var(--gold);}
+.bk-co{font-size:12px;color:var(--muted2);}
+.bk-dt{font-size:12px;color:var(--muted2);margin-top:3px;}
+.bk-pr{font-size:16px;font-weight:700;color:var(--mint);margin-top:8px;}
+/* CHAT */
+.chat-list-area{padding:16px 18px;}
+.chat-row{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;}
+.chat-row:active{transform:scale(.98);}
+.ch-av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;}
+.ch-online{width:11px;height:11px;background:var(--mint);border-radius:50%;border:2px solid var(--card);position:absolute;bottom:0;left:0;}
+.ch-nm{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.ch-pv{font-size:12px;color:var(--muted2);}
+.ch-t{font-size:11px;color:var(--muted);}
+.unrd{background:var(--mint);color:#070B14;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:4px;}
+.cw{display:none;flex-direction:column;height:100%;}
+.cw.open{display:flex;}
+.cw-hd{background:rgba(7,11,20,.97);backdrop-filter:blur(20px);padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.cw-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(0,229,176,.1);border:1px solid rgba(0,229,176,.2);flex-shrink:0;position:relative;}
+.cw-online{width:9px;height:9px;background:var(--mint);border-radius:50%;border:2px solid var(--bg);position:absolute;bottom:0;left:0;}
+.cw-title{font-size:14px;font-weight:700;color:var(--text);}
+.cw-status{font-size:11px;color:var(--mint);}
+.cw-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.cw-msgs::-webkit-scrollbar{display:none;}
+.msg{max-width:80%;padding:10px 13px;font-size:13px;line-height:1.6;border-radius:16px;word-wrap:break-word;}
+.msg.user{background:rgba(0,229,176,.12);color:rgba(0,229,176,.95);border:1px solid rgba(0,229,176,.2);border-bottom-left-radius:4px;align-self:flex-start;}
+.msg.ai{background:var(--card);color:var(--text);border:1px solid var(--border);border-bottom-right-radius:4px;align-self:flex-end;}
+.msg.co-msg{background:var(--card2);color:var(--text);border:1px solid var(--border);border-bottom-right-radius:4px;align-self:flex-end;}
+.msg-time{font-size:10px;opacity:.45;margin-top:4px;}
+.typing-ind{display:flex;gap:4px;align-items:center;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:16px;border-bottom-right-radius:4px;align-self:flex-end;width:52px;}
+.td{width:6px;height:6px;background:var(--muted2);border-radius:50%;animation:tdot .9s ease-in-out infinite;}
+.td:nth-child(2){animation-delay:.2s;}
+.td:nth-child(3){animation-delay:.4s;}
+@keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.cw-inp{padding:10px 14px;background:rgba(7,11,20,.97);border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.cinput{flex:1;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:20px;font-family:var(--font);font-size:13px;color:var(--text);outline:none;direction:rtl;transition:border-color .2s;}
+.cinput:focus{border-color:rgba(0,229,176,.4);}
+.cinput::placeholder{color:var(--muted);}
+.send-b{width:40px;height:40px;background:var(--mint);color:#070B14;border:none;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:transform .15s;font-weight:800;flex-shrink:0;}
+.send-b:active{transform:scale(.88);}
+.ai-tag-btn{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);font-size:11px;font-weight:600;padding:6px 12px;border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:var(--font);}
+.ai-tag-btn:active{background:rgba(0,229,176,.1);border-color:rgba(0,229,176,.3);color:var(--mint);}
+.quick-btns{display:flex;gap:7px;overflow-x:auto;padding:8px 14px 4px;scrollbar-width:none;border-top:1px solid var(--border);}
+.quick-btns::-webkit-scrollbar{display:none;}
+.bk-suc{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:40px 20px;text-align:center;}
+.bk-suc.show{display:flex;}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card2);color:var(--text);padding:11px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.screen.active>*{animation:fadeUp .3s ease forwards;}
 </style>
 </head>
 <body>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
 <div id="app">
+<div class="toast" id="toast"></div>
 
-  <!-- NOTIFICATION TOAST -->
-  <div class="notif" id="notif"></div>
+<!-- HOME -->
+<div class="screen active" id="s-home">
+  <div class="topbar">
+    <div class="logo"><span class="logo-c">Clean</span><span class="logo-b">Hub</span></div>
+    <div class="tbtns">
+      <div class="ticon" onclick="toast('🔔 لا يوجد إشعارات')">🔔</div>
+      <div class="ticon" onclick="go('s-profile')">👤</div>
+    </div>
+  </div>
+  <div class="hero" style="position:relative;z-index:1">
+    <div class="hero-grid"></div>
+    <div class="hero-tag"><span class="hero-dot"></span>🇰🇼 خدمات التنظيف في الكويت</div>
+    <div class="hero-title">نظّف بيتك<br>بضغطة <em>واحدة</em></div>
+    <div class="hero-sub">قارن بين أفضل شركات التنظيف واحجز بأسعار شفافة</div>
+    <div class="hero-search">
+      <span style="color:var(--muted);font-size:16px">🔍</span>
+      <input type="text" placeholder="ابحث عن خدمة أو شركة...">
+      <button class="sbtn">←</button>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n"><b>48</b>+</div><div class="stat-l">شركة معتمدة</div></div>
+    <div class="stat"><div class="stat-n"><b>2.4</b>K</div><div class="stat-l">حجز ناجح</div></div>
+    <div class="stat"><div class="stat-n"><b>4.8</b>⭐</div><div class="stat-l">متوسط التقييم</div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-hd"><div class="sec-t">اختر الخدمة</div><div class="sec-a">الكل</div></div>
+    <div class="srv-row">
+      <div class="srv-c" onclick="pickSrv(this,'تنظيف منزلي شامل')"><span class="srv-ic">🏠</span><div class="srv-nm">تنظيف منزلي</div><div class="srv-pr">من 15 د.ك</div></div>
+      <div class="srv-c" onclick="pickSrv(this,'تنظيف عميق')"><span class="srv-ic">✨</span><div class="srv-nm">تنظيف عميق</div><div class="srv-pr">من 25 د.ك</div></div>
+      <div class="srv-c" onclick="pickSrv(this,'غسيل سجاد وكنب')"><span class="srv-ic">🛋️</span><div class="srv-nm">سجاد وكنب</div><div class="srv-pr">من 20 د.ك</div></div>
+      <div class="srv-c" onclick="pickSrv(this,'تنظيف ما بعد بناء')"><span class="srv-ic">🏗️</span><div class="srv-nm">بعد البناء</div><div class="srv-pr">من 40 د.ك</div></div>
+      <div class="srv-c" onclick="pickSrv(this,'تنظيف مكاتب')"><span class="srv-ic">🏢</span><div class="srv-nm">مكاتب</div><div class="srv-pr">من 30 د.ك</div></div>
+    </div>
+  </div>
+  <div class="sec" style="padding-top:16px">
+    <div class="promo"><div><div class="promo-l">خصم 20% 🎉</div><div class="promo-s">على أول حجز لك هذا الشهر</div></div><div style="font-size:42px">💎</div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-hd"><div class="sec-t">أفضل الشركات</div><div class="sec-a" onclick="go('s-compare')">مقارنة</div></div>
+    <div class="ftabs" style="margin-bottom:14px">
+      <div class="ftab active" onclick="setFt(this)">الكل</div>
+      <div class="ftab" onclick="setFt(this)">منازل</div>
+      <div class="ftab" onclick="setFt(this)">مكاتب</div>
+      <div class="ftab" onclick="setFt(this)">تجاري</div>
+    </div>
+    <div onclick="showCo('sparkle')" class="co"><div class="co-av" style="background:rgba(0,229,176,.1)">✨</div><div class="co-inf"><div class="co-nm">Sparkle Clean</div><div class="co-mt">منازل · مكاتب · تجاري</div><div class="co-ft"><span><span class="stars">★★★★★</span> <span style="font-size:12px;color:var(--muted2)">4.9 (312)</span></span><span class="badge b-ok">متاح الآن</span></div><div class="co-p">10–50 د.ك</div></div></div>
+    <div onclick="showCo('crystal')" class="co"><div class="co-av" style="background:rgba(74,184,255,.1)">💎</div><div class="co-inf"><div class="co-nm">Crystal Pro</div><div class="co-mt">منازل · سجاد · كنب</div><div class="co-ft"><span><span class="stars">★★★★★</span> <span style="font-size:12px;color:var(--muted2)">4.8 (198)</span></span><span class="badge b-ok">متاح الآن</span></div><div class="co-p">15–45 د.ك</div></div></div>
+    <div onclick="showCo('shine')" class="co"><div class="co-av" style="background:rgba(255,107,138,.1)">🌟</div><div class="co-inf"><div class="co-nm">Shine Kuwait</div><div class="co-mt">مكاتب · تجاري · مستشفيات</div><div class="co-ft"><span><span class="stars">★★★★☆</span> <span style="font-size:12px;color:var(--muted2)">4.6 (241)</span></span><span class="badge b-no">مشغول</span></div><div class="co-p">20–80 د.ك</div></div></div>
+  </div>
+</div>
 
-  <!-- =================== HOME SCREEN =================== -->
-  <div class="screen active" id="screen-home">
-    <!-- Top Bar -->
-    <div class="topbar">
-      <div class="topbar-logo">Clean<span>Hub</span></div>
-      <div style="display:flex;gap:8px">
-        <div class="topbar-icon" onclick="showNotif('🔔 لا يوجد إشعارات جديدة')">🔔</div>
-        <div class="topbar-icon" onclick="switchScreen('screen-profile')">👤</div>
+<!-- COMPARE -->
+<div class="screen" id="s-compare">
+  <div class="topbar"><div class="logo"><span class="logo-c">مقارنة</span><span class="logo-b"> الشركات</span></div><div class="ticon" onclick="toast('⚙️ قريباً')">⚙️</div></div>
+  <div style="padding:16px 18px 0">
+    <div class="ftabs" style="margin-bottom:14px">
+      <div class="ftab active" onclick="setFt(this)">الكل</div>
+      <div class="ftab" onclick="setFt(this)">الأعلى تقييماً</div>
+      <div class="ftab" onclick="setFt(this)">الأقل سعراً</div>
+      <div class="ftab" onclick="setFt(this)">متاح الآن</div>
+    </div>
+    <div onclick="showCo('sparkle')" class="co"><div class="co-av" style="background:rgba(0,229,176,.1)">✨</div><div class="co-inf"><div class="co-nm">Sparkle Clean</div><div class="co-mt">2-4 ساعات</div><div class="tags"><span class="tag">منازل</span><span class="tag">مكاتب</span><span class="tag">تجاري</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">10–50 د.ك</div></div></div>
+    <div onclick="showCo('crystal')" class="co"><div class="co-av" style="background:rgba(74,184,255,.1)">💎</div><div class="co-inf"><div class="co-nm">Crystal Pro</div><div class="co-mt">3-5 ساعات</div><div class="tags"><span class="tag">سجاد</span><span class="tag">كنب</span><span class="tag">ستائر</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">15–45 د.ك</div></div></div>
+    <div onclick="showCo('shine')" class="co"><div class="co-av" style="background:rgba(255,107,138,.1)">🌟</div><div class="co-inf"><div class="co-nm">Shine Kuwait</div><div class="co-mt">4-8 ساعات</div><div class="tags"><span class="tag">مكاتب</span><span class="tag">تجاري</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★☆</span><span class="badge b-no">مشغول</span></div><div class="co-p">20–80 د.ك</div></div></div>
+    <div onclick="showCo('fresh')" class="co"><div class="co-av" style="background:rgba(0,229,176,.08)">🌿</div><div class="co-inf"><div class="co-nm">Fresh & Green</div><div class="co-mt">2-3 ساعات</div><div class="tags"><span class="tag">منازل</span><span class="tag">بيئي</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★☆</span><span class="badge b-ok">متاح</span></div><div class="co-p">18–40 د.ك</div></div></div>
+    <div onclick="showCo('elite')" class="co"><div class="co-av" style="background:rgba(255,209,102,.1)">👑</div><div class="co-inf"><div class="co-nm">Elite Cleaning</div><div class="co-mt">3-6 ساعات</div><div class="tags"><span class="tag">فلل</span><span class="tag">قصور</span></div><div class="co-ft" style="margin-top:7px"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">35–150 د.ك</div></div></div>
+  </div>
+</div>
+
+<!-- BOOKING -->
+<div class="screen" id="s-book">
+  <div class="topbar"><div class="logo"><span class="logo-c">احجز</span><span class="logo-b"> خدمة</span></div></div>
+  <div id="bk-form">
+    <div class="bform">
+      <div class="fg"><label class="fl">🏠 نوع العقار</label><select class="fs"><option>شقة سكنية</option><option>فيلا</option><option>مكتب</option><option>محل تجاري</option></select></div>
+      <div class="fg"><label class="fl">🧹 نوع الخدمة</label><select class="fs"><option>تنظيف شامل</option><option>تنظيف عميق</option><option>غسيل سجاد وكنب</option><option>تنظيف ما بعد بناء</option><option>تنظيف مكاتب</option></select></div>
+      <div class="fg"><label class="fl">📐 المساحة (م²)</label><input type="number" class="fi" value="120" id="bk-area" oninput="calcP()"></div>
+      <div class="fg"><label class="fl">🛏️ عدد الغرف</label><div class="ctr"><button class="cbtn" onclick="chgR(-1)">−</button><span class="cval" id="room-n">3</span><button class="cbtn" onclick="chgR(1)">+</button></div></div>
+      <div class="fg"><label class="fl">📅 التاريخ</label><input type="date" class="fi" id="bk-date"></div>
+      <div class="fg"><label class="fl">⏰ الوقت</label>
+        <div class="tgrid">
+          <div class="tslot" onclick="pickT(this)">8:00 ص</div>
+          <div class="tslot sel" onclick="pickT(this)">10:00 ص</div>
+          <div class="tslot" onclick="pickT(this)">12:00 م</div>
+          <div class="tslot off">2:00 م</div>
+          <div class="tslot" onclick="pickT(this)">4:00 م</div>
+          <div class="tslot" onclick="pickT(this)">6:00 م</div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">📍 المنطقة</label><select class="fs"><option>السالمية</option><option>الفروانية</option><option>حولي</option><option>الأحمدي</option><option>الجهراء</option><option>مبارك الكبير</option><option>العاصمة</option></select></div>
+      <div class="fg"><label class="fl">📝 ملاحظات</label><input type="text" class="fi" placeholder="أي تعليمات خاصة..."></div>
+      <div class="pest"><div class="pest-l">💰 تقدير السعر</div><div class="pest-n" id="pest-n">22 – 35 د.ك</div><div class="pest-s">بناءً على المعلومات المدخلة</div></div>
+      <button class="btn btn-mint" onclick="showRes()">🔍 عرض الشركات المتاحة</button>
+    </div>
+  </div>
+  <div id="bk-res" style="display:none;padding:18px">
+    <div style="font-size:15px;font-weight:700;margin-bottom:14px">✅ شركات متاحة</div>
+    <div class="co" onclick="goPay('Sparkle Clean',28)"><div class="co-av" style="background:rgba(0,229,176,.1)">✨</div><div class="co-inf"><div class="co-nm">Sparkle Clean</div><div class="co-mt">10:00 ص · 3 ساعات</div><div class="co-ft"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">28 د.ك</div></div></div>
+    <div class="co" onclick="goPay('Crystal Pro',32)"><div class="co-av" style="background:rgba(74,184,255,.1)">💎</div><div class="co-inf"><div class="co-nm">Crystal Pro</div><div class="co-mt">10:00 ص · 3.5 ساعات</div><div class="co-ft"><span class="stars">★★★★★</span><span class="badge b-ok">متاح</span></div><div class="co-p">32 د.ك</div></div></div>
+    <div class="co" style="opacity:.4"><div class="co-av" style="background:rgba(255,107,138,.1)">🌟</div><div class="co-inf"><div class="co-nm">Shine Kuwait</div><div class="co-mt">أقرب موعد: الثلاثاء</div><div class="co-ft"><span class="stars">★★★★☆</span><span class="badge b-no">مشغول</span></div></div></div>
+    <button class="btn btn-ghost" onclick="document.getElementById('bk-res').style.display='none';document.getElementById('bk-form').style.display='block'">← تعديل</button>
+  </div>
+  <div class="bk-suc" id="bk-suc">
+    <div style="font-size:68px;margin-bottom:20px;animation:popIn .5s ease">🎉</div>
+    <div style="font-size:24px;font-weight:700;margin-bottom:8px">تم الحجز!</div>
+    <div style="font-size:14px;color:var(--muted2);line-height:1.8;margin-bottom:28px">تم تأكيد حجزك مع Sparkle Clean<br>الثلاثاء · 10:00 صباحاً</div>
+    <button class="btn btn-mint" onclick="resetBook()">العودة للرئيسية 🏠</button>
+  </div>
+</div>
+
+<!-- PAYMENT SELECT -->
+<div class="screen" id="s-payment">
+  <div class="topbar"><div style="display:flex;align-items:center;gap:10px"><div class="bk" style="margin:0" onclick="back()">←</div><div class="logo"><span class="logo-c">اختر</span><span class="logo-b"> طريقة الدفع</span></div></div></div>
+  <div style="padding:18px">
+    <div class="order-sum">
+      <div style="font-size:11px;color:var(--muted2);margin-bottom:8px">ملخص الطلب</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:16px;font-weight:700" id="pay-co-nm">Sparkle Clean</div><div style="font-size:12px;color:var(--muted2);margin-top:2px">تنظيف شامل · الثلاثاء 10:00 ص</div></div>
+        <div style="text-align:left"><div style="font-size:28px;font-weight:700;color:var(--mint)" id="pay-co-am">28</div><div style="font-size:11px;color:var(--muted2)">د.ك</div></div>
       </div>
     </div>
-
-    <!-- Hero -->
-    <div class="hero">
-      <div class="hero-greeting">مرحباً بك في</div>
-      <div class="hero-name">🇰🇼 CleanHub الكويت</div>
-      <div class="hero-search">
-        <span>🔍</span>
-        <input type="text" placeholder="ابحث عن خدمة أو شركة...">
-        <button class="search-btn">←</button>
-      </div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px">اختر طريقة الدفع</div>
+    <div class="pay-m sel-p" id="pm-knet" onclick="selPay('knet')">
+      <div class="pay-logo" style="background:var(--knet)"><span style="color:white;font-size:12px;font-weight:900">K-NET</span></div>
+      <div style="flex:1"><div class="pay-nm">كي-نت</div><div class="pay-sb">بطاقة مدى الكويتية</div></div>
+      <div class="radio on" id="r-knet"><div class="radio-d"></div></div>
     </div>
-
-    <!-- Stats -->
-    <div style="padding:16px 20px 0">
-      <div class="stats-bar">
-        <div class="stat-item">
-          <div class="stat-num">48+</div>
-          <div class="stat-label">شركة معتمدة</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <div class="stat-num">2.4K</div>
-          <div class="stat-label">حجز ناجح</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <div class="stat-num">4.8⭐</div>
-          <div class="stat-label">متوسط التقييم</div>
-        </div>
-      </div>
+    <div class="pay-m" id="pm-visa" onclick="selPay('visa')">
+      <div class="pay-logo" style="background:#1A1F36;padding:0 6px"><span style="color:#1A6FE8;font-size:13px;font-weight:900;font-style:italic">VISA</span></div>
+      <div style="flex:1"><div class="pay-nm">فيزا / ماستركارد</div><div class="pay-sb">بطاقة ائتمانية</div></div>
+      <div class="radio" id="r-visa"></div>
     </div>
-
-    <!-- Services -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">اختر نوع الخدمة</div>
-        <div class="see-all">الكل</div>
-      </div>
-      <div class="services-scroll" id="services-scroll">
-        <div class="service-card" onclick="selectService(this,'تنظيف منزلي شامل')">
-          <span class="service-icon">🏠</span>
-          <div class="service-name">تنظيف منزلي شامل</div>
-          <div class="service-price">من 15 د.ك</div>
-        </div>
-        <div class="service-card" onclick="selectService(this,'تنظيف عميق')">
-          <span class="service-icon">✨</span>
-          <div class="service-name">تنظيف عميق</div>
-          <div class="service-price">من 25 د.ك</div>
-        </div>
-        <div class="service-card" onclick="selectService(this,'غسيل سجاد وكنب')">
-          <span class="service-icon">🛋️</span>
-          <div class="service-name">غسيل سجاد وكنب</div>
-          <div class="service-price">من 20 د.ك</div>
-        </div>
-        <div class="service-card" onclick="selectService(this,'تنظيف ما بعد بناء')">
-          <span class="service-icon">🏗️</span>
-          <div class="service-name">تنظيف ما بعد بناء</div>
-          <div class="service-price">من 40 د.ك</div>
-        </div>
-        <div class="service-card" onclick="selectService(this,'تنظيف مكاتب')">
-          <span class="service-icon">🏢</span>
-          <div class="service-name">تنظيف مكاتب</div>
-          <div class="service-price">من 30 د.ك</div>
-        </div>
-      </div>
+    <div class="pay-m" id="pm-tabby" onclick="selPay('tabby')">
+      <div class="pay-logo" style="background:var(--tabby)"><span style="color:white;font-size:14px;font-weight:900">tabby</span></div>
+      <div style="flex:1"><div class="pay-nm" style="display:flex;align-items:center;gap:6px">تابي – الأقساط <span style="background:var(--tabby);color:white;font-size:9px;padding:2px 6px;border-radius:10px">جديد</span></div><div class="pay-sb">4 دفعات بدون فوائد</div></div>
+      <div class="radio" id="r-tabby"></div>
     </div>
-
-    <!-- Promo -->
-    <div class="section" style="padding-top:20px">
-      <div class="promo-banner">
-        <div class="promo-text">
-          <div class="promo-title">خصم 20% 🎉</div>
-          <div class="promo-sub">على أول حجز لك هذا الشهر</div>
-        </div>
-        <div class="promo-emoji">💎</div>
-      </div>
+    <div class="pay-m" id="pm-apple" onclick="selPay('apple')">
+      <div class="pay-logo" style="background:#000;font-size:18px"></div>
+      <div style="flex:1"><div class="pay-nm">Apple Pay</div><div class="pay-sb">ادفع بسرعة</div></div>
+      <div class="radio" id="r-apple"></div>
     </div>
+    <button class="btn btn-mint" style="margin-top:18px" onclick="procPay()">متابعة الدفع ←</button>
+  </div>
+</div>
 
-    <!-- Top Companies -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">أفضل الشركات</div>
-        <div class="see-all" onclick="switchScreen('screen-compare')">مقارنة</div>
-      </div>
+<!-- KNET -->
+<div class="screen" id="s-knet">
+  <div class="knet-hd">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div onclick="back()" style="width:34px;height:34px;background:rgba(255,255,255,.12);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:16px">←</div>
+      <span style="color:white;font-weight:800;font-size:18px">K-NET</span>
+      <div class="secure-badge" style="margin-right:auto">🔒 آمن ومشفر</div>
+    </div>
+    <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:14px">
+      <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px">المبلغ المطلوب</div>
+      <div style="font-size:28px;font-weight:700;color:white" id="knet-am">28.000 د.ك</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:2px" id="knet-mer">CleanHub – Sparkle Clean</div>
+    </div>
+  </div>
+  <div style="padding:20px">
+    <div style="background:rgba(27,94,196,.15);border:1px solid rgba(27,94,196,.3);border-radius:var(--rs);padding:12px 14px;margin-bottom:18px;font-size:13px;color:rgba(74,184,255,.9);font-weight:600">🏦 سيتم التحقق عبر بوابة K-NET الآمنة</div>
+    <div class="fg"><label class="fl">🏦 اختر البنك</label><select class="fs"><option>بنك الكويت الوطني (NBK)</option><option>بيت التمويل الكويتي (KFH)</option><option>البنك الأهلي الكويتي</option><option>بنك برقان</option><option>بنك الخليج</option><option>بنك وربة</option><option>بنك بوبيان</option></select></div>
+    <div class="fg"><label class="fl">رقم البطاقة</label><input class="fi" type="tel" placeholder="XXXX XXXX XXXX XXXX" id="knet-card" maxlength="19" oninput="fmtC(this)"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="fg"><label class="fl">تاريخ الانتهاء</label><input class="fi" type="tel" placeholder="MM/YY" maxlength="5" oninput="fmtE(this)"></div>
+      <div class="fg"><label class="fl">الرقم السري</label><input class="fi" type="password" placeholder="••••" maxlength="4"></div>
+    </div>
+    <button class="btn btn-knet" onclick="doPay('K-NET')">دفع <span id="knet-btn-am">28.000</span> د.ك</button>
+  </div>
+</div>
 
-      <div class="filter-tabs" style="margin-bottom:14px">
-        <div class="filter-tab active" onclick="setFilter(this,'all')">الكل</div>
-        <div class="filter-tab" onclick="setFilter(this,'home')">منازل</div>
-        <div class="filter-tab" onclick="setFilter(this,'office')">مكاتب</div>
-        <div class="filter-tab" onclick="setFilter(this,'commercial')">تجاري</div>
-      </div>
-
-      <div onclick="showCompany('sparkle')" class="company-card">
-        <div class="company-logo" style="background:#E0FBF5">✨</div>
-        <div class="company-info">
-          <div class="company-name">Sparkle Clean</div>
-          <div class="company-meta">منازل · مكاتب · تجاري</div>
-          <div class="company-footer">
-            <div class="rating"><span class="rating-stars">★★★★★</span> 4.9 (312)</div>
-            <span class="badge badge-available">متاح الآن</span>
-          </div>
-          <div class="price-range">10 – 50 د.ك</div>
-        </div>
-      </div>
-
-      <div onclick="showCompany('crystal')" class="company-card">
-        <div class="company-logo" style="background:#EEF2FF">💎</div>
-        <div class="company-info">
-          <div class="company-name">Crystal Pro</div>
-          <div class="company-meta">منازل · سجاد · كنب</div>
-          <div class="company-footer">
-            <div class="rating"><span class="rating-stars">★★★★★</span> 4.8 (198)</div>
-            <span class="badge badge-available">متاح الآن</span>
-          </div>
-          <div class="price-range">15 – 45 د.ك</div>
-        </div>
-      </div>
-
-      <div onclick="showCompany('shine')" class="company-card">
-        <div class="company-logo" style="background:#FFF0F0">🌟</div>
-        <div class="company-info">
-          <div class="company-name">Shine Kuwait</div>
-          <div class="company-meta">مكاتب · تجاري · مستشفيات</div>
-          <div class="company-footer">
-            <div class="rating"><span class="rating-stars">★★★★☆</span> 4.6 (241)</div>
-            <span class="badge badge-busy">مشغول</span>
-          </div>
-          <div class="price-range">20 – 80 د.ك</div>
-        </div>
+<!-- VISA -->
+<div class="screen" id="s-visa">
+  <div class="visa-hd">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div onclick="back()" style="width:34px;height:34px;background:rgba(255,255,255,.1);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:16px">←</div>
+      <span style="color:white;font-weight:700;font-size:16px">بطاقة ائتمانية</span>
+      <div class="secure-badge" style="margin-right:auto">🔒 SSL 256-bit</div>
+    </div>
+    <div class="card-prev">
+      <div style="font-size:11px;opacity:.7">رقم البطاقة</div>
+      <div class="card-num" id="prev-num">•••• •••• •••• ••••</div>
+      <div style="display:flex;justify-content:space-between">
+        <div><div style="font-size:10px;opacity:.7">الاسم</div><div style="font-size:13px;font-weight:600" id="prev-nm">اسمك هنا</div></div>
+        <div style="text-align:left"><div style="font-size:10px;opacity:.7">الانتهاء</div><div style="font-size:13px;font-weight:600" id="prev-exp">MM/YY</div></div>
       </div>
     </div>
   </div>
-
-  <!-- =================== COMPARE SCREEN =================== -->
-  <div class="screen" id="screen-compare">
-    <div class="topbar">
-      <div class="topbar-logo">مقارنة <span>الشركات</span></div>
-      <div class="topbar-icon" onclick="showNotif('🔽 فلتر متقدم قريباً')">⚙️</div>
+  <div style="padding:20px">
+    <div class="fg"><label class="fl">رقم البطاقة</label><input class="fi" type="tel" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtC(this);document.getElementById('prev-num').textContent=this.value||'•••• •••• •••• ••••'"></div>
+    <div class="fg"><label class="fl">اسم حامل البطاقة</label><input class="fi" type="text" placeholder="الاسم كما هو على البطاقة" oninput="document.getElementById('prev-nm').textContent=this.value||'اسمك هنا'"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="fg"><label class="fl">تاريخ الانتهاء</label><input class="fi" type="tel" placeholder="MM/YY" maxlength="5" oninput="fmtE(this);document.getElementById('prev-exp').textContent=this.value||'MM/YY'"></div>
+      <div class="fg"><label class="fl">CVV</label><input class="fi" type="tel" placeholder="•••" maxlength="3"></div>
     </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--rs);padding:11px 14px;margin-bottom:18px;font-size:12px;color:var(--muted2)">🔒 بياناتك محمية. لن يتم حفظ بيانات بطاقتك.</div>
+    <button class="btn btn-mint" onclick="doPlay('فيزا/ماستركارد')">ادفع <span id="visa-am">28</span> د.ك الآن</button>
+  </div>
+</div>
 
-    <div class="section" style="padding-top:16px">
-      <div class="filter-tabs" style="margin-bottom:16px">
-        <div class="filter-tab active">الكل</div>
-        <div class="filter-tab">الأعلى تقييماً</div>
-        <div class="filter-tab">الأقل سعراً</div>
-        <div class="filter-tab">متاح الآن</div>
-      </div>
+<!-- TABBY -->
+<div class="screen" id="s-tabby">
+  <div class="tabby-hd">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <div onclick="back()" style="width:34px;height:34px;background:rgba(255,255,255,.12);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:16px">←</div>
+      <span style="color:white;font-weight:900;font-size:20px">tabby</span>
+      <div class="secure-badge" style="margin-right:auto;background:rgba(255,255,255,.15)">0% فوائد</div>
+    </div>
+    <div style="text-align:center;color:white;margin-bottom:6px">
+      <div style="font-size:13px;opacity:.75;margin-bottom:4px">قسّم المبلغ</div>
+      <div style="font-size:34px;font-weight:700" id="tabby-tot">28 د.ك</div>
+      <div style="font-size:12px;opacity:.7">على 4 دفعات متساوية</div>
+    </div>
+    <div class="t-insts">
+      <div class="t-inst act"><div class="t-inst-n">الآن</div><div class="t-inst-a" id="ti0">7 د.ك</div></div>
+      <div class="t-inst"><div class="t-inst-n">شهر 1</div><div class="t-inst-a" id="ti1">7 د.ك</div></div>
+      <div class="t-inst"><div class="t-inst-n">شهر 2</div><div class="t-inst-a" id="ti2">7 د.ك</div></div>
+      <div class="t-inst"><div class="t-inst-n">شهر 3</div><div class="t-inst-a" id="ti3">7 د.ك</div></div>
+    </div>
+  </div>
+  <div style="padding:18px">
+    <div style="background:rgba(61,200,174,.08);border:1px solid rgba(61,200,174,.2);border-radius:var(--rs);padding:14px;margin-bottom:18px">
+      <div style="font-size:13px;font-weight:700;color:var(--tabby);margin-bottom:8px">✅ مزايا تابي</div>
+      <div style="font-size:12px;color:var(--muted2);line-height:2.2">✓ بدون فوائد أو رسوم خفية<br>✓ موافقة فورية في ثوانٍ<br>✓ متاح لجميع العملاء في الكويت</div>
+    </div>
+    <div class="fg"><label class="fl">رقم الجوال</label><input class="fi" type="tel" placeholder="+965 XXXX XXXX" value="+965 "></div>
+    <div class="fg"><label class="fl">البريد الإلكتروني</label><input class="fi" type="email" placeholder="example@email.com"></div>
+    <div class="fg"><label class="fl">رقم البطاقة</label><input class="fi" type="tel" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtC(this)"></div>
+    <div style="background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.2);border-radius:var(--rs);padding:11px;margin-bottom:18px;font-size:12px;color:rgba(255,209,102,.85)">⚡ ستحصل على موافقة فورية وسيتم خصم الدفعة الأولى فقط الآن</div>
+    <button class="btn btn-tabby" onclick="doPlay('تابي – الأقساط')">ادفع <span id="tabby-first">7</span> د.ك الآن</button>
+  </div>
+</div>
 
-      <!-- Company Cards with details -->
-      <div onclick="showCompany('sparkle')" class="company-card">
-        <div class="company-logo" style="background:#E0FBF5">✨</div>
-        <div class="company-info">
-          <div class="company-name">Sparkle Clean</div>
-          <div class="company-meta">مدة الخدمة: 2-4 ساعات</div>
-          <div class="tag-row">
-            <span class="tag">منازل</span><span class="tag">مكاتب</span><span class="tag">تجاري</span>
-          </div>
-          <div class="company-footer" style="margin-top:8px">
-            <div class="rating"><span class="rating-stars">★★★★★</span> 4.9</div>
-            <span class="badge badge-available">متاح الآن</span>
-          </div>
-          <div class="price-range">10 – 50 د.ك</div>
-        </div>
-      </div>
+<!-- PROCESSING -->
+<div class="screen" id="s-proc">
+  <div class="proc">
+    <div class="proc-ring"></div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:8px">جارٍ معالجة الدفع...</div>
+    <div style="font-size:13px;color:var(--muted2);line-height:1.7" id="proc-sub">يرجى الانتظار، لا تغلق التطبيق</div>
+    <div class="pbar-wrap"><div class="pbar" id="pbar"></div></div>
+  </div>
+</div>
 
-      <div onclick="showCompany('crystal')" class="company-card">
-        <div class="company-logo" style="background:#EEF2FF">💎</div>
-        <div class="company-info">
-          <div class="company-name">Crystal Pro</div>
-          <div class="company-meta">مدة الخدمة: 3-5 ساعات</div>
-          <div class="tag-row">
-            <span class="tag">منازل</span><span class="tag">سجاد</span><span class="tag">كنب</span>
-          </div>
-          <div class="company-footer" style="margin-top:8px">
-            <div class="rating"><span class="rating-stars">★★★★★</span> 4.8</div>
-            <span class="badge badge-available">متاح الآن</span>
-          </div>
-          <div class="price-range">15 – 45 د.ك</div>
-        </div>
-      </div>
+<!-- PAY SUCCESS -->
+<div class="screen" id="s-paysuc">
+  <div class="pay-suc">
+    <div class="suc-ring">✅</div>
+    <div style="font-size:26px;font-weight:700;margin-bottom:6px">تم الدفع!</div>
+    <div style="font-size:30px;font-weight:700;color:var(--mint);margin-bottom:4px" id="suc-am">28 د.ك</div>
+    <div style="font-size:13px;color:var(--muted2);margin-bottom:24px" id="suc-mt">عبر K-NET</div>
+    <div class="rcpt">
+      <div class="rcpt-row"><span>رقم العملية</span><span>#CH-<span id="rcpt-num">00000</span></span></div>
+      <div class="rcpt-row"><span>الشركة</span><span id="rcpt-co">Sparkle Clean</span></div>
+      <div class="rcpt-row"><span>الموعد</span><span>الثلاثاء 10:00 ص</span></div>
+      <div class="rcpt-row"><span>طريقة الدفع</span><span id="rcpt-mt">K-NET</span></div>
+    </div>
+    <button class="btn btn-mint" onclick="resetPay()">العودة للرئيسية 🏠</button>
+    <button class="btn btn-ghost" style="margin-top:10px" onclick="toast('📲 تم إرسال الإيصال')">مشاركة الإيصال 📤</button>
+  </div>
+</div>
 
-      <div onclick="showCompany('shine')" class="company-card">
-        <div class="company-logo" style="background:#FFF0F0">🌟</div>
-        <div class="company-info">
-          <div class="company-name">Shine Kuwait</div>
-          <div class="company-meta">مدة الخدمة: 4-8 ساعات</div>
-          <div class="tag-row">
-            <span class="tag">مكاتب</span><span class="tag">تجاري</span><span class="tag">مستشفيات</span>
-          </div>
-          <div class="company-footer" style="margin-top:8px">
-            <div class="rating"><span class="rating-stars">★★★★☆</span> 4.6</div>
-            <span class="badge badge-busy">مشغول - متاح الثلاثاء</span>
-          </div>
-          <div class="price-range">20 – 80 د.ك</div>
-        </div>
-      </div>
-
-      <div onclick="showCompany('fresh')" class="company-card">
-        <div class="company-logo" style="background:#F0FFF4">🌿</div>
-        <div class="company-info">
-          <div class="company-name">Fresh & Green</div>
-          <div class="company-meta">مدة الخدمة: 2-3 ساعات</div>
-          <div class="tag-row">
-            <span class="tag">منازل</span><span class="tag">صديق للبيئة</span>
-          </div>
-          <div class="company-footer" style="margin-top:8px">
-            <div class="rating"><span class="rating-stars">★★★★☆</span> 4.5</div>
-            <span class="badge badge-available">متاح الآن</span>
-          </div>
-          <div class="price-range">18 – 40 د.ك</div>
-        </div>
-      </div>
-
-      <div onclick="showCompany('elite')" class="company-card">
-        <div class="company-logo" style="background:#FFF8E7">👑</div>
-        <div class="company-info">
-          <div class="company-name">Elite Cleaning</div>
-          <div class="company-meta">مدة الخدمة: 3-6 ساعات</div>
-          <div class="tag-row">
-            <span class="tag">فلل</span><span class="tag">قصور</span><span class="tag">تجاري</span>
-          </div>
-          <div class="company-footer" style="margin-top:8px">
-            <div class="rating"><span class="rating-stars">★★★★★</span> 4.7</div>
-            <span class="badge badge-available">متاح الآن</span>
-          </div>
-          <div class="price-range">35 – 150 د.ك</div>
-        </div>
+<!-- COMPANY DETAIL -->
+<div class="screen" id="s-codetail">
+  <div class="co-dh">
+    <div class="bk" onclick="back()">←</div>
+    <div class="dl-row">
+      <div class="dl-av" id="dl-av">✨</div>
+      <div>
+        <div class="dl-nm" id="dl-nm">Sparkle Clean</div>
+        <div class="dl-sb" id="dl-sb">منازل · مكاتب · تجاري</div>
+        <div class="dl-st" id="dl-st">★★★★★ <span style="font-size:12px;color:var(--muted2)">4.9 (312)</span></div>
       </div>
     </div>
   </div>
-
-  <!-- =================== BOOKING SCREEN =================== -->
-  <div class="screen" id="screen-book">
-    <div class="topbar">
-      <div class="topbar-logo">احجز <span>خدمة</span></div>
+  <div style="padding:18px">
+    <div class="sec-t" style="margin-bottom:10px">الخدمات</div>
+    <div class="tags" id="dl-tags" style="margin-bottom:18px"></div>
+    <div class="sec-t" style="margin-bottom:10px">💰 الأسعار</div>
+    <div class="ptable">
+      <div class="prow"><span>تنظيف شقة (100م²)</span><span>15 د.ك</span></div>
+      <div class="prow"><span>تنظيف فيلا (250م²)</span><span>35 د.ك</span></div>
+      <div class="prow"><span>تنظيف مكتب</span><span>25 د.ك</span></div>
     </div>
-
-    <div id="booking-form-view">
-      <div class="booking-form">
-        <div class="form-group">
-          <label class="form-label">🏠 نوع العقار</label>
-          <select class="form-select">
-            <option>شقة سكنية</option>
-            <option>فيلا</option>
-            <option>مكتب</option>
-            <option>محل تجاري</option>
-            <option>مستودع</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">🧹 نوع الخدمة</label>
-          <select class="form-select">
-            <option>تنظيف شامل</option>
-            <option>تنظيف عميق</option>
-            <option>غسيل سجاد وكنب</option>
-            <option>تنظيف ما بعد بناء</option>
-            <option>تنظيف مكاتب</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">📐 مساحة العقار (م²)</label>
-          <input type="number" class="form-input" placeholder="مثال: 150" value="120">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">🛏️ عدد الغرف</label>
-          <div class="room-counter">
-            <button class="counter-btn" onclick="changeCount(-1)">−</button>
-            <span class="counter-val" id="room-count">3</span>
-            <button class="counter-btn" onclick="changeCount(1)">+</button>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">📅 التاريخ المفضل</label>
-          <input type="date" class="form-input" id="booking-date">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">⏰ الوقت المفضل</label>
-          <div class="time-grid">
-            <div class="time-slot" onclick="selectTime(this)">8:00 ص</div>
-            <div class="time-slot selected" onclick="selectTime(this)">10:00 ص</div>
-            <div class="time-slot" onclick="selectTime(this)">12:00 م</div>
-            <div class="time-slot unavailable">2:00 م</div>
-            <div class="time-slot" onclick="selectTime(this)">4:00 م</div>
-            <div class="time-slot" onclick="selectTime(this)">6:00 م</div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">📍 المنطقة</label>
-          <select class="form-select">
-            <option>السالمية</option>
-            <option>الفروانية</option>
-            <option>حولي</option>
-            <option>الأحمدي</option>
-            <option>الجهراء</option>
-            <option>مبارك الكبير</option>
-            <option>العاصمة</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">📝 ملاحظات إضافية</label>
-          <input type="text" class="form-input" placeholder="أي تعليمات خاصة للفريق...">
-        </div>
-
-        <div style="background:var(--primary-light);border-radius:var(--radius-sm);padding:14px;margin-bottom:20px">
-          <div style="font-size:13px;color:var(--primary-dark);font-weight:600">💰 تقدير السعر</div>
-          <div style="font-size:24px;font-weight:900;color:var(--primary);margin-top:4px">22 – 35 د.ك</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">بناءً على المعلومات المدخلة</div>
-        </div>
-
-        <button class="btn-primary" onclick="showResults()">🔍 عرض الشركات المتاحة</button>
-      </div>
-    </div>
-
-    <!-- Results after booking form -->
-    <div id="booking-results" style="display:none;padding:20px">
-      <div style="font-size:16px;font-weight:700;margin-bottom:14px">✅ شركات متاحة في وقتك</div>
-
-      <div class="company-card" onclick="goToPayment('Sparkle Clean','28')">
-        <div class="company-logo" style="background:#E0FBF5">✨</div>
-        <div class="company-info">
-          <div class="company-name">Sparkle Clean</div>
-          <div class="company-meta">10:00 ص - مدة 3 ساعات</div>
-          <div class="company-footer">
-            <div class="rating"><span class="rating-stars">★★★★★</span> 4.9</div>
-            <span class="badge badge-available">متاح</span>
-          </div>
-          <div class="booking-price">28 د.ك</div>
-        </div>
-      </div>
-
-      <div class="company-card" onclick="goToPayment('Crystal Pro','32')">
-        <div class="company-logo" style="background:#EEF2FF">💎</div>
-        <div class="company-info">
-          <div class="company-name">Crystal Pro</div>
-          <div class="company-meta">10:00 ص - مدة 3.5 ساعات</div>
-          <div class="company-footer">
-            <div class="rating"><span class="rating-stars">★★★★★</span> 4.8</div>
-            <span class="badge badge-available">متاح</span>
-          </div>
-          <div class="booking-price">32 د.ك</div>
-        </div>
-      </div>
-
-      <div class="company-card" style="opacity:0.6">
-        <div class="company-logo" style="background:#FFF0F0">🌟</div>
-        <div class="company-info">
-          <div class="company-name">Shine Kuwait</div>
-          <div class="company-meta">أقرب موعد: الثلاثاء 10:00 ص</div>
-          <div class="company-footer">
-            <div class="rating"><span class="rating-stars">★★★★☆</span> 4.6</div>
-            <span class="badge badge-busy">مشغول</span>
-          </div>
-        </div>
-      </div>
-
-      <button class="btn-secondary" onclick="document.getElementById('booking-results').style.display='none';document.getElementById('booking-form-view').style.display='block'">← تعديل البيانات</button>
-    </div>
-
-    <!-- Success -->
-    <div class="success-screen" id="booking-success">
-      <div class="success-icon">🎉</div>
-      <div class="success-title">تم الحجز بنجاح!</div>
-      <div class="success-sub">تم تأكيد حجزك مع Sparkle Clean<br>الثلاثاء، 10:00 صباحاً<br>ستصلك رسالة تأكيد على هاتفك</div>
-      <button class="btn-primary" onclick="goHome()">العودة للرئيسية</button>
-    </div>
+    <div class="sec-t" style="margin-bottom:10px">عن الشركة</div>
+    <div style="font-size:13px;color:var(--muted2);line-height:1.8;margin-bottom:18px" id="dl-about"></div>
+    <div class="sec-t" style="margin-bottom:12px">⭐ آراء العملاء</div>
+    <div class="rv"><div class="rv-hd"><div class="rv-av">👩</div><div><div class="rv-nm">فاطمة العلي</div><div class="rv-dt">⭐⭐⭐⭐⭐ · منذ 3 أيام</div></div></div><div class="rv-tx">خدمة ممتازة جداً! الفريق كان محترف ومنظم. البيت نظيف تماماً والرائحة رائعة 👍</div></div>
+    <div class="rv"><div class="rv-hd"><div class="rv-av">👨</div><div><div class="rv-nm">محمد الرشيد</div><div class="rv-dt">⭐⭐⭐⭐⭐ · أسبوع</div></div></div><div class="rv-tx">أفضل شركة تنظيف في الكويت. وصلوا في الوقت المحدد وأنجزوا باحترافية.</div></div>
+    <div style="height:12px"></div>
+    <button class="btn btn-mint" onclick="go('s-book')">📅 احجز الآن</button>
+    <button class="btn btn-ghost" onclick="openCoChat()">💬 تواصل مع الشركة</button>
   </div>
+</div>
 
-  <!-- =================== CHAT SCREEN =================== -->
-  <div class="screen" id="screen-chat">
-    <div id="chat-list-view">
-      <div class="topbar">
-        <div class="topbar-logo">الرسائل</div>
-        <div class="topbar-icon" onclick="showNotif('✏️ محادثة جديدة')">✏️</div>
+<!-- CHAT -->
+<div class="screen" id="s-chat">
+  <div id="cl-wrap">
+    <div class="topbar"><div class="logo"><span class="logo-c">الرسائل</span></div><div class="ticon">✏️</div></div>
+    <div class="chat-list-area">
+      <!-- AI -->
+      <div class="chat-row" onclick="openChat('ai','🤖 مساعد CleanHub الذكي')">
+        <div class="ch-av" style="background:linear-gradient(135deg,rgba(0,229,176,.2),rgba(74,184,255,.15));border:1px solid rgba(0,229,176,.3)">🤖<div class="ch-online"></div></div>
+        <div style="flex:1"><div class="ch-nm">مساعد CleanHub الذكي 🧠</div><div class="ch-pv">اسألني أي سؤال!</div></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><div class="ch-t">الآن</div><div class="unrd">1</div></div>
       </div>
-      <div class="chat-list">
-        <!-- Support -->
-        <div class="chat-item" onclick="openChat('support')">
-          <div class="chat-avatar">
-            🎧
-            <div class="online-dot"></div>
-          </div>
-          <div class="chat-info">
-            <div class="chat-name">دعم CleanHub</div>
-            <div class="chat-preview">كيف يمكنني مساعدتك؟</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-            <div class="chat-time">الآن</div>
-            <div class="unread-badge">1</div>
-          </div>
-        </div>
-        <div class="chat-item" onclick="openChat('sparkle')">
-          <div class="chat-avatar">✨</div>
-          <div class="chat-info">
-            <div class="chat-name">Sparkle Clean</div>
-            <div class="chat-preview">سيصل الفريق في الساعة 10 صباحاً</div>
-          </div>
-          <div class="chat-time">أمس</div>
-        </div>
-        <div class="chat-item" onclick="openChat('crystal')">
-          <div class="chat-avatar">💎</div>
-          <div class="chat-info">
-            <div class="chat-name">Crystal Pro</div>
-            <div class="chat-preview">شكراً لاختياركم خدماتنا</div>
-          </div>
-          <div class="chat-time">الأحد</div>
-        </div>
+      <div class="chat-row" onclick="openChat('sparkle','✨ Sparkle Clean')">
+        <div class="ch-av" style="background:rgba(0,229,176,.08)">✨<div class="ch-online"></div></div>
+        <div style="flex:1"><div class="ch-nm">Sparkle Clean</div><div class="ch-pv">سيصل الفريق الساعة 10 ص</div></div>
+        <div class="ch-t">أمس</div>
       </div>
-    </div>
-
-    <!-- Chat Window -->
-    <div id="chat-window-view" style="display:none;height:100%;display:none;flex-direction:column">
-      <div class="topbar">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="back-btn" style="margin:0;background:var(--primary-light)" onclick="closeChat()">←</div>
-          <div>
-            <div style="font-size:15px;font-weight:700" id="chat-title">دعم CleanHub</div>
-            <div style="font-size:11px;color:var(--primary)">● متصل الآن</div>
-          </div>
-        </div>
-        <div class="topbar-icon">📞</div>
+      <div class="chat-row" onclick="openChat('crystal','💎 Crystal Pro')">
+        <div class="ch-av" style="background:rgba(74,184,255,.08)">💎</div>
+        <div style="flex:1"><div class="ch-nm">Crystal Pro</div><div class="ch-pv">شكراً لاختياركم خدماتنا</div></div>
+        <div class="ch-t">الأحد</div>
       </div>
-      <div class="chat-messages" id="chat-messages">
-        <div class="message received">
-          مرحباً! 👋 أنا مساعد CleanHub. كيف يمكنني مساعدتك اليوم؟
-          <div class="msg-time">10:00 ص</div>
-        </div>
-        <div class="message sent">
-          أريد الاستفسار عن خدمة التنظيف العميق
-          <div class="msg-time">10:01 ص</div>
-        </div>
-        <div class="message received">
-          بالتأكيد! خدمة التنظيف العميق تشمل تنظيف جميع الغرف بالمواد المتخصصة. تريد أعرفك على الأسعار؟ 😊
-          <div class="msg-time">10:01 ص</div>
-        </div>
-      </div>
-      <div class="chat-input-row">
-        <button class="send-btn" onclick="sendMsg()">➤</button>
-        <input class="chat-input" id="msg-input" type="text" placeholder="اكتب رسالة...">
-        <span style="font-size:20px;cursor:pointer">📎</span>
+      <div class="chat-row" onclick="openChat('support','🎧 دعم CleanHub')">
+        <div class="ch-av" style="background:rgba(255,209,102,.08)">🎧<div class="ch-online"></div></div>
+        <div style="flex:1"><div class="ch-nm">دعم CleanHub</div><div class="ch-pv">كيف يمكنني مساعدتك؟</div></div>
+        <div class="ch-t">الإثنين</div>
       </div>
     </div>
   </div>
-
-  <!-- =================== PROFILE SCREEN =================== -->
-  <div class="screen" id="screen-profile">
-    <div class="profile-header">
-      <div class="profile-avatar-wrap">
-        <div class="profile-avatar">👤</div>
-        <div class="edit-avatar">✏️</div>
-      </div>
-      <div class="profile-name">أحمد الكويتي</div>
-      <div class="profile-phone">+965 5555 1234</div>
+  <!-- Chat Window -->
+  <div class="cw" id="cw">
+    <div class="cw-hd">
+      <div style="width:34px;height:34px;background:rgba(255,255,255,.07);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--text);flex-shrink:0" onclick="closeChat()">←</div>
+      <div class="cw-av" id="cw-av">🤖<div class="cw-online"></div></div>
+      <div style="flex:1"><div class="cw-title" id="cw-title">مساعد CleanHub</div><div class="cw-status" id="cw-status">● مدعوم بالذكاء الاصطناعي</div></div>
+      <div class="ticon" style="background:transparent">📞</div>
     </div>
-
-    <!-- Bookings History -->
-    <div class="section" style="padding-top:20px">
-      <div class="section-title" style="margin-bottom:14px">📋 حجوزاتي</div>
-
-      <div class="booking-item">
-        <div class="booking-header">
-          <div class="booking-service">تنظيف شامل</div>
-          <span class="booking-status status-upcoming">قادم</span>
-        </div>
-        <div class="booking-company">✨ Sparkle Clean</div>
-        <div class="booking-date">📅 الثلاثاء 10 مارس · 10:00 ص</div>
-        <div class="booking-price">28 د.ك</div>
-      </div>
-
-      <div class="booking-item">
-        <div class="booking-header">
-          <div class="booking-service">غسيل كنب وسجاد</div>
-          <span class="booking-status status-done">مكتمل ✓</span>
-        </div>
-        <div class="booking-company">💎 Crystal Pro</div>
-        <div class="booking-date">📅 الخميس 5 مارس · 2:00 م</div>
-        <div class="booking-price">35 د.ك</div>
-      </div>
+    <div class="cw-msgs" id="cw-msgs"></div>
+    <div id="quick-row" class="quick-btns">
+      <div class="ai-tag-btn" onclick="quickS(this)">ما هي أسعار التنظيف؟</div>
+      <div class="ai-tag-btn" onclick="quickS(this)">كيف أحجز؟</div>
+      <div class="ai-tag-btn" onclick="quickS(this)">الفرق بين الخدمات؟</div>
+      <div class="ai-tag-btn" onclick="quickS(this)">طرق الدفع</div>
     </div>
-
-    <div class="menu-list">
-      <div class="menu-item" onclick="showNotif('⭐ صفحة التقييمات')">
-        <div class="menu-icon">⭐</div>
-        <div class="menu-text">تقييماتي</div>
-        <div class="menu-arrow">←</div>
-      </div>
-      <div class="menu-item" onclick="showNotif('💳 طرق الدفع')">
-        <div class="menu-icon">💳</div>
-        <div class="menu-text">طرق الدفع</div>
-        <div class="menu-arrow">←</div>
-      </div>
-      <div class="menu-item" onclick="showNotif('📍 عناويني')">
-        <div class="menu-icon">📍</div>
-        <div class="menu-text">عناويني</div>
-        <div class="menu-arrow">←</div>
-      </div>
-      <div class="menu-item" onclick="showNotif('🔔 إعدادات الإشعارات')">
-        <div class="menu-icon">🔔</div>
-        <div class="menu-text">الإشعارات</div>
-        <div class="menu-arrow">←</div>
-      </div>
-      <div class="menu-item" onclick="showNotif('🚪 تم تسجيل الخروج')">
-        <div class="menu-icon" style="background:#FFF0F0">🚪</div>
-        <div class="menu-text" style="color:var(--danger)">تسجيل الخروج</div>
-        <div class="menu-arrow">←</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- =================== COMPANY DETAIL SCREEN =================== -->
-  <div class="screen" id="screen-company">
-    <div class="company-detail-header">
-      <div class="back-btn" onclick="goBack()">←</div>
-      <div class="detail-logo-row">
-        <div class="detail-logo" id="detail-logo">✨</div>
-        <div>
-          <div class="detail-name" id="detail-name">Sparkle Clean</div>
-          <div class="detail-sub" id="detail-sub">منازل · مكاتب · تجاري</div>
-          <div class="detail-rating-row">
-            <span class="detail-stars">★★★★★</span>
-            <span id="detail-rating">4.9 (312 تقييم)</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="padding:20px">
-
-      <!-- Services offered -->
-      <div class="section-title" style="margin-bottom:12px">الخدمات المقدمة</div>
-      <div class="tag-row" style="margin-bottom:18px" id="detail-tags">
-        <span class="tag">تنظيف شامل</span>
-        <span class="tag">تنظيف عميق</span>
-        <span class="tag">غسيل كنب</span>
-        <span class="tag">سجاد</span>
-      </div>
-
-      <!-- Pricing -->
-      <div style="background:var(--primary-light);border-radius:var(--radius-sm);padding:16px;margin-bottom:18px">
-        <div style="font-size:13px;font-weight:700;color:var(--primary-dark);margin-bottom:10px">💰 هيكل الأسعار</div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05)" id="detail-price1">
-          <span>تنظيف شقة (100م²)</span><span style="font-weight:700">15 د.ك</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05)">
-          <span>تنظيف فيلا (250م²)</span><span style="font-weight:700">35 د.ك</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0">
-          <span>تنظيف مكتب</span><span style="font-weight:700">25 د.ك</span>
-        </div>
-      </div>
-
-      <!-- About -->
-      <div class="section-title" style="margin-bottom:10px">عن الشركة</div>
-      <div style="font-size:13px;color:var(--text-muted);line-height:1.8;margin-bottom:18px" id="detail-about">
-        شركة متخصصة في تقديم خدمات التنظيف الشامل في الكويت منذ 2015. نعتمد على أحدث المعدات والمواد الصديقة للبيئة. فريقنا مدرب ومرخص.
-      </div>
-
-      <!-- Reviews -->
-      <div class="section-title" style="margin-bottom:12px">⭐ آراء العملاء</div>
-
-      <div class="review-card">
-        <div class="review-header">
-          <div class="reviewer-avatar">👩</div>
-          <div>
-            <div class="reviewer-name">فاطمة العلي</div>
-            <div class="reviewer-date">⭐⭐⭐⭐⭐ · منذ 3 أيام</div>
-          </div>
-        </div>
-        <div class="review-text">خدمة ممتازة جداً! الفريق كان محترف ومنظم. البيت نظيف تماماً والرائحة رائعة. سأعيد الحجز بالتأكيد 👍</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-header">
-          <div class="reviewer-avatar">👨</div>
-          <div>
-            <div class="reviewer-name">محمد الرشيد</div>
-            <div class="reviewer-date">⭐⭐⭐⭐⭐ · منذ أسبوع</div>
-          </div>
-        </div>
-        <div class="review-text">أفضل شركة تنظيف جربتها في الكويت. وصلوا في الوقت المحدد وأنجزوا العمل باحترافية عالية.</div>
-      </div>
-
-      <div class="review-card">
-        <div class="review-header">
-          <div class="reviewer-avatar">👩</div>
-          <div>
-            <div class="reviewer-name">نورة الصباح</div>
-            <div class="reviewer-date">⭐⭐⭐⭐☆ · منذ أسبوعين</div>
-          </div>
-        </div>
-        <div class="review-text">خدمة جيدة جداً، الفريق ودود ومهني. السعر مناسب مقارنة بالجودة.</div>
-      </div>
-
-      <button class="btn-primary" style="margin-top:8px" onclick="bookNow()">📅 احجز الآن</button>
-      <button class="btn-secondary" onclick="switchToChat()">💬 تواصل مع الشركة</button>
-    </div>
-  </div>
-
-  <!-- =================== PAYMENT SCREEN =================== -->
-  <div class="screen" id="screen-payment">
-    <div class="topbar">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="back-btn" style="margin:0;background:var(--primary-light);width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px" onclick="goBack()">←</div>
-        <div class="topbar-logo">اختر <span>طريقة الدفع</span></div>
-      </div>
-    </div>
-
-    <div style="padding:20px">
-      <!-- Order Summary -->
-      <div style="background:linear-gradient(135deg,var(--secondary),#2D3561);border-radius:var(--radius);padding:18px;margin-bottom:20px;color:white">
-        <div style="font-size:12px;opacity:0.7;margin-bottom:6px">ملخص الطلب</div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-size:16px;font-weight:700" id="pay-company-name">Sparkle Clean</div>
-            <div style="font-size:13px;opacity:0.75">تنظيف شامل · الثلاثاء 10:00 ص</div>
-          </div>
-          <div style="text-align:left">
-            <div style="font-size:24px;font-weight:900" id="pay-amount">28</div>
-            <div style="font-size:12px;opacity:0.7">د.ك</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="font-size:15px;font-weight:700;margin-bottom:14px">اختر طريقة الدفع</div>
-
-      <!-- KNET -->
-      <div class="pay-method-card" id="pm-knet" onclick="selectPayMethod('knet')">
-        <div class="pay-method-logo" style="background:#1B4F9B">
-          <span style="color:white;font-size:13px;font-weight:900;letter-spacing:-0.5px">K-NET</span>
-        </div>
-        <div class="pay-method-info">
-          <div class="pay-method-name">كي-نت</div>
-          <div class="pay-method-sub">بطاقة مدى الكويتية</div>
-        </div>
-        <div class="pay-radio" id="radio-knet"></div>
-      </div>
-
-      <!-- VISA / Mastercard -->
-      <div class="pay-method-card" id="pm-visa" onclick="selectPayMethod('visa')">
-        <div class="pay-method-logo" style="background:#1A1F36;display:flex;gap:4px;align-items:center;padding:0 8px">
-          <span style="color:#1A6FE8;font-size:14px;font-weight:900;font-style:italic">VISA</span>
-          <span style="color:#EB001B;font-size:18px">●</span><span style="color:#F79E1B;font-size:18px;margin-right:-10px">●</span>
-        </div>
-        <div class="pay-method-info">
-          <div class="pay-method-name">فيزا / ماستركارد</div>
-          <div class="pay-method-sub">ادفع ببطاقتك الائتمانية</div>
-        </div>
-        <div class="pay-radio" id="radio-visa"></div>
-      </div>
-
-      <!-- Tabby -->
-      <div class="pay-method-card" id="pm-tabby" onclick="selectPayMethod('tabby')" style="border:2px solid #3DBFA8">
-        <div class="pay-method-logo" style="background:#3DBFA8">
-          <span style="color:white;font-size:15px;font-weight:900">tabby</span>
-        </div>
-        <div class="pay-method-info">
-          <div class="pay-method-name" style="display:flex;align-items:center;gap:6px">
-            تابي – الدفع بالأقساط
-            <span style="background:#3DBFA8;color:white;font-size:10px;padding:2px 6px;border-radius:20px;font-weight:700">جديد</span>
-          </div>
-          <div class="pay-method-sub">4 دفعات بدون فوائد</div>
-        </div>
-        <div class="pay-radio selected" id="radio-tabby"><div class="radio-inner"></div></div>
-      </div>
-
-      <!-- Apple Pay -->
-      <div class="pay-method-card" id="pm-apple" onclick="selectPayMethod('apple')">
-        <div class="pay-method-logo" style="background:#000">
-          <span style="color:white;font-size:18px"></span>
-        </div>
-        <div class="pay-method-info">
-          <div class="pay-method-name">Apple Pay</div>
-          <div class="pay-method-sub">ادفع بسرعة وأمان</div>
-        </div>
-        <div class="pay-radio" id="radio-apple"></div>
-      </div>
-
-      <button class="btn-primary" style="margin-top:20px" onclick="proceedPayment()" id="pay-btn">متابعة الدفع →</button>
-    </div>
-  </div>
-
-  <!-- =================== KNET SCREEN =================== -->
-  <div class="screen" id="screen-knet">
-    <div style="background:#1B4F9B;padding:16px 20px 20px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-        <div onclick="goBack()" style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:18px">←</div>
-        <div style="color:white;font-weight:800;font-size:18px">K-NET</div>
-        <div style="margin-right:auto;background:rgba(255,255,255,0.2);color:white;font-size:11px;padding:4px 10px;border-radius:20px">🔒 آمن ومشفر</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.1);border-radius:var(--radius-sm);padding:14px;color:white">
-        <div style="font-size:12px;opacity:0.75;margin-bottom:4px">المبلغ المطلوب</div>
-        <div style="font-size:28px;font-weight:900" id="knet-amount">28.000 د.ك</div>
-        <div style="font-size:12px;opacity:0.7;margin-top:2px" id="knet-merchant">CleanHub – Sparkle Clean</div>
-      </div>
-    </div>
-
-    <div style="padding:24px 20px">
-      <div style="background:#EEF4FF;border-radius:var(--radius-sm);padding:14px;margin-bottom:20px;font-size:13px;color:#1B4F9B;font-weight:600;display:flex;gap:8px;align-items:center">
-        🏦 سيتم توجيهك لبوابة K-NET الآمنة لإتمام عملية الدفع
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">🏦 اختر البنك</label>
-        <select class="form-select" id="knet-bank">
-          <option>بنك الكويت الوطني (NBK)</option>
-          <option>بيت التمويل الكويتي (KFH)</option>
-          <option>البنك الأهلي الكويتي (NBQ)</option>
-          <option>بنك برقان</option>
-          <option>بنك الخليج</option>
-          <option>بنك وربة</option>
-          <option>بنك بوبيان</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">رقم البطاقة</label>
-        <input class="form-input" type="tel" placeholder="XXXX XXXX XXXX XXXX" id="knet-card" maxlength="19" oninput="formatCard(this)">
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="form-group">
-          <label class="form-label">تاريخ الانتهاء</label>
-          <input class="form-input" type="tel" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
-        </div>
-        <div class="form-group">
-          <label class="form-label">الرقم السري</label>
-          <input class="form-input" type="password" placeholder="••••" maxlength="4">
-        </div>
-      </div>
-
-      <button class="btn-primary" onclick="processKnet()" id="knet-pay-btn">
-        دفع <span id="knet-btn-amount">28.000</span> د.ك
-      </button>
-    </div>
-  </div>
-
-  <!-- =================== VISA SCREEN =================== -->
-  <div class="screen" id="screen-visa">
-    <div style="background:linear-gradient(135deg,#1A1F36,#2D3561);padding:16px 20px 20px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-        <div onclick="goBack()" style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:18px">←</div>
-        <div style="color:white;font-weight:800;font-size:18px">بطاقة ائتمانية</div>
-        <div style="margin-right:auto;background:rgba(255,255,255,0.1);color:white;font-size:11px;padding:4px 10px;border-radius:20px">🔒 SSL آمن</div>
-      </div>
-      <!-- Card Preview -->
-      <div id="card-preview" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:20px;color:white;min-height:100px;position:relative;overflow:hidden">
-        <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,0.08);border-radius:50%"></div>
-        <div style="position:absolute;bottom:-30px;left:-10px;width:120px;height:120px;background:rgba(255,255,255,0.05);border-radius:50%"></div>
-        <div style="font-size:13px;opacity:0.7;margin-bottom:12px">رقم البطاقة</div>
-        <div style="font-size:18px;font-weight:700;letter-spacing:3px;margin-bottom:16px;font-family:monospace" id="preview-num">•••• •••• •••• ••••</div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-end">
-          <div>
-            <div style="font-size:10px;opacity:0.7">اسم حامل البطاقة</div>
-            <div style="font-size:14px;font-weight:600" id="preview-name">اسمك هنا</div>
-          </div>
-          <div style="text-align:left">
-            <div style="font-size:10px;opacity:0.7">تاريخ الانتهاء</div>
-            <div style="font-size:14px;font-weight:600" id="preview-exp">MM/YY</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="padding:24px 20px">
-      <div class="form-group">
-        <label class="form-label">رقم البطاقة</label>
-        <input class="form-input" type="tel" placeholder="1234 5678 9012 3456" id="visa-num" maxlength="19"
-          oninput="formatCard(this);document.getElementById('preview-num').textContent=this.value||'•••• •••• •••• ••••'">
-      </div>
-      <div class="form-group">
-        <label class="form-label">اسم حامل البطاقة</label>
-        <input class="form-input" type="text" placeholder="الاسم كما هو على البطاقة" id="visa-name"
-          oninput="document.getElementById('preview-name').textContent=this.value||'اسمك هنا'">
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="form-group">
-          <label class="form-label">تاريخ الانتهاء</label>
-          <input class="form-input" type="tel" placeholder="MM/YY" maxlength="5" id="visa-exp"
-            oninput="formatExpiry(this);document.getElementById('preview-exp').textContent=this.value||'MM/YY'">
-        </div>
-        <div class="form-group">
-          <label class="form-label">CVV</label>
-          <input class="form-input" type="tel" placeholder="•••" maxlength="3">
-        </div>
-      </div>
-      <div style="background:#F4F7FB;border-radius:var(--radius-sm);padding:12px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-muted)">
-        🔒 بياناتك محمية بتشفير SSL 256-bit. لن يتم حفظ بيانات بطاقتك.
-      </div>
-      <button class="btn-primary" onclick="processVisa()">
-        ادفع <span id="visa-btn-amount">28</span> د.ك الآن
-      </button>
-    </div>
-  </div>
-
-  <!-- =================== TABBY SCREEN =================== -->
-  <div class="screen" id="screen-tabby">
-    <div style="background:linear-gradient(135deg,#3DBFA8,#27A08E);padding:16px 20px 24px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-        <div onclick="goBack()" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:18px">←</div>
-        <div style="color:white;font-weight:900;font-size:22px">tabby</div>
-        <div style="margin-right:auto;background:rgba(255,255,255,0.2);color:white;font-size:11px;padding:4px 10px;border-radius:20px">بدون فوائد 0%</div>
-      </div>
-
-      <!-- Installment Preview -->
-      <div style="color:white;text-align:center;margin-bottom:8px">
-        <div style="font-size:14px;opacity:0.85;margin-bottom:4px">قسّم مبلغ</div>
-        <div style="font-size:36px;font-weight:900" id="tabby-total">28 د.ك</div>
-        <div style="font-size:13px;opacity:0.8">على 4 دفعات متساوية</div>
-      </div>
-
-      <!-- 4 payments -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px" id="tabby-installments">
-        <div class="tabby-inst active">
-          <div class="tabby-inst-num">الآن</div>
-          <div class="tabby-inst-amt">7 د.ك</div>
-        </div>
-        <div class="tabby-inst">
-          <div class="tabby-inst-num">شهر 1</div>
-          <div class="tabby-inst-amt">7 د.ك</div>
-        </div>
-        <div class="tabby-inst">
-          <div class="tabby-inst-num">شهر 2</div>
-          <div class="tabby-inst-amt">7 د.ك</div>
-        </div>
-        <div class="tabby-inst">
-          <div class="tabby-inst-num">شهر 3</div>
-          <div class="tabby-inst-amt">7 د.ك</div>
-        </div>
-      </div>
-    </div>
-
-    <div style="padding:20px">
-      <div style="background:#E8FBF8;border-radius:var(--radius-sm);padding:14px;margin-bottom:20px">
-        <div style="font-size:14px;font-weight:700;color:#27A08E;margin-bottom:8px">✅ مزايا تابي</div>
-        <div style="font-size:13px;color:var(--text-muted);line-height:2">
-          ✓ بدون فوائد أو رسوم خفية<br>
-          ✓ موافقة فورية في ثوانٍ<br>
-          ✓ لا يؤثر على تصنيفك الائتماني<br>
-          ✓ متاح لجميع العملاء في الكويت
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">رقم الجوال</label>
-        <input class="form-input" type="tel" placeholder="+965 XXXX XXXX" value="+965 ">
-      </div>
-      <div class="form-group">
-        <label class="form-label">البريد الإلكتروني</label>
-        <input class="form-input" type="email" placeholder="example@email.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">رقم البطاقة (أي بطاقة)</label>
-        <input class="form-input" type="tel" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
-      </div>
-
-      <div style="background:#FFF8E7;border-radius:var(--radius-sm);padding:12px;margin-bottom:20px;font-size:12px;color:#8B6914;display:flex;gap:8px">
-        ⚡ ستحصل على موافقة فورية وسيتم خصم الدفعة الأولى فقط الآن
-      </div>
-
-      <button class="btn-primary" style="background:linear-gradient(135deg,#3DBFA8,#27A08E);box-shadow:0 4px 20px rgba(61,191,168,0.4)" onclick="processTabby()">
-        ادفع <span id="tabby-first">7</span> د.ك الآن (الدفعة الأولى)
-      </button>
-    </div>
-  </div>
-
-  <!-- =================== PAYMENT PROCESSING =================== -->
-  <div class="screen" id="screen-processing">
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 20px;text-align:center">
-      <div id="processing-icon" style="font-size:64px;margin-bottom:20px;animation:spin 1s linear infinite">⏳</div>
-      <div style="font-size:20px;font-weight:800;margin-bottom:8px" id="processing-title">جارٍ معالجة الدفع...</div>
-      <div style="font-size:14px;color:var(--text-muted);line-height:1.7" id="processing-sub">يرجى الانتظار، لا تغلق التطبيق</div>
-      <div style="width:100%;max-width:260px;height:6px;background:var(--border);border-radius:10px;margin-top:24px;overflow:hidden">
-        <div id="progress-bar" style="height:100%;background:var(--primary);border-radius:10px;width:0%;transition:width 0.3s"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- =================== PAYMENT SUCCESS =================== -->
-  <div class="screen" id="screen-pay-success">
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80%;padding:40px 20px;text-align:center">
-      <div style="width:100px;height:100px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:50px;margin-bottom:24px;animation:bounce 0.6s ease">✅</div>
-      <div style="font-size:26px;font-weight:900;margin-bottom:8px">تم الدفع بنجاح!</div>
-      <div style="font-size:34px;font-weight:900;color:var(--primary);margin-bottom:4px" id="success-amount">28 د.ك</div>
-      <div style="font-size:14px;color:var(--text-muted);margin-bottom:24px" id="success-method">عبر K-NET</div>
-
-      <div style="background:white;border-radius:var(--radius);padding:20px;width:100%;box-shadow:var(--shadow-card);margin-bottom:24px;text-align:right">
-        <div style="font-size:14px;font-weight:700;margin-bottom:12px;text-align:center">🧾 إيصال الدفع</div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span style="color:var(--text-muted)">رقم العملية</span><span style="font-weight:700">#CH-<span id="receipt-num">48291</span></span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span style="color:var(--text-muted)">الشركة</span><span id="receipt-company">Sparkle Clean</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
-          <span style="color:var(--text-muted)">الموعد</span><span>الثلاثاء 10:00 ص</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0">
-          <span style="color:var(--text-muted)">طريقة الدفع</span><span id="receipt-method">K-NET</span>
-        </div>
-      </div>
-
-      <button class="btn-primary" onclick="goHome()">العودة للرئيسية 🏠</button>
-      <button class="btn-secondary" onclick="showNotif('📲 تم إرسال الإيصال على واتساب')">مشاركة الإيصال 📤</button>
-    </div>
-  </div>
-
-  <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
-    <div class="nav-item active" id="nav-home" onclick="switchScreen('screen-home')">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">الرئيسية</span>
-    </div>
-    <div class="nav-item" id="nav-compare" onclick="switchScreen('screen-compare')">
-      <span class="nav-icon">🔍</span>
-      <span class="nav-label">مقارنة</span>
-    </div>
-    <div class="nav-item" id="nav-book" onclick="switchScreen('screen-book')">
-      <span class="nav-icon">📅</span>
-      <span class="nav-label">حجز</span>
-    </div>
-    <div class="nav-item" id="nav-chat" onclick="switchScreen('screen-chat')">
-      <span class="nav-icon">💬</span>
-      <span class="nav-label">الرسائل</span>
-    </div>
-    <div class="nav-item" id="nav-profile" onclick="switchScreen('screen-profile')">
-      <span class="nav-icon">👤</span>
-      <span class="nav-label">حسابي</span>
+    <div class="cw-inp">
+      <button class="send-b" onclick="sendMsg()">↑</button>
+      <input class="cinput" id="ci" type="text" placeholder="اكتب رسالتك...">
     </div>
   </div>
 </div>
 
+<!-- PROFILE -->
+<div class="screen" id="s-profile">
+  <div class="prof-hd">
+    <div class="prof-av">👤<div class="prof-edit">✏️</div></div>
+    <div class="prof-nm">أحمد الكويتي</div>
+    <div class="prof-ph">+965 5555 1234</div>
+  </div>
+  <div style="padding:16px 18px 0">
+    <div class="sec-t" style="margin-bottom:12px">📋 حجوزاتي</div>
+    <div class="bk-item"><div class="bk-hd"><div class="bk-sv">تنظيف شامل</div><span class="bk-st st-up">قادم</span></div><div class="bk-co">✨ Sparkle Clean</div><div class="bk-dt">📅 الثلاثاء 10 مارس · 10:00 ص</div><div class="bk-pr">28 د.ك</div></div>
+    <div class="bk-item"><div class="bk-hd"><div class="bk-sv">غسيل كنب وسجاد</div><span class="bk-st st-done">مكتمل ✓</span></div><div class="bk-co">💎 Crystal Pro</div><div class="bk-dt">📅 الخميس 5 مارس · 2:00 م</div><div class="bk-pr">35 د.ك</div></div>
+  </div>
+  <div class="menu-wrap">
+    <div class="mi" onclick="toast('⭐ تقييماتي')"><div class="mi-ic">⭐</div><div class="mi-tx">تقييماتي</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('💳 طرق الدفع')"><div class="mi-ic">💳</div><div class="mi-tx">طرق الدفع</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('📍 عناويني')"><div class="mi-ic">📍</div><div class="mi-tx">عناويني</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('🔔 الإشعارات')"><div class="mi-ic">🔔</div><div class="mi-tx">الإشعارات</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('🌐 تغيير اللغة')"><div class="mi-ic">🌐</div><div class="mi-tx">اللغة</div><div class="mi-ar">←</div></div>
+    <div class="mi" onclick="toast('🚪 تم تسجيل الخروج')" style="border-color:rgba(255,107,138,.15)"><div class="mi-ic" style="background:rgba(255,107,138,.08)">🚪</div><div class="mi-tx" style="color:var(--rose)">تسجيل الخروج</div><div class="mi-ar">←</div></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="nav">
+  <div class="ni active" id="ni-home" onclick="go('s-home')"><div class="ni-ic">🏠</div><div class="ni-lb">الرئيسية</div></div>
+  <div class="ni" id="ni-compare" onclick="go('s-compare')"><div class="ni-ic">🔍</div><div class="ni-lb">مقارنة</div></div>
+  <div class="ni" id="ni-book" onclick="go('s-book')"><div class="ni-ic">📅</div><div class="ni-lb">حجز</div></div>
+  <div class="ni" id="ni-chat" onclick="go('s-chat')"><div class="ni-ic">💬</div><div class="ni-lb">رسائل</div></div>
+  <div class="ni" id="ni-profile" onclick="go('s-profile')"><div class="ni-ic">👤</div><div class="ni-lb">حسابي</div></div>
+</div>
+</div>
+
 <script>
-  // Payment State
-  let selectedPayMethod = 'tabby';
-  let payAmount = 28;
-  let payCompany = 'Sparkle Clean';
+/* ─── BACKEND DB ─── */
+const DB={user:{name:'أحمد الكويتي',phone:'+965 5555 1234'},companies:{sparkle:{name:'Sparkle Clean',icon:'✨',bg:'rgba(0,229,176,.1)',sub:'منازل · مكاتب · تجاري',tags:['تنظيف شامل','تنظيف عميق','كنب','سجاد'],about:'شركة متخصصة في التنظيف الشامل بالكويت منذ 2015. نعتمد على أحدث المعدات والمواد الصديقة للبيئة.'},crystal:{name:'Crystal Pro',icon:'💎',bg:'rgba(74,184,255,.1)',sub:'منازل · سجاد · كنب',tags:['سجاد','كنب','ستائر','تنظيف عميق'],about:'متخصصون في تنظيف السجاد والكنب بتقنية البخار منذ 2018. نضمن إزالة كل البقع.'},shine:{name:'Shine Kuwait',icon:'🌟',bg:'rgba(255,107,138,.1)',sub:'مكاتب · تجاري',tags:['مكاتب','تجاري','مستشفيات'],about:'شركة متخصصة في تنظيف الشركات والمنشآت. نقدم عقود صيانة دورية.'},fresh:{name:'Fresh & Green',icon:'🌿',bg:'rgba(0,229,176,.08)',sub:'منازل · بيئي',tags:['منازل','عضوي','آمن للأطفال'],about:'نستخدم حصرياً المنتجات الطبيعية. مثالي للعائلات التي لديها أطفال.'},elite:{name:'Elite Cleaning',icon:'👑',bg:'rgba(255,209,102,.1)',sub:'فلل · قصور',tags:['فلل','قصور','ديكور فاخر'],about:'نتخصص في تنظيف المنازل الفاخرة والقصور بأعلى معايير الجودة.'}}};
 
-  function goToPayment(company, amount) {
-    payCompany = company;
-    payAmount = parseFloat(amount);
-    document.getElementById('pay-company-name').textContent = company;
-    document.getElementById('pay-amount').textContent = amount;
-    // Update tabby installments
-    const inst = Math.ceil(payAmount / 4 * 10) / 10;
-    document.getElementById('tabby-total').textContent = payAmount + ' د.ك';
-    document.getElementById('tabby-first').textContent = inst;
-    document.querySelectorAll('.tabby-inst-amt').forEach(el => el.textContent = inst + ' د.ك');
-    prevScreen = 'screen-book';
-    switchScreen('screen-payment');
-  }
+/* ─── STATE ─── */
+let prevS='s-home',curS='s-home',rooms=3,selM='knet',payAm=28,payCo='Sparkle Clean',chatT='ai',aiHist=[];
+const navM={'s-home':'ni-home','s-compare':'ni-compare','s-book':'ni-book','s-chat':'ni-chat','s-profile':'ni-profile'};
 
-  function selectPayMethod(method) {
-    selectedPayMethod = method;
-    ['knet','visa','tabby','apple'].forEach(m => {
-      const radio = document.getElementById('radio-'+m);
-      const card = document.getElementById('pm-'+m);
-      if(radio) { radio.classList.remove('selected'); radio.innerHTML = ''; }
-      if(card) card.classList.remove('selected');
-    });
-    const radio = document.getElementById('radio-'+method);
-    const card = document.getElementById('pm-'+method);
-    if(radio) { radio.classList.add('selected'); radio.innerHTML = '<div class="radio-inner"></div>'; }
-    if(card) card.classList.add('selected');
-  }
-  // Init tabby selected
-  selectPayMethod('tabby');
+/* ─── NAV ─── */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  prevS=curS;curS=id;
+  if(navM[id])document.getElementById(navM[id]).classList.add('active');
+  document.getElementById(id).scrollTop=0;
+}
+function back(){go(prevS);}
 
-  function proceedPayment() {
-    prevScreen = 'screen-payment';
-    if(selectedPayMethod === 'knet') {
-      document.getElementById('knet-amount').textContent = payAmount.toFixed(3) + ' د.ك';
-      document.getElementById('knet-btn-amount').textContent = payAmount.toFixed(3);
-      document.getElementById('knet-merchant').textContent = 'CleanHub – ' + payCompany;
-      switchScreen('screen-knet');
-    } else if(selectedPayMethod === 'visa') {
-      document.getElementById('visa-btn-amount').textContent = payAmount;
-      switchScreen('screen-visa');
-    } else if(selectedPayMethod === 'tabby') {
-      switchScreen('screen-tabby');
-    } else if(selectedPayMethod === 'apple') {
-      showNotif('🍎 Apple Pay غير متوفر على هذا الجهاز');
-    }
-  }
+/* ─── TOAST ─── */
+let tt;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600);}
 
-  function processKnet() {
-    const card = document.getElementById('knet-card').value;
-    if(card.length < 10) { showNotif('⚠️ أدخل رقم بطاقة صحيح'); return; }
-    startProcessing('K-NET');
-  }
-  function processVisa() {
-    const num = document.getElementById('visa-num').value;
-    if(num.length < 10) { showNotif('⚠️ أدخل رقم بطاقة صحيح'); return; }
-    startProcessing('فيزا/ماستركارد');
-  }
-  function processTabby() {
-    startProcessing('تابي – قسّطها');
-  }
+/* ─── FILTERS ─── */
+function setFt(el){el.closest('.ftabs').querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
 
-  function startProcessing(methodName) {
-    prevScreen = 'screen-payment';
-    switchScreen('screen-processing');
-    document.getElementById('processing-icon').style.animation = 'spin 1s linear infinite';
-    let pct = 0;
-    const bar = document.getElementById('progress-bar');
-    const steps = [
-      [500, 30, '🔐 التحقق من بيانات البطاقة...'],
-      [1200, 60, '🏦 الاتصال بالبنك...'],
-      [2000, 85, '✅ جارٍ تأكيد العملية...'],
-      [2800, 100, '🎉 تم التأكيد!']
-    ];
-    steps.forEach(([delay, pctVal, text]) => {
-      setTimeout(() => {
-        bar.style.width = pctVal + '%';
-        document.getElementById('processing-sub').textContent = text;
-        if(pctVal === 100) {
-          document.getElementById('processing-icon').style.animation = 'none';
-          document.getElementById('processing-icon').textContent = '✅';
-          setTimeout(() => showPaySuccess(methodName), 400);
-        }
-      }, delay);
-    });
-  }
+/* ─── SERVICES ─── */
+function pickSrv(el,nm){document.querySelectorAll('.srv-c').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');toast('✅ '+nm);setTimeout(()=>go('s-book'),500);}
 
-  function showPaySuccess(methodName) {
-    document.getElementById('success-amount').textContent = payAmount + ' د.ك';
-    document.getElementById('success-method').textContent = 'عبر ' + methodName;
-    document.getElementById('receipt-company').textContent = payCompany;
-    document.getElementById('receipt-method').textContent = methodName;
-    document.getElementById('receipt-num').textContent = Math.floor(10000 + Math.random()*90000);
-    // Reset processing for next use
-    document.getElementById('processing-icon').textContent = '⏳';
-    document.getElementById('processing-icon').style.animation = 'spin 1s linear infinite';
-    document.getElementById('progress-bar').style.width = '0%';
-    document.getElementById('processing-title').textContent = 'جارٍ معالجة الدفع...';
-    document.getElementById('processing-sub').textContent = 'يرجى الانتظار، لا تغلق التطبيق';
-    switchScreen('screen-pay-success');
-  }
+/* ─── BOOKING ─── */
+function chgR(d){rooms=Math.max(1,Math.min(10,rooms+d));document.getElementById('room-n').textContent=rooms;calcP();}
+function calcP(){const a=parseInt(document.getElementById('bk-area')?.value)||120;const lo=Math.round(a*.15+rooms*2),hi=Math.round(a*.22+rooms*3);const el=document.getElementById('pest-n');if(el)el.textContent=lo+' – '+hi+' د.ك';}
+function pickT(el){if(el.classList.contains('off'))return;el.closest('.tgrid').querySelectorAll('.tslot').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');}
+function showRes(){document.getElementById('bk-form').style.display='none';document.getElementById('bk-res').style.display='block';document.getElementById('s-book').scrollTop=0;}
+function resetBook(){document.getElementById('bk-form').style.display='block';document.getElementById('bk-res').style.display='none';document.getElementById('bk-suc').classList.remove('show');go('s-home');}
 
-  function formatCard(input) {
-    let v = input.value.replace(/\D/g,'').substring(0,16);
-    input.value = v.replace(/(.{4})/g,'$1 ').trim();
-  }
-  function formatExpiry(input) {
-    let v = input.value.replace(/\D/g,'').substring(0,4);
-    if(v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2);
-    input.value = v;
-  }
+/* ─── COMPANY ─── */
+function showCo(k){const c=DB.companies[k];document.getElementById('dl-av').textContent=c.icon;document.getElementById('dl-av').style.background=c.bg;document.getElementById('dl-nm').textContent=c.name;document.getElementById('dl-sb').textContent=c.sub;document.getElementById('dl-tags').innerHTML=c.tags.map(t=>`<span class="tag">${t}</span>`).join('');document.getElementById('dl-about').textContent=c.about;prevS=curS;go('s-codetail');}
+function openCoChat(){go('s-chat');openChat('sparkle','✨ Sparkle Clean');}
 
+/* ─── PAYMENT ─── */
+function goPay(co,am){payCo=co;payAm=parseFloat(am);document.getElementById('pay-co-nm').textContent=co;document.getElementById('pay-co-am').textContent=am;const inst=Math.round(payAm/4*10)/10;document.getElementById('tabby-tot').textContent=payAm+' د.ك';['ti0','ti1','ti2','ti3'].forEach(id=>document.getElementById(id).textContent=inst+' د.ك');document.getElementById('tabby-first').textContent=inst;prevS='s-book';go('s-payment');}
+function selPay(m){selM=m;['knet','visa','tabby','apple'].forEach(k=>{const r=document.getElementById('r-'+k),c=document.getElementById('pm-'+k);r.className='radio';r.innerHTML='';c.classList.remove('sel-p');});const r=document.getElementById('r-'+m);r.className='radio on';r.innerHTML='<div class="radio-d"></div>';document.getElementById('pm-'+m).classList.add('sel-p');}
+selPay('knet');
+function procPay(){prevS='s-payment';if(selM==='knet'){document.getElementById('knet-am').textContent=payAm.toFixed(3)+' د.ك';document.getElementById('knet-btn-am').textContent=payAm.toFixed(3);document.getElementById('knet-mer').textContent='CleanHub – '+payCo;go('s-knet');}else if(selM==='visa'){document.getElementById('visa-am').textContent=payAm;go('s-visa');}else if(selM==='tabby'){go('s-tabby');}else{toast('🍎 Apple Pay غير متوفر');}}
+function fmtC(i){let v=i.value.replace(/\D/g,'').slice(0,16);i.value=v.replace(/(.{4})/g,'$1 ').trim();}
+function fmtE(i){let v=i.value.replace(/\D/g,'').slice(0,4);if(v.length>=2)v=v.slice(0,2)+'/'+v.slice(2);i.value=v;}
+function doPlay(m){doPayInner(m);}
+function doPlay(m){doPayInner(m);}
+function doPlay(m){doPayInner(m);}
+function doPlay(m){doPayInner(m);}
+function doPlay(m){doPayInner(m);}
+function doPlay(m){doPayInner(m);}
+function doPlay(method){doPayInner(method);}
+function doPayInner(method){
+  prevS=curS;go('s-proc');
+  document.getElementById('pbar').style.width='0%';
+  const steps=[[400,25,'🔐 التحقق من البيانات...'],[1200,55,'🏦 الاتصال بالبنك...'],[2000,80,'✅ تأكيد العملية...'],[2800,100,'🎉 تم!']];
+  steps.forEach(([d,p,t])=>setTimeout(()=>{
+    document.getElementById('pbar').style.width=p+'%';
+    document.getElementById('proc-sub').textContent=t;
+    if(p===100)setTimeout(()=>{document.getElementById('suc-am').textContent=payAm+' د.ك';document.getElementById('suc-mt').textContent='عبر '+method;document.getElementById('rcpt-co').textContent=payCo;document.getElementById('rcpt-mt').textContent=method;document.getElementById('rcpt-num').textContent=Math.floor(10000+Math.random()*90000);go('s-paysuc');},300);
+  },d));
+}
+function doPlay(m){doPayInner(m);}
+function doPlay(m){doPayInner(m);}
+window.doPlay=doPayInner;
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('[onclick*="doPlay"]').forEach(el=>{const m=el.getAttribute('onclick').match(/doPlay\('(.+?)'\)/);if(m)el.onclick=()=>doPayInner(m[1]);});
+});
+function doPlay(m){doPayInner(m);}
+function doPayFn(m){doPayInner(m);}
+function resetPay(){document.getElementById('proc-sub').textContent='يرجى الانتظار';document.getElementById('pbar').style.width='0%';go('s-home');toast('🎉 تم الحجز والدفع بنجاح!');}
 
-  const today = new Date();
-  const dateInput = document.getElementById('booking-date');
-  if(dateInput) {
-    dateInput.value = today.toISOString().split('T')[0];
-    dateInput.min = today.toISOString().split('T')[0];
-  }
+/* ─── AI CHAT ─── */
+function openChat(type,title){
+  chatT=type;aiHist=[];
+  document.getElementById('cl-wrap').style.display='none';
+  const cw=document.getElementById('cw');cw.classList.add('open');
+  const icons={ai:'🤖',sparkle:'✨',crystal:'💎',support:'🎧'};
+  document.getElementById('cw-av').textContent=icons[type]||'💬';
+  document.getElementById('cw-title').textContent=title;
+  document.getElementById('cw-status').textContent=type==='ai'?'● مدعوم بالذكاء الاصطناعي':'● متصل الآن';
+  document.getElementById('quick-row').style.display=type==='ai'?'flex':'none';
+  const msgs=document.getElementById('cw-msgs');msgs.innerHTML='';
+  const greetings={ai:'👋 مرحباً! أنا مساعد CleanHub الذكي.\n\nيمكنني مساعدتك في:\n• أسعار وأنواع خدمات التنظيف\n• مقارنة الشركات والتوصية بالأفضل\n• نصائح للحفاظ على نظافة منزلك\n\nبماذا يمكنني مساعدتك؟ 😊',sparkle:'مرحباً! شكراً لتواصلك مع Sparkle Clean ✨\nسيصل فريقنا يوم الثلاثاء. هل لديك طلبات خاصة؟',crystal:'أهلاً بك في Crystal Pro 💎\nكيف يمكننا مساعدتك؟',support:'مرحباً! فريق دعم CleanHub 🎧\nكيف يمكنني مساعدتك؟'};
+  appendM(type==='ai'?'ai':'co',greetings[type]||'مرحباً!');
+}
+function closeChat(){document.getElementById('cw').classList.remove('open');document.getElementById('cl-wrap').style.display='block';}
+function appendM(role,text){
+  const msgs=document.getElementById('cw-msgs');
+  const now=new Date().toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div');
+  d.className='msg '+(role==='user'?'user':role==='ai'?'ai':'co-msg');
+  d.innerHTML=text.replace(/\n/g,'<br>')+`<div class="msg-time">${now}</div>`;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+function showTyp(){const m=document.getElementById('cw-msgs');const t=document.createElement('div');t.className='typing-ind';t.id='typ';t.innerHTML='<div class="td"></div><div class="td"></div><div class="td"></div>';m.appendChild(t);m.scrollTop=m.scrollHeight;}
+function rmTyp(){const t=document.getElementById('typ');if(t)t.remove();}
+async function sendMsg(){
+  const inp=document.getElementById('ci');const text=inp.value.trim();if(!text)return;
+  inp.value='';appendM('user',text);
+  document.getElementById('cw-status').textContent='● يكتب...';
+  if(chatT==='ai'){await callAI(text);}
+  else{showTyp();await sl(1200);rmTyp();const r=['شكراً على رسالتك! سنرد قريباً 😊','بالتأكيد! سأوصل سؤالك للفريق 👍','تم استلام رسالتك. هل تريد حجز موعد؟ 📅'];appendM('co',r[Math.floor(Math.random()*r.length)]);document.getElementById('cw-status').textContent='● متصل الآن';}
+}
+function quickS(el){document.getElementById('ci').value=el.textContent;sendMsg();}
+async function callAI(msg){
+  showTyp();
+  aiHist.push({role:'user',content:msg});
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:`أنت مساعد ذكي لتطبيق CleanHub، منصة كويتية لحجز خدمات التنظيف.
+أجب باللغة العربية فقط بطريقة ودودة وموجزة.
 
-  let roomCount = 3;
-  let prevScreen = 'screen-home';
-  let currentScreen = 'screen-home';
+معلومات CleanHub:
+- خدمات التنظيف في الكويت: منازل، مكاتب، تجاري
+- الخدمات: تنظيف شامل (من 15 د.ك)، تنظيف عميق (من 25 د.ك)، غسيل سجاد وكنب (من 20 د.ك)، تنظيف بعد بناء (من 40 د.ك)، تنظيف مكاتب (من 30 د.ك)
+- أفضل الشركات: Sparkle Clean (4.9⭐)، Crystal Pro (4.8⭐)، Shine Kuwait (4.6⭐)، Fresh & Green (4.5⭐)، Elite Cleaning (4.7⭐)
+- طرق الدفع: K-NET، فيزا، ماستركارد، تابي (أقساط بدون فوائد)
+- مناطق الخدمة: السالمية، الفروانية، حولي، الأحمدي، الجهراء، مبارك الكبير، العاصمة`,messages:aiHist})});
+    const data=await res.json();
+    rmTyp();
+    const reply=data.content?.[0]?.text||'عذراً، حدث خطأ. حاول مرة أخرى.';
+    aiHist.push({role:'assistant',content:reply});
+    appendM('ai',reply);
+    document.getElementById('cw-status').textContent='● مدعوم بالذكاء الاصطناعي';
+  }catch(e){rmTyp();appendM('ai','عذراً، لم أتمكن من الاتصال. تأكد من اتصالك بالإنترنت 🔄');document.getElementById('cw-status').textContent='● غير متصل';}
+}
+function sl(ms){return new Promise(r=>setTimeout(r,ms));}
+document.getElementById('ci').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
+document.getElementById('ni-chat').addEventListener('click',()=>{if(curS==='s-chat'){document.getElementById('cw').classList.remove('open');document.getElementById('cl-wrap').style.display='block';}});
 
-  function switchScreen(id) {
-    // Hide all
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    currentScreen = id;
-    // Activate nav
-    const map = {
-      'screen-home':'nav-home',
-      'screen-compare':'nav-compare',
-      'screen-book':'nav-book',
-      'screen-chat':'nav-chat',
-      'screen-profile':'nav-profile'
-    };
-    if(map[id]) document.getElementById(map[id]).classList.add('active');
-  }
-
-  function showNotif(msg) {
-    const n = document.getElementById('notif');
-    n.textContent = msg;
-    n.classList.add('show');
-    setTimeout(() => n.classList.remove('show'), 2500);
-  }
-
-  function selectService(el, name) {
-    document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    showNotif('✅ تم اختيار: ' + name);
-    setTimeout(() => switchScreen('screen-book'), 600);
-  }
-
-  function setFilter(el, type) {
-    el.closest('.filter-tabs').querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-  }
-
-  function changeCount(delta) {
-    roomCount = Math.max(1, Math.min(10, roomCount + delta));
-    document.getElementById('room-count').textContent = roomCount;
-  }
-
-  function selectTime(el) {
-    if(el.classList.contains('unavailable')) return;
-    el.closest('.time-grid').querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
-    el.classList.add('selected');
-  }
-
-  function showResults() {
-    document.getElementById('booking-form-view').style.display = 'none';
-    document.getElementById('booking-results').style.display = 'block';
-    document.getElementById('screen-book').scrollTop = 0;
-  }
-
-  function confirmBooking() {
-    document.getElementById('booking-results').style.display = 'none';
-    const s = document.getElementById('booking-success');
-    s.style.display = 'flex';
-    document.getElementById('screen-book').scrollTop = 0;
-  }
-
-  function goHome() {
-    document.getElementById('booking-form-view').style.display = 'block';
-    document.getElementById('booking-results').style.display = 'none';
-    document.getElementById('booking-success').style.display = 'none';
-    switchScreen('screen-home');
-    showNotif('🎉 تم الحجز! سيصلك تأكيد قريباً');
-  }
-
-  // Company data
-  const companies = {
-    sparkle: {name:'Sparkle Clean', logo:'✨', sub:'منازل · مكاتب · تجاري', rating:'4.9 (312 تقييم)', tags:['تنظيف شامل','تنظيف عميق','غسيل كنب','سجاد'], about:'شركة متخصصة في تقديم خدمات التنظيف الشامل في الكويت منذ 2015. نعتمد على أحدث المعدات والمواد الصديقة للبيئة. فريقنا مدرب ومرخص.'},
-    crystal: {name:'Crystal Pro', logo:'💎', sub:'منازل · سجاد · كنب', rating:'4.8 (198 تقييم)', tags:['سجاد','كنب','ستائر','تنظيف عميق'], about:'متخصصون في تنظيف السجاد والكنب بتقنية البخار منذ 2018. نضمن إزالة كل البقع مع الحفاظ على جودة القماش.'},
-    shine: {name:'Shine Kuwait', logo:'🌟', sub:'مكاتب · تجاري · مستشفيات', rating:'4.6 (241 تقييم)', tags:['مكاتب','تجاري','مستشفيات','فنادق'], about:'شركة متخصصة في قطاع تنظيف الشركات والمنشآت التجارية. نقدم عقود صيانة دورية وخدمات الطوارئ على مدار الساعة.'},
-    fresh: {name:'Fresh & Green', logo:'🌿', sub:'منازل · صديق للبيئة', rating:'4.5 (156 تقييم)', tags:['منازل','عضوي','بدون كيماويات','آمن للأطفال'], about:'نستخدم حصرياً المنتجات الطبيعية والعضوية في التنظيف. مثالي للعائلات التي لديها أطفال وحيوانات أليفة.'},
-    elite: {name:'Elite Cleaning', logo:'👑', sub:'فلل · قصور · تجاري', rating:'4.7 (89 تقييم)', tags:['فلل','قصور','ديكور فاخر','تحف'], about:'نتخصص في تنظيف المنازل الفاخرة والقصور. فريقنا مدرب على التعامل مع القطع الأثرية والديكورات الفاخرة.'}
-  };
-
-  function showCompany(key) {
-    prevScreen = currentScreen;
-    const c = companies[key];
-    document.getElementById('detail-logo').textContent = c.logo;
-    document.getElementById('detail-name').textContent = c.name;
-    document.getElementById('detail-sub').textContent = c.sub;
-    document.getElementById('detail-rating').textContent = c.rating;
-    document.getElementById('detail-about').textContent = c.about;
-    const tagsEl = document.getElementById('detail-tags');
-    tagsEl.innerHTML = c.tags.map(t => `<span class="tag">${t}</span>`).join('');
-    switchScreen('screen-company');
-  }
-
-  function goBack() {
-    switchScreen(prevScreen || 'screen-home');
-  }
-
-  function bookNow() {
-    switchScreen('screen-book');
-    showNotif('📅 اختر موعدك المناسب');
-  }
-
-  function switchToChat() {
-    switchScreen('screen-chat');
-    openChat('sparkle');
-  }
-
-  // Chat
-  function openChat(id) {
-    const titles = {support:'دعم CleanHub', sparkle:'Sparkle Clean', crystal:'Crystal Pro'};
-    document.getElementById('chat-title').textContent = titles[id] || id;
-    document.getElementById('chat-list-view').style.display = 'none';
-    const w = document.getElementById('chat-window-view');
-    w.style.display = 'flex';
-    w.style.flexDirection = 'column';
-    w.style.height = '100%';
-  }
-
-  function closeChat() {
-    document.getElementById('chat-list-view').style.display = 'block';
-    document.getElementById('chat-window-view').style.display = 'none';
-  }
-
-  function sendMsg() {
-    const input = document.getElementById('msg-input');
-    const text = input.value.trim();
-    if(!text) return;
-    const msgs = document.getElementById('chat-messages');
-    const now = new Date().toLocaleTimeString('ar', {hour:'2-digit', minute:'2-digit'});
-    const msg = document.createElement('div');
-    msg.className = 'message sent';
-    msg.innerHTML = text + `<div class="msg-time">${now}</div>`;
-    msgs.appendChild(msg);
-    input.value = '';
-    msgs.scrollTop = msgs.scrollHeight;
-    // Auto-reply
-    setTimeout(() => {
-      const reply = document.createElement('div');
-      reply.className = 'message received';
-      const replies = ['شكراً على تواصلك! سنرد عليك في أقرب وقت 😊','بالتأكيد! سأوصل سؤالك للفريق المختص 👍','تم استلام رسالتك. هل تريد حجز موعد؟ 📅'];
-      reply.innerHTML = replies[Math.floor(Math.random()*replies.length)] + `<div class="msg-time">${now}</div>`;
-      msgs.appendChild(reply);
-      msgs.scrollTop = msgs.scrollHeight;
-    }, 1000);
-  }
-
-  // Enter to send
-  document.getElementById('msg-input').addEventListener('keydown', e => {
-    if(e.key === 'Enter') sendMsg();
-  });
-
-  // Screen re-init for chat
-  document.getElementById('nav-chat').addEventListener('click', () => {
-    document.getElementById('chat-list-view').style.display = 'block';
-    document.getElementById('chat-window-view').style.display = 'none';
-  });
+/* ─── INIT ─── */
+const dt=document.getElementById('bk-date');if(dt){const t=new Date();dt.value=t.toISOString().split('T')[0];dt.min=dt.value;}
+/* Fix doPlay calls in HTML */
+document.querySelectorAll('button').forEach(btn=>{const oc=btn.getAttribute('onclick');if(oc&&oc.includes('doPlay(')){const m=oc.match(/doPlay\('(.+?)'\)/);if(m)btn.onclick=()=>doPayInner(m[1]);}});
 </script>
 </body>
 </html>
