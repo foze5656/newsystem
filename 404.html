@@ -301,20 +301,6 @@
       border-radius: 4px;
     }
     
-    /* Embed Mode - Full screen for iframes */
-    .content-area.embed-mode {
-      display: flex;
-      flex-direction: column;
-      padding: 0;
-      overflow: hidden;
-    }
-    
-    .content-area.embed-mode iframe {
-      width: 100%;
-      height: 100%;
-      flex: 1;
-    }
-    
     /* Form Sections */
     .form-section {
       background: #1a1a1a;
@@ -2609,6 +2595,256 @@
       `;
     }
 
+    function renderNewBatteryInterface() {
+      const contentArea = document.getElementById('contentArea');
+      if (!contentArea) return;
+
+      if (!document.getElementById('newBatteryScopedStyles')) {
+        const style = document.createElement('style');
+        style.id = 'newBatteryScopedStyles';
+        style.textContent = `
+          .nb-app{background:#111;border:1px solid #2a2a2a;border-radius:16px;padding:14px;color:#F2BC1B}
+          .nb-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+          .nb-title{font-size:18px;font-weight:700}
+          .nb-mode-wrap{display:flex;gap:8px;flex-wrap:wrap}
+          .nb-mode{background:#000;border:1px solid #F2BC1B;color:#F2BC1B;border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:700}
+          .nb-mode.active{background:#F2BC1B;color:#000}
+          .nb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+          .nb-field label{display:block;margin-bottom:6px;font-weight:700;font-size:13px}
+          .nb-input{width:100%;background:#000;color:#F2BC1B;border:1px solid #3a3a3a;border-radius:10px;padding:10px 12px;outline:none}
+          .nb-input:focus{border-color:#F2BC1B;box-shadow:0 0 0 3px rgba(242,188,27,.15)}
+          .nb-results{margin-top:12px;background:#0a0a0a;border:1px solid #252525;border-radius:12px;padding:10px;max-height:62vh;overflow:auto}
+          .nb-empty{text-align:center;color:#a8a8a8;padding:24px 10px}
+          .nb-card{border:1px solid #2f2f2f;border-radius:12px;padding:10px;margin-bottom:10px;background:#111}
+          .nb-card-title{font-weight:700;margin-bottom:8px}
+          .nb-size-pill{display:inline-block;background:#F2BC1B;color:#000;font-weight:700;padding:6px 10px;border-radius:999px;margin-bottom:8px}
+          .nb-table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:10px}
+          .nb-table th,.nb-table td{padding:8px;border-bottom:1px solid #232323;text-align:center;font-size:13px}
+          .nb-table th{background:#F2BC1B;color:#000}
+          .nb-table td{color:#F2BC1B}
+          .nb-copy{background:#1f8f3d;color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer}
+          .nb-note{margin-top:8px;background:#6e1f1f;color:#fff;border-radius:10px;padding:10px;font-size:12px;line-height:1.8}
+        `;
+        document.head.appendChild(style);
+      }
+
+      setContentAreaEmbedMode(false);
+
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <div class="nb-app">
+            <div class="nb-head">
+              <div class="nb-title">🔋 بطارية جديدة - الكود والتصميم كامل</div>
+              <div class="nb-mode-wrap">
+                <button id="nbModeSize" class="nb-mode active">البحث بالمقاس</button>
+                <button id="nbModeCar" class="nb-mode">البحث بالسيارة</button>
+              </div>
+            </div>
+
+            <div id="nbSizeFilters" class="nb-grid">
+              <div class="nb-field" style="grid-column:1/-1;">
+                <label>مقاس البطارية</label>
+                <input id="nbSizeInput" class="nb-input" placeholder="اكتب المقاس مثل DA95 أو LN5">
+              </div>
+            </div>
+
+            <div id="nbCarFilters" class="nb-grid" style="display:none;">
+              <div class="nb-field">
+                <label>الشركة المصنعة</label>
+                <input id="nbMakeInput" class="nb-input" list="nbMakeList" placeholder="اختر الشركة">
+                <datalist id="nbMakeList"></datalist>
+              </div>
+              <div class="nb-field">
+                <label>الموديل</label>
+                <input id="nbModelInput" class="nb-input" list="nbModelList" placeholder="اختر الموديل">
+                <datalist id="nbModelList"></datalist>
+              </div>
+              <div class="nb-field">
+                <label>السنة</label>
+                <input id="nbYearInput" class="nb-input" list="nbYearList" placeholder="اختر السنة">
+                <datalist id="nbYearList"></datalist>
+              </div>
+            </div>
+
+            <div id="nbResults" class="nb-results">
+              <div class="nb-empty">ابدأ البحث لعرض النتائج</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const state = {
+        mode: 'size',
+        make: '',
+        model: '',
+        year: ''
+      };
+
+      const el = {
+        modeSize: document.getElementById('nbModeSize'),
+        modeCar: document.getElementById('nbModeCar'),
+        sizeFilters: document.getElementById('nbSizeFilters'),
+        carFilters: document.getElementById('nbCarFilters'),
+        sizeInput: document.getElementById('nbSizeInput'),
+        makeInput: document.getElementById('nbMakeInput'),
+        modelInput: document.getElementById('nbModelInput'),
+        yearInput: document.getElementById('nbYearInput'),
+        makeList: document.getElementById('nbMakeList'),
+        modelList: document.getElementById('nbModelList'),
+        yearList: document.getElementById('nbYearList'),
+        results: document.getElementById('nbResults')
+      };
+
+      const uniq = (arr) => [...new Set(arr.filter(Boolean))];
+
+      const buildStockText = (battery) => {
+        const parts = [];
+        if (battery.fkStock > 0) parts.push(`${battery.fkSupplierName}: ${battery.fkStock}`);
+        if (battery.mStock > 0) parts.push(`${battery.mSupplierName}: ${battery.mStock}`);
+        return parts.length ? parts.join(' | ') : 'غير متوفر';
+      };
+
+      const copyMessage = async (brand, size, salePrice) => {
+        const message = `متوفرة بطارية ${brand} مقاس ${size} السعر مع رسوم التركيب ${salePrice} دك`;
+        await copyToClipboard(message);
+        showToast('تم نسخ الرسالة');
+      };
+
+      const renderTable = (list, title, sizeLabel = '') => {
+        if (!list.length) {
+          el.results.innerHTML = `<div class="nb-empty">لا توجد بطاريات متوفرة</div>`;
+          return;
+        }
+
+        el.results.innerHTML = `
+          <div class="nb-card">
+            <div class="nb-card-title">${escapeHtml(title)}</div>
+            ${sizeLabel ? `<div class="nb-size-pill">${escapeHtml(sizeLabel)}</div>` : ''}
+            <table class="nb-table">
+              <thead>
+                <tr>
+                  <th>الماركة</th>
+                  <th>المقاس</th>
+                  <th>سعر البيع</th>
+                  <th>المخزون الرئيسي</th>
+                  <th>نسخ</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${list.map((battery, idx) => `
+                  <tr>
+                    <td>${escapeHtml(battery.brand || '-')}</td>
+                    <td>${escapeHtml(battery.size || '-')}</td>
+                    <td>${battery.salePrice || 0} دك</td>
+                    <td>${escapeHtml(buildStockText(battery))}</td>
+                    <td><button class="nb-copy" data-copy-index="${idx}">نسخ</button></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            <div class="nb-note">
+              زيادة 15 د.ك: إذا البطارية تحت الكشن<br>
+              زيادة 10 د.ك: المناطق البعيدة<br>
+              زيادة 5 د.ك: بعض المناطق الخارجية
+            </div>
+          </div>
+        `;
+
+        el.results.querySelectorAll('[data-copy-index]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const battery = list[Number(btn.getAttribute('data-copy-index'))];
+            if (!battery) return;
+            await copyMessage(battery.brand || 'بطارية', battery.size || '-', battery.salePrice || 0);
+          });
+        });
+      };
+
+      const renderBySize = () => {
+        const sizeText = (el.sizeInput.value || '').trim().toUpperCase();
+        if (!sizeText) {
+          el.results.innerHTML = '<div class="nb-empty">اكتب المقاس لعرض النتائج</div>';
+          return;
+        }
+
+        const list = batteryData.filter(b => (b.size || '').toUpperCase().includes(sizeText));
+        renderTable(list, `نتائج البحث بالمقاس: ${sizeText}`, sizeText);
+      };
+
+      const fillMakeList = () => {
+        const makes = uniq(carData.map(c => (c.make || '').trim())).sort();
+        el.makeList.innerHTML = makes.map(m => `<option value="${escapeHtml(m)}"></option>`).join('');
+      };
+
+      const fillModelList = () => {
+        const models = uniq(carData.filter(c => c.make === state.make).map(c => (c.model || '').trim())).sort();
+        el.modelList.innerHTML = models.map(m => `<option value="${escapeHtml(m)}"></option>`).join('');
+      };
+
+      const fillYearList = () => {
+        const years = uniq(carData.filter(c => c.make === state.make && c.model === state.model).map(c => (c.year || '').trim()))
+          .sort((a, b) => Number(b) - Number(a));
+        el.yearList.innerHTML = years.map(y => `<option value="${escapeHtml(y)}"></option>`).join('');
+      };
+
+      const renderByCar = () => {
+        if (!state.make || !state.model || !state.year) {
+          el.results.innerHTML = '<div class="nb-empty">اختر الشركة والموديل والسنة</div>';
+          return;
+        }
+
+        const matchedCars = carData.filter(c => c.make === state.make && c.model === state.model && c.year === state.year);
+        const sizes = uniq(matchedCars.map(c => c.bat)).map(s => (s || '').toUpperCase());
+        const list = batteryData.filter(b => sizes.includes((b.size || '').toUpperCase()));
+        renderTable(list, `نتائج ${state.make} ${state.model} ${state.year}`);
+      };
+
+      el.modeSize.addEventListener('click', () => {
+        state.mode = 'size';
+        el.modeSize.classList.add('active');
+        el.modeCar.classList.remove('active');
+        el.sizeFilters.style.display = 'grid';
+        el.carFilters.style.display = 'none';
+        renderBySize();
+      });
+
+      el.modeCar.addEventListener('click', () => {
+        state.mode = 'car';
+        el.modeCar.classList.add('active');
+        el.modeSize.classList.remove('active');
+        el.sizeFilters.style.display = 'none';
+        el.carFilters.style.display = 'grid';
+        renderByCar();
+      });
+
+      el.sizeInput.addEventListener('input', renderBySize);
+
+      el.makeInput.addEventListener('input', () => {
+        state.make = (el.makeInput.value || '').trim();
+        state.model = '';
+        state.year = '';
+        el.modelInput.value = '';
+        el.yearInput.value = '';
+        fillModelList();
+        fillYearList();
+        renderByCar();
+      });
+
+      el.modelInput.addEventListener('input', () => {
+        state.model = (el.modelInput.value || '').trim();
+        state.year = '';
+        el.yearInput.value = '';
+        fillYearList();
+        renderByCar();
+      });
+
+      el.yearInput.addEventListener('input', () => {
+        state.year = (el.yearInput.value || '').trim();
+        renderByCar();
+      });
+
+      fillMakeList();
+    }
+
     window.closeFullscreenIframe = function() {
       const wrapper = document.getElementById('fullscreenIframeWrapper');
       const container = document.getElementById('fullscreenIframeContainer');
@@ -2845,1359 +3081,6 @@
     function renderBatterySubscriptionInterface() {
       renderServiceWithDatalist('اشتراك بطارية', 'خدمات5', [0, 1, 2, 4, 5, 6], 
         '<div class="info-box">في حال العميل يبي فحص بطارية: 10 د.ك تنخصم من سعر البطارية</div>');
-    }
-
-    // Render New Battery Interface
-    function renderNewBatteryInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-       <div style="padding: 20px; color: #FFC107;">
-         <h2 style="text-align: center; margin-bottom: 20px;">⚡ نظام البطاريات ⚡</h2>
-         <div style="background: #1a1a1a; border-radius: 15px; padding: 20px; border: 2px solid #FFC107;">
-           <p style="text-align: center; font-size: 18px;">
-             نظام البطاريات الكامل يعمل هنا
-           </p>
-           <p style="text-align: center; margin-top: 20px; color: #999;">
-             ✅ البحث بمقاس البطارية
-           </p>
-           <p style="text-align: center; color: #999;">
-             ✅ البحث بأسماء السيارات
-           </p>
-           <p style="text-align: center; color: #999;">
-             ✅ عرض الأسعار والمخزون
-           </p>
-         </div>
-       </div>
-      `;
-    }
-
-    // Render Installments Interface
-   <div class="auth-card">
-    <div class="logo-container"><img src="https://i.top4top.io/p_35860o72q1.png" alt="شعار النظام" style="display: block; margin: 0 auto 1.5rem auto;" onerror="this.style.display='none'">
-     <div class="system-title">
-      ⚡ سيستم البطاريات ⚡
-     </div>
-    </div>
-    <div id="errorMessage" class="error-message"></div>
-    <form id="loginForm" onsubmit="handleLogin(event)">
-     <div class="form-group"><label class="form-label">اسم المستخدم</label> <input type="text" id="username" class="form-input" placeholder="أدخل اسم المستخدم" required>
-     </div>
-     <div class="form-group"><label class="form-label">كلمة المرور</label> <input type="password" id="password" class="form-input" placeholder="أدخل كلمة ال����رور" required>
-     </div><button type="submit" class="btn-login">تسجيل الدخول</button>
-    </form>
-   </div>
-  </div>
-  <div id="mainContainer" class="main-container">
-   <header class="header">
-    <div class="header-content">
-     <div class="header-logo"><img src="https://i.top4top.io/p_35860o72q1.png" alt="شعار النظام" onerror="this.style.display='none'">
-      <div class="header-title" id="headerTitle">
-       ⚡ سيستم البطاريات ⚡
-      </div>
-     </div>
-     <div class="user-info">
-      <div class="user-badge" id="userBadge"></div><button class="btn-logout" onclick="handleLogout()">تسجيل الخروج</button>
-     </div>
-    </div>
-   </header>
-   <main class="content">
-    <div id="searchModeSelector" class="search-mode-selector"><button class="mode-btn" onclick="switchSearchMode('size')"> 🔋 البحث بمقاس البطارية </button> <button class="mode-btn" onclick="switchSearchMode('car')"> 🚗 البحث بأسماء السيارات </button>
-    </div>
-    <div id="sizeSearchSection" class="search-section active">
-     <div class="search-title">
-      🔋 ابحث عن مقاس البطارية
-     </div>
-     <div class="dropdown-group"><label class="dropdown-label">🔋 اختر أو اكتب مقاس البطارية</label>
-      <div class="dropdown-container"><input type="text" id="sizeInput" class="dropdown-input" placeholder="مثال: DA95, LN5, 70D23L..." autocomplete="off" oninput="filterDropdown('size')" onfocus="showDropdown('size')"> <span class="dropdown-arrow" id="sizeArrow">▼</span>
-       <div id="sizeList" class="dropdown-list"></div>
-      </div>
-     </div>
-    </div>
-    <div id="carSearchSection" class="search-section">
-     <div class="search-title" id="searchLabel">
-      🚗 ابحث عن بطارية سيارتك
-     </div>
-     <div class="dropdown-group" id="makeGroup"><label class="dropdown-label">🚗 اختر الشركة المصنعة</label>
-      <div class="dropdown-container"><input type="text" id="makeInput" class="dropdown-input" placeholder="��كتب أو اختر الشركة..." autocomplete="off" oninput="filterDropdown('make')" onfocus="showDropdown('make')"> <span class="dropdown-arrow" id="makeArrow">▼</span>
-       <div id="makeList" class="dropdown-list"></div>
-      </div>
-     </div>
-     <div class="dropdown-group" id="modelGroup" style="display: none;"><label class="dropdown-label">🚙 اختر الموديل</label>
-      <div class="dropdown-container"><input type="text" id="modelInput" class="dropdown-input" placeholder="اختر الموديل..." autocomplete="off" oninput="filterDropdown('model')" onfocus="showDropdown('model')"> <span class="dropdown-arrow" id="modelArrow">▼</span>
-       <div id="modelList" class="dropdown-list"></div>
-      </div>
-     </div>
-     <div class="dropdown-group" id="yearGroup" style="display: none;"><label class="dropdown-label">📅 اختر السنة</label>
-      <div class="dropdown-container"><input type="text" id="yearInput" class="dropdown-input" placeholder="اختر السنة..." autocomplete="off" oninput="filterDropdown('year')" onfocus="showDropdown('year')"> <span class="dropdown-arrow" id="yearArrow">▼</span>
-       <div id="yearList" class="dropdown-list"></div>
-      </div>
-     </div>
-    </div>
-    <div id="results" class="results-section"></div>
-    <div id="dashboardSection" class="dashboard-section">
-     <div class="dashboard-header">
-      <div class="dashboard-title-row">
-       <div class="dashboard-title" id="dashboardTitle">
-        🔋 لوحة التحكم
-       </div><button class="btn-sheet" onclick="openGoogleSheet()"> 📊 فتح القوقل ��يت </button>
-      </div>
-      <div class="stats-grid">
-       <div class="stat-card">
-        <div class="stat-icon">
-         🔋
-        </div>
-        <div class="stat-value" id="totalBatteries">
-         0
-        </div>
-        <div class="stat-label">
-         إجمالي البطاريات
-        </div>
-       </div>
-       <div class="stat-card">
-        <div class="stat-icon">
-         📦
-        </div>
-        <div class="stat-value" id="warehouseStock">
-         0
-        </div>
-        <div class="stat-label">
-         المخزون الرئيسي
-        </div>
-       </div>
-       <div class="stat-card">
-        <div class="stat-icon">
-         🚚
-        </div>
-        <div class="stat-value" id="driversStock">
-         0
-        </div>
-        <div class="stat-label">
-         م��زون السائقين
-        </div>
-       </div>
-       <div class="stat-card">
-        <div class="stat-icon">
-         ⚠️
-        </div>
-        <div class="stat-value" id="lowStock">
-         0
-        </div>
-        <div class="stat-label">
-         بطاريات منخفضة أو منتهية
-        </div>
-       </div>
-      </div>
-     </div>
-     <div class="low-stock-section">
-      <div class="low-stock-header">
-       <div class="low-stock-title">
-        ⚠️ البطاريا�� المنخفضة أو المنتهية
-       </div>
-       <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-        <div class="filter-buttons"><button class="filter-btn active" onclick="filterLowStock('all')">الكل</button> <button class="filter-btn" onclick="filterLowStock('out')">منتهية ����ط</button> <button class="filter-btn" onclick="filterLowStock('low')">منخفضة فقط</button>
-        </div><button class="btn-export-excel" onclick="exportOutOfStockToExcel()"> 📥 تصدير Excel </button>
-       </div>
-      </div>
-      <div style="overflow-x: auto;">
-       <table class="low-stock-table">
-        <thead>
-         <tr>
-          <th>الماركة</th>
-          <th>المقاس</th>
-          <th>سعر الشراء</th>
-          <th>سعر البيع</th>
-          <th>المخزون الرئيسي</th>
-          <th>مخزون ال��ائقين</th>
-          <th>الحالة</th>
-         </tr>
-        </thead>
-        <tbody id="lowStockTableBody">
-        </tbody>
-       </table>
-      </div>
-     </div>
-    </div>
-    <div id="loading" class="loading">
-     <div class="spinner"></div>
-     <div style="color: #FFC107; font-weight: bold; font-size: 1.1rem;">
-      جاري تحميل البيانات...
-     </div>
-    </div>
-   </main>
-  </div>
-  <script>
-        const defaultConfig = {
-            system_title: "⚡ سيستم البطاريات ⚡",
-            search_label: "🚗 ابحث عن بطارية سيارتك",
-            dashboard_title: "🔋 لوحة التحكم"
-        };
-
-        let config = { ...defaultConfig };
-        
-        const CAR_SHEET_ID = '1tUjEj-1FtAqewhJiRcC4dgGwgrxhb5OjKxGWEojFzlg';
-        const BATTERY_SHEET_ID = '1WghSWhC-NJ0h--afoaR0ydzTP8ULw7N3tBDgToXoLVk';
-        
-        const CAR_SHEET_URL = `https://docs.google.com/spreadsheets/d/${CAR_SHEET_ID}/export?format=csv&gid=0`;
-        const BATTERY_SHEET_URL = `https://docs.google.com/spreadsheets/d/${BATTERY_SHEET_ID}/export?format=csv&gid=0`;
-        const GOOGLE_SHEET_VIEW_URL = `https://docs.google.com/spreadsheets/d/${BATTERY_SHEET_ID}/edit`;
-
-        const USERS = {
-            Abdullah: { password: 'portarage1', role: 'كول سنتر', isStaff: true },
-            Suaad: { password: 'portarage2', role: 'كول سنتر', isStaff: true },
-            Laila: { password: 'portarage3', role: 'كول سنتر', isStaff: true },
-            Nasser: { password: 'portarage4', role: 'كول سنتر', isStaff: true },
-            Khalifa: { password: 'portarage5', role: 'كول سنتر', isStaff: true },
-            Azam: { password: 'portarage6', role: 'كول سنتر', isStaff: true },
-            Abdulwahab: { password: 'portarage7', role: 'كول سنتر', isStaff: true },
-            Bashar: { password: 'portarage8', role: 'كول سنتر', isStaff: true },
-            Ali: { password: 'portarage9', role: 'كول سنتر', isStaff: true },
-            Sabah: { password: 'portarage10', role: 'كول سنتر', isStaff: true },
-            Hamad: { password: 'portarage12', role: 'كول سنتر', isStaff: true },
-            Fawzi: { password: 'portarage12', role: 'كول سنتر', isStaff: true },
-            Mohamad: { password: 'portarage7896', role: 'المحاسب', isStaff: false },
-            Salem: { password: 'portarage7887', role: 'المدير', isStaff: false }
-        };
-
-        let currentUser = null;
-        let carData = [];
-        let batteryData = [];
-        let driversArabicNames = {};
-        
-        let selectedMake = '';
-        let selectedModel = '';
-        let selectedYear = '';
-        let currentSearchMode = 'size';
-        let currentFilter = 'all';
-        let autoRefreshInterval = null;
-
-        function startAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-            }
-            
-            autoRefreshInterval = setInterval(async () => {
-                if (currentUser) {
-                    await loadAllDataSilently();
-                }
-            }, 60000);
-        }
-
-        function stopAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-            }
-        }
-
-        async function loadAllDataSilently() {
-            try {
-                await Promise.all([
-                    loadCarData(),
-                    loadDriversData(),
-                    loadBatteryData()
-                ]);
-                
-                populateMakeDropdown();
-                populateSizeDropdown();
-                
-                if (!currentUser.isStaff) {
-                    updateDashboard();
-                }
-            } catch (error) {
-                console.error('خطأ في تحميل البيانات:', error);
-            }
-        }
-
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current.trim().replace(/^"|"$/g, ''));
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            result.push(current.trim().replace(/^"|"$/g, ''));
-            return result;
-        }
-
-        function getSupplierName(brand, type) {
-            const brandUpper = brand.toUpperCase();
-            
-            if (brandUpper.includes('VARTA')) {
-                return 'مورد فارتا';
-            } else if (brandUpper.includes('EMTRAC')) {
-                return 'مورد البحبطين';
-            } else {
-                return type === 'FK' ? 'مورد اف كي' : 'مورد افتخار';
-            }
-        }
-
-        function handleLogin(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('errorMessage');
-
-            if (USERS[username] && USERS[username].password === password) {
-                currentUser = { username, ...USERS[username] };
-                
-                localStorage.setItem('batterySystemUser', JSON.stringify(currentUser));
-                
-                document.getElementById('authContainer').style.display = 'none';
-                document.getElementById('mainContainer').style.display = 'block';
-                document.getElementById('userBadge').textContent = `${currentUser.role}: ${username}`;
-
-                if (!currentUser.isStaff) {
-                    document.getElementById('searchModeSelector').style.display = 'none';
-                    document.getElementById('sizeSearchSection').style.display = 'block';
-                    document.getElementById('carSearchSection').style.display = 'none';
-                    document.getElementById('dashboardSection').style.display = 'block';
-                    document.getElementById('sizeSearchSection').classList.add('active');
-                    document.getElementById('carSearchSection').classList.remove('active');
-                } else {
-                    document.getElementById('searchModeSelector').style.display = 'flex';
-                    document.getElementById('sizeSearchSection').style.display = 'block';
-                    document.getElementById('carSearchSection').style.display = 'none';
-                    document.getElementById('dashboardSection').style.display = 'none';
-                    document.getElementById('sizeSearchSection').classList.add('active');
-                    document.getElementById('carSearchSection').classList.remove('active');
-                    
-                    const sizeBtn = document.querySelector('.mode-btn[onclick*="size"]');
-                    if (sizeBtn) sizeBtn.classList.add('active');
-                }
-
-                loadAllData();
-                startAutoRefresh();
-            } else {
-                errorMsg.textContent = '❌ اسم المستخدم أو كلمة المرور غير صحيحة';
-                errorMsg.style.display = 'block';
-                setTimeout(() => {
-                    errorMsg.style.display = 'none';
-                }, 3000);
-            }
-        }
-
-        function handleLogout() {
-            currentUser = null;
-            stopAutoRefresh();
-            localStorage.removeItem('batterySystemUser');
-            
-            document.getElementById('mainContainer').style.display = 'none';
-            document.getElementById('authContainer').style.display = 'flex';
-            document.getElementById('loginForm').reset();
-            document.getElementById('results').style.display = 'none';
-            
-            resetSelections();
-        }
-
-        function resetSelections() {
-            selectedMake = '';
-            selectedModel = '';
-            selectedYear = '';
-            
-            document.getElementById('makeInput').value = '';
-            document.getElementById('modelInput').value = '';
-            document.getElementById('yearInput').value = '';
-            document.getElementById('sizeInput').value = '';
-            
-            document.getElementById('modelGroup').style.display = 'none';
-            document.getElementById('yearGroup').style.display = 'none';
-            
-            document.getElementById('results').style.display = 'none';
-        }
-
-        async function loadAllData() {
-            document.getElementById('loading').style.display = 'block';
-            
-            try {
-                await Promise.all([
-                    loadCarData(),
-                    loadDriversData(),
-                    loadBatteryData()
-                ]);
-                
-                populateMakeDropdown();
-                populateSizeDropdown();
-                
-                if (!currentUser.isStaff) {
-                    updateDashboard();
-                }
-            } catch (error) {
-                console.error('خطأ في تحميل البيانات:', error);
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
-        }
-
-        async function loadCarData() {
-            try {
-                const response = await fetch(CAR_SHEET_URL);
-                const text = await response.text();
-                const rows = text.split('\n').filter(row => row.trim());
-                
-                carData = [];
-                
-                for (let i = 1; i < rows.length; i++) {
-                    const cols = parseCSVLine(rows[i]);
-                    if (cols[0] && cols[3]) {
-                        carData.push({
-                            make: cols[0].trim(),
-                            model: cols[1].trim(),
-                            year: cols[2].trim(),
-                            bat: cols[3].trim(),
-                            count: parseInt(cols[4]) || 1
-                        });
-                    }
-                }
-                
-                console.log('تم تحميل بيانات السيارات:', carData.length);
-            } catch (error) {
-                console.error('خطأ في تحميل بيانات السيارات:', error);
-            }
-        }
-
-        async function loadDriversData() {
-            try {
-                const predefinedNames = {
-                    'NYAZ': 'نياز',
-                    'Muthu': 'موتو',
-                    'Ganesh': 'جانيش',
-                    'Iresh-KESAVAN': 'اريش-كيسافان',
-                    'GUFRAN': 'غفران',
-                    'edeson alpert': 'إيديسون ألبرت',
-                    'Irfan': 'عرفان',
-                    'Albert': 'ألبرت',
-                    'Lakshman': 'لاكشمان',
-                    'santheel': 'سانتيل',
-                    'ARVENTH': 'أرفنت',
-                    'MortaDA/Santhosh': 'مرتضى / سانتوش',
-                    'Mayura': 'مايورا',
-                    'yusuf & rahimah allah': 'يوسف و رحمة الله',
-                    'Ali and Sayed': 'علي وس��د',
-                    'Sayid and Ramos': 'سيد ورامو',
-                    'bala': 'بالا',
-                    'Durga Prasad': 'دورجا براساد'
-                };
-                
-                Object.assign(driversArabicNames, predefinedNames);
-            } catch (error) {
-                console.error('خطأ في تحميل أسماء السائقين:', error);
-            }
-        }
-
-        async function loadBatteryData() {
-            try {
-                const response = await fetch(BATTERY_SHEET_URL);
-                const text = await response.text();
-                const rows = text.split('\n').filter(row => row.trim());
-                
-                const headers = parseCSVLine(rows[0]);
-                batteryData = [];
-
-                for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
-                    const cols = parseCSVLine(rows[rowIndex]);
-                    
-                    const battery = {
-                        size: cols[0] || '',
-                        brand: cols[1] || '',
-                        tradeName: cols[2] || '',
-                        price: parseFloat(cols[3]) || 0,
-                        salePrice: parseFloat(cols[4]) || 0,
-                        fkStock: parseFloat(cols[5]) || 0,
-                        mStock: parseFloat(cols[6]) || 0,
-                        drivers: [],
-                        fkSupplierName: '',
-                        mSupplierName: ''
-                    };
-                    
-                    battery.fkSupplierName = getSupplierName(battery.brand, 'FK');
-                    battery.mSupplierName = getSupplierName(battery.brand, 'M');
-
-                    for (let colIndex = 7; colIndex < headers.length; colIndex += 2) {
-                        const driverHeader = headers[colIndex];
-                        
-                        if (driverHeader && driverHeader.trim() !== '' && driverHeader.toLowerCase() !== 'total') {
-                            const driverEnglishName = driverHeader.trim();
-                            const fkQty = parseFloat(cols[colIndex]) || 0;
-                            const mQty = parseFloat(cols[colIndex + 1]) || 0;
-                            
-                            if (fkQty > 0 || mQty > 0) {
-                                const driverArabicName = driversArabicNames[driverEnglishName] || driverEnglishName;
-                                
-                                battery.drivers.push({
-                                    name: driverArabicName,
-                                    englishName: driverEnglishName,
-                                    fk: fkQty,
-                                    m: mQty,
-                                    fkSupplierName: battery.fkSupplierName,
-                                    mSupplierName: battery.mSupplierName
-                                });
-                            }
-                        }
-                    }
-
-                    if (battery.size) {
-                        batteryData.push(battery);
-                    }
-                }
-
-                console.log('تم تحميل بيانات البطاريات:', batteryData.length);
-            } catch (error) {
-                console.error('خطأ في تحميل بيانات البطاريات:', error);
-            }
-        }
-
-        function updateDashboard() {
-            let totalBatteries = 0;
-            let warehouseStock = 0;
-            let driversStock = 0;
-            let lowStockCount = 0;
-
-            batteryData.forEach(battery => {
-                const warehouseTotal = battery.fkStock + battery.mStock;
-                warehouseStock += warehouseTotal;
-                
-                battery.drivers.forEach(driver => {
-                    driversStock += driver.fk + driver.m;
-                });
-
-                const totalStock = warehouseTotal + battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
-                totalBatteries += totalStock;
-                
-                if (totalStock <= 5) {
-                    lowStockCount++;
-                }
-            });
-
-            document.getElementById('totalBatteries').textContent = totalBatteries;
-            document.getElementById('warehouseStock').textContent = warehouseStock;
-            document.getElementById('driversStock').textContent = driversStock;
-            document.getElementById('lowStock').textContent = lowStockCount;
-
-            updateLowStockTable();
-        }
-
-        function updateLowStockTable() {
-            const tbody = document.getElementById('lowStockTableBody');
-            const lowStockBatteries = batteryData.filter(battery => {
-                const warehouseTotal = battery.fkStock + battery.mStock;
-                const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
-                const totalStock = warehouseTotal + driversTotal;
-                return totalStock <= 5;
-            }).sort((a, b) => {
-                const aTotal = a.fkStock + a.mStock + a.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
-                const bTotal = b.fkStock + b.mStock + b.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
-                return aTotal - bTotal;
-            });
-
-            tbody.innerHTML = lowStockBatteries.map(battery => {
-                const warehouseTotal = battery.fkStock + battery.mStock;
-                const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
-                const totalStock = warehouseTotal + driversTotal;
-                
-                let status = '';
-                let statusClass = '';
-                let filterClass = '';
-                
-                if (totalStock === 0) {
-                    status = 'منتهية';
-                    statusClass = 'status-out';
-                    filterClass = 'filter-out';
-                } else {
-                    status = 'منخفضة';
-                    statusClass = 'status-low';
-                    filterClass = 'filter-low';
-                }
-
-                let warehouseContent = '';
-                if (battery.fkStock > 0) {
-                    warehouseContent += `${battery.fkSupplierName}: ${battery.fkStock} `;
-                }
-                if (battery.mStock > 0) {
-                    warehouseContent += `${battery.mSupplierName}: ${battery.mStock}`;
-                }
-                if (!warehouseContent) {
-                    warehouseContent = '0';
-                }
-
-                return `
-                    <tr class="${filterClass}">
-                        <td style="font-weight: bold;">${battery.brand}</td>
-                        <td style="font-weight: bold;">${battery.size}</td>
-                        <td>${battery.price} دك</td>
-                        <td>${battery.salePrice} دك</td>
-                        <td>${warehouseContent}</td>
-                        <td>${driversTotal}</td>
-                        <td><span class="status-badge ${statusClass}">${status}</span></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function filterLowStock(filter) {
-            currentFilter = filter;
-            
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            const rows = document.querySelectorAll('#lowStockTableBody tr');
-            rows.forEach(row => {
-                if (filter === 'all') {
-                    row.style.display = '';
-                } else if (filter === 'out') {
-                    row.style.display = row.classList.contains('filter-out') ? '' : 'none';
-                } else if (filter === 'low') {
-                    row.style.display = row.classList.contains('filter-low') ? '' : 'none';
-                }
-            });
-        }
-
-        function openGoogleSheet() {
-            window.open(GOOGLE_SHEET_VIEW_URL, '_blank', 'noopener,noreferrer');
-        }
-
-        function exportOutOfStockToExcel() {
-            let filteredBatteries = [];
-            let filterName = '';
-            
-            if (currentFilter === 'all') {
-                filteredBatteries = batteryData.filter(battery => {
-                    const warehouseTotal = battery.fkStock + battery.mStock;
-                    const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
-                    const totalStock = warehouseTotal + driversTotal;
-                    return totalStock <= 5;
-                });
-                filterName = 'الكل';
-            } else if (currentFilter === 'out') {
-                filteredBatteries = batteryData.filter(battery => {
-                    const warehouseTotal = battery.fkStock + battery.mStock;
-                    const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
-                    const totalStock = warehouseTotal + driversTotal;
-                    return totalStock === 0;
-                });
-                filterName = 'المنتهية';
-            } else if (currentFilter === 'low') {
-                filteredBatteries = batteryData.filter(battery => {
-                    const warehouseTotal = battery.fkStock + battery.mStock;
-                    const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
-                    const totalStock = warehouseTotal + driversTotal;
-                    return totalStock > 0 && totalStock <= 5;
-                });
-                filterName = 'المنخفضة';
-            }
-
-            filteredBatteries.sort((a, b) => {
-                if (a.brand < b.brand) return -1;
-                if (a.brand > b.brand) return 1;
-                return 0;
-            });
-
-            if (filteredBatteries.length === 0) {
-                const message = document.createElement('div');
-                message.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; border: 3px solid #FFC107; padding: 2rem; border-radius: 20px; z-index: 10000; text-align: center; box-shadow: 0 10px 50px rgba(255, 193, 7, 0.5);';
-                message.innerHTML = `
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
-                    <div style="color: #FFC107; font-weight: bold; font-size: 1.3rem;">لا توجد بطاريات ${filterName} للتصدير</div>
-                `;
-                document.body.appendChild(message);
-                setTimeout(() => message.remove(), 2500);
-                return;
-            }
-
-            const now = new Date();
-            const dateStr = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
-            const timeStr = `${now.getHours()}-${now.getMinutes()}`;
-            
-            let csv = '\uFEFF';
-            csv += 'الماركة,المقاس,الحالة\n';
-            
-            filteredBatteries.forEach(battery => {
-                const warehouseTotal = battery.fkStock + battery.mStock;
-                const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
-                const totalStock = warehouseTotal + driversTotal;
-                
-                const status = totalStock === 0 ? 'منتهية' : 'م��خفضة';
-                
-                csv += `${battery.brand},${battery.size},${status}\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', `بطاريات-${filterName}_${dateStr}_${timeStr}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            const successMessage = document.createElement('div');
-            successMessage.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); color: white; padding: 2rem 3rem; border-radius: 20px; z-index: 10000; text-align: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 10px 50px rgba(76, 175, 80, 0.5);';
-            successMessage.innerHTML = `
-                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
-                تم تصدير ${filteredBatteries.length} بطارية ${filterName} بنجاح!
-            `;
-            document.body.appendChild(successMessage);
-            setTimeout(() => successMessage.remove(), 3000);
-        }
-
-        function switchSearchMode(mode) {
-            currentSearchMode = mode;
-            
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            document.getElementById('results').style.display = 'none';
-
-            if (mode === 'car') {
-                document.getElementById('carSearchSection').style.display = 'block';
-                document.getElementById('sizeSearchSection').style.display = 'none';
-                document.getElementById('carSearchSection').classList.add('active');
-                document.getElementById('sizeSearchSection').classList.remove('active');
-            } else {
-                document.getElementById('sizeSearchSection').style.display = 'block';
-                document.getElementById('carSearchSection').style.display = 'none';
-                document.getElementById('sizeSearchSection').classList.add('active');
-                document.getElementById('carSearchSection').classList.remove('active');
-            }
-
-            resetSelections();
-        }
-
-        function populateMakeDropdown() {
-            const makes = [...new Set(carData.map(c => c.make))].sort();
-            const makeList = document.getElementById('makeList');
-            
-            makeList.innerHTML = makes.map(make => 
-                `<div class="dropdown-item" onclick="selectMake('${make}')">${make}</div>`
-            ).join('');
-        }
-
-        function populateSizeDropdown() {
-            const sizes = [...new Set(batteryData.map(b => b.size))].sort();
-            const sizeList = document.getElementById('sizeList');
-            
-            sizeList.innerHTML = sizes.map(size => 
-                `<div class="dropdown-item" onclick="selectSize('${size}')">${size}</div>`
-            ).join('');
-        }
-
-        function selectMake(make) {
-            selectedMake = make;
-            selectedModel = '';
-            selectedYear = '';
-            
-            document.getElementById('makeInput').value = make;
-            document.getElementById('makeList').classList.remove('show');
-            document.getElementById('makeArrow').classList.remove('open');
-            
-            document.getElementById('modelGroup').style.display = 'block';
-            document.getElementById('modelInput').value = '';
-            
-            document.getElementById('yearGroup').style.display = 'none';
-            document.getElementById('yearInput').value = '';
-            
-            populateModelDropdown();
-            
-            document.getElementById('results').style.display = 'none';
-        }
-
-        function populateModelDropdown() {
-            const models = [...new Set(carData
-                .filter(c => c.make === selectedMake)
-                .map(c => c.model)
-            )].sort();
-            
-            const modelList = document.getElementById('modelList');
-            modelList.innerHTML = models.map(model => 
-                `<div class="dropdown-item" onclick="selectModel('${model}')">${model}</div>`
-            ).join('');
-        }
-
-        function selectModel(model) {
-            selectedModel = model;
-            selectedYear = '';
-            
-            document.getElementById('modelInput').value = model;
-            document.getElementById('modelList').classList.remove('show');
-            document.getElementById('modelArrow').classList.remove('open');
-            
-            document.getElementById('yearGroup').style.display = 'block';
-            document.getElementById('yearInput').value = '';
-            
-            populateYearDropdown();
-            
-            document.getElementById('results').style.display = 'none';
-        }
-
-        function populateYearDropdown() {
-            const years = [...new Set(carData
-                .filter(c => c.make === selectedMake && c.model === selectedModel)
-                .map(c => c.year)
-            )].sort((a, b) => b - a);
-            
-            const yearList = document.getElementById('yearList');
-            yearList.innerHTML = years.map(year => 
-                `<div class="dropdown-item" onclick="selectYear('${year}')">${year}</div>`
-            ).join('');
-        }
-
-        function selectYear(year) {
-            selectedYear = year;
-            
-            document.getElementById('yearInput').value = year;
-            document.getElementById('yearList').classList.remove('show');
-            document.getElementById('yearArrow').classList.remove('open');
-            
-            showBatteryResults();
-        }
-
-        function selectSize(size) {
-            document.getElementById('sizeInput').value = size;
-            document.getElementById('sizeList').classList.remove('show');
-            document.getElementById('sizeArrow').classList.remove('open');
-            
-            showBatteryResultsBySize(size);
-        }
-
-        function showBatteryResults() {
-            const matchingCars = carData.filter(c => 
-                c.make === selectedMake && 
-                c.model === selectedModel && 
-                c.year === selectedYear
-            );
-
-            const resultsDiv = document.getElementById('results');
-            
-            if (matchingCars.length === 0) {
-                resultsDiv.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: #FFC107;">
-                        <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
-                        <div style="font-size: 1.4rem; font-weight: bold;">لا توجد نتائ��</div>
-                        <div style="color: #999; margin-top: 0.5rem;">لم يتم العثور على بطا��يات لهذه السيارة</div>
-                    </div>
-                `;
-            } else {
-                const batterySizes = {};
-                matchingCars.forEach(car => {
-                    if (!batterySizes[car.bat]) {
-                        batterySizes[car.bat] = 0;
-                    }
-                    batterySizes[car.bat] += car.count;
-                });
-
-                const sizesArray = Object.entries(batterySizes);
-                
-                resultsDiv.innerHTML = `
-                    <div class="battery-result">
-                        <div class="battery-title">
-                            🔋 حجم البطارية المطلوبة
-                        </div>
-                        <div class="battery-info">
-                            ${sizesArray.map(([size, count]) => `
-                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                                    <div class="battery-size-box" style="flex: 1;">
-                                        ${size}${count > 1 ? ` (${count})` : ''}
-                                    </div>
-                                    <button class="show-prices-btn" style="width: auto; margin-top: 0;" onclick="togglePricesForSingleSize(this, '${size}')">
-                                        💰 إظهار الأسعار
-                                    </button>
-                                </div>
-                                <div class="prices-table-container" data-size="${size}"></div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            resultsDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-        }
-
-        function showBatteryResultsBySize(size) {
-            const resultsDiv = document.getElementById('results');
-            
-            const allBatteries = batteryData.filter(b => 
-                b.size.toUpperCase() === size.toUpperCase() &&
-                (b.fkStock > 0 || b.mStock > 0 || b.drivers.length > 0)
-            );
-
-            if (allBatteries.length === 0) {
-                resultsDiv.innerHTML = `
-                    <div style="text-align: center; padding: 3rem; color: #FFC107;">
-                        <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
-                        <div style="font-size: 1.4rem; font-weight: bold;">لا توجد نتائج</div>
-                        <div style="color: #999; margin-top: 0.5rem;">لا توجد بطاريات متوفرة بهذا المقاس</div>
-                    </div>
-                `;
-            } else {
-                resultsDiv.innerHTML = `
-                    <div class="battery-result">
-                        <div class="battery-title">
-                            🔋 بطارية بمقاس ${size}
-                        </div>
-                        <div class="battery-info">
-                            <div class="battery-size-box">
-                                ${size}
-                            </div>
-                        </div>
-                        <div class="prices-table-container" style="display: block;">
-                            ${generatePricesTable(allBatteries)}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            resultsDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-        }
-
-        function togglePricesForSingleSize(button, size) {
-            const parentDiv = button.closest('.battery-info');
-            const container = parentDiv.querySelector(`.prices-table-container[data-size="${size}"]`);
-            
-            if (container.style.display === 'none' || !container.style.display) {
-                showPricesForSize(container, size);
-                container.style.display = 'block';
-                button.textContent = '❌ إخفاء الأسعار';
-                
-                setTimeout(() => {
-                    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 100);
-            } else {
-                container.style.display = 'none';
-                button.textContent = '💰 إظهار الأسعار';
-            }
-        }
-
-        function toggleNotice(button) {
-            const noticeContent = button.closest('.notice-box').querySelector('.notice-content');
-            
-            if (noticeContent.classList.contains('hidden')) {
-                noticeContent.classList.remove('hidden');
-                button.textContent = '🔼 إخفاء';
-            } else {
-                noticeContent.classList.add('hidden');
-                button.textContent = '🔽 إظهار';
-            }
-        }
-
-        function generatePricesTable(allBatteries) {
-            const showPurchasePrice = currentUser && !currentUser.isStaff;
-            const showCopyButton = currentUser && currentUser.isStaff;
-            
-            let headerRow = `
-                <th>الماركة</th>
-                <th>المقاس</th>`;
-            
-            if (showPurchasePrice) {
-                headerRow += `<th>سعر الشراء 💰</th>`;
-            }
-            
-            headerRow += `
-                <th>سعر البيع 💵</th>
-                <th>المخزون الرئيسي 📦</th>
-                <th>مخزون السائقين 🚚</th>`;
-            
-            if (showCopyButton) {
-                headerRow += `<th>نسخ الرسالة</th>`;
-            }
-            
-            return `
-                <table class="prices-table">
-                    <thead>
-                        <tr>${headerRow}</tr>
-                    </thead>
-                    <tbody>
-                        ${allBatteries.map(battery => {
-                            const onlyInWarehouse = battery.drivers.length === 0;
-                            
-                            let warehouseContent = '';
-                            if (battery.fkStock > 0) {
-                                warehouseContent += `<span class="warehouse-stock-badge">${battery.fkSupplierName}: ${battery.fkStock}</span>`;
-                            }
-                            if (battery.mStock > 0) {
-                                warehouseContent += `<span class="warehouse-stock-badge">${battery.mSupplierName}: ${battery.mStock}</span>`;
-                            }
-                            if (!warehouseContent) {
-                                warehouseContent = '-';
-                            }
-                            
-                            let driversContent = '';
-                            if (onlyInWarehouse) {
-                                driversContent = '<div class="warehouse-only-notice">في المورد فقط ❗</div>';
-                            } else {
-                                driversContent = battery.drivers.map(driver => {
-                                    let driverInfo = '';
-                                    if (driver.fk > 0) {
-                                        driverInfo += `<span class="driver-item-stock">${driver.fkSupplierName}: ${driver.fk}</span>`;
-                                    }
-                                    if (driver.m > 0) {
-                                        driverInfo += `<span class="driver-item-stock">${driver.mSupplierName}: ${driver.m}</span>`;
-                                    }
-                                    return `<div class="driver-item"><span class="driver-item-name">${driver.name}</span>${driverInfo}</div>`;
-                                }).join('');
-                            }
-                            
-                            let priceColumns = '';
-                            if (showPurchasePrice) {
-                                priceColumns = `<td class="price-cell">${battery.price} دك</td>`;
-                            }
-                            priceColumns += `<td class="price-cell">${battery.salePrice} دك</td>`;
-                            
-                            let copyButtonColumn = '';
-                            if (showCopyButton) {
-                                copyButtonColumn = `
-                                    <td>
-                                        <button class="copy-btn" onclick="copyBatteryMessage('${battery.brand.replace(/'/g, "\\'")}', '${battery.size}', ${battery.salePrice})">
-                                            📋 نسخ
-                                        </button>
-                                    </td>`;
-                            }
-                            
-                            return `
-                                <tr>
-                                    <td class="brand-cell">${battery.brand}</td>
-                                    <td class="price-cell">${battery.size}</td>
-                                    ${priceColumns}
-                                    <td class="warehouse-cell">${warehouseContent}</td>
-                                    <td class="drivers-cell">${driversContent}</td>
-                                    ${copyButtonColumn}
-                                </tr>
-                            `;
-                        }).join('')}
-                    </tbody>
-                </table>
-                <div class="notice-box">
-                    <div class="notice-header">
-                        <div class="notice-title">
-                            ⚠️ ملاحظة مهمة - رسوم إضافية
-                        </div>
-                        <button class="toggle-notice-btn" onclick="toggleNotice(this)">🔼 إخفاء</button>
-                    </div>
-                    <div class="notice-content">
-                        <div class="notice-item">
-                            <strong>💵 زيادة 15 د.ك:</strong> إذا البطارية تحت الكشن
-                        </div>
-                        <div class="notice-item">
-                            <strong>💵 زيادة 10 د.ك:</strong> علي صباح السالم (أم الهيمان)، شعيبة، ميناء عبدالله، جليعة، بنيدر، الخيران، النوي��يب، الرو��تين، العبدلي، الصبية، جبد، صباح الأحمد، الوفره
-                        </div>
-                        <div class="notice-item">
-                            <strong>💵 زيادة 5 د.ك:</strong> جابر الأحمد، سعد العبدالله، الجهراء، فحيحيل، الأحمدي، غرب عبدالله مبارك
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function showPricesForSize(container, size) {
-            const allBatteries = batteryData.filter(b => 
-                b.size.toUpperCase() === size.toUpperCase() &&
-                (b.fkStock > 0 || b.mStock > 0 || b.drivers.length > 0)
-            );
-
-            if (allBatteries.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #999;">
-                        لا توجد بطاريات متوفرة حالياً
-                    </div>
-                `;
-            } else {
-                container.innerHTML = generatePricesTable(allBatteries);
-            }
-        }
-
-        function copyBatteryMessage(brand, size, salePrice) {
-            let message = '';
-            const brandUpper = brand.toUpperCase();
-            
-            if (brandUpper.includes('MOTER CRAFT') || brandUpper.includes('MOTOR CRAFT') || brandUpper.includes('MOTORCRAFT')) {
-                if (size === 'DA100' || size === '95AGM') {
-                    message = `متوفرة بطارية موتر كرافت امريكيه 🇺🇸 كفالتها (سنتين) على الوكيل فورد الغانم سعرها ${salePrice} دك`;
-                } else {
-                    message = `متوفرة بطارية موتر كرافت امريكيه 🇺🇸 كفالتها 3 سنوات على الوكيل فورد الغانم السعر مع رسوم التركيب ${salePrice} دك`;
-                }
-            } else if (brandUpper.includes('VARTA')) {
-                message = `متوفرة بطارية فارتا المانيه 🇩🇪 كفالتها سنه على الوكيل اف اتو انترنشلن السعر مع رسوم التركيب ${salePrice} دك`;
-            } else if (brandUpper.includes('ABM')) {
-                message = `متوفرة بطارية ايه بي ام ماليزيه 🇲🇾 كفالتها سنه واحده على الوكيل اف كي السعر مع رسوم التركيب ${salePrice} دك`;
-            } else if (brandUpper.includes('MOTO RAFT') || brandUpper.includes('MOTORAFT')) {
-                message = `متوفرة بطارية موتر رافت هنديه 🇮🇳 كفالتها سنه واحده على الوكيل افتخار السعر مع رسوم التركيب ${salePrice} دك`;
-            } else if (brandUpper.includes('BOSSTER') || brandUpper.includes('BOOSTER')) {
-                message = `متوفرة بطارية (بوستر/أوكلا) صينيه 🇨🇳 كفالتها سنه واحده على الوكيل المشعل السعر مع رسوم التركيب ${salePrice} دك`;
-            } else {
-                message = `متوفرة بطارية ${brand} السعر مع رسوم التركيب ${salePrice} دك`;
-            }
-            
-            const btn = event.target.closest('.copy-btn');
-            const originalText = btn.innerHTML;
-            
-            // طريقة بديلة للنسخ تعمل في الـ iframe
-            const textarea = document.createElement('textarea');
-            textarea.value = message;
-            textarea.style.position = 'fixed';
-            textarea.style.top = '0';
-            textarea.style.left = '0';
-            textarea.style.width = '2em';
-            textarea.style.height = '2em';
-            textarea.style.padding = '0';
-            textarea.style.border = 'none';
-            textarea.style.outline = 'none';
-            textarea.style.boxShadow = 'none';
-            textarea.style.background = 'transparent';
-            textarea.style.opacity = '0';
-            
-            document.body.appendChild(textarea);
-            textarea.focus();
-            textarea.select();
-            
-            let success = false;
-            try {
-                success = document.execCommand('copy');
-            } catch (err) {
-                console.error('فشل النسخ:', err);
-            }
-            
-            document.body.removeChild(textarea);
-            
-            if (success) {
-                btn.classList.add('copied');
-                btn.innerHTML = '✅ تم النسخ';
-                
-                setTimeout(() => {
-                    btn.classList.remove('copied');
-                    btn.innerHTML = originalText;
-                }, 2000);
-            } else {
-                // محاولة استخدام clipboard API كبديل
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(message).then(() => {
-                        btn.classList.add('copied');
-                        btn.innerHTML = '✅ تم النسخ';
-                        
-                        setTimeout(() => {
-                            btn.classList.remove('copied');
-                            btn.innerHTML = originalText;
-                        }, 2000);
-                    }).catch(err => {
-                        console.error('فشل النسخ عبر clipboard API:', err);
-                        btn.innerHTML = '❌ فشل النسخ';
-                        setTimeout(() => {
-                            btn.innerHTML = originalText;
-                        }, 2000);
-                    });
-                } else {
-                    btn.innerHTML = '❌ فشل النسخ';
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                    }, 2000);
-                }
-            }
-        }
-
-        function showDropdown(type) {
-            const list = document.getElementById(`${type}List`);
-            const arrow = document.getElementById(`${type}Arrow`);
-            
-            if (list.innerHTML.trim() !== '') {
-                list.classList.add('show');
-                arrow.classList.add('open');
-            }
-        }
-
-        function filterDropdown(type) {
-            const input = document.getElementById(`${type}Input`);
-            const list = document.getElementById(`${type}List`);
-            const arrow = document.getElementById(`${type}Arrow`);
-            const searchText = input.value.trim();
-            const searchUpper = searchText.toUpperCase();
-            
-            if (searchText === '') {
-                if (type === 'make') {
-                    selectedMake = '';
-                    selectedModel = '';
-                    selectedYear = '';
-                    document.getElementById('modelGroup').style.display = 'none';
-                    document.getElementById('yearGroup').style.display = 'none';
-                    document.getElementById('modelInput').value = '';
-                    document.getElementById('yearInput').value = '';
-                    document.getElementById('results').style.display = 'none';
-                } else if (type === 'model') {
-                    selectedModel = '';
-                    selectedYear = '';
-                    document.getElementById('yearGroup').style.display = 'none';
-                    document.getElementById('yearInput').value = '';
-                    document.getElementById('results').style.display = 'none';
-                } else if (type === 'year') {
-                    selectedYear = '';
-                    document.getElementById('results').style.display = 'none';
-                }
-            }
-            
-            const existingNoResults = list.querySelector('.no-results');
-            if (existingNoResults) {
-                existingNoResults.remove();
-            }
-            
-            const items = list.querySelectorAll('.dropdown-item:not(.no-results)');
-            let hasResults = false;
-            
-            items.forEach(item => {
-                if (!item.dataset.originalText) {
-                    item.dataset.originalText = item.textContent;
-                }
-                const originalText = item.dataset.originalText;
-                const upperText = originalText.toUpperCase();
-                
-                if (searchText === '' || upperText.includes(searchUpper)) {
-                    item.style.display = 'block';
-                    hasResults = true;
-                    
-                    if (searchText !== '' && searchUpper !== '') {
-                        const index = upperText.indexOf(searchUpper);
-                        if (index !== -1) {
-                            const before = originalText.substring(0, index);
-                            const match = originalText.substring(index, index + searchText.length);
-                            const after = originalText.substring(index + searchText.length);
-                            item.innerHTML = `${before}<mark>${match}</mark>${after}`;
-                        } else {
-                            item.innerHTML = originalText;
-                        }
-                    } else {
-                        item.innerHTML = originalText;
-                    }
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-            
-            if (!hasResults && searchText !== '') {
-                const noResults = document.createElement('div');
-                noResults.className = 'no-results';
-                noResults.textContent = '❌ لا توجد ����تائج مطابقة';
-                list.appendChild(noResults);
-            }
-            
-            list.classList.add('show');
-            arrow.classList.add('open');
-        }
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.dropdown-container')) {
-                document.querySelectorAll('.dropdown-list').forEach(list => {
-                    list.classList.remove('show');
-                });
-                document.querySelectorAll('.dropdown-arrow').forEach(arrow => {
-                    arrow.classList.remove('open');
-                });
-            }
-        });
-
-        async function onConfigChange(newConfig) {
-            const headerTitle = document.getElementById('headerTitle');
-            const searchLabel = document.getElementById('searchLabel');
-            const dashboardTitle = document.getElementById('dashboardTitle');
-            
-            if (headerTitle) {
-                headerTitle.textContent = newConfig.system_title || defaultConfig.system_title;
-            }
-            
-            if (searchLabel) {
-                searchLabel.textContent = newConfig.search_label || defaultConfig.search_label;
-            }
-            
-            if (dashboardTitle) {
-                dashboardTitle.textContent = newConfig.dashboard_title || defaultConfig.dashboard_title;
-            }
-        }
-
-        function mapToCapabilities(cfg) {
-            return {
-                recolorables: [],
-                borderables: [],
-                fontEditable: undefined,
-                fontSizeable: undefined
-            };
-        }
-
-        function mapToEditPanelValues(cfg) {
-            return new Map([
-                ["system_title", cfg.system_title || defaultConfig.system_title],
-                ["search_label", cfg.search_label || defaultConfig.search_label],
-                ["dashboard_title", cfg.dashboard_title || defaultConfig.dashboard_title]
-            ]);
-        }
-
-        if (window.elementSdk) {
-            window.elementSdk.init({
-                defaultConfig,
-                onConfigChange,
-                mapToCapabilities,
-                mapToEditPanelValues
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedUser = localStorage.getItem('batterySystemUser');
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    document.getElementById('authContainer').style.display = 'none';
-                    document.getElementById('mainContainer').style.display = 'block';
-                    document.getElementById('userBadge').textContent = `${currentUser.role}: ${currentUser.username}`;
-                    
-                    if (!currentUser.isStaff) {
-                        document.getElementById('searchModeSelector').style.display = 'none';
-                        document.getElementById('sizeSearchSection').style.display = 'block';
-                        document.getElementById('carSearchSection').style.display = 'none';
-                        document.getElementById('dashboardSection').style.display = 'block';
-                        document.getElementById('sizeSearchSection').classList.add('active');
-                        document.getElementById('carSearchSection').classList.remove('active');
-                    } else {
-                        document.getElementById('searchModeSelector').style.display = 'flex';
-                        document.getElementById('sizeSearchSection').style.display = 'block';
-                        document.getElementById('carSearchSection').style.display = 'none';
-                        document.getElementById('dashboardSection').style.display = 'none';
-                        document.getElementById('sizeSearchSection').classList.add('active');
-                        document.getElementById('carSearchSection').classList.remove('active');
-                        
-                        setTimeout(() => {
-                            const sizeBtn = document.querySelector('.mode-btn[onclick*="size"]');
-                            if (sizeBtn) sizeBtn.classList.add('active');
-                        }, 100);
-                    }
-                    
-                    loadAllData();
-                    startAutoRefresh();
-                } catch (error) {
-                    console.error('خطأ في استرجاع بيانات المستخدم:', error);
-                    localStorage.removeItem('batterySystemUser');
-                }
-            }
-        });
-    </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d9c6285f01e77ef',t:'MTc3MzA4MzQ4MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
-      `;
     }
 
     // Render Installments Interface
@@ -11015,5 +9898,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         console.warn('Clipboard copy failed', e);
       }
     }
-      `;
-    }
+  </script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
