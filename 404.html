@@ -6,6 +6,10 @@
   <title>اسعار خدمات بورتراج</title>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Flatpickr Date Picker -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
   <style>
     body {
       box-sizing: border-box;
@@ -415,6 +419,196 @@
 
     .datetime-control::-webkit-datetime-edit-text {
       color: #888;
+    }
+
+    /* Flatpickr Custom Styling */
+    .flatpickr-calendar {
+      background: #0f0f0f;
+      border: 2px solid #F2BC1B;
+      border-radius: 8px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(242, 188, 27, 0.2);
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .flatpickr-calendar.open {
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .flatpickr-month {
+      background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+      border-bottom: 1px solid #333;
+    }
+
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+      color: #F2BC1B;
+      fill: #F2BC1B;
+    }
+
+    .flatpickr-prev-month:hover,
+    .flatpickr-next-month:hover {
+      background: rgba(242, 188, 27, 0.1);
+      border-radius: 4px;
+    }
+
+    .flatpickr-current-month {
+      color: #F2BC1B;
+      font-weight: 700;
+      padding: 12px 0;
+    }
+
+    .flatpickr-current-month .numInputWrapper {
+      width: auto;
+    }
+
+    .flatpickr-current-month input.cur-year {
+      color: #F2BC1B;
+      background: rgba(242, 188, 27, 0.05);
+      border: 1px solid #F2BC1B;
+      border-radius: 4px;
+      padding: 4px 8px;
+      width: 70px;
+    }
+
+    .flatpickr-weekdaycontainer {
+      background: #1a1a1a;
+      border-bottom: 1px solid #333;
+    }
+
+    .flatpickr-weekday {
+      color: #F2BC1B;
+      font-weight: 700;
+    }
+
+    .flatpickr-days {
+      padding: 8px;
+    }
+
+    .flatpickr-day {
+      color: #ccc;
+      border-radius: 4px;
+      height: 36px;
+      line-height: 36px;
+      margin: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .flatpickr-day:hover {
+      background: rgba(242, 188, 27, 0.2);
+      color: #F2BC1B;
+      border-color: #F2BC1B;
+    }
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+      background: #F2BC1B;
+      border-color: #F2BC1B;
+      color: #000;
+      font-weight: 700;
+    }
+
+    .flatpickr-day.selected:hover,
+    .flatpickr-day.startRange:hover,
+    .flatpickr-day.endRange:hover {
+      background: #ffd700;
+      border-color: #ffd700;
+      box-shadow: 0 4px 12px rgba(242, 188, 27, 0.4);
+    }
+
+    .flatpickr-day.today {
+      border-color: #F2BC1B;
+      border-width: 2px;
+    }
+
+    .flatpickr-day.prevMonthDay,
+    .flatpickr-day.nextMonthDay {
+      color: #444;
+    }
+
+    .flatpickr-day.disabled,
+    .flatpickr-day.disabled:hover {
+      color: #333;
+      background: transparent;
+      cursor: not-allowed;
+    }
+
+    .flatpickr-time {
+      background: #1a1a1a;
+      border-top: 1px solid #333;
+      padding: 12px;
+    }
+
+    .flatpickr-hour,
+    .flatpickr-minute {
+      background: #0f0f0f;
+      color: #F2BC1B;
+      border: 1px solid #F2BC1B;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-weight: 700;
+    }
+
+    .flatpickr-hour:hover,
+    .flatpickr-minute:hover {
+      background: rgba(242, 188, 27, 0.1);
+    }
+
+    .flatpickr-am-pm {
+      color: #F2BC1B;
+      background: #0f0f0f;
+      border: 1px solid #F2BC1B;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-weight: 700;
+    }
+
+    .flatpickr-am-pm:hover {
+      background: rgba(242, 188, 27, 0.1);
+    }
+
+    .flatpickr-separator {
+      color: #F2BC1B;
+    }
+
+    .numInputWrapper {
+      position: relative;
+    }
+
+    .numInputWrapper button {
+      background: transparent;
+      border: none;
+      color: #F2BC1B;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 0 4px;
+    }
+
+    .numInputWrapper button:hover {
+      color: #ffd700;
+    }
+
+    .numInputWrapper.nightMode input {
+      background: #0f0f0f;
+      color: #F2BC1B;
+    }
+
+    /* Input styling when focused */
+    .flatpickr-input:focus {
+      outline: none;
+      border-color: #ffd700;
+      box-shadow: 0 0 0 3px rgba(242, 188, 27, 0.2);
     }
 
     /* Horizontal date picker */
@@ -6957,6 +7151,9 @@
         onDateChange: (dateStr) => loadCarWashAppointments(dateStr),
         days: 14
       });
+      
+      // Initialize date picker for main appointment input
+      setTimeout(() => window.initializeDatePickersForModal?.(), 100);
     }
 
     function calculateAlternatorPrice() {
@@ -7976,6 +8173,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
       setModalMessage(overlay.querySelector('#cwMessage'), '', '');
       overlay.classList.remove('hidden');
+      
+      // Initialize date picker for this modal
+      setTimeout(() => window.initializeDatePickersForModal?.(), 50);
     }
 
     async function handleCarWashSubmit() {
@@ -8282,6 +8482,9 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
       setModalMessage(overlay.querySelector('#mechMessage'), '', '');
       overlay.classList.remove('hidden');
+      
+      // Initialize date picker for this modal
+      setTimeout(() => window.initializeDatePickersForModal?.(), 50);
     }
 
     async function handleMechanicalSubmit() {
@@ -9680,6 +9883,71 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         console.warn('Clipboard copy failed', e);
       }
     }
+
+    // Initialize Flatpickr for all datetime inputs
+    function initializeDatePickers() {
+      const datetimeInputs = document.querySelectorAll('input[type="datetime-local"].datetime-control');
+      
+      datetimeInputs.forEach(input => {
+        flatpickr(input, {
+          enableTime: true,
+          dateFormat: 'Y-m-d H:i',
+          time_24hr: true,
+          locale: 'ar',
+          minuteIncrement: 5,
+          minDate: 'today',
+          allowInput: false,
+          clickOpens: true,
+          static: false,
+          position: 'auto',
+          theme: 'dark',
+          // Custom styling
+          onReady: function(selectedDates, dateStr, instance) {
+            // Add custom classes
+            instance.calendarContainer.classList.add('flatpickr-dark');
+          },
+          onOpen: function(selectedDates, dateStr, instance) {
+            // Position the calendar optimally
+            const rect = instance.input.getBoundingClientRect();
+            if (rect.bottom + instance.calendarContainer.offsetHeight > window.innerHeight) {
+              instance.calendarContainer.style.top = 'auto';
+              instance.calendarContainer.style.bottom = (window.innerHeight - rect.top) + 'px';
+            }
+          }
+        });
+      });
+    }
+
+    // Initialize date pickers when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initializeDatePickers, 100);
+      });
+    } else {
+      setTimeout(initializeDatePickers, 100);
+    }
+
+    // Also initialize when modals are created
+    const originalSetTimeout = window.setTimeout;
+    window.initializeDatePickersForModal = function() {
+      const newInputs = document.querySelectorAll('input[type="datetime-local"].datetime-control:not(.flatpickr-initialized)');
+      newInputs.forEach(input => {
+        input.classList.add('flatpickr-initialized');
+        flatpickr(input, {
+          enableTime: true,
+          dateFormat: 'Y-m-d H:i',
+          time_24hr: true,
+          locale: 'ar',
+          minuteIncrement: 5,
+          minDate: 'today',
+          allowInput: false,
+          clickOpens: true,
+          static: false,
+          position: 'auto',
+          theme: 'dark'
+        });
+      });
+    };
   </script>
   <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
