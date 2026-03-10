@@ -6,10 +6,6 @@
   <title>اسعار خدمات بورتراج</title>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Flatpickr Date Picker -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
   <style>
     body {
       box-sizing: border-box;
@@ -421,194 +417,86 @@
       color: #888;
     }
 
-    /* Flatpickr Custom Styling */
-    .flatpickr-calendar {
-      background: #0f0f0f;
-      border: 2px solid #F2BC1B;
-      border-radius: 8px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(242, 188, 27, 0.2);
-      font-family: 'Cairo', sans-serif;
+    /* Date Time Picker Container */
+    .datetime-picker-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
     }
 
-    .flatpickr-calendar.open {
-      animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+    @media (max-width: 640px) {
+      .datetime-picker-group {
+        grid-template-columns: 1fr;
+        gap: 10px;
       }
     }
 
-    .flatpickr-month {
+    /* Date Input Box */
+    .date-input-box,
+    .time-input-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .date-input-box label,
+    .time-input-box label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #F2BC1B;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .date-input-box input,
+    .time-input-box input {
       background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
-      border-bottom: 1px solid #333;
-    }
-
-    .flatpickr-prev-month,
-    .flatpickr-next-month {
+      border: 2px solid #F2BC1B;
+      border-radius: 6px;
       color: #F2BC1B;
-      fill: #F2BC1B;
-    }
-
-    .flatpickr-prev-month:hover,
-    .flatpickr-next-month:hover {
-      background: rgba(242, 188, 27, 0.1);
-      border-radius: 4px;
-    }
-
-    .flatpickr-current-month {
-      color: #F2BC1B;
-      font-weight: 700;
-      padding: 12px 0;
-    }
-
-    .flatpickr-current-month .numInputWrapper {
-      width: auto;
-    }
-
-    .flatpickr-current-month input.cur-year {
-      color: #F2BC1B;
-      background: rgba(242, 188, 27, 0.05);
-      border: 1px solid #F2BC1B;
-      border-radius: 4px;
-      padding: 4px 8px;
-      width: 70px;
-    }
-
-    .flatpickr-weekdaycontainer {
-      background: #1a1a1a;
-      border-bottom: 1px solid #333;
-    }
-
-    .flatpickr-weekday {
-      color: #F2BC1B;
-      font-weight: 700;
-    }
-
-    .flatpickr-days {
-      padding: 8px;
-    }
-
-    .flatpickr-day {
-      color: #ccc;
-      border-radius: 4px;
-      height: 36px;
-      line-height: 36px;
-      margin: 2px;
-      transition: all 0.2s ease;
-    }
-
-    .flatpickr-day:hover {
-      background: rgba(242, 188, 27, 0.2);
-      color: #F2BC1B;
-      border-color: #F2BC1B;
-    }
-
-    .flatpickr-day.selected,
-    .flatpickr-day.startRange,
-    .flatpickr-day.endRange {
-      background: #F2BC1B;
-      border-color: #F2BC1B;
-      color: #000;
-      font-weight: 700;
-    }
-
-    .flatpickr-day.selected:hover,
-    .flatpickr-day.startRange:hover,
-    .flatpickr-day.endRange:hover {
-      background: #ffd700;
-      border-color: #ffd700;
-      box-shadow: 0 4px 12px rgba(242, 188, 27, 0.4);
-    }
-
-    .flatpickr-day.today {
-      border-color: #F2BC1B;
-      border-width: 2px;
-    }
-
-    .flatpickr-day.prevMonthDay,
-    .flatpickr-day.nextMonthDay {
-      color: #444;
-    }
-
-    .flatpickr-day.disabled,
-    .flatpickr-day.disabled:hover {
-      color: #333;
-      background: transparent;
-      cursor: not-allowed;
-    }
-
-    .flatpickr-time {
-      background: #1a1a1a;
-      border-top: 1px solid #333;
-      padding: 12px;
-    }
-
-    .flatpickr-hour,
-    .flatpickr-minute {
-      background: #0f0f0f;
-      color: #F2BC1B;
-      border: 1px solid #F2BC1B;
-      border-radius: 4px;
-      padding: 6px 8px;
-      font-weight: 700;
-    }
-
-    .flatpickr-hour:hover,
-    .flatpickr-minute:hover {
-      background: rgba(242, 188, 27, 0.1);
-    }
-
-    .flatpickr-am-pm {
-      color: #F2BC1B;
-      background: #0f0f0f;
-      border: 1px solid #F2BC1B;
-      border-radius: 4px;
-      padding: 6px 8px;
-      font-weight: 700;
-    }
-
-    .flatpickr-am-pm:hover {
-      background: rgba(242, 188, 27, 0.1);
-    }
-
-    .flatpickr-separator {
-      color: #F2BC1B;
-    }
-
-    .numInputWrapper {
-      position: relative;
-    }
-
-    .numInputWrapper button {
-      background: transparent;
-      border: none;
-      color: #F2BC1B;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Cairo', sans-serif;
       cursor: pointer;
-      font-weight: 700;
-      padding: 0 4px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(242, 188, 27, 0.08);
     }
 
-    .numInputWrapper button:hover {
-      color: #ffd700;
+    .date-input-box input:hover,
+    .time-input-box input:hover {
+      border-color: #ffd700;
+      box-shadow: 0 6px 16px rgba(242, 188, 27, 0.15);
+      background: linear-gradient(135deg, #222 0%, #141414 100%);
     }
 
-    .numInputWrapper.nightMode input {
-      background: #0f0f0f;
-      color: #F2BC1B;
-    }
-
-    /* Input styling when focused */
-    .flatpickr-input:focus {
+    .date-input-box input:focus,
+    .time-input-box input:focus {
       outline: none;
       border-color: #ffd700;
-      box-shadow: 0 0 0 3px rgba(242, 188, 27, 0.2);
+      box-shadow: 0 0 0 4px rgba(242, 188, 27, 0.2), 0 6px 20px rgba(242, 188, 27, 0.15);
+      background: linear-gradient(135deg, #222 0%, #141414 100%);
+    }
+
+    /* Date/Time picker styling for browsers */
+    .date-input-box input::-webkit-calendar-picker-indicator,
+    .time-input-box input::-webkit-calendar-picker-indicator {
+      filter: invert(70%) sepia(75%) saturate(500%) hue-rotate(2deg) brightness(105%) contrast(102%);
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Firefox styling */
+    @-moz-document url-prefix() {
+      .date-input-box input,
+      .time-input-box input {
+        padding: 10px 12px;
+      }
     }
 
     /* Horizontal date picker */
@@ -7153,7 +7041,7 @@
       });
       
       // Initialize date picker for main appointment input
-      setTimeout(() => window.initializeDatePickersForModal?.(), 100);
+      setTimeout(() => window.convertDateTimeInputsForModal?.(), 100);
     }
 
     function calculateAlternatorPrice() {
@@ -8175,7 +8063,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.classList.remove('hidden');
       
       // Initialize date picker for this modal
-      setTimeout(() => window.initializeDatePickersForModal?.(), 50);
+      setTimeout(() => window.convertDateTimeInputsForModal?.(), 50);
     }
 
     async function handleCarWashSubmit() {
@@ -8484,7 +8372,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       overlay.classList.remove('hidden');
       
       // Initialize date picker for this modal
-      setTimeout(() => window.initializeDatePickersForModal?.(), 50);
+      setTimeout(() => window.convertDateTimeInputsForModal?.(), 50);
     }
 
     async function handleMechanicalSubmit() {
@@ -9884,69 +9772,149 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
     }
 
-    // Initialize Flatpickr for all datetime inputs
-    function initializeDatePickers() {
+    // Convert datetime-local inputs to separate date and time inputs
+    function convertDateTimeInputs() {
       const datetimeInputs = document.querySelectorAll('input[type="datetime-local"].datetime-control');
       
       datetimeInputs.forEach(input => {
-        flatpickr(input, {
-          enableTime: true,
-          dateFormat: 'Y-m-d H:i',
-          time_24hr: true,
-          locale: 'ar',
-          minuteIncrement: 5,
-          minDate: 'today',
-          allowInput: false,
-          clickOpens: true,
-          static: false,
-          position: 'auto',
-          theme: 'dark',
-          // Custom styling
-          onReady: function(selectedDates, dateStr, instance) {
-            // Add custom classes
-            instance.calendarContainer.classList.add('flatpickr-dark');
-          },
-          onOpen: function(selectedDates, dateStr, instance) {
-            // Position the calendar optimally
-            const rect = instance.input.getBoundingClientRect();
-            if (rect.bottom + instance.calendarContainer.offsetHeight > window.innerHeight) {
-              instance.calendarContainer.style.top = 'auto';
-              instance.calendarContainer.style.bottom = (window.innerHeight - rect.top) + 'px';
-            }
-          }
+        if (input._converted) return;
+        input._converted = true;
+        
+        const container = document.createElement('div');
+        container.className = 'datetime-picker-group';
+        container.style.marginTop = '8px';
+        container.style.marginBottom = '12px';
+        
+        // Create date input
+        const dateBox = document.createElement('div');
+        dateBox.className = 'date-input-box';
+        const dateLabel = document.createElement('label');
+        dateLabel.innerHTML = '📅 التاريخ';
+        dateLabel.style.fontSize = '12px';
+        const dateInput = document.createElement('input');
+        dateInput.type = 'date';
+        dateInput.className = 'form-control';
+        dateInput.style.cssText = `
+          background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+          border: 2px solid #F2BC1B;
+          border-radius: 6px;
+          color: #F2BC1B;
+          padding: 12px 14px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(242, 188, 27, 0.08);
+        `;
+        dateBox.appendChild(dateLabel);
+        dateBox.appendChild(dateInput);
+        
+        // Create time input
+        const timeBox = document.createElement('div');
+        timeBox.className = 'time-input-box';
+        const timeLabel = document.createElement('label');
+        timeLabel.innerHTML = '⏰ الوقت';
+        timeLabel.style.fontSize = '12px';
+        const timeInput = document.createElement('input');
+        timeInput.type = 'time';
+        timeInput.className = 'form-control';
+        timeInput.style.cssText = `
+          background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+          border: 2px solid #F2BC1B;
+          border-radius: 6px;
+          color: #F2BC1B;
+          padding: 12px 14px;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(242, 188, 27, 0.08);
+        `;
+        timeBox.appendChild(timeLabel);
+        timeBox.appendChild(timeInput);
+        
+        // Add hover effects
+        [dateInput, timeInput].forEach(inp => {
+          inp.addEventListener('mouseover', function() {
+            this.style.borderColor = '#ffd700';
+            this.style.boxShadow = '0 6px 16px rgba(242, 188, 27, 0.15)';
+            this.style.background = 'linear-gradient(135deg, #222 0%, #141414 100%)';
+          });
+          inp.addEventListener('mouseout', function() {
+            this.style.borderColor = '#F2BC1B';
+            this.style.boxShadow = '0 4px 12px rgba(242, 188, 27, 0.08)';
+            this.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%)';
+          });
+          inp.addEventListener('focus', function() {
+            this.style.borderColor = '#ffd700';
+            this.style.boxShadow = '0 0 0 4px rgba(242, 188, 27, 0.2), 0 6px 20px rgba(242, 188, 27, 0.15)';
+            this.style.background = 'linear-gradient(135deg, #222 0%, #141414 100%)';
+          });
+          inp.addEventListener('blur', function() {
+            this.style.borderColor = '#F2BC1B';
+            this.style.boxShadow = '0 4px 12px rgba(242, 188, 27, 0.08)';
+            this.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%)';
+          });
         });
+        
+        // Sync with original input
+        dateInput.addEventListener('change', () => {
+          updateOriginalDateTime(input, dateInput, timeInput);
+        });
+        timeInput.addEventListener('change', () => {
+          updateOriginalDateTime(input, dateInput, timeInput);
+        });
+        
+        // Set initial values
+        if (input.value) {
+          const [date, time] = input.value.split('T');
+          dateInput.value = date;
+          timeInput.value = time || '12:00';
+        } else {
+          const now = new Date();
+          const year = now.getFullYear();
+          const month = String(now.getMonth() + 1).padStart(2, '0');
+          const day = String(now.getDate()).padStart(2, '0');
+          dateInput.value = `${year}-${month}-${day}`;
+          timeInput.value = '12:00';
+        }
+        
+        container.appendChild(dateBox);
+        container.appendChild(timeBox);
+        
+        // Hide original input and insert new container
+        input.style.display = 'none';
+        input.parentNode.insertBefore(container, input.nextSibling);
+        
+        // Store references
+        input._dateInput = dateInput;
+        input._timeInput = timeInput;
+        input._container = container;
       });
     }
 
-    // Initialize date pickers when DOM is ready
+    function updateOriginalDateTime(original, dateInput, timeInput) {
+      const date = dateInput.value;
+      const time = timeInput.value;
+      if (date && time) {
+        original.value = `${date}T${time}`;
+        original.dispatchEvent(new Event('change', { bubbles: true }));
+        original.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }
+
+    // Initialize on page load
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(initializeDatePickers, 100);
+        setTimeout(convertDateTimeInputs, 100);
       });
     } else {
-      setTimeout(initializeDatePickers, 100);
+      setTimeout(convertDateTimeInputs, 100);
     }
 
-    // Also initialize when modals are created
-    const originalSetTimeout = window.setTimeout;
-    window.initializeDatePickersForModal = function() {
-      const newInputs = document.querySelectorAll('input[type="datetime-local"].datetime-control:not(.flatpickr-initialized)');
-      newInputs.forEach(input => {
-        input.classList.add('flatpickr-initialized');
-        flatpickr(input, {
-          enableTime: true,
-          dateFormat: 'Y-m-d H:i',
-          time_24hr: true,
-          locale: 'ar',
-          minuteIncrement: 5,
-          minDate: 'today',
-          allowInput: false,
-          clickOpens: true,
-          static: false,
-          position: 'auto',
-          theme: 'dark'
-        });
-      });
+    // Also convert when modals are opened
+    window.convertDateTimeInputsForModal = function() {
+      setTimeout(convertDateTimeInputs, 50);
     };
   </script>
   <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
