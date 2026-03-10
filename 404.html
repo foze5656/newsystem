@@ -580,6 +580,51 @@
   /* Divider */
   .divider { height: 1px; background: var(--border); margin: 16px 0; }
 
+  /* Payment Method Cards */
+  .pay-method-card {
+    background: white; border-radius: var(--radius-sm);
+    padding: 14px 16px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer; box-shadow: var(--shadow-card);
+    border: 2px solid transparent; transition: all 0.2s;
+  }
+  .pay-method-card:active { transform: scale(0.98); }
+  .pay-method-card.selected { border-color: var(--primary); }
+  .pay-method-logo {
+    width: 56px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .pay-method-info { flex: 1; }
+  .pay-method-name { font-size: 14px; font-weight: 700; }
+  .pay-method-sub { font-size: 12px; color: var(--text-muted); }
+  .pay-radio {
+    width: 22px; height: 22px;
+    border-radius: 50%; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  .pay-radio.selected { border-color: var(--primary); background: var(--primary); }
+  .radio-inner { width: 8px; height: 8px; background: white; border-radius: 50%; }
+
+  /* Tabby installments */
+  .tabby-inst {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px; padding: 10px 6px; text-align: center;
+    border: 2px solid rgba(255,255,255,0.2); transition: all 0.2s;
+  }
+  .tabby-inst.active { background: white; border-color: white; }
+  .tabby-inst.active .tabby-inst-num { color: #3DBFA8; }
+  .tabby-inst.active .tabby-inst-amt { color: #27A08E; }
+  .tabby-inst-num { font-size: 10px; color: rgba(255,255,255,0.8); font-weight: 600; margin-bottom: 4px; }
+  .tabby-inst-amt { font-size: 13px; font-weight: 900; color: white; }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
   /* Fade in animation */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
@@ -944,7 +989,7 @@
     <div id="booking-results" style="display:none;padding:20px">
       <div style="font-size:16px;font-weight:700;margin-bottom:14px">✅ شركات متاحة في وقتك</div>
 
-      <div class="company-card" onclick="confirmBooking()">
+      <div class="company-card" onclick="goToPayment('Sparkle Clean','28')">
         <div class="company-logo" style="background:#E0FBF5">✨</div>
         <div class="company-info">
           <div class="company-name">Sparkle Clean</div>
@@ -957,7 +1002,7 @@
         </div>
       </div>
 
-      <div class="company-card" onclick="confirmBooking()">
+      <div class="company-card" onclick="goToPayment('Crystal Pro','32')">
         <div class="company-logo" style="background:#EEF2FF">💎</div>
         <div class="company-info">
           <div class="company-name">Crystal Pro</div>
@@ -1077,7 +1122,7 @@
         <div class="profile-avatar">👤</div>
         <div class="edit-avatar">✏️</div>
       </div>
-      <div class="profile-name">ثامر الخنيث </div>
+      <div class="profile-name">أحمد الكويتي</div>
       <div class="profile-phone">+965 5555 1234</div>
     </div>
 
@@ -1224,6 +1269,314 @@
     </div>
   </div>
 
+  <!-- =================== PAYMENT SCREEN =================== -->
+  <div class="screen" id="screen-payment">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="back-btn" style="margin:0;background:var(--primary-light);width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px" onclick="goBack()">←</div>
+        <div class="topbar-logo">اختر <span>طريقة الدفع</span></div>
+      </div>
+    </div>
+
+    <div style="padding:20px">
+      <!-- Order Summary -->
+      <div style="background:linear-gradient(135deg,var(--secondary),#2D3561);border-radius:var(--radius);padding:18px;margin-bottom:20px;color:white">
+        <div style="font-size:12px;opacity:0.7;margin-bottom:6px">ملخص الطلب</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:16px;font-weight:700" id="pay-company-name">Sparkle Clean</div>
+            <div style="font-size:13px;opacity:0.75">تنظيف شامل · الثلاثاء 10:00 ص</div>
+          </div>
+          <div style="text-align:left">
+            <div style="font-size:24px;font-weight:900" id="pay-amount">28</div>
+            <div style="font-size:12px;opacity:0.7">د.ك</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">اختر طريقة الدفع</div>
+
+      <!-- KNET -->
+      <div class="pay-method-card" id="pm-knet" onclick="selectPayMethod('knet')">
+        <div class="pay-method-logo" style="background:#1B4F9B">
+          <span style="color:white;font-size:13px;font-weight:900;letter-spacing:-0.5px">K-NET</span>
+        </div>
+        <div class="pay-method-info">
+          <div class="pay-method-name">كي-نت</div>
+          <div class="pay-method-sub">بطاقة مدى الكويتية</div>
+        </div>
+        <div class="pay-radio" id="radio-knet"></div>
+      </div>
+
+      <!-- VISA / Mastercard -->
+      <div class="pay-method-card" id="pm-visa" onclick="selectPayMethod('visa')">
+        <div class="pay-method-logo" style="background:#1A1F36;display:flex;gap:4px;align-items:center;padding:0 8px">
+          <span style="color:#1A6FE8;font-size:14px;font-weight:900;font-style:italic">VISA</span>
+          <span style="color:#EB001B;font-size:18px">●</span><span style="color:#F79E1B;font-size:18px;margin-right:-10px">●</span>
+        </div>
+        <div class="pay-method-info">
+          <div class="pay-method-name">فيزا / ماستركارد</div>
+          <div class="pay-method-sub">ادفع ببطاقتك الائتمانية</div>
+        </div>
+        <div class="pay-radio" id="radio-visa"></div>
+      </div>
+
+      <!-- Tabby -->
+      <div class="pay-method-card" id="pm-tabby" onclick="selectPayMethod('tabby')" style="border:2px solid #3DBFA8">
+        <div class="pay-method-logo" style="background:#3DBFA8">
+          <span style="color:white;font-size:15px;font-weight:900">tabby</span>
+        </div>
+        <div class="pay-method-info">
+          <div class="pay-method-name" style="display:flex;align-items:center;gap:6px">
+            تابي – الدفع بالأقساط
+            <span style="background:#3DBFA8;color:white;font-size:10px;padding:2px 6px;border-radius:20px;font-weight:700">جديد</span>
+          </div>
+          <div class="pay-method-sub">4 دفعات بدون فوائد</div>
+        </div>
+        <div class="pay-radio selected" id="radio-tabby"><div class="radio-inner"></div></div>
+      </div>
+
+      <!-- Apple Pay -->
+      <div class="pay-method-card" id="pm-apple" onclick="selectPayMethod('apple')">
+        <div class="pay-method-logo" style="background:#000">
+          <span style="color:white;font-size:18px"></span>
+        </div>
+        <div class="pay-method-info">
+          <div class="pay-method-name">Apple Pay</div>
+          <div class="pay-method-sub">ادفع بسرعة وأمان</div>
+        </div>
+        <div class="pay-radio" id="radio-apple"></div>
+      </div>
+
+      <button class="btn-primary" style="margin-top:20px" onclick="proceedPayment()" id="pay-btn">متابعة الدفع →</button>
+    </div>
+  </div>
+
+  <!-- =================== KNET SCREEN =================== -->
+  <div class="screen" id="screen-knet">
+    <div style="background:#1B4F9B;padding:16px 20px 20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <div onclick="goBack()" style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:18px">←</div>
+        <div style="color:white;font-weight:800;font-size:18px">K-NET</div>
+        <div style="margin-right:auto;background:rgba(255,255,255,0.2);color:white;font-size:11px;padding:4px 10px;border-radius:20px">🔒 آمن ومشفر</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.1);border-radius:var(--radius-sm);padding:14px;color:white">
+        <div style="font-size:12px;opacity:0.75;margin-bottom:4px">المبلغ المطلوب</div>
+        <div style="font-size:28px;font-weight:900" id="knet-amount">28.000 د.ك</div>
+        <div style="font-size:12px;opacity:0.7;margin-top:2px" id="knet-merchant">CleanHub – Sparkle Clean</div>
+      </div>
+    </div>
+
+    <div style="padding:24px 20px">
+      <div style="background:#EEF4FF;border-radius:var(--radius-sm);padding:14px;margin-bottom:20px;font-size:13px;color:#1B4F9B;font-weight:600;display:flex;gap:8px;align-items:center">
+        🏦 سيتم توجيهك لبوابة K-NET الآمنة لإتمام عملية الدفع
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">🏦 اختر البنك</label>
+        <select class="form-select" id="knet-bank">
+          <option>بنك الكويت الوطني (NBK)</option>
+          <option>بيت التمويل الكويتي (KFH)</option>
+          <option>البنك الأهلي الكويتي (NBQ)</option>
+          <option>بنك برقان</option>
+          <option>بنك الخليج</option>
+          <option>بنك وربة</option>
+          <option>بنك بوبيان</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">رقم البطاقة</label>
+        <input class="form-input" type="tel" placeholder="XXXX XXXX XXXX XXXX" id="knet-card" maxlength="19" oninput="formatCard(this)">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">تاريخ الانتهاء</label>
+          <input class="form-input" type="tel" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">الرقم السري</label>
+          <input class="form-input" type="password" placeholder="••••" maxlength="4">
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="processKnet()" id="knet-pay-btn">
+        دفع <span id="knet-btn-amount">28.000</span> د.ك
+      </button>
+    </div>
+  </div>
+
+  <!-- =================== VISA SCREEN =================== -->
+  <div class="screen" id="screen-visa">
+    <div style="background:linear-gradient(135deg,#1A1F36,#2D3561);padding:16px 20px 20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <div onclick="goBack()" style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:18px">←</div>
+        <div style="color:white;font-weight:800;font-size:18px">بطاقة ائتمانية</div>
+        <div style="margin-right:auto;background:rgba(255,255,255,0.1);color:white;font-size:11px;padding:4px 10px;border-radius:20px">🔒 SSL آمن</div>
+      </div>
+      <!-- Card Preview -->
+      <div id="card-preview" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:20px;color:white;min-height:100px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,0.08);border-radius:50%"></div>
+        <div style="position:absolute;bottom:-30px;left:-10px;width:120px;height:120px;background:rgba(255,255,255,0.05);border-radius:50%"></div>
+        <div style="font-size:13px;opacity:0.7;margin-bottom:12px">رقم البطاقة</div>
+        <div style="font-size:18px;font-weight:700;letter-spacing:3px;margin-bottom:16px;font-family:monospace" id="preview-num">•••• •••• •••• ••••</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div>
+            <div style="font-size:10px;opacity:0.7">اسم حامل البطاقة</div>
+            <div style="font-size:14px;font-weight:600" id="preview-name">اسمك هنا</div>
+          </div>
+          <div style="text-align:left">
+            <div style="font-size:10px;opacity:0.7">تاريخ الانتهاء</div>
+            <div style="font-size:14px;font-weight:600" id="preview-exp">MM/YY</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:24px 20px">
+      <div class="form-group">
+        <label class="form-label">رقم البطاقة</label>
+        <input class="form-input" type="tel" placeholder="1234 5678 9012 3456" id="visa-num" maxlength="19"
+          oninput="formatCard(this);document.getElementById('preview-num').textContent=this.value||'•••• •••• •••• ••••'">
+      </div>
+      <div class="form-group">
+        <label class="form-label">اسم حامل البطاقة</label>
+        <input class="form-input" type="text" placeholder="الاسم كما هو على البطاقة" id="visa-name"
+          oninput="document.getElementById('preview-name').textContent=this.value||'اسمك هنا'">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">تاريخ الانتهاء</label>
+          <input class="form-input" type="tel" placeholder="MM/YY" maxlength="5" id="visa-exp"
+            oninput="formatExpiry(this);document.getElementById('preview-exp').textContent=this.value||'MM/YY'">
+        </div>
+        <div class="form-group">
+          <label class="form-label">CVV</label>
+          <input class="form-input" type="tel" placeholder="•••" maxlength="3">
+        </div>
+      </div>
+      <div style="background:#F4F7FB;border-radius:var(--radius-sm);padding:12px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-muted)">
+        🔒 بياناتك محمية بتشفير SSL 256-bit. لن يتم حفظ بيانات بطاقتك.
+      </div>
+      <button class="btn-primary" onclick="processVisa()">
+        ادفع <span id="visa-btn-amount">28</span> د.ك الآن
+      </button>
+    </div>
+  </div>
+
+  <!-- =================== TABBY SCREEN =================== -->
+  <div class="screen" id="screen-tabby">
+    <div style="background:linear-gradient(135deg,#3DBFA8,#27A08E);padding:16px 20px 24px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <div onclick="goBack()" style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:white;font-size:18px">←</div>
+        <div style="color:white;font-weight:900;font-size:22px">tabby</div>
+        <div style="margin-right:auto;background:rgba(255,255,255,0.2);color:white;font-size:11px;padding:4px 10px;border-radius:20px">بدون فوائد 0%</div>
+      </div>
+
+      <!-- Installment Preview -->
+      <div style="color:white;text-align:center;margin-bottom:8px">
+        <div style="font-size:14px;opacity:0.85;margin-bottom:4px">قسّم مبلغ</div>
+        <div style="font-size:36px;font-weight:900" id="tabby-total">28 د.ك</div>
+        <div style="font-size:13px;opacity:0.8">على 4 دفعات متساوية</div>
+      </div>
+
+      <!-- 4 payments -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px" id="tabby-installments">
+        <div class="tabby-inst active">
+          <div class="tabby-inst-num">الآن</div>
+          <div class="tabby-inst-amt">7 د.ك</div>
+        </div>
+        <div class="tabby-inst">
+          <div class="tabby-inst-num">شهر 1</div>
+          <div class="tabby-inst-amt">7 د.ك</div>
+        </div>
+        <div class="tabby-inst">
+          <div class="tabby-inst-num">شهر 2</div>
+          <div class="tabby-inst-amt">7 د.ك</div>
+        </div>
+        <div class="tabby-inst">
+          <div class="tabby-inst-num">شهر 3</div>
+          <div class="tabby-inst-amt">7 د.ك</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:20px">
+      <div style="background:#E8FBF8;border-radius:var(--radius-sm);padding:14px;margin-bottom:20px">
+        <div style="font-size:14px;font-weight:700;color:#27A08E;margin-bottom:8px">✅ مزايا تابي</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:2">
+          ✓ بدون فوائد أو رسوم خفية<br>
+          ✓ موافقة فورية في ثوانٍ<br>
+          ✓ لا يؤثر على تصنيفك الائتماني<br>
+          ✓ متاح لجميع العملاء في الكويت
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">رقم الجوال</label>
+        <input class="form-input" type="tel" placeholder="+965 XXXX XXXX" value="+965 ">
+      </div>
+      <div class="form-group">
+        <label class="form-label">البريد الإلكتروني</label>
+        <input class="form-input" type="email" placeholder="example@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">رقم البطاقة (أي بطاقة)</label>
+        <input class="form-input" type="tel" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+      </div>
+
+      <div style="background:#FFF8E7;border-radius:var(--radius-sm);padding:12px;margin-bottom:20px;font-size:12px;color:#8B6914;display:flex;gap:8px">
+        ⚡ ستحصل على موافقة فورية وسيتم خصم الدفعة الأولى فقط الآن
+      </div>
+
+      <button class="btn-primary" style="background:linear-gradient(135deg,#3DBFA8,#27A08E);box-shadow:0 4px 20px rgba(61,191,168,0.4)" onclick="processTabby()">
+        ادفع <span id="tabby-first">7</span> د.ك الآن (الدفعة الأولى)
+      </button>
+    </div>
+  </div>
+
+  <!-- =================== PAYMENT PROCESSING =================== -->
+  <div class="screen" id="screen-processing">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 20px;text-align:center">
+      <div id="processing-icon" style="font-size:64px;margin-bottom:20px;animation:spin 1s linear infinite">⏳</div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:8px" id="processing-title">جارٍ معالجة الدفع...</div>
+      <div style="font-size:14px;color:var(--text-muted);line-height:1.7" id="processing-sub">يرجى الانتظار، لا تغلق التطبيق</div>
+      <div style="width:100%;max-width:260px;height:6px;background:var(--border);border-radius:10px;margin-top:24px;overflow:hidden">
+        <div id="progress-bar" style="height:100%;background:var(--primary);border-radius:10px;width:0%;transition:width 0.3s"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== PAYMENT SUCCESS =================== -->
+  <div class="screen" id="screen-pay-success">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80%;padding:40px 20px;text-align:center">
+      <div style="width:100px;height:100px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:50px;margin-bottom:24px;animation:bounce 0.6s ease">✅</div>
+      <div style="font-size:26px;font-weight:900;margin-bottom:8px">تم الدفع بنجاح!</div>
+      <div style="font-size:34px;font-weight:900;color:var(--primary);margin-bottom:4px" id="success-amount">28 د.ك</div>
+      <div style="font-size:14px;color:var(--text-muted);margin-bottom:24px" id="success-method">عبر K-NET</div>
+
+      <div style="background:white;border-radius:var(--radius);padding:20px;width:100%;box-shadow:var(--shadow-card);margin-bottom:24px;text-align:right">
+        <div style="font-size:14px;font-weight:700;margin-bottom:12px;text-align:center">🧾 إيصال الدفع</div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">رقم العملية</span><span style="font-weight:700">#CH-<span id="receipt-num">48291</span></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">الشركة</span><span id="receipt-company">Sparkle Clean</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text-muted)">الموعد</span><span>الثلاثاء 10:00 ص</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0">
+          <span style="color:var(--text-muted)">طريقة الدفع</span><span id="receipt-method">K-NET</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="goHome()">العودة للرئيسية 🏠</button>
+      <button class="btn-secondary" onclick="showNotif('📲 تم إرسال الإيصال على واتساب')">مشاركة الإيصال 📤</button>
+    </div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <div class="nav-item active" id="nav-home" onclick="switchScreen('screen-home')">
@@ -1250,7 +1603,123 @@
 </div>
 
 <script>
-  // Set today's date
+  // Payment State
+  let selectedPayMethod = 'tabby';
+  let payAmount = 28;
+  let payCompany = 'Sparkle Clean';
+
+  function goToPayment(company, amount) {
+    payCompany = company;
+    payAmount = parseFloat(amount);
+    document.getElementById('pay-company-name').textContent = company;
+    document.getElementById('pay-amount').textContent = amount;
+    // Update tabby installments
+    const inst = Math.ceil(payAmount / 4 * 10) / 10;
+    document.getElementById('tabby-total').textContent = payAmount + ' د.ك';
+    document.getElementById('tabby-first').textContent = inst;
+    document.querySelectorAll('.tabby-inst-amt').forEach(el => el.textContent = inst + ' د.ك');
+    prevScreen = 'screen-book';
+    switchScreen('screen-payment');
+  }
+
+  function selectPayMethod(method) {
+    selectedPayMethod = method;
+    ['knet','visa','tabby','apple'].forEach(m => {
+      const radio = document.getElementById('radio-'+m);
+      const card = document.getElementById('pm-'+m);
+      if(radio) { radio.classList.remove('selected'); radio.innerHTML = ''; }
+      if(card) card.classList.remove('selected');
+    });
+    const radio = document.getElementById('radio-'+method);
+    const card = document.getElementById('pm-'+method);
+    if(radio) { radio.classList.add('selected'); radio.innerHTML = '<div class="radio-inner"></div>'; }
+    if(card) card.classList.add('selected');
+  }
+  // Init tabby selected
+  selectPayMethod('tabby');
+
+  function proceedPayment() {
+    prevScreen = 'screen-payment';
+    if(selectedPayMethod === 'knet') {
+      document.getElementById('knet-amount').textContent = payAmount.toFixed(3) + ' د.ك';
+      document.getElementById('knet-btn-amount').textContent = payAmount.toFixed(3);
+      document.getElementById('knet-merchant').textContent = 'CleanHub – ' + payCompany;
+      switchScreen('screen-knet');
+    } else if(selectedPayMethod === 'visa') {
+      document.getElementById('visa-btn-amount').textContent = payAmount;
+      switchScreen('screen-visa');
+    } else if(selectedPayMethod === 'tabby') {
+      switchScreen('screen-tabby');
+    } else if(selectedPayMethod === 'apple') {
+      showNotif('🍎 Apple Pay غير متوفر على هذا الجهاز');
+    }
+  }
+
+  function processKnet() {
+    const card = document.getElementById('knet-card').value;
+    if(card.length < 10) { showNotif('⚠️ أدخل رقم بطاقة صحيح'); return; }
+    startProcessing('K-NET');
+  }
+  function processVisa() {
+    const num = document.getElementById('visa-num').value;
+    if(num.length < 10) { showNotif('⚠️ أدخل رقم بطاقة صحيح'); return; }
+    startProcessing('فيزا/ماستركارد');
+  }
+  function processTabby() {
+    startProcessing('تابي – قسّطها');
+  }
+
+  function startProcessing(methodName) {
+    prevScreen = 'screen-payment';
+    switchScreen('screen-processing');
+    document.getElementById('processing-icon').style.animation = 'spin 1s linear infinite';
+    let pct = 0;
+    const bar = document.getElementById('progress-bar');
+    const steps = [
+      [500, 30, '🔐 التحقق من بيانات البطاقة...'],
+      [1200, 60, '🏦 الاتصال بالبنك...'],
+      [2000, 85, '✅ جارٍ تأكيد العملية...'],
+      [2800, 100, '🎉 تم التأكيد!']
+    ];
+    steps.forEach(([delay, pctVal, text]) => {
+      setTimeout(() => {
+        bar.style.width = pctVal + '%';
+        document.getElementById('processing-sub').textContent = text;
+        if(pctVal === 100) {
+          document.getElementById('processing-icon').style.animation = 'none';
+          document.getElementById('processing-icon').textContent = '✅';
+          setTimeout(() => showPaySuccess(methodName), 400);
+        }
+      }, delay);
+    });
+  }
+
+  function showPaySuccess(methodName) {
+    document.getElementById('success-amount').textContent = payAmount + ' د.ك';
+    document.getElementById('success-method').textContent = 'عبر ' + methodName;
+    document.getElementById('receipt-company').textContent = payCompany;
+    document.getElementById('receipt-method').textContent = methodName;
+    document.getElementById('receipt-num').textContent = Math.floor(10000 + Math.random()*90000);
+    // Reset processing for next use
+    document.getElementById('processing-icon').textContent = '⏳';
+    document.getElementById('processing-icon').style.animation = 'spin 1s linear infinite';
+    document.getElementById('progress-bar').style.width = '0%';
+    document.getElementById('processing-title').textContent = 'جارٍ معالجة الدفع...';
+    document.getElementById('processing-sub').textContent = 'يرجى الانتظار، لا تغلق التطبيق';
+    switchScreen('screen-pay-success');
+  }
+
+  function formatCard(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,16);
+    input.value = v.replace(/(.{4})/g,'$1 ').trim();
+  }
+  function formatExpiry(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,4);
+    if(v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2);
+    input.value = v;
+  }
+
+
   const today = new Date();
   const dateInput = document.getElementById('booking-date');
   if(dateInput) {
