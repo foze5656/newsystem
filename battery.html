@@ -1,0 +1,2294 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام البحث عن بطاريات السيارات</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100%;
+            height: 100%;
+        }
+        
+        html {
+            height: 100%;
+        }
+
+        .auth-container {
+            width: 100%;
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+        }
+
+        .auth-card {
+            background: #1a1a1a;
+            border-radius: 20px;
+            box-shadow: 0 25px 70px rgba(255, 193, 7, 0.3);
+            max-width: 360px;
+            width: 100%;
+            padding: 2rem 1.8rem;
+            border: 3px solid #FFC107;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-container img {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 20px rgba(255, 193, 7, 0.5));
+        }
+
+        .system-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px rgba(255, 193, 7, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #FFC107;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.65rem 0.9rem;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            background: #000;
+            color: #FFC107;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #FFC107;
+            background: #1a1a1a;
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.2);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.7rem;
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 193, 7, 0.5);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #000;
+            color: #FFC107;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            display: none;
+            border: 2px solid #FFC107;
+        }
+
+        .main-container {
+            display: none;
+            width: 100%;
+            min-height: 100%;
+            background: #000;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 4px 20px rgba(255, 193, 7, 0.3);
+            border-bottom: 3px solid #FFC107;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .header-logo img {
+            height: 40px;
+            width: auto;
+            filter: drop-shadow(0 0 15px rgba(255, 193, 7, 0.6));
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-badge {
+            background: #FFC107;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .btn-logout {
+            background: #000;
+            color: #FFC107;
+            border: 2px solid #FFC107;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #FFC107;
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        .content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .search-mode-selector {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #333;
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            background: #000;
+            color: #FFC107;
+            border: 2px solid #FFC107;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 193, 7, 0.3);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+            border-color: #FFC107;
+        }
+
+        .search-section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1.8rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.2);
+            border: 2px solid #333;
+            display: none;
+        }
+
+        .search-section.active {
+            display: block;
+        }
+
+        .search-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .dropdown-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .dropdown-label {
+            display: block;
+            color: #FFC107;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .dropdown-container {
+            position: relative;
+        }
+
+        .dropdown-input {
+            width: 100%;
+            padding: 0.7rem 2.5rem 0.7rem 1rem;
+            border: 2px solid #333;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            background: #000;
+            color: #FFC107;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .dropdown-input:focus {
+            outline: none;
+            border-color: #FFC107;
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.2);
+        }
+
+        .dropdown-input::placeholder {
+            color: #666;
+        }
+
+        .dropdown-arrow {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #FFC107;
+            pointer-events: none;
+            transition: transform 0.3s;
+        }
+
+        .dropdown-arrow.open {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #000;
+            border: 2px solid #FFC107;
+            border-radius: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            margin-top: 0.5rem;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+        }
+
+        .dropdown-list.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #333;
+            color: #FFC107;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #FFC107;
+            color: #000;
+            font-weight: 700;
+        }
+
+        .dropdown-item mark {
+            background: #FFC107;
+            color: #000;
+            padding: 0.1rem 0.2rem;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+
+        .no-results {
+            padding: 1.5rem;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }
+
+        .results-section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.2);
+            display: none;
+            margin-bottom: 1.5rem;
+            border: 2px solid #333;
+        }
+
+        .battery-result {
+            background: #000;
+            border: 2px solid #FFC107;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .battery-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .battery-info {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .battery-size-box {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .show-prices-btn {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+            border: none;
+            padding: 0.65rem 1.2rem;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            margin-top: 0.8rem;
+            width: 100%;
+        }
+
+        .show-prices-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.5);
+        }
+
+        .prices-table-container {
+            display: none;
+            margin-top: 1.5rem;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .prices-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+        }
+
+        .prices-table thead {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+        }
+
+        .prices-table th {
+            padding: 0.8rem 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border-left: 2px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .prices-table th:last-child {
+            border-left: none;
+        }
+
+        .prices-table tbody tr {
+            border-bottom: 2px solid #1a1a1a;
+            transition: all 0.2s;
+        }
+
+        .prices-table tbody tr:hover {
+            background: #1a1a1a;
+        }
+
+        .prices-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .prices-table td {
+            padding: 0.7rem 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            border-left: 2px solid #1a1a1a;
+            color: #FFC107;
+        }
+
+        .prices-table td:last-child {
+            border-left: none;
+        }
+
+        .brand-cell {
+            font-weight: bold;
+            color: #FFC107;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        .price-cell {
+            font-weight: bold;
+            color: #FFD54F;
+        }
+
+        .warehouse-cell {
+            font-size: 0.9rem;
+        }
+
+        .warehouse-stock-badge {
+            background: #FFC107;
+            color: #000;
+            padding: 0.3rem 0.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 0.2rem;
+            font-size: 0.75rem;
+        }
+
+        .drivers-cell {
+            text-align: right;
+            font-size: 0.9rem;
+            line-height: 1.9;
+        }
+
+        .driver-item {
+            display: inline-block;
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 0.4rem 0.5rem;
+            margin: 0.2rem;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .driver-item:hover {
+            border-color: #FFC107;
+            background: #1a1a1a;
+        }
+
+        .driver-item-name {
+            font-weight: bold;
+            color: #FFC107;
+            margin-left: 0.4rem;
+        }
+
+        .driver-item-stock {
+            background: #FFC107;
+            color: #000;
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.7rem;
+            margin: 0 0.2rem;
+        }
+
+        .warehouse-only-notice {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            border: 2px solid #000;
+            border-radius: 10px;
+            padding: 0.6rem 0.9rem;
+            text-align: center;
+            font-weight: bold;
+            color: #000;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+        }
+
+        .notice-box {
+            background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+            border: 2px solid #b71c1c;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+            color: white;
+        }
+
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            gap: 0.8rem;
+        }
+
+        .notice-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .toggle-notice-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .toggle-notice-btn:hover {
+            background: white;
+            color: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .notice-content {
+            line-height: 1.8;
+            font-size: 0.85rem;
+        }
+
+        .notice-content.hidden {
+            display: none;
+        }
+
+        .notice-item {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .notice-item:last-child {
+            border-bottom: none;
+        }
+
+        .notice-item strong {
+            color: #FFD54F;
+            font-size: 0.9rem;
+        }
+
+        .dashboard-section {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #FFC107;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+        }
+
+        .dashboard-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFC107;
+        }
+
+        .btn-sheet {
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.1rem;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-sheet:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.5);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: #FFC107;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #FFC107;
+            margin-bottom: 0.4rem;
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        .low-stock-section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 2px solid #333;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.2);
+        }
+
+        .low-stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .low-stock-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #FFC107;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-export-excel {
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.1rem;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-export-excel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.5);
+        }
+
+        .filter-btn {
+            background: #000;
+            color: #FFC107;
+            border: 2px solid #333;
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .filter-btn:hover {
+            border-color: #FFC107;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+            color: #000;
+            border-color: #FFC107;
+        }
+
+        .low-stock-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .low-stock-table thead {
+            background: linear-gradient(135deg, #FF5722 0%, #FF7043 100%);
+            color: white;
+        }
+
+        .low-stock-table th {
+            padding: 0.7rem 0.5rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .low-stock-table tbody tr {
+            border-bottom: 2px solid #1a1a1a;
+            transition: all 0.2s;
+        }
+
+        .low-stock-table tbody tr:hover {
+            background: #1a1a1a;
+        }
+
+        .low-stock-table td {
+            padding: 0.7rem 0.5rem;
+            text-align: center;
+            color: #FFC107;
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-weight: bold;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+
+        .status-out {
+            background: #f44336;
+            color: white;
+        }
+
+        .status-low {
+            background: #FF9800;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+
+        .spinner {
+            border: 5px solid #1a1a1a;
+            border-top: 5px solid #FFC107;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .auth-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .search-section {
+                padding: 1.5rem;
+            }
+
+            .prices-table {
+                font-size: 0.8rem;
+            }
+
+            .prices-table th,
+            .prices-table td {
+                padding: 0.7rem 0.4rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #FFC107;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FFD54F;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body>
+  <div id="authContainer" class="auth-container">
+   <div class="auth-card">
+    <div class="logo-container"><img src="https://i.top4top.io/p_35860o72q1.png" alt="شعار النظام" style="display: block; margin: 0 auto 1.5rem auto;" onerror="this.style.display='none'">
+     <div class="system-title">
+      ⚡ سيستم البطاريات ⚡
+     </div>
+    </div>
+    <div id="errorMessage" class="error-message"></div>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+     <div class="form-group"><label class="form-label">اسم المستخدم</label> <input type="text" id="username" class="form-input" placeholder="أدخل اسم المستخدم" required>
+     </div>
+     <div class="form-group"><label class="form-label">كلمة المرور</label> <input type="password" id="password" class="form-input" placeholder="أدخل كلمة المرور" required>
+     </div><button type="submit" class="btn-login">تسجيل الدخول</button>
+    </form>
+   </div>
+  </div>
+  <div id="mainContainer" class="main-container">
+   <header class="header">
+    <div class="header-content">
+     <div class="header-logo"><img src="https://i.top4top.io/p_35860o72q1.png" alt="شعار النظام" onerror="this.style.display='none'">
+      <div class="header-title" id="headerTitle">
+       ⚡ سيستم البطاريات ⚡
+      </div>
+     </div>
+     <div class="user-info">
+      <div class="user-badge" id="userBadge"></div><button class="btn-logout" onclick="handleLogout()">تسجيل الخروج</button>
+     </div>
+    </div>
+   </header>
+   <main class="content">
+    <div id="searchModeSelector" class="search-mode-selector"><button class="mode-btn" onclick="switchSearchMode('size')"> 🔋 البحث بمقاس البطارية </button> <button class="mode-btn" onclick="switchSearchMode('car')"> 🚗 البحث بأسماء السيارات </button>
+    </div>
+    <div id="sizeSearchSection" class="search-section active">
+     <div class="search-title">
+      🔋 ابحث عن مقاس البطارية
+     </div>
+     <div class="dropdown-group"><label class="dropdown-label">🔋 اختر أو اكتب مقاس البطارية</label>
+      <div class="dropdown-container"><input type="text" id="sizeInput" class="dropdown-input" placeholder="مثال: DA95, LN5, 70D23L..." autocomplete="off" oninput="filterDropdown('size')" onfocus="showDropdown('size')"> <span class="dropdown-arrow" id="sizeArrow">▼</span>
+       <div id="sizeList" class="dropdown-list"></div>
+      </div>
+     </div>
+    </div>
+    <div id="carSearchSection" class="search-section">
+     <div class="search-title" id="searchLabel">
+      🚗 ابحث عن بطارية سيارتك
+     </div>
+     <div class="dropdown-group" id="makeGroup"><label class="dropdown-label">🚗 اختر الشركة المصنعة</label>
+      <div class="dropdown-container"><input type="text" id="makeInput" class="dropdown-input" placeholder="اكتب أو اختر الشركة..." autocomplete="off" oninput="filterDropdown('make')" onfocus="showDropdown('make')"> <span class="dropdown-arrow" id="makeArrow">▼</span>
+       <div id="makeList" class="dropdown-list"></div>
+      </div>
+     </div>
+     <div class="dropdown-group" id="modelGroup" style="display: none;"><label class="dropdown-label">🚙 اختر الموديل</label>
+      <div class="dropdown-container"><input type="text" id="modelInput" class="dropdown-input" placeholder="اختر الموديل..." autocomplete="off" oninput="filterDropdown('model')" onfocus="showDropdown('model')"> <span class="dropdown-arrow" id="modelArrow">▼</span>
+       <div id="modelList" class="dropdown-list"></div>
+      </div>
+     </div>
+     <div class="dropdown-group" id="yearGroup" style="display: none;"><label class="dropdown-label">📅 اختر السنة</label>
+      <div class="dropdown-container"><input type="text" id="yearInput" class="dropdown-input" placeholder="اختر السنة..." autocomplete="off" oninput="filterDropdown('year')" onfocus="showDropdown('year')"> <span class="dropdown-arrow" id="yearArrow">▼</span>
+       <div id="yearList" class="dropdown-list"></div>
+      </div>
+     </div>
+    </div>
+    <div id="results" class="results-section"></div>
+    <div id="dashboardSection" class="dashboard-section">
+     <div class="dashboard-header">
+      <div class="dashboard-title-row">
+       <div class="dashboard-title" id="dashboardTitle">
+        🔋 لوحة التحكم
+       </div><button class="btn-sheet" onclick="openGoogleSheet()"> 📊 فتح الجوجل شيت </button>
+      </div>
+      <div class="stats-grid">
+       <div class="stat-card">
+        <div class="stat-icon">
+         🔋
+        </div>
+        <div class="stat-value" id="totalBatteries">
+         0
+        </div>
+        <div class="stat-label">
+         إجمالي البطاريات
+        </div>
+       </div>
+       <div class="stat-card">
+        <div class="stat-icon">
+         📦
+        </div>
+        <div class="stat-value" id="warehouseStock">
+         0
+        </div>
+        <div class="stat-label">
+         المخزون الرئيسي
+        </div>
+       </div>
+       <div class="stat-card">
+        <div class="stat-icon">
+         🚚
+        </div>
+        <div class="stat-value" id="driversStock">
+         0
+        </div>
+        <div class="stat-label">
+         مخزون السائقين
+        </div>
+       </div>
+       <div class="stat-card">
+        <div class="stat-icon">
+         ⚠️
+        </div>
+        <div class="stat-value" id="lowStock">
+         0
+        </div>
+        <div class="stat-label">
+         بطاريات منخفضة أو منتهية
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="low-stock-section">
+      <div class="low-stock-header">
+       <div class="low-stock-title">
+        ⚠️ البطاريات المنخفضة أو المنتهية
+       </div>
+       <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <div class="filter-buttons"><button class="filter-btn active" onclick="filterLowStock('all')">الكل</button> <button class="filter-btn" onclick="filterLowStock('out')">منتهية فقط</button> <button class="filter-btn" onclick="filterLowStock('low')">منخفضة فقط</button>
+        </div><button class="btn-export-excel" onclick="exportOutOfStockToExcel()"> 📥 تصدير Excel </button>
+       </div>
+      </div>
+      <div style="overflow-x: auto;">
+       <table class="low-stock-table">
+        <thead>
+         <tr>
+          <th>الماركة</th>
+          <th>المقاس</th>
+          <th>سعر الشراء</th>
+          <th>سعر البيع</th>
+          <th>المخزون الرئيسي</th>
+          <th>مخزون السائقين</th>
+          <th>الحالة</th>
+         </tr>
+        </thead>
+        <tbody id="lowStockTableBody">
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </div>
+    <div id="loading" class="loading">
+     <div class="spinner"></div>
+     <div style="color: #FFC107; font-weight: bold; font-size: 1.1rem;">
+      جاري تحميل البيانات...
+     </div>
+    </div>
+   </main>
+  </div>
+  <script>
+        const defaultConfig = {
+            system_title: "⚡ سيستم البطاريات ⚡",
+            search_label: "🚗 ابحث عن بطارية سيارتك",
+            dashboard_title: "🔋 لوحة التحكم"
+        };
+
+        let config = { ...defaultConfig };
+        
+        const CAR_SHEET_ID = '1tUjEj-1FtAqewhJiRcC4dgGwgrxhb5OjKxGWEojFzlg';
+        const BATTERY_SHEET_ID = '1WghSWhC-NJ0h--afoaR0ydzTP8ULw7N3tBDgToXoLVk';
+        
+        const CAR_SHEET_URL = `https://docs.google.com/spreadsheets/d/${CAR_SHEET_ID}/export?format=csv&gid=0`;
+        const BATTERY_SHEET_URL = `https://docs.google.com/spreadsheets/d/${BATTERY_SHEET_ID}/export?format=csv&gid=0`;
+        const GOOGLE_SHEET_VIEW_URL = `https://docs.google.com/spreadsheets/d/${BATTERY_SHEET_ID}/edit`;
+
+        const USERS = {
+            Abdullah: { password: 'portarage1', role: 'كول سنتر', isStaff: true },
+            Suaad: { password: 'portarage2', role: 'كول سنتر', isStaff: true },
+            Laila: { password: 'portarage3', role: 'كول سنتر', isStaff: true },
+            Nasser: { password: 'portarage4', role: 'كول سنتر', isStaff: true },
+            Khalifa: { password: 'portarage5', role: 'كول سنتر', isStaff: true },
+            Azam: { password: 'portarage6', role: 'كول سنتر', isStaff: true },
+            Sarah: { password: 'portrage1388', role: 'كول سنتر', isStaff: true },
+            Abdulwahab: { password: 'portarage7', role: 'كول سنتر', isStaff: true },
+            Bashar: { password: 'portarage8', role: 'كول سنتر', isStaff: true },
+            Ali: { password: 'portarage9', role: 'كول سنتر', isStaff: true },
+            Sabah: { password: 'portarage10', role: 'كول سنتر', isStaff: true },
+            Hamad: { password: 'portarage12', role: 'كول سنتر', isStaff: true },
+            Fawzi: { password: 'portarage12', role: 'كول سنتر', isStaff: true },
+            Mohamad: { password: 'portarage7896', role: 'المحاسب', isStaff: false },
+            Salem: { password: 'portarage7887', role: 'المدير', isStaff: false }
+
+         
+        };
+
+        let currentUser = null;
+        let carData = [];
+        let batteryData = [];
+        let driversArabicNames = {};
+        
+        let selectedMake = '';
+        let selectedModel = '';
+        let selectedYear = '';
+        let currentSearchMode = 'size';
+        let currentFilter = 'all';
+        let autoRefreshInterval = null;
+
+        function startAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            autoRefreshInterval = setInterval(async () => {
+                if (currentUser) {
+                    await loadAllDataSilently();
+                }
+            }, 60000);
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        async function loadAllDataSilently() {
+            try {
+                await Promise.all([
+                    loadCarData(),
+                    loadDriversData(),
+                    loadBatteryData()
+                ]);
+                
+                populateMakeDropdown();
+                populateSizeDropdown();
+                
+                if (!currentUser.isStaff) {
+                    updateDashboard();
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل البيانات:', error);
+            }
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim().replace(/^"|"$/g, ''));
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            return result;
+        }
+
+        function getSupplierName(brand, type) {
+            const brandUpper = brand.toUpperCase();
+            
+            if (brandUpper.includes('VARTA')) {
+                return 'مورد فارتا';
+            } else if (brandUpper.includes('EMTRAC')) {
+                return 'مورد البحبطين';
+            } else {
+                return type === 'FK' ? 'مورد اف كي' : 'مورد افتخار';
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMessage');
+
+            if (USERS[username] && USERS[username].password === password) {
+                currentUser = { username, ...USERS[username] };
+                
+                localStorage.setItem('batterySystemUser', JSON.stringify(currentUser));
+                
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                document.getElementById('userBadge').textContent = `${currentUser.role}: ${username}`;
+
+                if (!currentUser.isStaff) {
+                    document.getElementById('searchModeSelector').style.display = 'none';
+                    document.getElementById('sizeSearchSection').style.display = 'block';
+                    document.getElementById('carSearchSection').style.display = 'none';
+                    document.getElementById('dashboardSection').style.display = 'block';
+                    document.getElementById('sizeSearchSection').classList.add('active');
+                    document.getElementById('carSearchSection').classList.remove('active');
+                } else {
+                    document.getElementById('searchModeSelector').style.display = 'flex';
+                    document.getElementById('sizeSearchSection').style.display = 'block';
+                    document.getElementById('carSearchSection').style.display = 'none';
+                    document.getElementById('dashboardSection').style.display = 'none';
+                    document.getElementById('sizeSearchSection').classList.add('active');
+                    document.getElementById('carSearchSection').classList.remove('active');
+                    
+                    const sizeBtn = document.querySelector('.mode-btn[onclick*="size"]');
+                    if (sizeBtn) sizeBtn.classList.add('active');
+                }
+
+                loadAllData();
+                startAutoRefresh();
+            } else {
+                errorMsg.textContent = '❌ اسم المستخدم أو كلمة المرور غير صحيحة';
+                errorMsg.style.display = 'block';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            stopAutoRefresh();
+            localStorage.removeItem('batterySystemUser');
+            
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('authContainer').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+            document.getElementById('results').style.display = 'none';
+            
+            resetSelections();
+        }
+
+        function resetSelections() {
+            selectedMake = '';
+            selectedModel = '';
+            selectedYear = '';
+            
+            document.getElementById('makeInput').value = '';
+            document.getElementById('modelInput').value = '';
+            document.getElementById('yearInput').value = '';
+            document.getElementById('sizeInput').value = '';
+            
+            document.getElementById('modelGroup').style.display = 'none';
+            document.getElementById('yearGroup').style.display = 'none';
+            
+            document.getElementById('results').style.display = 'none';
+        }
+
+        async function loadAllData() {
+            document.getElementById('loading').style.display = 'block';
+            
+            try {
+                await Promise.all([
+                    loadCarData(),
+                    loadDriversData(),
+                    loadBatteryData()
+                ]);
+                
+                populateMakeDropdown();
+                populateSizeDropdown();
+                
+                if (!currentUser.isStaff) {
+                    updateDashboard();
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل البيانات:', error);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function loadCarData() {
+            try {
+                const response = await fetch(CAR_SHEET_URL);
+                const text = await response.text();
+                const rows = text.split('\n').filter(row => row.trim());
+                
+                carData = [];
+                
+                for (let i = 1; i < rows.length; i++) {
+                    const cols = parseCSVLine(rows[i]);
+                    if (cols[0] && cols[3]) {
+                        carData.push({
+                            make: cols[0].trim(),
+                            model: cols[1].trim(),
+                            year: cols[2].trim(),
+                            bat: cols[3].trim(),
+                            count: parseInt(cols[4]) || 1
+                        });
+                    }
+                }
+                
+                console.log('تم تحميل بيانات السيارات:', carData.length);
+            } catch (error) {
+                console.error('خطأ في تحميل بيانات السيارات:', error);
+            }
+        }
+
+        async function loadDriversData() {
+            try {
+                const predefinedNames = {
+                    'NYAZ': 'نياز',
+                    'Muthu': 'موتو',
+                    'Ganesh': 'جانيش',
+                    'Iresh-KESAVAN': 'اريش-كيسافان',
+                    'GUFRAN': 'غفران',
+                    'edeson alpert': 'إيديسون ألبرت',
+                    'Irfan': 'عرفان',
+                    'Albert': 'ألبرت',
+                    'Lakshman': 'لاكشمان',
+                    'santheel': 'سانتيل',
+                    'ARVENTH': 'أرفنت',
+                    'MortaDA/Santhosh': 'مرتضى / سانتوش',
+                    'Mayura': 'مايورا',
+                    'yusuf & rahimah allah': 'يوسف و رحمة الله',
+                    'Ali and Sayed': 'علي وسيد',
+                    'Sayid and Ramos': 'سيد ورامو',
+                    'bala': 'بالا',
+                    'Durga Prasad': 'دورجا براساد'
+                };
+                
+                Object.assign(driversArabicNames, predefinedNames);
+            } catch (error) {
+                console.error('خطأ في تحميل أسماء السائقين:', error);
+            }
+        }
+
+        async function loadBatteryData() {
+            try {
+                const response = await fetch(BATTERY_SHEET_URL);
+                const text = await response.text();
+                const rows = text.split('\n').filter(row => row.trim());
+                
+                const headers = parseCSVLine(rows[0]);
+                batteryData = [];
+
+                for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+                    const cols = parseCSVLine(rows[rowIndex]);
+                    
+                    const battery = {
+                        size: cols[0] || '',
+                        brand: cols[1] || '',
+                        tradeName: cols[2] || '',
+                        price: parseFloat(cols[3]) || 0,
+                        salePrice: parseFloat(cols[4]) || 0,
+                        fkStock: parseFloat(cols[5]) || 0,
+                        mStock: parseFloat(cols[6]) || 0,
+                        drivers: [],
+                        fkSupplierName: '',
+                        mSupplierName: ''
+                    };
+                    
+                    battery.fkSupplierName = getSupplierName(battery.brand, 'FK');
+                    battery.mSupplierName = getSupplierName(battery.brand, 'M');
+
+                    for (let colIndex = 7; colIndex < headers.length; colIndex += 2) {
+                        const driverHeader = headers[colIndex];
+                        
+                        if (driverHeader && driverHeader.trim() !== '' && driverHeader.toLowerCase() !== 'total') {
+                            const driverEnglishName = driverHeader.trim();
+                            const fkQty = parseFloat(cols[colIndex]) || 0;
+                            const mQty = parseFloat(cols[colIndex + 1]) || 0;
+                            
+                            if (fkQty > 0 || mQty > 0) {
+                                const driverArabicName = driversArabicNames[driverEnglishName] || driverEnglishName;
+                                
+                                battery.drivers.push({
+                                    name: driverArabicName,
+                                    englishName: driverEnglishName,
+                                    fk: fkQty,
+                                    m: mQty,
+                                    fkSupplierName: battery.fkSupplierName,
+                                    mSupplierName: battery.mSupplierName
+                                });
+                            }
+                        }
+                    }
+
+                    if (battery.size) {
+                        batteryData.push(battery);
+                    }
+                }
+
+                console.log('تم تحميل بيانات البطاريات:', batteryData.length);
+            } catch (error) {
+                console.error('خطأ في تحميل بيانات البطاريات:', error);
+            }
+        }
+
+        function updateDashboard() {
+            let totalBatteries = 0;
+            let warehouseStock = 0;
+            let driversStock = 0;
+            let lowStockCount = 0;
+
+            batteryData.forEach(battery => {
+                const warehouseTotal = battery.fkStock + battery.mStock;
+                warehouseStock += warehouseTotal;
+                
+                battery.drivers.forEach(driver => {
+                    driversStock += driver.fk + driver.m;
+                });
+
+                const totalStock = warehouseTotal + battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                totalBatteries += totalStock;
+                
+                if (totalStock <= 5) {
+                    lowStockCount++;
+                }
+            });
+
+            document.getElementById('totalBatteries').textContent = totalBatteries;
+            document.getElementById('warehouseStock').textContent = warehouseStock;
+            document.getElementById('driversStock').textContent = driversStock;
+            document.getElementById('lowStock').textContent = lowStockCount;
+
+            updateLowStockTable();
+        }
+
+        function updateLowStockTable() {
+            const tbody = document.getElementById('lowStockTableBody');
+            const lowStockBatteries = batteryData.filter(battery => {
+                const warehouseTotal = battery.fkStock + battery.mStock;
+                const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                const totalStock = warehouseTotal + driversTotal;
+                return totalStock <= 5;
+            }).sort((a, b) => {
+                const aTotal = a.fkStock + a.mStock + a.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                const bTotal = b.fkStock + b.mStock + b.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                return aTotal - bTotal;
+            });
+
+            tbody.innerHTML = lowStockBatteries.map(battery => {
+                const warehouseTotal = battery.fkStock + battery.mStock;
+                const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                const totalStock = warehouseTotal + driversTotal;
+                
+                let status = '';
+                let statusClass = '';
+                let filterClass = '';
+                
+                if (totalStock === 0) {
+                    status = 'منتهية';
+                    statusClass = 'status-out';
+                    filterClass = 'filter-out';
+                } else {
+                    status = 'منخفضة';
+                    statusClass = 'status-low';
+                    filterClass = 'filter-low';
+                }
+
+                let warehouseContent = '';
+                if (battery.fkStock > 0) {
+                    warehouseContent += `${battery.fkSupplierName}: ${battery.fkStock} `;
+                }
+                if (battery.mStock > 0) {
+                    warehouseContent += `${battery.mSupplierName}: ${battery.mStock}`;
+                }
+                if (!warehouseContent) {
+                    warehouseContent = '0';
+                }
+
+                return `
+                    <tr class="${filterClass}">
+                        <td style="font-weight: bold;">${battery.brand}</td>
+                        <td style="font-weight: bold;">${battery.size}</td>
+                        <td>${battery.price} دك</td>
+                        <td>${battery.salePrice} دك</td>
+                        <td>${warehouseContent}</td>
+                        <td>${driversTotal}</td>
+                        <td><span class="status-badge ${statusClass}">${status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterLowStock(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            const rows = document.querySelectorAll('#lowStockTableBody tr');
+            rows.forEach(row => {
+                if (filter === 'all') {
+                    row.style.display = '';
+                } else if (filter === 'out') {
+                    row.style.display = row.classList.contains('filter-out') ? '' : 'none';
+                } else if (filter === 'low') {
+                    row.style.display = row.classList.contains('filter-low') ? '' : 'none';
+                }
+            });
+        }
+
+        function openGoogleSheet() {
+            window.open(GOOGLE_SHEET_VIEW_URL, '_blank', 'noopener,noreferrer');
+        }
+
+        function exportOutOfStockToExcel() {
+            let filteredBatteries = [];
+            let filterName = '';
+            
+            if (currentFilter === 'all') {
+                filteredBatteries = batteryData.filter(battery => {
+                    const warehouseTotal = battery.fkStock + battery.mStock;
+                    const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                    const totalStock = warehouseTotal + driversTotal;
+                    return totalStock <= 5;
+                });
+                filterName = 'الكل';
+            } else if (currentFilter === 'out') {
+                filteredBatteries = batteryData.filter(battery => {
+                    const warehouseTotal = battery.fkStock + battery.mStock;
+                    const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                    const totalStock = warehouseTotal + driversTotal;
+                    return totalStock === 0;
+                });
+                filterName = 'المنتهية';
+            } else if (currentFilter === 'low') {
+                filteredBatteries = batteryData.filter(battery => {
+                    const warehouseTotal = battery.fkStock + battery.mStock;
+                    const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                    const totalStock = warehouseTotal + driversTotal;
+                    return totalStock > 0 && totalStock <= 5;
+                });
+                filterName = 'المنخفضة';
+            }
+
+            filteredBatteries.sort((a, b) => {
+                if (a.brand < b.brand) return -1;
+                if (a.brand > b.brand) return 1;
+                return 0;
+            });
+
+            if (filteredBatteries.length === 0) {
+                const message = document.createElement('div');
+                message.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; border: 3px solid #FFC107; padding: 2rem; border-radius: 20px; z-index: 10000; text-align: center; box-shadow: 0 10px 50px rgba(255, 193, 7, 0.5);';
+                message.innerHTML = `
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                    <div style="color: #FFC107; font-weight: bold; font-size: 1.3rem;">لا توجد بطاريات ${filterName} للتصدير</div>
+                `;
+                document.body.appendChild(message);
+                setTimeout(() => message.remove(), 2500);
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
+            const timeStr = `${now.getHours()}-${now.getMinutes()}`;
+            
+            let csv = '\uFEFF';
+            csv += 'الماركة,المقاس,الحالة\n';
+            
+            filteredBatteries.forEach(battery => {
+                const warehouseTotal = battery.fkStock + battery.mStock;
+                const driversTotal = battery.drivers.reduce((sum, d) => sum + d.fk + d.m, 0);
+                const totalStock = warehouseTotal + driversTotal;
+                
+                const status = totalStock === 0 ? 'منتهية' : 'منخفضة';
+                
+                csv += `${battery.brand},${battery.size},${status}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `بطاريات-${filterName}_${dateStr}_${timeStr}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            const successMessage = document.createElement('div');
+            successMessage.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); color: white; padding: 2rem 3rem; border-radius: 20px; z-index: 10000; text-align: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 10px 50px rgba(76, 175, 80, 0.5);';
+            successMessage.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                تم تصدير ${filteredBatteries.length} بطارية ${filterName} بنجاح!
+            `;
+            document.body.appendChild(successMessage);
+            setTimeout(() => successMessage.remove(), 3000);
+        }
+
+        function switchSearchMode(mode) {
+            currentSearchMode = mode;
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            document.getElementById('results').style.display = 'none';
+
+            if (mode === 'car') {
+                document.getElementById('carSearchSection').style.display = 'block';
+                document.getElementById('sizeSearchSection').style.display = 'none';
+                document.getElementById('carSearchSection').classList.add('active');
+                document.getElementById('sizeSearchSection').classList.remove('active');
+            } else {
+                document.getElementById('sizeSearchSection').style.display = 'block';
+                document.getElementById('carSearchSection').style.display = 'none';
+                document.getElementById('sizeSearchSection').classList.add('active');
+                document.getElementById('carSearchSection').classList.remove('active');
+            }
+
+            resetSelections();
+        }
+
+        function populateMakeDropdown() {
+            const makes = [...new Set(carData.map(c => c.make))].sort();
+            const makeList = document.getElementById('makeList');
+            
+            makeList.innerHTML = makes.map(make => 
+                `<div class="dropdown-item" onclick="selectMake('${make}')">${make}</div>`
+            ).join('');
+        }
+
+        function populateSizeDropdown() {
+            const sizes = [...new Set(batteryData.map(b => b.size))].sort();
+            const sizeList = document.getElementById('sizeList');
+            
+            sizeList.innerHTML = sizes.map(size => 
+                `<div class="dropdown-item" onclick="selectSize('${size}')">${size}</div>`
+            ).join('');
+        }
+
+        function selectMake(make) {
+            selectedMake = make;
+            selectedModel = '';
+            selectedYear = '';
+            
+            document.getElementById('makeInput').value = make;
+            document.getElementById('makeList').classList.remove('show');
+            document.getElementById('makeArrow').classList.remove('open');
+            
+            document.getElementById('modelGroup').style.display = 'block';
+            document.getElementById('modelInput').value = '';
+            
+            document.getElementById('yearGroup').style.display = 'none';
+            document.getElementById('yearInput').value = '';
+            
+            populateModelDropdown();
+            
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function populateModelDropdown() {
+            const models = [...new Set(carData
+                .filter(c => c.make === selectedMake)
+                .map(c => c.model)
+            )].sort();
+            
+            const modelList = document.getElementById('modelList');
+            modelList.innerHTML = models.map(model => 
+                `<div class="dropdown-item" onclick="selectModel('${model}')">${model}</div>`
+            ).join('');
+        }
+
+        function selectModel(model) {
+            selectedModel = model;
+            selectedYear = '';
+            
+            document.getElementById('modelInput').value = model;
+            document.getElementById('modelList').classList.remove('show');
+            document.getElementById('modelArrow').classList.remove('open');
+            
+            document.getElementById('yearGroup').style.display = 'block';
+            document.getElementById('yearInput').value = '';
+            
+            populateYearDropdown();
+            
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function populateYearDropdown() {
+            const years = [...new Set(carData
+                .filter(c => c.make === selectedMake && c.model === selectedModel)
+                .map(c => c.year)
+            )].sort((a, b) => b - a);
+            
+            const yearList = document.getElementById('yearList');
+            yearList.innerHTML = years.map(year => 
+                `<div class="dropdown-item" onclick="selectYear('${year}')">${year}</div>`
+            ).join('');
+        }
+
+        function selectYear(year) {
+            selectedYear = year;
+            
+            document.getElementById('yearInput').value = year;
+            document.getElementById('yearList').classList.remove('show');
+            document.getElementById('yearArrow').classList.remove('open');
+            
+            showBatteryResults();
+        }
+
+        function selectSize(size) {
+            document.getElementById('sizeInput').value = size;
+            document.getElementById('sizeList').classList.remove('show');
+            document.getElementById('sizeArrow').classList.remove('open');
+            
+            showBatteryResultsBySize(size);
+        }
+
+        function showBatteryResults() {
+            const matchingCars = carData.filter(c => 
+                c.make === selectedMake && 
+                c.model === selectedModel && 
+                c.year === selectedYear
+            );
+
+            const resultsDiv = document.getElementById('results');
+            
+            if (matchingCars.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #FFC107;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
+                        <div style="font-size: 1.4rem; font-weight: bold;">لا توجد نتائج</div>
+                        <div style="color: #999; margin-top: 0.5rem;">لم يتم العثور على بطاريات لهذه السيارة</div>
+                    </div>
+                `;
+            } else {
+                const batterySizes = {};
+                matchingCars.forEach(car => {
+                    if (!batterySizes[car.bat]) {
+                        batterySizes[car.bat] = 0;
+                    }
+                    batterySizes[car.bat] += car.count;
+                });
+
+                const sizesArray = Object.entries(batterySizes);
+                
+                resultsDiv.innerHTML = `
+                    <div class="battery-result">
+                        <div class="battery-title">
+                            🔋 حجم البطارية المطلوبة
+                        </div>
+                        <div class="battery-info">
+                            ${sizesArray.map(([size, count]) => `
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                    <div class="battery-size-box" style="flex: 1;">
+                                        ${size}${count > 1 ? ` (${count})` : ''}
+                                    </div>
+                                    <button class="show-prices-btn" style="width: auto; margin-top: 0;" onclick="togglePricesForSingleSize(this, '${size}')">
+                                        💰 إظهار الأسعار
+                                    </button>
+                                </div>
+                                <div class="prices-table-container" data-size="${size}"></div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function showBatteryResultsBySize(size) {
+            const resultsDiv = document.getElementById('results');
+            
+            const allBatteries = batteryData.filter(b => 
+                b.size.toUpperCase() === size.toUpperCase() &&
+                (b.fkStock > 0 || b.mStock > 0 || b.drivers.length > 0)
+            );
+
+            if (allBatteries.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #FFC107;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
+                        <div style="font-size: 1.4rem; font-weight: bold;">لا توجد نتائج</div>
+                        <div style="color: #999; margin-top: 0.5rem;">لا توجد بطاريات متوفرة بهذا المقاس</div>
+                    </div>
+                `;
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="battery-result">
+                        <div class="battery-title">
+                            🔋 بطارية بمقاس ${size}
+                        </div>
+                        <div class="battery-info">
+                            <div class="battery-size-box">
+                                ${size}
+                            </div>
+                        </div>
+                        <div class="prices-table-container" style="display: block;">
+                            ${generatePricesTable(allBatteries)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function togglePricesForSingleSize(button, size) {
+            const parentDiv = button.closest('.battery-info');
+            const container = parentDiv.querySelector(`.prices-table-container[data-size="${size}"]`);
+            
+            if (container.style.display === 'none' || !container.style.display) {
+                showPricesForSize(container, size);
+                container.style.display = 'block';
+                button.textContent = '❌ إخفاء الأسعار';
+                
+                setTimeout(() => {
+                    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            } else {
+                container.style.display = 'none';
+                button.textContent = '💰 إظهار الأسعار';
+            }
+        }
+
+        function toggleNotice(button) {
+            const noticeContent = button.closest('.notice-box').querySelector('.notice-content');
+            
+            if (noticeContent.classList.contains('hidden')) {
+                noticeContent.classList.remove('hidden');
+                button.textContent = '🔼 إخفاء';
+            } else {
+                noticeContent.classList.add('hidden');
+                button.textContent = '🔽 إظهار';
+            }
+        }
+
+        function generatePricesTable(allBatteries) {
+            const showPurchasePrice = currentUser && !currentUser.isStaff;
+            const showCopyButton = currentUser && currentUser.isStaff;
+            
+            let headerRow = `
+                <th>الماركة</th>
+                <th>المقاس</th>`;
+            
+            if (showPurchasePrice) {
+                headerRow += `<th>سعر الشراء 💰</th>`;
+            }
+            
+            headerRow += `
+                <th>سعر البيع 💵</th>
+                <th>المخزون الرئيسي 📦</th>
+                <th>مخزون السائقين 🚚</th>`;
+            
+            if (showCopyButton) {
+                headerRow += `<th>نسخ الرسالة</th>`;
+            }
+            
+            return `
+                <table class="prices-table">
+                    <thead>
+                        <tr>${headerRow}</tr>
+                    </thead>
+                    <tbody>
+                        ${allBatteries.map(battery => {
+                            const onlyInWarehouse = battery.drivers.length === 0;
+                            
+                            let warehouseContent = '';
+                            if (battery.fkStock > 0) {
+                                warehouseContent += `<span class="warehouse-stock-badge">${battery.fkSupplierName}: ${battery.fkStock}</span>`;
+                            }
+                            if (battery.mStock > 0) {
+                                warehouseContent += `<span class="warehouse-stock-badge">${battery.mSupplierName}: ${battery.mStock}</span>`;
+                            }
+                            if (!warehouseContent) {
+                                warehouseContent = '-';
+                            }
+                            
+                            let driversContent = '';
+                            if (onlyInWarehouse) {
+                                driversContent = '<div class="warehouse-only-notice">في المورد فقط ❗</div>';
+                            } else {
+                                driversContent = battery.drivers.map(driver => {
+                                    let driverInfo = '';
+                                    if (driver.fk > 0) {
+                                        driverInfo += `<span class="driver-item-stock">${driver.fkSupplierName}: ${driver.fk}</span>`;
+                                    }
+                                    if (driver.m > 0) {
+                                        driverInfo += `<span class="driver-item-stock">${driver.mSupplierName}: ${driver.m}</span>`;
+                                    }
+                                    return `<div class="driver-item"><span class="driver-item-name">${driver.name}</span>${driverInfo}</div>`;
+                                }).join('');
+                            }
+                            
+                            let priceColumns = '';
+                            if (showPurchasePrice) {
+                                priceColumns = `<td class="price-cell">${battery.price} دك</td>`;
+                            }
+                            priceColumns += `<td class="price-cell">${battery.salePrice} دك</td>`;
+                            
+                            let copyButtonColumn = '';
+                            if (showCopyButton) {
+                                copyButtonColumn = `
+                                    <td>
+                                        <button class="copy-btn" onclick="copyBatteryMessage('${battery.brand.replace(/'/g, "\\'")}', '${battery.size}', ${battery.salePrice})">
+                                            📋 نسخ
+                                        </button>
+                                    </td>`;
+                            }
+                            
+                            return `
+                                <tr>
+                                    <td class="brand-cell">${battery.brand}</td>
+                                    <td class="price-cell">${battery.size}</td>
+                                    ${priceColumns}
+                                    <td class="warehouse-cell">${warehouseContent}</td>
+                                    <td class="drivers-cell">${driversContent}</td>
+                                    ${copyButtonColumn}
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+                <div class="notice-box">
+                    <div class="notice-header">
+                        <div class="notice-title">
+                            ⚠️ ملاحظة مهمة - رسوم إضافية
+                        </div>
+                        <button class="toggle-notice-btn" onclick="toggleNotice(this)">🔼 إخفاء</button>
+                    </div>
+                    <div class="notice-content">
+                        <div class="notice-item">
+                            <strong>💵 زيادة 15 د.ك:</strong> إذا البطارية تحت الكشن
+                        </div>
+                        <div class="notice-item">
+                            <strong>💵 زيادة 10 د.ك:</strong> علي صباح السالم (أم الهيمان)، شعيبة، ميناء عبدالله، جليعة، بنيدر، الخيران، النويحي، الروضة، العبدلي، الصبية، جبد، صباح الأحمد، الوفره
+                        </div>
+                        <div class="notice-item">
+                            <strong>💵 زيادة 5 د.ك:</strong> جابر الأحمد، سعد العبدالله، الجهراء، فحيحيل، الأحمدي، غرب عبدالله مبارك
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showPricesForSize(container, size) {
+            const allBatteries = batteryData.filter(b => 
+                b.size.toUpperCase() === size.toUpperCase() &&
+                (b.fkStock > 0 || b.mStock > 0 || b.drivers.length > 0)
+            );
+
+            if (allBatteries.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #999;">
+                        لا توجد بطاريات متوفرة حالياً
+                    </div>
+                `;
+            } else {
+                container.innerHTML = generatePricesTable(allBatteries);
+            }
+        }
+
+        function copyBatteryMessage(brand, size, salePrice) {
+            let message = '';
+            const brandUpper = brand.toUpperCase();
+            
+            if (brandUpper.includes('MOTER CRAFT') || brandUpper.includes('MOTOR CRAFT') || brandUpper.includes('MOTORCRAFT')) {
+                if (size === 'DA100' || size === '95AGM') {
+                    message = `متوفرة بطارية موتر كرافت امريكيه 🇺🇸 كفالتها (سنتين) على الوكيل فورد الغانم سعرها ${salePrice} دك`;
+                } else {
+                    message = `متوفرة بطارية موتر كرافت امريكيه 🇺🇸 كفالتها 3 سنوات على الوكيل فورد الغانم السعر مع رسوم التركيب ${salePrice} دك`;
+                }
+            } else if (brandUpper.includes('VARTA')) {
+                message = `متوفرة بطارية فارتا المانيه 🇩🇪 كفالتها سنه على الوكيل اف اتو انترنشلن السعر مع رسوم التركيب ${salePrice} دك`;
+            } else if (brandUpper.includes('ABM')) {
+                message = `متوفرة بطارية ايه بي ام ماليزيه 🇲🇾 كفالتها سنه واحده على الوكيل اف كي السعر مع رسوم التركيب ${salePrice} دك`;
+            } else if (brandUpper.includes('MOTO RAFT') || brandUpper.includes('MOTORAFT')) {
+                message = `متوفرة بطارية موتر رافت هنديه 🇮🇳 كفالتها سنه واحده على الوكيل افتخار السعر مع رسوم التركيب ${salePrice} دك`;
+            } else if (brandUpper.includes('BOSSTER') || brandUpper.includes('BOOSTER')) {
+                message = `متوفرة بطارية (بوستر/أوكلا) صينيه 🇨🇳 كفالتها سنه واحده على الوكيل المشعل السعر مع رسوم التركيب ${salePrice} دك`;
+            } else {
+                message = `متوفرة بطارية ${brand} السعر مع رسوم التركيب ${salePrice} دك`;
+            }
+            
+            const btn = event.target.closest('.copy-btn');
+            const originalText = btn.innerHTML;
+            
+            // طريقة بديلة للنسخ تعمل في الـ iframe
+            const textarea = document.createElement('textarea');
+            textarea.value = message;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '0';
+            textarea.style.left = '0';
+            textarea.style.width = '2em';
+            textarea.style.height = '2em';
+            textarea.style.padding = '0';
+            textarea.style.border = 'none';
+            textarea.style.outline = 'none';
+            textarea.style.boxShadow = 'none';
+            textarea.style.background = 'transparent';
+            textarea.style.opacity = '0';
+            
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            
+            let success = false;
+            try {
+                success = document.execCommand('copy');
+            } catch (err) {
+                console.error('فشل النسخ:', err);
+            }
+            
+            document.body.removeChild(textarea);
+            
+            if (success) {
+                btn.classList.add('copied');
+                btn.innerHTML = '✅ تم النسخ';
+                
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalText;
+                }, 2000);
+            } else {
+                // محاولة استخدام clipboard API كبديل
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(message).then(() => {
+                        btn.classList.add('copied');
+                        btn.innerHTML = '✅ تم النسخ';
+                        
+                        setTimeout(() => {
+                            btn.classList.remove('copied');
+                            btn.innerHTML = originalText;
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('فشل النسخ عبر clipboard API:', err);
+                        btn.innerHTML = '❌ فشل النسخ';
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                        }, 2000);
+                    });
+                } else {
+                    btn.innerHTML = '❌ فشل النسخ';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                    }, 2000);
+                }
+            }
+        }
+
+        function showDropdown(type) {
+            const list = document.getElementById(`${type}List`);
+            const arrow = document.getElementById(`${type}Arrow`);
+            
+            if (list.innerHTML.trim() !== '') {
+                list.classList.add('show');
+                arrow.classList.add('open');
+            }
+        }
+
+        function filterDropdown(type) {
+            const input = document.getElementById(`${type}Input`);
+            const list = document.getElementById(`${type}List`);
+            const arrow = document.getElementById(`${type}Arrow`);
+            const searchText = input.value.trim();
+            const searchUpper = searchText.toUpperCase();
+            
+            if (searchText === '') {
+                if (type === 'make') {
+                    selectedMake = '';
+                    selectedModel = '';
+                    selectedYear = '';
+                    document.getElementById('modelGroup').style.display = 'none';
+                    document.getElementById('yearGroup').style.display = 'none';
+                    document.getElementById('modelInput').value = '';
+                    document.getElementById('yearInput').value = '';
+                    document.getElementById('results').style.display = 'none';
+                } else if (type === 'model') {
+                    selectedModel = '';
+                    selectedYear = '';
+                    document.getElementById('yearGroup').style.display = 'none';
+                    document.getElementById('yearInput').value = '';
+                    document.getElementById('results').style.display = 'none';
+                } else if (type === 'year') {
+                    selectedYear = '';
+                    document.getElementById('results').style.display = 'none';
+                }
+            }
+            
+            const existingNoResults = list.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+            
+            const items = list.querySelectorAll('.dropdown-item:not(.no-results)');
+            let hasResults = false;
+            
+            items.forEach(item => {
+                if (!item.dataset.originalText) {
+                    item.dataset.originalText = item.textContent;
+                }
+                const originalText = item.dataset.originalText;
+                const upperText = originalText.toUpperCase();
+                
+                if (searchText === '' || upperText.includes(searchUpper)) {
+                    item.style.display = 'block';
+                    hasResults = true;
+                    
+                    if (searchText !== '' && searchUpper !== '') {
+                        const index = upperText.indexOf(searchUpper);
+                        if (index !== -1) {
+                            const before = originalText.substring(0, index);
+                            const match = originalText.substring(index, index + searchText.length);
+                            const after = originalText.substring(index + searchText.length);
+                            item.innerHTML = `${before}<mark>${match}</mark>${after}`;
+                        } else {
+                            item.innerHTML = originalText;
+                        }
+                    } else {
+                        item.innerHTML = originalText;
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            if (!hasResults && searchText !== '') {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = '❌ لا توجد نتائج مطابقة';
+                list.appendChild(noResults);
+            }
+            
+            list.classList.add('show');
+            arrow.classList.add('open');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown-container')) {
+                document.querySelectorAll('.dropdown-list').forEach(list => {
+                    list.classList.remove('show');
+                });
+                document.querySelectorAll('.dropdown-arrow').forEach(arrow => {
+                    arrow.classList.remove('open');
+                });
+            }
+        });
+
+        async function onConfigChange(newConfig) {
+            const headerTitle = document.getElementById('headerTitle');
+            const searchLabel = document.getElementById('searchLabel');
+            const dashboardTitle = document.getElementById('dashboardTitle');
+            
+            if (headerTitle) {
+                headerTitle.textContent = newConfig.system_title || defaultConfig.system_title;
+            }
+            
+            if (searchLabel) {
+                searchLabel.textContent = newConfig.search_label || defaultConfig.search_label;
+            }
+            
+            if (dashboardTitle) {
+                dashboardTitle.textContent = newConfig.dashboard_title || defaultConfig.dashboard_title;
+            }
+        }
+
+        function mapToCapabilities(cfg) {
+            return {
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(cfg) {
+            return new Map([
+                ["system_title", cfg.system_title || defaultConfig.system_title],
+                ["search_label", cfg.search_label || defaultConfig.search_label],
+                ["dashboard_title", cfg.dashboard_title || defaultConfig.dashboard_title]
+            ]);
+        }
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities,
+                mapToEditPanelValues
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('batterySystemUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    document.getElementById('authContainer').style.display = 'none';
+                    document.getElementById('mainContainer').style.display = 'block';
+                    document.getElementById('userBadge').textContent = `${currentUser.role}: ${currentUser.username}`;
+                    
+                    if (!currentUser.isStaff) {
+                        document.getElementById('searchModeSelector').style.display = 'none';
+                        document.getElementById('sizeSearchSection').style.display = 'block';
+                        document.getElementById('carSearchSection').style.display = 'none';
+                        document.getElementById('dashboardSection').style.display = 'block';
+                        document.getElementById('sizeSearchSection').classList.add('active');
+                        document.getElementById('carSearchSection').classList.remove('active');
+                    } else {
+                        document.getElementById('searchModeSelector').style.display = 'flex';
+                        document.getElementById('sizeSearchSection').style.display = 'block';
+                        document.getElementById('carSearchSection').style.display = 'none';
+                        document.getElementById('dashboardSection').style.display = 'none';
+                        document.getElementById('sizeSearchSection').classList.add('active');
+                        document.getElementById('carSearchSection').classList.remove('active');
+                        
+                        setTimeout(() => {
+                            const sizeBtn = document.querySelector('.mode-btn[onclick*="size"]');
+                            if (sizeBtn) sizeBtn.classList.add('active');
+                        }, 100);
+                    }
+                    
+                    loadAllData();
+                    startAutoRefresh();
+                } catch (error) {
+                    console.error('خطأ في استرجاع بيانات المستخدم:', error);
+                    localStorage.removeItem('batterySystemUser');
+                }
+            }
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d9c219674f977ef',t:'MTc3MzA4MDgyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
