@@ -1920,6 +1920,10 @@
     /* Important red message used in protection results (single red note as requested) */
     .prot-important{ margin-top:12px; padding:12px; border-radius:8px; background: rgba(127,29,29,0.04); border:1px solid #ef4444; color:#ffb3b3; font-weight:700 }
     .prot-toast{ position:fixed; top:80px; right:40px; background:#F2BC1B; color:#000; padding:12px 16px; border-radius:10px; border:1px solid rgba(0,0,0,0.12); box-shadow:0 12px 40px rgba(0,0,0,0.6); display:none; z-index:1500; font-weight:700 }
+    /* Coordinates toast */
+    .coords-toast{position:fixed;bottom:24px;left:24px;min-width:200px;max-width:calc(100vw - 48px);z-index:2200;padding:12px 16px;border-radius:10px;color:#000;font-weight:700;box-shadow:0 10px 28px rgba(0,0,0,0.45);display:none}
+    .coords-toast.success{background:#10b981;color:#fff}
+    .coords-toast.error{background:#ef4444;color:#fff}
   </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
@@ -2095,8 +2099,10 @@
      </div>
      <div class="service-item submenu-item" data-service="annualSubscription"><span class="label">الاشتراك السنوي</span>
      </div>
-     <div class="service-item submenu-item" data-service="installments"><span class="label">الاقساط</span>
+      <div class="service-item submenu-item" data-service="installments"><span class="label">الاقساط</span>
      </div>
+      <div class="service-item submenu-item" data-service="coords"><span class="label">الاحداثيات</span>
+      </div>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
@@ -2757,7 +2763,8 @@
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات',
           'annualSubscription': 'الاشتراك السنوي',
-          'installments': 'الاقساط'
+          'installments': 'الاقساط',
+          'coords': 'الاحداثيات'
         };
         
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
@@ -2823,6 +2830,9 @@
           case 'installments':
             renderInstallmentsInterface();
             break;
+          case 'coords':
+            renderCoordsInterface();
+            break;
         }
       }
     });
@@ -2869,6 +2879,113 @@
 
       const payBtn = document.getElementById('installmentsPayBtn');
       if (payBtn) payBtn.onclick = () => openSimpleModal('installmentPayModal');
+    }
+
+    // Render Coordinates Interface
+    function renderCoordsInterface() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = `
+        <div class="form-section full-width">
+          <h3 class="section-title">الاحداثيات</h3>
+          <div class="form-field">
+            <label>الصق رابط Google Maps هنا</label>
+            <input id="coordsInput" class="form-control" placeholder="Location: https://maps.google.com/?q=29.2419738769531,48.080810546875" type="text" />
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px;">
+            <button id="coordsConvertBtn" class="btn-primary btn-inline">تحويل ونسخ</button>
+            <button id="coordsClearBtn" class="btn-outline btn-inline">مسح</button>
+          </div>
+          <p style="margin-top:8px;color:#999">سيقوم النظام بالتعرّف على الرابط ونسخ الإحداثيات (6 منازل عشرية) تلقائياً.</p>
+        </div>
+      `;
+
+      const input = document.getElementById('coordsInput');
+      const btn = document.getElementById('coordsConvertBtn');
+      const clearBtn = document.getElementById('coordsClearBtn');
+
+      async function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise((resolve, reject) => {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            resolve();
+          } catch (e) {
+            document.body.removeChild(ta);
+            reject(e);
+          }
+        });
+      }
+
+      function showToast(message, type = 'success') {
+        let el = document.getElementById('coords-toast');
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'coords-toast';
+          el.className = 'coords-toast';
+          document.body.appendChild(el);
+        }
+        el.textContent = message;
+        el.className = 'coords-toast ' + (type === 'error' ? 'error' : 'success');
+        el.style.display = 'block';
+        clearTimeout(el._hideTimer);
+        el._hideTimer = setTimeout(() => { el.style.display = 'none'; }, 3500);
+      }
+
+      function parseGoogleMapsCoords(inputVal) {
+        if (!inputVal) return null;
+        try {
+          const u = new URL(inputVal);
+          const host = (u.host || '').toLowerCase();
+          // short/redirect links are considered invalid for auto-parse
+          if (host.includes('goo.gl') || host.includes('maps.app')) return { error: 'short' };
+          const q = u.searchParams.get('q');
+          if (q) {
+            const m = q.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+            if (m) return { lat: m[1], lng: m[2] };
+          }
+          const at = u.pathname.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+          if (at) return { lat: at[1], lng: at[2] };
+        } catch (e) {
+          // not a valid URL, fall through to plain regex
+        }
+
+        const regex = /(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/;
+        const m = inputVal.match(regex);
+        if (m) return { lat: m[1], lng: m[2] };
+        return null;
+      }
+
+      async function tryParseAndCopy() {
+        const val = (input.value || '').trim();
+        if (!val) { showToast('أدخل رابطاً صحيحاً', 'error'); return; }
+        const parsed = parseGoogleMapsCoords(val);
+        if (!parsed) { showToast('الرابط غير معروف، أرسل رابط بهذا الشكل: https://maps.google.com/?q=29.2419738769531,48.080810546875', 'error'); return; }
+        if (parsed.error === 'short') { showToast('الرابط خطأ — الرجاء إرسال رابط من الشكل الكامل: https://maps.google.com/?q=29.2419738769531,48.080810546875', 'error'); return; }
+        const lat = parseFloat(parsed.lat);
+        const lng = parseFloat(parsed.lng);
+        if (Number.isNaN(lat) || Number.isNaN(lng)) { showToast('تعذر استخراج الإحداثيات', 'error'); return; }
+        const outLat = Number(lat.toFixed(6));
+        const outLng = Number(lng.toFixed(6));
+        const out = `${outLat}, ${outLng}`;
+        try {
+          await copyToClipboard(out);
+          showToast(`تم النسخ: ${out}`, 'success');
+        } catch (err) {
+          showToast('فشل النسخ تلقائياً، انسخ يدويًا: ' + out, 'error');
+        }
+      }
+
+      btn.onclick = tryParseAndCopy;
+      input.addEventListener('paste', () => setTimeout(tryParseAndCopy, 60));
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); tryParseAndCopy(); } });
+      clearBtn.onclick = () => { input.value = ''; showToast('تم المسح', 'success'); input.focus(); };
     }
 
     // Render Staff Interface
@@ -2990,7 +3107,9 @@
         window._driverStatusUnavailableMessage = buildDriverUnavailableMessage(nextLang);
         updateDriverStatusLanguageUI(nextLang);
         populateDriverTypeFilter(window._driverStatusRows || []);
-        if (isIdris) populateMonthFilter(nextLang);
+        const currentUser = (localStorage.getItem('currentUser') || '').trim().toLowerCase();
+        const isAdmin = currentUser === 'idris' || currentUser === 'salem';
+        if (isAdmin) populateMonthFilter(nextLang);
         renderDriverStatusTable();
       };
 
@@ -2998,18 +3117,18 @@
       updateDriverStatusLanguageUI('ar');
 
       const currentUser = (localStorage.getItem('currentUser') || '').trim().toLowerCase();
-      const isIdris = currentUser === 'idris';
-      if (downloadBtn) downloadBtn.style.display = isIdris ? 'inline-flex' : 'none';
-      if (sheetBtn) sheetBtn.style.display = isIdris ? 'inline-flex' : 'none';
+      const isAdmin = currentUser === 'idris' || currentUser === 'salem';
+      if (downloadBtn) downloadBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+      if (sheetBtn) sheetBtn.style.display = isAdmin ? 'inline-flex' : 'none';
       const shiftDownloadFilterGroup = document.getElementById('driverShiftDownloadFilterGroup');
-      if (shiftDownloadFilterGroup) shiftDownloadFilterGroup.style.display = isIdris ? 'flex' : 'none';
+      if (shiftDownloadFilterGroup) shiftDownloadFilterGroup.style.display = isAdmin ? 'flex' : 'none';
       const monthFilterGroup = document.getElementById('driverMonthFilterGroup');
-      if (monthFilterGroup) monthFilterGroup.style.display = isIdris ? 'flex' : 'none';
-      if (isIdris) {
+      if (monthFilterGroup) monthFilterGroup.style.display = isAdmin ? 'flex' : 'none';
+      if (isAdmin) {
         populateMonthFilter(window._driverStatusLang || 'ar');
       }
-      if (downloadBtn && isIdris) downloadBtn.onclick = () => exportDriverTableAsImage();
-      if (sheetBtn && isIdris) sheetBtn.onclick = () => {
+      if (downloadBtn && isAdmin) downloadBtn.onclick = () => exportDriverTableAsImage();
+      if (sheetBtn && isAdmin) sheetBtn.onclick = () => {
         const sheetId = '1nhjZLD1VoYYusxKi4wUFIP3fdToVlrIREy31WZdipWo';
         const url = `https://docs.google.com/spreadsheets/d/${sheetId}/edit?usp=sharing`;
         window.open(url, '_blank');
@@ -9736,7 +9855,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(text);
         } else {
-          const ta = document.createElement('textarea');
           ta.value = text;
           ta.style.position = 'fixed';
           ta.style.left = '-9999px';
