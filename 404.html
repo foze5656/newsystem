@@ -2990,21 +2990,21 @@
 
       async function tryParseAndCopy() {
         const val = (input.value || '').trim();
-        if (!val) { showToast('أدخل رابطاً صحيحاً', 'error'); return; }
+        if (!val) { showCoordsErrorModal('أدخل رابطاً صحيحاً'); return; }
         const parsed = parseGoogleMapsCoords(val);
-        if (!parsed) { showToast('الرابط غير معروف، أرسل رابط بهذا الشكل: https://maps.google.com/?q=29.2419738769531,48.080810546875', 'error'); return; }
-        if (parsed.error === 'short') { showToast('الرابط خطأ — الرجاء إرسال رابط من الشكل الكامل: https://maps.google.com/?q=29.2419738769531,48.080810546875', 'error'); return; }
+        if (!parsed) { showCoordsErrorModal('الرابط غير معروف، أرسل رابط بهذا الشكل:\nhttps://maps.google.com/?q=29.2419738769531,48.080810546875'); return; }
+        if (parsed.error === 'short') { showCoordsErrorModal('الرابط خطأ — الرجاء إرسال رابط من الشكل الكامل:\nhttps://maps.google.com/?q=29.2419738769531,48.080810546875'); return; }
         const lat = parseFloat(parsed.lat);
         const lng = parseFloat(parsed.lng);
-        if (Number.isNaN(lat) || Number.isNaN(lng)) { showToast('تعذر استخراج الإحداثيات', 'error'); return; }
+        if (Number.isNaN(lat) || Number.isNaN(lng)) { showCoordsErrorModal('تعذر استخراج الإحداثيات'); return; }
         const outLat = Number(lat.toFixed(6));
         const outLng = Number(lng.toFixed(6));
         const out = `${outLat}, ${outLng}`;
         try {
           await copyToClipboard(out);
-          showToast(`تم النسخ: ${out}`, 'success');
+          showToast(`✓ تم النسخ: ${out}`, 'success');
         } catch (err) {
-          showToast('فشل النسخ تلقائياً، انسخ يدويًا: ' + out, 'error');
+          showCoordsErrorModal('فشل النسخ تلقائياً، انسخ يدويًا:\n' + out);
         }
       }
 
