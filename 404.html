@@ -2006,6 +2006,18 @@
     </div>
   </div>
 
+  <!-- Coords Error Modal (matches logout modal style) -->
+  <div id="coordsErrorModal" class="logout-modal-overlay hidden">
+    <div class="logout-modal">
+      <div class="logout-modal-icon">❌</div>
+      <h2 class="logout-modal-title">رابط غير صالح</h2>
+      <p id="coordsErrorMessage" class="logout-modal-message">الرجاء إرسال رابط Google Maps بالشكل: https://maps.google.com/?q=29.2419738769531,48.080810546875</p>
+      <div class="logout-modal-buttons">
+        <button id="coordsErrorDismiss" class="logout-modal-btn logout-modal-btn-cancel">لقد فهمت</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Installments How-To Modal -->
   <div id="installmentHowModal" class="modal-overlay hidden" data-modal-id="installmentHowModal">
     <div class="modal installments-how-modal">
@@ -2054,7 +2066,11 @@
       <div class="service-item submenu-item" data-service="driver_status"><span class="label">جدولة السائقين</span>
       </div>
     </div>
-    <div class="service-item" data-service="tow"><span class="icon">🚚</span> <span class="label">ونشات</span>
+    <div class="service-item has-submenu" data-service="tow"><span class="icon">🚚</span> <span class="label">ونشات</span> <span class="arrow">▼</span>
+    </div>
+    <div class="service-submenu" id="towSubmenu">
+     <div class="service-item submenu-item" data-service="coords"><span class="label">الاحداثيات</span>
+     </div>
     </div>
     <div class="service-item has-submenu" data-service="battery"><span class="icon">🔋</span> <span class="label">بطارية</span> <span class="arrow">▼</span>
     </div>
@@ -2100,9 +2116,7 @@
      <div class="service-item submenu-item" data-service="annualSubscription"><span class="label">الاشتراك السنوي</span>
      </div>
       <div class="service-item submenu-item" data-service="installments"><span class="label">الاقساط</span>
-     </div>
-      <div class="service-item submenu-item" data-service="coords"><span class="label">الاحداثيات</span>
-      </div>
+         </div>
     </div>
    </aside><!-- Main Content -->
    <main class="main-content"><!-- Header Bar -->
@@ -2895,7 +2909,6 @@
             <button id="coordsConvertBtn" class="btn-primary btn-inline">تحويل ونسخ</button>
             <button id="coordsClearBtn" class="btn-outline btn-inline">مسح</button>
           </div>
-          <p style="margin-top:8px;color:#999">سيقوم النظام بالتعرّف على الرابط ونسخ الإحداثيات (6 منازل عشرية) تلقائياً.</p>
         </div>
       `;
 
@@ -2937,6 +2950,21 @@
         clearTimeout(el._hideTimer);
         el._hideTimer = setTimeout(() => { el.style.display = 'none'; }, 3500);
       }
+
+      function showCoordsErrorModal(message) {
+        const modal = document.getElementById('coordsErrorModal');
+        const msg = document.getElementById('coordsErrorMessage');
+        if (msg) msg.textContent = message || msg.textContent;
+        if (modal) modal.classList.remove('hidden');
+      }
+
+      document.addEventListener('click', (e) => {
+        const dismiss = e.target.closest('#coordsErrorDismiss');
+        if (dismiss) {
+          const modal = document.getElementById('coordsErrorModal');
+          if (modal) modal.classList.add('hidden');
+        }
+      });
 
       function parseGoogleMapsCoords(inputVal) {
         if (!inputVal) return null;
