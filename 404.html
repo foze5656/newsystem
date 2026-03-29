@@ -9132,6 +9132,12 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
               match = true;
             }
           }
+                    if (plateNumberCol !== -1 && row[plateNumberCol]) {
+            const plateNumber = (row[plateNumberCol] || '').toString().toLowerCase();
+            if (plateNumber.includes(query.toLowerCase())) {
+              match = true;
+            }
+          }
           
           if (match) {
             // Check if row has any non-empty data
