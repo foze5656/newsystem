@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Excel Splitter</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
@@ -168,6 +168,16 @@
   </div>
   <div id="toastContainer"></div>
   <script>
+    // Check libraries before processing
+    window.addEventListener('load', () => {
+      if (!window.XLSX) {
+        console.warn('⚠️ XLSX library not loaded, retrying...');
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+        document.head.appendChild(script);
+      }
+    });
+  </script>
     // State
     let workbookData = null; // raw parsed rows
     let headers = [];
@@ -493,20 +503,28 @@
         `;
         list.appendChild(card);
       });
-      lucide.createIcons();
+      if (window.lucide) window.lucide.createIcons();
     }
 
     function downloadOne(name) {
-      if (!employeeFiles.mainWorkbook) return;
-      const out = XLSX.write(employeeFiles.mainWorkbook, { bookType: 'xlsx', type: 'array' });
-      saveFile(out, `بيانات_الموظفين.xlsx`);
+      if (!employeeFiles.mainWorkbook) { showToast('لا توجد بيانات للتحميل', 'error'); return; }
+      try {
+        const out = XLSX.write(employeeFiles.mainWorkbook, { bookType: 'xlsx', type: 'array' });
+        saveFile(out, `بيانات_الموظفين.xlsx`);
+      } catch (err) {
+        showToast('خطأ في التحميل: ' + err.message, 'error');
+      }
     }
 
     function downloadAll() {
-      if (!employeeFiles.mainWorkbook) return;
-      const out = XLSX.write(employeeFiles.mainWorkbook, { bookType: 'xlsx', type: 'array' });
-      saveFile(out, `بيانات_الموظفين.xlsx`);
-      showToast(`تم تحميل الملف الموحد`, 'success');
+      if (!employeeFiles.mainWorkbook) { showToast('لا توجد بيانات للتحميل', 'error'); return; }
+      try {
+        const out = XLSX.write(employeeFiles.mainWorkbook, { bookType: 'xlsx', type: 'array' });
+        saveFile(out, `بيانات_الموظفين.xlsx`);
+        showToast(`تم تحميل الملف الموحد`, 'success');
+      } catch (err) {
+        showToast('خطأ في التحميل: ' + err.message, 'error');
+      }
     }
 
     function saveFile(data, filename) {
@@ -552,7 +570,14 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
-    lucide.createIcons();
+    // Initialize Lucide icons
+    if (window.lucide) {
+      window.lucide.createIcons();
+    } else {
+      window.addEventListener('load', () => {
+        if (window.lucide) window.lucide.createIcons();
+      });
+    }
   </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e880b2615df7cc9',t:'MTc3NTU1NDU0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
