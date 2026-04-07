@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.18.5/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
   <style>
     :root {
@@ -69,8 +69,7 @@
  </head>
  <body class="h-full" style="background:var(--bg); color:var(--text);">
   <div id="app" class="h-full overflow-auto">
-   <div class="max-w-3xl mx-auto px-4 py-8">
-    <!-- Header -->
+   <div class="max-w-3xl mx-auto px-4 py-8"><!-- Header -->
     <header class="text-center mb-10 fade-in">
      <div class="inline-flex items-center gap-3 mb-3">
       <div style="background:var(--primary); width:10px; height:10px; border-radius:2px; transform:rotate(45deg);"></div>
@@ -80,22 +79,18 @@
      <p class="text-sm" style="color:var(--secondary);">ارفع ← فلتر ← قسّم ← حمّل</p>
     </header><!-- Steps indicator -->
     <nav class="flex items-center justify-center gap-2 mb-10 fade-in" id="stepsNav">
-     <div class="flex items-center gap-2">
-      <span class="step-badge current" data-step="1">1</span> <span class="text-xs font-medium">رفع</span>
+     <div class="flex items-center gap-2"><span class="step-badge current" data-step="1">1</span> <span class="text-xs font-medium">رفع</span>
      </div>
      <div class="w-8 glow-line"></div>
-     <div class="flex items-center gap-2">
-      <span class="step-badge pending" data-step="2">2</span> <span class="text-xs font-medium" style="color:var(--secondary);">فلترة</span>
+     <div class="flex items-center gap-2"><span class="step-badge pending" data-step="2">2</span> <span class="text-xs font-medium" style="color:var(--secondary);">فلترة</span>
      </div>
      <div class="w-8 glow-line"></div>
-     <div class="flex items-center gap-2">
-      <span class="step-badge pending" data-step="3">3</span> <span class="text-xs font-medium" style="color:var(--secondary);">تحميل</span>
+     <div class="flex items-center gap-2"><span class="step-badge pending" data-step="3">3</span> <span class="text-xs font-medium" style="color:var(--secondary);">تحميل</span>
      </div>
     </nav><!-- Step 1: Upload -->
     <section id="step1" class="fade-in">
      <div class="drop-zone rounded-xl p-10 text-center" id="dropZone" style="background:var(--surface);">
-      <div class="mb-4">
-       <i data-lucide="upload-cloud" style="width:48px;height:48px;color:var(--secondary);margin:auto;"></i>
+      <div class="mb-4"><i data-lucide="upload-cloud" style="width:48px;height:48px;color:var(--secondary);margin:auto;"></i>
       </div>
       <p class="font-semibold mb-1">اسحب ملف Excel هنا</p>
       <p class="text-sm mb-4" style="color:var(--secondary);">أو اضغط لاختيار ملف (.xlsx, .xls)</p><label class="btn-primary inline-block cursor-pointer" style="font-size:14px; padding:10px 24px;"> اختر ملف <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden"> </label>
@@ -112,8 +107,7 @@
          <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center" style="border-color:var(--primary);">
           <div class="w-2 h-2 rounded-full" style="background:var(--primary);"></div>
          </div>
-         <div>
-          <span class="font-semibold text-sm">الكل</span> <span class="text-xs block" style="color:var(--secondary);">جميع البيانات بدون فلترة</span>
+         <div><span class="font-semibold text-sm">الكل</span> <span class="text-xs block" style="color:var(--secondary);">جميع البيانات بدون فلترة</span>
          </div>
         </div>
        </div>
@@ -122,8 +116,7 @@
          <div class="w-4 h-4 rounded-full border-2 flex items-center justify-center" style="border-color:var(--secondary);">
           <div class="w-2 h-2 rounded-full hidden" style="background:var(--primary);"></div>
          </div>
-         <div>
-          <span class="font-semibold text-sm">حالات محددة</span> <span class="text-xs block" style="color:var(--secondary);">رجوع بواسطة الحسابات / تم الغاء الطلب</span>
+         <div><span class="font-semibold text-sm">حالات محددة</span> <span class="text-xs block" style="color:var(--secondary);">رجوع بواسطة الحسابات / تم الغاء الطلب</span>
          </div>
         </div>
        </div>
@@ -148,8 +141,7 @@
         </div>
        </div>
       </div>
-      <div class="flex items-center gap-3">
-       <button class="btn-primary flex items-center gap-2" onclick="processData()"> <i data-lucide="scissors" style="width:16px;height:16px;"></i> تقسيم وتحميل </button> <button class="text-sm px-4 py-2 rounded-lg" style="color:var(--secondary);border:1px solid var(--secondary);" onclick="resetAll()"> إعادة </button>
+      <div class="flex items-center gap-3"><button class="btn-primary flex items-center gap-2" onclick="processData()"> <i data-lucide="scissors" style="width:16px;height:16px;"></i> تقسيم وتحميل </button> <button class="text-sm px-4 py-2 rounded-lg" style="color:var(--secondary);border:1px solid var(--secondary);" onclick="resetAll()"> إعادة </button>
       </div>
      </div>
     </section><!-- Step 3: Results -->
@@ -162,8 +154,7 @@
        </div><button class="btn-primary text-sm flex items-center gap-2" style="padding:8px 20px;" onclick="downloadAll()"> <i data-lucide="download" style="width:14px;height:14px;"></i> تحميل الكل </button>
       </div>
       <div id="filesList" class="space-y-2"></div>
-      <div class="mt-5 pt-4" style="border-top:1px solid rgba(71,85,105,0.3);">
-       <button class="text-sm px-4 py-2 rounded-lg" style="color:var(--secondary);border:1px solid var(--secondary);" onclick="resetAll()"> <i data-lucide="rotate-ccw" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> ملف جديد </button>
+      <div class="mt-5 pt-4" style="border-top:1px solid rgba(71,85,105,0.3);"><button class="text-sm px-4 py-2 rounded-lg" style="color:var(--secondary);border:1px solid var(--secondary);" onclick="resetAll()"> <i data-lucide="rotate-ccw" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> ملف جديد </button>
       </div>
      </div>
     </section><!-- Loading overlay -->
@@ -258,29 +249,134 @@
     fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
 
     function handleFile(file) {
-      if (!file.name.match(/\.xlsx?$/i)) { showToast('يرجى رفع ملف Excel فقط', 'error'); return; }
+      console.log('📁 بدء معالجة الملف:', file.name, 'الحجم:', file.size);
+      
+      if (!file.name.match(/\.xlsx?$/i)) { 
+        showToast('يرجى رفع ملف Excel فقط', 'error'); 
+        return; 
+      }
+      
       showLoading(true);
       const reader = new FileReader();
+      
+      reader.onerror = (e) => {
+        console.error('❌ خطأ في قراءة الملف:', e, 'الكود:', e.target.error.code);
+        const errorMsg = e.target.error.code === 1 ? 'تم إيقاف قراءة الملف' : 'خطأ في قراءة الملف من النظام';
+        showToast(errorMsg, 'error');
+        showLoading(false);
+      };
+      
       reader.onload = (e) => {
         try {
-          const wb = XLSX.read(e.target.result, { type: 'array' });
+          console.log('✓ تم تحميل الملف بنجاح، الحجم:', e.target.result.byteLength, 'بايت');
+          
+          if (!e.target.result || e.target.result.byteLength === 0) {
+            console.error('❌ الملف فارغ - الحجم: 0');
+            showToast('الملف فارغ أو تالف - تأكد من الملف', 'error');
+            showLoading(false);
+            return;
+          }
+          
+          const data = new Uint8Array(e.target.result);
+          console.log('📊 بدء قراءة Excel... عدد البايتات:', data.length);
+          
+          if (!window.XLSX) {
+            console.error('❌ مكتبة XLSX لم تُحمّل');
+            console.log('🔗 تحقق من رابط المكتبة: https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+            showToast('خطأ: مكتبة Excel لم تُحمّل - جرب تحديث الصفحة', 'error');
+            showLoading(false);
+            return;
+          }
+          
+          console.log('✓ مكتبة XLSX متوفرة');
+          
+          let wb;
+          try {
+            wb = XLSX.read(data, { type: 'array' });
+          } catch (parseErr) {
+            console.error('❌ خطأ في تحليل الملف:', parseErr.message);
+            console.log('🔍 قد يكون الملف تالفاً أو بصيغة غير صحيحة');
+            showToast('الملف تالف أو الصيغة غير صحيحة - استخدم .xlsx أو .xls', 'error');
+            showLoading(false);
+            return;
+          }
+          
+          console.log('✓ تم قراءة Workbook، عدد الأوراق:', wb.SheetNames.length);
+          console.log('📄 أسماء الأوراق:', wb.SheetNames);
+          
+          if (!wb.SheetNames.length) {
+            console.error('❌ الملف لا يحتوي على أوراق عمل');
+            showToast('الملف لا يحتوي على بيانات - أضف ورقة عمل', 'error');
+            showLoading(false);
+            return;
+          }
+          
           const sheet = wb.Sheets[wb.SheetNames[0]];
-          const raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-          if (raw.length < 2) { showToast('الملف فارغ أو لا يحتوي على بيانات كافية', 'error'); showLoading(false); return; }
+          if (!sheet) {
+            console.error('❌ لا يمكن قراءة ورقة العمل الأولى');
+            showToast('خطأ في قراءة ورقة العمل', 'error');
+            showLoading(false);
+            return;
+          }
+          
+          console.log('✓ تم اختيار الورقة:', wb.SheetNames[0]);
+          
+          let raw;
+          try {
+            raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+          } catch (convErr) {
+            console.error('❌ خطأ في تحويل البيانات:', convErr.message);
+            showToast('خطأ في معالجة البيانات', 'error');
+            showLoading(false);
+            return;
+          }
+          
+          console.log('✓ تم تحويل البيانات، عدد الصفوف:', raw.length);
+          
+          if (!raw || raw.length === 0) {
+            console.error('❌ لا توجد بيانات في الملف');
+            showToast('الملف فارغ - أضف بيانات', 'error');
+            showLoading(false);
+            return;
+          }
+          
+          if (raw.length < 2) { 
+            console.error('❌ الملف يحتوي على أقل من صفين (رأس + صف واحد)');
+            showToast('الملف يحتوي على رأس فقط - أضف البيانات', 'error'); 
+            showLoading(false); 
+            return; 
+          }
+          
           headers = raw[0];
           workbookData = raw.slice(1);
+          console.log('✓ تم استخراج', workbookData.length, 'صف من البيانات');
+          console.log('📋 الأعمدة:', headers);
+          console.log('✅ معلومات أول صف:', workbookData[0]);
+          
           // show file info
           const info = document.getElementById('fileInfo');
-          info.innerHTML = `<div class="mono text-xs mt-2" style="color:var(--primary);">✓ ${file.name} — ${workbookData.length} صف</div>`;
+          info.innerHTML = `<div class="mono text-xs mt-2" style="color:var(--primary);">✓ ${file.name}<br/>📊 ${workbookData.length} صف | 📋 ${headers.length} عمود<br/>✅ تم التحميل بنجاح</div>`;
           info.classList.remove('hidden');
+          
           showLoading(false);
           goToStep(2);
         } catch (err) {
-          showToast('خطأ في قراءة الملف', 'error');
+          console.error('❌ خطأ عام في معالجة الملف:', err);
+          console.error('🔍 تفاصيل الخطأ:', err.message);
+          console.error('📍 السطر:', err.stack);
+          showToast('خطأ: ' + (err.message || 'خطأ غير معروف'), 'error');
           showLoading(false);
         }
       };
-      reader.readAsArrayBuffer(file);
+      
+      try {
+        reader.readAsArrayBuffer(file);
+        console.log('✓ بدأت عملية قراءة الملف');
+      } catch (readErr) {
+        console.error('❌ خطأ في بدء القراءة:', readErr.message);
+        showToast('خطأ في قراءة الملف من النظام', 'error');
+        showLoading(false);
+      }
     }
 
     // Filter selection
@@ -458,5 +554,5 @@
 
     lucide.createIcons();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e88018316507cc9',t:'MTc3NTU1NDE0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e880b2615df7cc9',t:'MTc3NTU1NDU0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
