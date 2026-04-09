@@ -2008,17 +2008,18 @@
     }
     
     .shift-cell {
-      min-width: 80px;
+      min-width: 90px;
       border-radius: 6px;
       margin: 2px;
       font-weight: 500;
-      padding: 8px 6px;
+      padding: 10px 8px;
       display: inline-block;
+      text-align: center;
     }
     
     /* Shift Colors */
     .shift-off { background: #dc2626; color: #fff; }
-    .shift-holiday { background: #eab308; color: #000; }
+    .shift-holiday { background: #f59e0b; color: #000; }
     .shift-sick { background: #9333ea; color: #fff; }
     .shift-7-3 { background: #2563eb; color: #fff; }
     .shift-8-4 { background: #0d9488; color: #fff; }
@@ -2035,6 +2036,78 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-start;
+    }
+
+    .staff-section {
+      background: #0f0f0f;
+      border-radius: 12px;
+      border: 1px solid #333;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .staff-table-container {
+      position: relative;
+      max-height: 600px;
+      overflow: auto;
+      padding: 12px;
+      background: #0d0d0d;
+    }
+
+    .staff-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: #090909;
+      border: 1px solid #333;
+    }
+
+    .staff-table th,
+    .staff-table td {
+      border: 1px solid #262626;
+    }
+
+    .staff-table th {
+      background: #121212;
+      color: #f3c94d;
+      padding: 14px 10px;
+      text-align: center;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    .staff-table td {
+      padding: 12px 10px;
+      text-align: center;
+      color: #d1d5db;
+      vertical-align: middle;
+    }
+
+    .staff-table tr:hover td {
+      background: #161616;
+    }
+
+    .staff-name-cell {
+      position: sticky;
+      left: 0;
+      background: #121212;
+      color: #f3c94d;
+      font-weight: 700;
+      z-index: 5;
+      border-right: 2px solid #333;
+      min-width: 170px;
+      text-align: right;
+    }
+
+    .staff-export-capture {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+      opacity: 0;
+      pointer-events: none;
     }
 
     .staff-download-select {
@@ -3252,7 +3325,7 @@
           </div>
           <div class="staff-actions">
             <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}">فتح جدول الموظفين</button>
-            <button id="staffDownloadBtn" class="copy-btn-small">تحميل الجدول</button>
+            <button id="staffDownloadBtn" class="copy-btn-small">تحميل كصورة</button>
             <select id="staffDownloadSelect" class="staff-download-select" multiple size="6">
               <option value="__all__">الكل</option>
             </select>
@@ -3287,7 +3360,7 @@
       document.getElementById('toggleBackOffice').onclick = () => toggleStaffSection('backOffice');
       document.getElementById('staffLangArBtn').onclick = () => setStaffScheduleLanguage('ar');
       document.getElementById('staffLangEnBtn').onclick = () => setStaffScheduleLanguage('en');
-      document.getElementById('staffDownloadBtn').onclick = downloadStaffSchedule;
+      document.getElementById('staffDownloadBtn').onclick = exportStaffScheduleAsImage;
 
       const openSheetBtn = document.getElementById('staffOpenSheetBtn');
       if (openSheetBtn) {
@@ -3482,21 +3555,17 @@
       select.value = '__all__';
     }
 
-    function downloadStaffSchedule() {
+    async function exportStaffScheduleAsImage() {
       const select = document.getElementById('staffDownloadSelect');
       if (!select || !window._staffScheduleData) return;
       const selected = Array.from(select.selectedOptions).map(opt => opt.value);
       const all = selected.includes('__all__') || selected.length === 0;
-      const rows = [];
-      const headerRow = ['STAFF NAMES', ...window._staffScheduleData.dates];
-      rows.push(headerRow.map(escapeCsv).join(','));
-
       const employees = [];
       window._staffScheduleData.callCenter.forEach(emp => {
-        if (all || selected.includes(emp.name)) employees.push(emp);
+        if (all || selected.includes(emp.name)) employees.push({ section: 'الكول سنتر', ...emp });
       });
       window._staffScheduleData.backOffice.forEach(emp => {
-        if (all || selected.includes(emp.name)) employees.push(emp);
+        if (all || selected.includes(emp.name)) employees.push({ section: 'الإدارة', ...emp });
       });
 
       if (employees.length === 0) {
@@ -3504,16 +3573,91 @@
         return;
       }
 
-      employees.forEach(emp => {
-        rows.push([emp.name, ...emp.shifts].map(escapeCsv).join(','));
-      });
+      const exportContainer = buildStaffExportContainer(window._staffScheduleData.dates, employees);
+      document.body.appendChild(exportContainer);
 
-      const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'staff-schedule.csv';
-      link.click();
-      URL.revokeObjectURL(link.href);
+      try {
+        await ensureHtml2Canvas();
+        const canvas = await html2canvas(exportContainer, {
+          backgroundColor: '#0f0f0f',
+          scale: 2,
+          useCORS: true
+        });
+        const link = document.createElement('a');
+        const dateStr = new Date().toISOString().slice(0, 10);
+        link.download = `staff-schedule-${dateStr}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (err) {
+        console.error('Export failed', err);
+      } finally {
+        if (exportContainer && exportContainer.parentNode) exportContainer.parentNode.removeChild(exportContainer);
+      }
+    }
+
+    function buildStaffExportContainer(dates, employees) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'staff-export-capture';
+      wrapper.style.background = '#0f0f0f';
+      wrapper.style.padding = '24px';
+      wrapper.style.borderRadius = '16px';
+      wrapper.style.color = '#f3f3f3';
+      wrapper.style.fontFamily = 'sans-serif';
+      wrapper.style.width = 'auto';
+      wrapper.style.maxWidth = '1600px';
+
+      const title = document.createElement('div');
+      title.style.fontSize = '20px';
+      title.style.fontWeight = '700';
+      title.style.marginBottom = '14px';
+      title.textContent = 'جدول الموظفين';
+      wrapper.appendChild(title);
+
+      const table = document.createElement('table');
+      table.className = 'staff-table';
+      table.style.width = '100%';
+      table.style.borderCollapse = 'collapse';
+      table.style.marginTop = '8px';
+
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+      const firstTH = document.createElement('th');
+      firstTH.textContent = 'الموظف';
+      firstTH.style.textAlign = 'center';
+      firstTH.style.minWidth = '180px';
+      headerRow.appendChild(firstTH);
+      dates.forEach(date => {
+        const th = document.createElement('th');
+        th.innerHTML = formatStaffHeaderLabel(date);
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      employees.forEach(emp => {
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        nameCell.className = 'staff-name-cell';
+        nameCell.innerHTML = `<span class="staff-name-label">${escapeHtml(getStaffDisplayName(emp.name))}</span>`;
+        row.appendChild(nameCell);
+
+        emp.shifts.forEach(shift => {
+          const td = document.createElement('td');
+          const shiftInfo = getShiftStyleAndClass(shift);
+          const shiftDiv = document.createElement('div');
+          shiftDiv.className = `shift-cell ${shiftInfo.class}`;
+          shiftDiv.style.cssText = shiftInfo.style;
+          shiftDiv.textContent = getShiftDisplayText(shift);
+          td.appendChild(shiftDiv);
+          row.appendChild(td);
+        });
+
+        tbody.appendChild(row);
+      });
+      table.appendChild(tbody);
+      wrapper.appendChild(table);
+      return wrapper;
     }
 
     function escapeCsv(value) {
