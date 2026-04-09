@@ -2012,6 +2012,8 @@
       border-radius: 6px;
       margin: 2px;
       font-weight: 500;
+      padding: 8px 6px;
+      display: inline-block;
     }
     
     /* Shift Colors */
@@ -2024,8 +2026,54 @@
     .shift-11-7 { background: #374151; color: #fff; }
     .shift-12-8 { background: #16a34a; color: #fff; }
     .shift-3-11 { background: #ea580c; color: #fff; }
+    .shift-empty { background: rgba(255,255,255,0.06); color: #ddd; }
     .shift-unknown { background: #6b7280; color: #fff; }
-    
+
+    .staff-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .staff-download-select {
+      min-width: 220px;
+      max-width: 360px;
+      background: #121212;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 8px;
+      min-height: 120px;
+      font-size: 13px;
+    }
+
+    .staff-status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-left: 8px;
+      vertical-align: middle;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .staff-status-indicator.active { background: #22c55e; }
+    .staff-status-indicator.off { background: #ef4444; }
+    .staff-status-indicator.soon { background: #f59e0b; }
+
+    .staff-name-label {
+      vertical-align: middle;
+    }
+
+    .date-sub {
+      display: block;
+      color: #9ca3af;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
     .staff-loading {
       text-align: center;
       padding: 40px;
@@ -3176,22 +3224,42 @@
       clearBtn.onclick = () => { input.value = ''; showToast('تم المسح', 'success'); input.focus(); };
     }
 
+    const STAFF_SCHEDULE_SHEET_ID = '1OLqF1d-NpUY2An4KQChU1BIvr4cfmJvu6xoJ81UXTbc';
+    const STAFF_SCHEDULE_SHEET_NAME = 'THIS WEEK';
+    const STAFF_NAMES_SHEET_NAME = 'Names';
+    const STAFF_EDITORS = ['esraa', 'fawzi', 'salem'];
+
     // Render Staff Schedule Interface
     function renderStaffScheduleInterface() {
       if (window.staffScheduleIntervalId) clearInterval(window.staffScheduleIntervalId);
+      window._staffScheduleLang = window._staffScheduleLang || 'ar';
+
+      const currentUser = (localStorage.getItem('currentUser') || '').trim().toLowerCase();
+      const isEditor = STAFF_EDITORS.includes(currentUser);
 
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="staff-schedule-container">
           <div class="staff-controls">
             <div class="staff-toggle">
-              <button id="toggleCallCenter" class="toggle-btn active">مركز الاتصال</button>
-              <button id="toggleBackOffice" class="toggle-btn">المكتب الخلفي</button>
+              <button id="toggleCallCenter" class="toggle-btn active">الكول سنتر</button>
+              <button id="toggleBackOffice" class="toggle-btn">الإدارة</button>
+            </div>
+            <div class="staff-toggle">
+              <button id="staffLangArBtn" class="toggle-btn ${window._staffScheduleLang === 'ar' ? 'active' : ''}">عربي</button>
+              <button id="staffLangEnBtn" class="toggle-btn ${window._staffScheduleLang === 'en' ? 'active' : ''}">English</button>
             </div>
           </div>
-          
+          <div class="staff-actions">
+            <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}">فتح جدول الموظفين</button>
+            <button id="staffDownloadBtn" class="copy-btn-small">تحميل الجدول</button>
+            <select id="staffDownloadSelect" class="staff-download-select" multiple size="6">
+              <option value="__all__">الكل</option>
+            </select>
+          </div>
+
           <div id="callCenterSection" class="staff-section">
-            <div class="staff-section-header">مركز الاتصال</div>
+            <div class="staff-section-header">الكول سنتر</div>
             <div class="staff-table-container">
               <table class="staff-table" id="callCenterTable">
                 <thead id="callCenterHeader"></thead>
@@ -3199,9 +3267,9 @@
               </table>
             </div>
           </div>
-          
+
           <div id="backOfficeSection" class="staff-section hidden">
-            <div class="staff-section-header">المكتب الخلفي</div>
+            <div class="staff-section-header">الإدارة</div>
             <div class="staff-table-container">
               <table class="staff-table" id="backOfficeTable">
                 <thead id="backOfficeHeader"></thead>
@@ -3209,63 +3277,102 @@
               </table>
             </div>
           </div>
-          
+
           <div id="staffScheduleLoading" class="staff-loading">جاري تحميل البيانات...</div>
           <div id="staffScheduleError" class="staff-error hidden"></div>
         </div>
       `;
 
-      // Initialize
-      loadStaffScheduleData(true);
-      window.staffScheduleIntervalId = setInterval(() => loadStaffScheduleData(), 5 * 60 * 1000);
-
-      // Event listeners
       document.getElementById('toggleCallCenter').onclick = () => toggleStaffSection('callCenter');
       document.getElementById('toggleBackOffice').onclick = () => toggleStaffSection('backOffice');
+      document.getElementById('staffLangArBtn').onclick = () => setStaffScheduleLanguage('ar');
+      document.getElementById('staffLangEnBtn').onclick = () => setStaffScheduleLanguage('en');
+      document.getElementById('staffDownloadBtn').onclick = downloadStaffSchedule;
+
+      const openSheetBtn = document.getElementById('staffOpenSheetBtn');
+      if (openSheetBtn) {
+        openSheetBtn.onclick = () => {
+          const url = `https://docs.google.com/spreadsheets/d/${STAFF_SCHEDULE_SHEET_ID}/edit`;
+          window.open(url, '_blank');
+        };
+      }
+
+      loadStaffNamesData(true);
+      loadStaffScheduleData(true);
+      window.staffScheduleIntervalId = setInterval(() => loadStaffScheduleData(), 5 * 60 * 1000);
     }
 
-    function loadStaffScheduleData(force = false) {
-      const sheetId = '1OLqF1d-NpUY2An4KQChU1BIvr4cfmJvu6xoJ81UXTbc';
-      const sheetName = 'THIS WEEK';
+    async function loadStaffNamesData(force = false) {
+      if (!force && window._staffNamesMap) return window._staffNamesMap;
+
+      const sheetId = STAFF_SCHEDULE_SHEET_ID;
+      const sheetName = STAFF_NAMES_SHEET_NAME;
       const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+
+      try {
+        const response = await fetch(csvUrl, { cache: 'no-cache' });
+        if (!response.ok) throw new Error('Failed to load staff names');
+        const csvText = await response.text();
+        const rows = parseCSV(csvText);
+        const map = {};
+        rows.forEach((row, index) => {
+          const eng = (row[0] || '').toString().trim();
+          const arb = (row[1] || '').toString().trim();
+          if (!eng) return;
+          if (index === 0 && /^staff|name/i.test(eng)) return;
+          map[eng.toLowerCase()] = arb || eng;
+        });
+        window._staffNamesMap = map;
+        return map;
+      } catch (e) {
+        console.warn('Names sheet load failed', e);
+        window._staffNamesMap = window._staffNamesMap || {};
+        return window._staffNamesMap;
+      }
+    }
+
+    async function loadStaffScheduleData(force = false) {
+      const sheetId = STAFF_SCHEDULE_SHEET_ID;
+      const sheetName = STAFF_SCHEDULE_SHEET_NAME;
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+      const loadingEl = document.getElementById('staffScheduleLoading');
+      const errorEl = document.getElementById('staffScheduleError');
 
       if (!force && window._staffScheduleData) {
         renderStaffScheduleTables(window._staffScheduleData);
+        updateStaffDownloadOptions(window._staffScheduleData);
         return;
       }
 
-      document.getElementById('staffScheduleLoading').style.display = 'block';
-      document.getElementById('staffScheduleError').classList.add('hidden');
+      loadingEl.style.display = 'block';
+      errorEl.classList.add('hidden');
 
-      fetch(csvUrl, { cache: 'no-cache' })
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to load staff schedule');
-          return res.text();
-        })
-        .then(csvText => {
-          const rows = parseCSV(csvText);
-          if (rows.length < 2) throw new Error('No data found');
+      try {
+        const response = await fetch(csvUrl, { cache: 'no-cache' });
+        if (!response.ok) throw new Error('Failed to load staff schedule');
 
-          const parsedData = parseStaffScheduleData(rows);
-          window._staffScheduleData = parsedData;
-          renderStaffScheduleTables(parsedData);
-        })
-        .catch(err => {
-          console.error(err);
-          document.getElementById('staffScheduleError').textContent = 'خطأ في تحميل جدول الموظفين: ' + err.message;
-          document.getElementById('staffScheduleError').classList.remove('hidden');
-        })
-        .finally(() => {
-          document.getElementById('staffScheduleLoading').style.display = 'none';
-        });
+        const csvText = await response.text();
+        const rows = parseCSV(csvText);
+        if (rows.length < 2) throw new Error('No data found');
+
+        await loadStaffNamesData(force);
+        const parsedData = parseStaffScheduleData(rows);
+        window._staffScheduleData = parsedData;
+        renderStaffScheduleTables(parsedData);
+        updateStaffDownloadOptions(parsedData);
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = 'خطأ في تحميل جدول الموظفين: ' + err.message;
+        errorEl.classList.remove('hidden');
+      } finally {
+        loadingEl.style.display = 'none';
+      }
     }
 
     function parseStaffScheduleData(rows) {
-      console.log('Raw CSV rows:', rows);
       const headers = rows[0];
       const data = { callCenter: [], backOffice: [], dates: [] };
 
-      // Find date columns (skip first column which is names)
       for (let i = 1; i < headers.length; i++) {
         const header = (headers[i] || '').toString().trim();
         if (header && !header.toLowerCase().includes('staff names') && !header.toLowerCase().includes('back office staff')) {
@@ -3273,37 +3380,32 @@
         }
       }
 
-      console.log('Extracted dates:', data.dates);
-
-      let currentSection = 'callCenter'; // Default to call center
-      for (let i = 1; i < rows.length; i++) { // Start from second row (index 1)
+      let currentSection = 'callCenter';
+      for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
         const firstCell = (row[0] || '').toString().trim().toLowerCase();
 
-        console.log(`Row ${i}: firstCell="${firstCell}", full row:`, row);
-
-        if (firstCell.includes('back office staff')) {
+        if (firstCell.includes('back office staff') || firstCell.includes('backoffice') || firstCell.includes('administration')) {
           currentSection = 'backOffice';
-          console.log('Switched to backOffice section');
           continue;
         }
 
-        if (row[0] && row[0].toString().trim()) {
-          const employee = {
-            name: row[0].toString().trim(),
-            shifts: []
-          };
+        if (!row[0] || !row[0].toString().trim()) continue;
+        const text = row[0].toString().trim();
+        if (text.toLowerCase().includes('staff names')) continue;
 
-          for (let j = 1; j < row.length && j - 1 < data.dates.length; j++) {
-            employee.shifts.push((row[j] || '').toString().trim());
-          }
+        const employee = {
+          name: text,
+          shifts: []
+        };
 
-          data[currentSection].push(employee);
-          console.log('Added employee to', currentSection, ':', employee);
+        for (let j = 1; j < row.length && j - 1 < data.dates.length; j++) {
+          employee.shifts.push((row[j] || '').toString().trim());
         }
+
+        data[currentSection].push(employee);
       }
 
-      console.log('Final parsed data:', data);
       return data;
     }
 
@@ -3315,47 +3417,239 @@
     function renderStaffTable(section, employees, dates) {
       const headerEl = document.getElementById(`${section}Header`);
       const bodyEl = document.getElementById(`${section}Body`);
+      const dateObjects = dates.map(date => parseStaffDateHeader(date));
 
-      // Header
       let headerHtml = '<tr><th style="position: sticky; left: 0; background: #262626; z-index: 15;">الموظف</th>';
       dates.forEach(date => {
-        headerHtml += `<th>${escapeHtml(date)}</th>`;
+        headerHtml += `<th>${formatStaffHeaderLabel(date)}</th>`;
       });
       headerHtml += '</tr>';
       headerEl.innerHTML = headerHtml;
 
-      // Body
       let bodyHtml = '';
       employees.forEach(employee => {
-        bodyHtml += `<tr><td class="staff-name-cell">${escapeHtml(employee.name)}</td>`;
+        const displayName = getStaffDisplayName(employee.name);
+        const status = getStaffStatusForToday(employee.shifts, dateObjects);
+        const statusHtml = status ? `<span class="staff-status-indicator ${status.key}" title="${escapeHtml(status.label)}"></span>` : '';
+
+        bodyHtml += `<tr><td class="staff-name-cell">${statusHtml}<span class="staff-name-label">${escapeHtml(displayName)}</span></td>`;
         employee.shifts.forEach(shift => {
-          const shiftClass = getShiftClass(shift);
+          const shiftInfo = getShiftStyleAndClass(shift);
           const displayText = getShiftDisplayText(shift);
-          bodyHtml += `<td><div class="shift-cell ${shiftClass}">${escapeHtml(displayText)}</div></td>`;
+          bodyHtml += `<td><div class="shift-cell ${shiftInfo.class}" style="${shiftInfo.style}">${escapeHtml(displayText)}</div></td>`;
         });
         bodyHtml += '</tr>';
       });
+
       bodyEl.innerHTML = bodyHtml;
     }
 
-    function getShiftClass(shift) {
-      const s = (shift || '').toString().trim().toLowerCase();
-      if (s === 'off') return 'shift-off';
-      if (s === 'holi day' || s === 'holiday') return 'shift-holiday';
-      if (s === 'sick' || s === 'sick leave') return 'shift-sick';
-      if (s === '7:00 - 3:00') return 'shift-7-3';
-      if (s === '8:00 - 4:00') return 'shift-8-4';
-      if (s === '9:00 - 5:00') return 'shift-9-5';
-      if (s === '11:00 - 7:00') return 'shift-11-7';
-      if (s === '12:00 - 8:00') return 'shift-12-8';
-      if (s === '3:00 - 11:00') return 'shift-3-11';
-      return 'shift-unknown';
+    function getStaffDisplayName(name) {
+      const lang = window._staffScheduleLang || 'ar';
+      const map = window._staffNamesMap || {};
+      const key = (name || '').toString().trim().toLowerCase();
+      if (lang === 'ar' && map[key]) return map[key];
+      return name || '';
+    }
+
+    function setStaffScheduleLanguage(lang) {
+      window._staffScheduleLang = lang;
+      const arBtn = document.getElementById('staffLangArBtn');
+      const enBtn = document.getElementById('staffLangEnBtn');
+      if (arBtn && enBtn) {
+        arBtn.classList.toggle('active', lang === 'ar');
+        enBtn.classList.toggle('active', lang === 'en');
+      }
+      if (window._staffScheduleData) {
+        renderStaffScheduleTables(window._staffScheduleData);
+        updateStaffDownloadOptions(window._staffScheduleData);
+      }
+    }
+
+    function updateStaffDownloadOptions(data) {
+      const select = document.getElementById('staffDownloadSelect');
+      if (!select) return;
+      const employees = [];
+      data.callCenter.forEach(emp => employees.push(emp.name));
+      data.backOffice.forEach(emp => employees.push(emp.name));
+      const unique = Array.from(new Set(employees));
+      const options = ['<option value="__all__">الكل</option>'];
+      unique.forEach(name => {
+        const displayName = getStaffDisplayName(name);
+        options.push(`<option value="${escapeHtml(name)}">${escapeHtml(displayName)}</option>`);
+      });
+      select.innerHTML = options.join('');
+      select.value = '__all__';
+    }
+
+    function downloadStaffSchedule() {
+      const select = document.getElementById('staffDownloadSelect');
+      if (!select || !window._staffScheduleData) return;
+      const selected = Array.from(select.selectedOptions).map(opt => opt.value);
+      const all = selected.includes('__all__') || selected.length === 0;
+      const rows = [];
+      const headerRow = ['STAFF NAMES', ...window._staffScheduleData.dates];
+      rows.push(headerRow.map(escapeCsv).join(','));
+
+      const employees = [];
+      window._staffScheduleData.callCenter.forEach(emp => {
+        if (all || selected.includes(emp.name)) employees.push(emp);
+      });
+      window._staffScheduleData.backOffice.forEach(emp => {
+        if (all || selected.includes(emp.name)) employees.push(emp);
+      });
+
+      if (employees.length === 0) {
+        alert('لم يتم اختيار موظف لتحميل الجدول. اختر الكل أو اسم واحد على الأقل.');
+        return;
+      }
+
+      employees.forEach(emp => {
+        rows.push([emp.name, ...emp.shifts].map(escapeCsv).join(','));
+      });
+
+      const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'staff-schedule.csv';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function escapeCsv(value) {
+      const text = (value || '').toString();
+      if (/[",\n\r]/.test(text)) {
+        return '"' + text.replace(/"/g, '""') + '"';
+      }
+      return text;
+    }
+
+    function parseStaffDateHeader(text) {
+      const value = (text || '').toString().trim();
+      if (!value) return null;
+      const parts = value.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+      if (parts) {
+        let day = parseInt(parts[1], 10);
+        let month = parseInt(parts[2], 10);
+        let year = parseInt(parts[3], 10);
+        if (year < 100) year += 2000;
+        if (month > 12) {
+          [day, month] = [month, day];
+        }
+        if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+          return new Date(year, month - 1, day);
+        }
+      }
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    function formatStaffHeaderLabel(dateText) {
+      const date = parseStaffDateHeader(dateText);
+      if (!date) return escapeHtml(dateText);
+      return `${escapeHtml(formatArabicDayName(date))}<span class="date-sub">${escapeHtml(`${date.getDate()}/${date.getMonth() + 1}`)}</span>`;
+    }
+
+    function formatArabicDayName(date) {
+      const names = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      return names[date.getDay()] || '';
+    }
+
+    function getStaffStatusForToday(shifts, dateObjects) {
+      const today = new Date();
+      for (let i = 0; i < dateObjects.length; i++) {
+        const dateObj = dateObjects[i];
+        if (!dateObj) continue;
+        if (isSameDate(dateObj, today)) {
+          return getStaffStatus(shifts[i] || '', dateObj);
+        }
+      }
+      return null;
+    }
+
+    function isSameDate(a, b) {
+      return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+
+    function getStaffStatus(shift, dateObj) {
+      const raw = (shift || '').toString().trim();
+      const norm = raw.toLowerCase();
+      if (!raw || norm.includes('off') || norm.includes('holiday') || norm.includes('holi') || norm.includes('sick') || norm.includes('leave')) {
+        return { key: 'off', label: 'خارج الدوام' };
+      }
+
+      const range = parseShiftTimeRange(raw);
+      if (!range) {
+        return { key: 'off', label: 'خارج الدوام' };
+      }
+
+      const now = new Date();
+      const start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), range.startHour, range.startMinute, 0);
+      const end = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), range.endHour, range.endMinute, 0);
+      if (range.wrapNextDay) {
+        end.setDate(end.getDate() + 1);
+      }
+
+      if (now >= start && now < end) {
+        return { key: 'active', label: 'متواجد الآن' };
+      }
+
+      return { key: 'off', label: 'خارج الدوام' };
+    }
+
+    function parseShiftTimeRange(value) {
+      const text = (value || '').toString().trim();
+      const match = text.match(/(\d{1,2}):(\d{2})\s*[-–—]\s*(\d{1,2}):(\d{2})/);
+      if (!match) return null;
+      const startHour = parseInt(match[1], 10);
+      const startMinute = parseInt(match[2], 10);
+      const endHour = parseInt(match[3], 10);
+      const endMinute = parseInt(match[4], 10);
+      const wrapNextDay = endHour < startHour || (endHour === startHour && endMinute <= startMinute);
+      return { startHour, startMinute, endHour, endMinute, wrapNextDay };
+    }
+
+    function getShiftStyleAndClass(shift) {
+      const raw = (shift || '').toString().trim();
+      const norm = raw.toLowerCase();
+      if (!raw) return { class: 'shift-empty', style: '' };
+      if (norm.includes('off')) return { class: 'shift-off', style: '' };
+      if (norm.includes('holiday') || norm.includes('holi')) return { class: 'shift-holiday', style: '' };
+      if (norm.includes('sick') || norm.includes('leave')) return { class: 'shift-sick', style: '' };
+      if (norm.includes('7:00') && norm.includes('3:00')) return { class: 'shift-7-3', style: '' };
+      if (norm.includes('8:00') && norm.includes('4:00')) return { class: 'shift-8-4', style: '' };
+      if (norm.includes('9:00') && norm.includes('5:00')) return { class: 'shift-9-5', style: '' };
+      if (norm.includes('11:00') && norm.includes('7:00')) return { class: 'shift-11-7', style: '' };
+      if (norm.includes('12:00') && norm.includes('8:00')) return { class: 'shift-12-8', style: '' };
+      if (norm.includes('3:00') && norm.includes('11:00')) return { class: 'shift-3-11', style: '' };
+
+      const bg = getColorForString(raw);
+      const fg = getContrastColor(bg);
+      return { class: 'shift-unknown', style: `background: ${bg}; color: ${fg};` };
+    }
+
+    function getColorForString(value) {
+      const palette = ['#2563eb', '#0d9488', '#4338ca', '#16a34a', '#ea580c', '#f97316', '#7c3aed', '#0ea5e9', '#14b8a6', '#f59e0b', '#d946ef', '#e11d48', '#0f766e', '#9333ea', '#854d0e'];
+      let hash = 0;
+      for (let i = 0; i < value.length; i++) {
+        hash = (hash << 5) - hash + value.charCodeAt(i);
+        hash |= 0;
+      }
+      return palette[Math.abs(hash) % palette.length];
+    }
+
+    function getContrastColor(bg) {
+      const hex = bg.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return luminance > 0.55 ? '#000' : '#fff';
     }
 
     function getShiftDisplayText(shift) {
       const s = (shift || '').toString().trim();
-      if (!s) return '-';
-      return s;
+      return s || '-';
     }
 
     function toggleStaffSection(section) {
