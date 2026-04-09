@@ -1964,16 +1964,16 @@
     
     .staff-table-container {
       position: relative;
-      max-height: 70vh;
+      max-height: 80vh;
       overflow: auto;
-      padding: 10px;
+      padding: 6px;
       background: #0d0d0d;
     }
 
     .staff-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: 12px;
       background: #0a0a0a;
       border: 1px solid #2a2a2a;
     }
@@ -1981,7 +1981,7 @@
     .staff-table th {
       background: #1a1a1a;
       color: #7cb342;
-      padding: 10px 8px;
+      padding: 6px 4px;
       text-align: center;
       font-weight: 600;
       position: sticky;
@@ -1989,11 +1989,11 @@
       z-index: 10;
       border-bottom: 1px solid #2a2a2a;
       white-space: nowrap;
-      font-size: 12px;
+      font-size: 11px;
     }
 
     .staff-table td {
-      padding: 10px 6px;
+      padding: 6px 4px;
       text-align: center;
       border-bottom: 1px solid #1a1a1a;
       transition: all 0.2s ease;
@@ -2012,9 +2012,9 @@
       font-weight: 600;
       z-index: 5;
       border-right: 1px solid #2a2a2a;
-      min-width: 140px;
+      min-width: 120px;
       text-align: right;
-      font-size: 12px;
+      font-size: 11px;
     }
 
     .staff-table tr:hover .staff-name-cell {
@@ -2022,13 +2022,14 @@
     }
     
     .shift-cell {
-      min-width: 90px;
-      border-radius: 6px;
-      margin: 2px;
+      min-width: 70px;
+      border-radius: 4px;
+      margin: 1px;
       font-weight: 500;
-      padding: 10px 8px;
+      padding: 4px 6px;
       display: inline-block;
       text-align: center;
+      font-size: 11px;
     }
     
     /* Shift Colors */
@@ -2156,9 +2157,9 @@
 
     .date-sub {
       display: block;
-      color: #9ca3af;
-      font-size: 12px;
-      margin-top: 4px;
+      color: #999;
+      font-size: 10px;
+      margin-top: 2px;
     }
 
     .staff-loading {
@@ -3324,10 +3325,17 @@
       const currentUser = (localStorage.getItem('currentUser') || '').trim().toLowerCase();
       const isEditor = STAFF_EDITORS.includes(currentUser);
 
+      // Hide sidebar
+      const sidebar = document.querySelector('.sidebar');
+      if (sidebar) sidebar.style.display = 'none';
+      const dashboardWrapper = document.querySelector('.dashboard-wrapper');
+      if (dashboardWrapper) dashboardWrapper.style.gridTemplateColumns = '1fr';
+
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="staff-schedule-container">
           <div class="staff-controls">
+            <button id="staffBackBtn" class="copy-btn-small" style="background: #666; color: #fff;">← رجوع</button>
             <div class="staff-toggle">
               <button id="staffFilterAll" class="toggle-btn active">الكل</button>
               <button id="staffFilterCallCenter" class="toggle-btn">كول سنتر</button>
@@ -3368,6 +3376,24 @@
 
       window._staffScheduleFilter = 'all'; // 'all', 'callCenter', 'backOffice'
 
+      document.getElementById('staffBackBtn').onclick = () => {
+        const sidebar = document.querySelector('.sidebar');
+        if (sidebar) sidebar.style.display = '';
+        const dashboardWrapper = document.querySelector('.dashboard-wrapper');
+        if (dashboardWrapper) dashboardWrapper.style.gridTemplateColumns = '';
+        currentService = '';
+        document.querySelectorAll('.service-item').forEach(item => item.classList.remove('active'));
+        const serviceTitle = document.getElementById('serviceTitle');
+        if (serviceTitle) serviceTitle.textContent = 'اختر خدمة من القائمة';
+        const contentAreaReset = document.getElementById('contentArea');
+        if (contentAreaReset) {
+          contentAreaReset.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
+              <h2 style="color: #ccc; margin-bottom: 20px;">اختر خدمة من القائمة الجانبية</h2>
+            </div>
+          `;
+        }
+      };
       document.getElementById('staffFilterAll').onclick = () => setStaffFilter('all');
       document.getElementById('staffFilterCallCenter').onclick = () => setStaffFilter('callCenter');
       document.getElementById('staffFilterBackOffice').onclick = () => setStaffFilter('backOffice');
