@@ -3261,6 +3261,7 @@
     }
 
     function parseStaffScheduleData(rows) {
+      console.log('Raw CSV rows:', rows);
       const headers = rows[0];
       const data = { callCenter: [], backOffice: [], dates: [] };
 
@@ -3272,16 +3273,22 @@
         }
       }
 
+      console.log('Extracted dates:', data.dates);
+
       let currentSection = null;
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
         const firstCell = (row[0] || '').toString().trim().toLowerCase();
 
+        console.log(`Row ${i}: firstCell="${firstCell}", full row:`, row);
+
         if (firstCell.includes('staff names')) {
           currentSection = 'callCenter';
+          console.log('Set section to callCenter');
           continue;
         } else if (firstCell.includes('back office staff')) {
           currentSection = 'backOffice';
+          console.log('Set section to backOffice');
           continue;
         }
 
@@ -3296,9 +3303,11 @@
           }
 
           data[currentSection].push(employee);
+          console.log('Added employee:', employee);
         }
       }
 
+      console.log('Final parsed data:', data);
       return data;
     }
 
