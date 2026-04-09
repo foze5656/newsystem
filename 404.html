@@ -1940,7 +1940,7 @@
     }
 
     .copy-btn-small {
-      padding: 6px 14px !important;
+      padding: 6px 12px !important;
       font-size: 12px !important;
       white-space: nowrap;
     }
@@ -3331,26 +3331,42 @@
       const dashboardWrapper = document.querySelector('.dashboard-wrapper');
       if (dashboardWrapper) dashboardWrapper.style.gridTemplateColumns = '1fr';
 
+      const lang = window._staffScheduleLang;
+      const texts = {
+        back: lang === 'ar' ? '← رجوع' : '← Back',
+        all: lang === 'ar' ? 'الكل' : 'All',
+        callCenter: lang === 'ar' ? 'كول سنتر' : 'Call Center',
+        backOffice: lang === 'ar' ? 'إدارة' : 'Back Office',
+        openSheet: lang === 'ar' ? 'فتح الشيت' : 'Open Sheet',
+        download: lang === 'ar' ? 'تحميل صورة' : 'Download Image',
+        arabic: lang === 'ar' ? 'عربي' : 'Arabic',
+        english: lang === 'ar' ? 'English' : 'English',
+        callCenterTitle: lang === 'ar' ? 'الكول سنتر' : 'Call Center',
+        backOfficeTitle: lang === 'ar' ? 'الإدارة' : 'Back Office',
+        loading: lang === 'ar' ? 'جاري تحميل البيانات...' : 'Loading data...',
+        employee: lang === 'ar' ? 'الموظف' : 'Employee'
+      };
+
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="staff-schedule-container">
+          <button id="staffBackBtn" class="copy-btn-small" style="position: absolute; top: 10px; left: 10px; background: #666; color: #fff; z-index: 100;">${texts.back}</button>
           <div class="staff-controls">
-            <button id="staffBackBtn" class="copy-btn-small" style="background: #666; color: #fff;">← رجوع</button>
             <div class="staff-toggle">
-              <button id="staffFilterAll" class="toggle-btn active">الكل</button>
-              <button id="staffFilterCallCenter" class="toggle-btn">كول سنتر</button>
-              <button id="staffFilterBackOffice" class="toggle-btn">إدارة</button>
+              <button id="staffFilterAll" class="toggle-btn active">${texts.all}</button>
+              <button id="staffFilterCallCenter" class="toggle-btn">${texts.callCenter}</button>
+              <button id="staffFilterBackOffice" class="toggle-btn">${texts.backOffice}</button>
             </div>
-            <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}">فتح الشيت</button>
-            <button id="staffDownloadBtn" class="copy-btn-small">تحميل صورة</button>
+            <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}">${texts.openSheet}</button>
             <div class="staff-toggle">
-              <button id="staffLangArBtn" class="toggle-btn ${window._staffScheduleLang === 'ar' ? 'active' : ''}">عربي</button>
-              <button id="staffLangEnBtn" class="toggle-btn ${window._staffScheduleLang === 'en' ? 'active' : ''}">English</button>
+              <button id="staffDownloadBtn" class="toggle-btn">${texts.download}</button>
+              <button id="staffLangArBtn" class="toggle-btn ${window._staffScheduleLang === 'ar' ? 'active' : ''}">${texts.arabic}</button>
+              <button id="staffLangEnBtn" class="toggle-btn ${window._staffScheduleLang === 'en' ? 'active' : ''}">${texts.english}</button>
             </div>
           </div>
 
           <div id="callCenterSection" class="staff-section">
-            <div class="staff-section-header">الكول سنتر</div>
+            <div class="staff-section-header">${texts.callCenterTitle}</div>
             <div class="staff-table-container">
               <table class="staff-table" id="callCenterTable">
                 <thead id="callCenterHeader"></thead>
@@ -3360,7 +3376,7 @@
           </div>
 
           <div id="backOfficeSection" class="staff-section hidden">
-            <div class="staff-section-header">الإدارة</div>
+            <div class="staff-section-header">${texts.backOfficeTitle}</div>
             <div class="staff-table-container">
               <table class="staff-table" id="backOfficeTable">
                 <thead id="backOfficeHeader"></thead>
@@ -3369,7 +3385,7 @@
             </div>
           </div>
 
-          <div id="staffScheduleLoading" class="staff-loading">جاري تحميل البيانات...</div>
+          <div id="staffScheduleLoading" class="staff-loading">${texts.loading}</div>
           <div id="staffScheduleError" class="staff-error hidden"></div>
         </div>
       `;
@@ -3474,7 +3490,9 @@
         updateStaffDownloadOptions(parsedData);
       } catch (err) {
         console.error(err);
-        errorEl.textContent = 'خطأ في تحميل جدول الموظفين: ' + err.message;
+        const lang = window._staffScheduleLang || 'ar';
+        const errorText = lang === 'ar' ? 'خطأ في تحميل جدول الموظفين: ' + err.message : 'Error loading staff schedule: ' + err.message;
+        errorEl.textContent = errorText;
         errorEl.classList.remove('hidden');
       } finally {
         loadingEl.style.display = 'none';
@@ -3530,8 +3548,10 @@
       const headerEl = document.getElementById(`${section}Header`);
       const bodyEl = document.getElementById(`${section}Body`);
       const dateObjects = dates.map(date => parseStaffDateHeader(date));
+      const lang = window._staffScheduleLang;
+      const employeeText = lang === 'ar' ? 'الموظف' : 'Employee';
 
-      let headerHtml = '<tr><th style="position: sticky; left: 0; background: #262626; z-index: 15;">الموظف</th>';
+      let headerHtml = `<tr><th style="position: sticky; left: 0; background: #262626; z-index: 15;">${employeeText}</th>`;
       dates.forEach(date => {
         headerHtml += `<th>${formatStaffHeaderLabel(date)}</th>`;
       });
@@ -3566,15 +3586,8 @@
 
     function setStaffScheduleLanguage(lang) {
       window._staffScheduleLang = lang;
-      const arBtn = document.getElementById('staffLangArBtn');
-      const enBtn = document.getElementById('staffLangEnBtn');
-      if (arBtn && enBtn) {
-        arBtn.classList.toggle('active', lang === 'ar');
-        enBtn.classList.toggle('active', lang === 'en');
-      }
-      if (window._staffScheduleData) {
-        renderStaffScheduleTables(window._staffScheduleData);
-      }
+      // Re-render the entire interface to update all text
+      renderStaffScheduleInterface();
     }
 
     function setStaffFilter(filter) {
@@ -3687,7 +3700,9 @@
       title.style.fontWeight = '700';
       title.style.marginBottom = '14px';
       title.style.color = '#000';
-      title.textContent = 'جدول الموظفين';
+      const lang = window._staffScheduleLang || 'ar';
+      const titleText = lang === 'ar' ? 'جدول الموظفين' : 'Staff Schedule';
+      title.textContent = titleText;
       wrapper.appendChild(title);
 
       const table = document.createElement('table');
@@ -3868,15 +3883,15 @@
       const raw = (shift || '').toString().trim();
       const norm = raw.toLowerCase();
       if (!raw) return { class: 'shift-empty', style: '' };
-      if (norm.includes('off')) return { class: 'shift-off', style: '' };
-      if (norm.includes('holiday') || norm.includes('holi')) return { class: 'shift-holiday', style: '' };
-      if (norm.includes('sick') || norm.includes('leave')) return { class: 'shift-sick', style: '' };
-      if (norm.includes('7:00') && norm.includes('3:00')) return { class: 'shift-7-3', style: '' };
-      if (norm.includes('8:00') && norm.includes('4:00')) return { class: 'shift-8-4', style: '' };
-      if (norm.includes('9:00') && norm.includes('5:00')) return { class: 'shift-9-5', style: '' };
-      if (norm.includes('11:00') && norm.includes('7:00')) return { class: 'shift-11-7', style: '' };
-      if (norm.includes('12:00') && norm.includes('8:00')) return { class: 'shift-12-8', style: '' };
-      if (norm.includes('3:00') && norm.includes('11:00')) return { class: 'shift-3-11', style: '' };
+      if (norm.includes('off') || norm.includes('عطلة')) return { class: 'shift-off', style: '' };
+      if (norm.includes('holiday') || norm.includes('holi') || norm.includes('اجازه') || norm.includes('إجازة')) return { class: 'shift-holiday', style: '' };
+      if (norm.includes('sick') || norm.includes('leave') || norm.includes('مرض')) return { class: 'shift-sick', style: '' };
+      
+      // Check for specific shift times
+      if ((norm.includes('7') && norm.includes('3')) || norm.includes('7-3') || norm.includes('7:00') && norm.includes('3:00')) return { class: 'shift-7-3', style: '' };
+      if ((norm.includes('12') && norm.includes('8')) || norm.includes('12-8') || norm.includes('12:00') && norm.includes('8:00')) return { class: 'shift-12-8', style: '' };
+      if ((norm.includes('3') && norm.includes('11')) || norm.includes('3-11') || norm.includes('3:00') && norm.includes('11:00')) return { class: 'shift-3-11', style: '' };
+      if ((norm.includes('11') && norm.includes('7')) || norm.includes('11-7') || norm.includes('11:00') && norm.includes('7:00')) return { class: 'shift-11-7', style: '' };
 
       const bg = getColorForString(raw);
       const fg = getContrastColor(bg);
