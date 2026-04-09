@@ -2022,11 +2022,11 @@
     }
     
     .shift-cell {
-      min-width: 70px;
+      min-width: 60px;
       border-radius: 4px;
       margin: 1px;
       font-weight: 500;
-      padding: 4px 6px;
+      padding: 2px 4px;
       display: inline-block;
       text-align: center;
       font-size: 11px;
@@ -3350,7 +3350,6 @@
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="staff-schedule-container">
-          <button id="staffBackBtn" class="copy-btn-small" style="position: absolute; top: 10px; left: 10px; background: #666; color: #fff; z-index: 100;">${texts.back}</button>
           <div class="staff-controls">
             <div class="staff-toggle">
               <button id="staffFilterAll" class="toggle-btn active">${texts.all}</button>
@@ -3363,6 +3362,7 @@
               <button id="staffLangArBtn" class="toggle-btn ${window._staffScheduleLang === 'ar' ? 'active' : ''}">${texts.arabic}</button>
               <button id="staffLangEnBtn" class="toggle-btn ${window._staffScheduleLang === 'en' ? 'active' : ''}">${texts.english}</button>
             </div>
+            <button id="staffBackBtn" class="copy-btn-small" style="background: #666; color: #fff;">${texts.back}</button>
           </div>
 
           <div id="callCenterSection" class="staff-section">
@@ -3551,7 +3551,7 @@
       const lang = window._staffScheduleLang;
       const employeeText = lang === 'ar' ? 'الموظف' : 'Employee';
 
-      let headerHtml = `<tr><th style="position: sticky; left: 0; background: #262626; z-index: 15;">${employeeText}</th>`;
+      let headerHtml = `<tr><th style="position: sticky; left: 0; background: #262626; z-index: 15; width: 120px; min-width: 120px;">${employeeText}</th>`;
       dates.forEach(date => {
         headerHtml += `<th>${formatStaffHeaderLabel(date)}</th>`;
       });
@@ -3564,7 +3564,7 @@
         const status = getStaffStatusForToday(employee.shifts, dateObjects);
         const statusHtml = status ? `<span class="staff-status-indicator ${status.key}" title="${escapeHtml(status.label)}"></span>` : '';
 
-        bodyHtml += `<tr><td class="staff-name-cell">${statusHtml}<span class="staff-name-label">${escapeHtml(displayName)}</span></td>`;
+        bodyHtml += `<tr><td class="staff-name-cell" style="position: sticky; left: 0; background: #262626; z-index: 10; width: 120px; min-width: 120px;">${statusHtml}<span class="staff-name-label">${escapeHtml(displayName)}</span></td>`;
         employee.shifts.forEach(shift => {
           const shiftInfo = getShiftStyleAndClass(shift);
           const displayText = getShiftDisplayText(shift);
@@ -3633,41 +3633,26 @@
     }
 
     async function exportStaffScheduleAsImage() {
-      if (!window._staffScheduleData) return;
+      const container = document.querySelector('.staff-schedule-container');
+      if (!container) return;
 
-      const filter = window._staffScheduleFilter || 'all';
-      const employees = [];
-      const allowedUsers = STAFF_EDITORS.map(u => u.toLowerCase());
+      const lang = window._staffScheduleLang || 'ar';
+      const titleText = lang === 'ar' ? 'جدول الموظفين' : 'Staff Schedule';
+      const exportHeading = document.createElement('div');
+      exportHeading.className = 'export-heading';
+      exportHeading.textContent = titleText;
+      exportHeading.style.fontSize = '20px';
+      exportHeading.style.fontWeight = '700';
+      exportHeading.style.marginBottom = '14px';
+      exportHeading.style.color = '#000';
+      exportHeading.style.background = '#ffffff';
+      exportHeading.style.padding = '10px 0';
 
-      if (filter === 'all' || filter === 'callCenter') {
-        window._staffScheduleData.callCenter.forEach(emp => {
-          const nameKey = emp.name.toLowerCase();
-          if (allowedUsers.includes(nameKey)) {
-            employees.push({ section: 'الكول سنتر', ...emp });
-          }
-        });
-      }
-
-      if (filter === 'all' || filter === 'backOffice') {
-        window._staffScheduleData.backOffice.forEach(emp => {
-          const nameKey = emp.name.toLowerCase();
-          if (allowedUsers.includes(nameKey)) {
-            employees.push({ section: 'الإدارة', ...emp });
-          }
-        });
-      }
-
-      if (employees.length === 0) {
-        alert('لا توجد بيانات لتصديرها.');
-        return;
-      }
-
-      const exportContainer = buildStaffExportContainer(window._staffScheduleData.dates, employees);
-      document.body.appendChild(exportContainer);
+      container.insertBefore(exportHeading, container.firstChild);
 
       try {
         await ensureHtml2Canvas();
-        const canvas = await html2canvas(exportContainer, {
+        const canvas = await html2canvas(container, {
           backgroundColor: '#ffffff',
           scale: 2,
           useCORS: true
@@ -3680,7 +3665,7 @@
       } catch (err) {
         console.error('Export failed', err);
       } finally {
-        if (exportContainer && exportContainer.parentNode) exportContainer.parentNode.removeChild(exportContainer);
+        if (exportHeading && exportHeading.parentNode) exportHeading.parentNode.removeChild(exportHeading);
       }
     }
 
@@ -3817,11 +3802,21 @@
     function formatStaffHeaderLabel(dateText) {
       const date = parseStaffDateHeader(dateText);
       if (!date) return escapeHtml(dateText);
-      return `${escapeHtml(formatArabicDayName(date))}<span class="date-sub">${escapeHtml(`${date.getDate()}/${date.getMonth() + 1}`)}</span>`;
+      const lang = window._staffScheduleLang || 'ar';
+      if (lang === 'ar') {
+        return `${escapeHtml(formatArabicDayName(date))}<span class="date-sub">${escapeHtml(`${date.getDate()}/${date.getMonth() + 1}`)}</span>`;
+      } else {
+        return `${escapeHtml(formatEnglishDayName(date))}<span class="date-sub">${escapeHtml(`${date.getMonth() + 1}/${date.getDate()}`)}</span>`;
+      }
     }
 
     function formatArabicDayName(date) {
       const names = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+      return names[date.getDay()] || '';
+    }
+
+    function formatEnglishDayName(date) {
+      const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       return names[date.getDay()] || '';
     }
 
