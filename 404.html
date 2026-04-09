@@ -3315,20 +3315,16 @@
         <div class="staff-schedule-container">
           <div class="staff-controls">
             <div class="staff-toggle">
-              <button id="toggleCallCenter" class="toggle-btn active">الكول سنتر</button>
-              <button id="toggleBackOffice" class="toggle-btn">الإدارة</button>
+              <button id="staffFilterAll" class="toggle-btn active">الكل</button>
+              <button id="staffFilterCallCenter" class="toggle-btn">كول سنتر</button>
+              <button id="staffFilterBackOffice" class="toggle-btn">إدارة</button>
             </div>
-            <div class="staff-toggle">
+            <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}" style="margin-left: 10px;">فتح الشيت</button>
+            <button id="staffDownloadBtn" class="copy-btn-small">تحميل صورة</button>
+            <div class="staff-toggle" style="margin-left: 10px;">
               <button id="staffLangArBtn" class="toggle-btn ${window._staffScheduleLang === 'ar' ? 'active' : ''}">عربي</button>
               <button id="staffLangEnBtn" class="toggle-btn ${window._staffScheduleLang === 'en' ? 'active' : ''}">English</button>
             </div>
-          </div>
-          <div class="staff-actions">
-            <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}">فتح جدول الموظفين</button>
-            <button id="staffDownloadBtn" class="copy-btn-small">تحميل كصورة</button>
-            <select id="staffDownloadSelect" class="staff-download-select" multiple size="6">
-              <option value="__all__">الكل</option>
-            </select>
           </div>
 
           <div id="callCenterSection" class="staff-section">
@@ -3356,8 +3352,11 @@
         </div>
       `;
 
-      document.getElementById('toggleCallCenter').onclick = () => toggleStaffSection('callCenter');
-      document.getElementById('toggleBackOffice').onclick = () => toggleStaffSection('backOffice');
+      window._staffScheduleFilter = 'all'; // 'all', 'callCenter', 'backOffice'
+
+      document.getElementById('staffFilterAll').onclick = () => setStaffFilter('all');
+      document.getElementById('staffFilterCallCenter').onclick = () => setStaffFilter('callCenter');
+      document.getElementById('staffFilterBackOffice').onclick = () => setStaffFilter('backOffice');
       document.getElementById('staffLangArBtn').onclick = () => setStaffScheduleLanguage('ar');
       document.getElementById('staffLangEnBtn').onclick = () => setStaffScheduleLanguage('en');
       document.getElementById('staffDownloadBtn').onclick = exportStaffScheduleAsImage;
@@ -3535,7 +3534,32 @@
       }
       if (window._staffScheduleData) {
         renderStaffScheduleTables(window._staffScheduleData);
-        updateStaffDownloadOptions(window._staffScheduleData);
+      }
+    }
+
+    function setStaffFilter(filter) {
+      window._staffScheduleFilter = filter;
+      const allBtn = document.getElementById('staffFilterAll');
+      const ccBtn = document.getElementById('staffFilterCallCenter');
+      const boBtn = document.getElementById('staffFilterBackOffice');
+      if (allBtn && ccBtn && boBtn) {
+        allBtn.classList.toggle('active', filter === 'all');
+        ccBtn.classList.toggle('active', filter === 'callCenter');
+        boBtn.classList.toggle('active', filter === 'backOffice');
+      }
+
+      const callCenterSec = document.getElementById('callCenterSection');
+      const backOfficeSec = document.getElementById('backOfficeSection');
+
+      if (filter === 'all') {
+        if (callCenterSec) callCenterSec.classList.remove('hidden');
+        if (backOfficeSec) backOfficeSec.classList.remove('hidden');
+      } else if (filter === 'callCenter') {
+        if (callCenterSec) callCenterSec.classList.remove('hidden');
+        if (backOfficeSec) backOfficeSec.classList.add('hidden');
+      } else if (filter === 'backOffice') {
+        if (callCenterSec) callCenterSec.classList.add('hidden');
+        if (backOfficeSec) backOfficeSec.classList.remove('hidden');
       }
     }
 
@@ -3556,20 +3580,25 @@
     }
 
     async function exportStaffScheduleAsImage() {
-      const select = document.getElementById('staffDownloadSelect');
-      if (!select || !window._staffScheduleData) return;
-      const selected = Array.from(select.selectedOptions).map(opt => opt.value);
-      const all = selected.includes('__all__') || selected.length === 0;
+      if (!window._staffScheduleData) return;
+
+      const filter = window._staffScheduleFilter || 'all';
       const employees = [];
-      window._staffScheduleData.callCenter.forEach(emp => {
-        if (all || selected.includes(emp.name)) employees.push({ section: 'الكول سنتر', ...emp });
-      });
-      window._staffScheduleData.backOffice.forEach(emp => {
-        if (all || selected.includes(emp.name)) employees.push({ section: 'الإدارة', ...emp });
-      });
+
+      if (filter === 'all' || filter === 'callCenter') {
+        window._staffScheduleData.callCenter.forEach(emp => {
+          employees.push({ section: 'الكول سنتر', ...emp });
+        });
+      }
+
+      if (filter === 'all' || filter === 'backOffice') {
+        window._staffScheduleData.backOffice.forEach(emp => {
+          employees.push({ section: 'الإدارة', ...emp });
+        });
+      }
 
       if (employees.length === 0) {
-        alert('لم يتم اختيار موظف لتحميل الجدول. اختر الكل أو اسم واحد على الأقل.');
+        alert('لا توجد بيانات لتصديرها.');
         return;
       }
 
@@ -3579,7 +3608,7 @@
       try {
         await ensureHtml2Canvas();
         const canvas = await html2canvas(exportContainer, {
-          backgroundColor: '#0f0f0f',
+          backgroundColor: '#ffffff',
           scale: 2,
           useCORS: true
         });
@@ -3598,10 +3627,10 @@
     function buildStaffExportContainer(dates, employees) {
       const wrapper = document.createElement('div');
       wrapper.className = 'staff-export-capture';
-      wrapper.style.background = '#0f0f0f';
+      wrapper.style.background = '#ffffff';
       wrapper.style.padding = '24px';
       wrapper.style.borderRadius = '16px';
-      wrapper.style.color = '#f3f3f3';
+      wrapper.style.color = '#333';
       wrapper.style.fontFamily = 'sans-serif';
       wrapper.style.width = 'auto';
       wrapper.style.maxWidth = '1600px';
@@ -3610,6 +3639,7 @@
       title.style.fontSize = '20px';
       title.style.fontWeight = '700';
       title.style.marginBottom = '14px';
+      title.style.color = '#000';
       title.textContent = 'جدول الموظفين';
       wrapper.appendChild(title);
 
@@ -3618,6 +3648,8 @@
       table.style.width = '100%';
       table.style.borderCollapse = 'collapse';
       table.style.marginTop = '8px';
+      table.style.background = '#ffffff';
+      table.style.border = '1px solid #ccc';
 
       const thead = document.createElement('thead');
       const headerRow = document.createElement('tr');
@@ -3625,25 +3657,57 @@
       firstTH.textContent = 'الموظف';
       firstTH.style.textAlign = 'center';
       firstTH.style.minWidth = '180px';
+      firstTH.style.background = '#f0f0f0';
+      firstTH.style.borderBottom = '2px solid #999';
+      firstTH.style.padding = '12px';
+      firstTH.style.color = '#000';
       headerRow.appendChild(firstTH);
       dates.forEach(date => {
         const th = document.createElement('th');
         th.innerHTML = formatStaffHeaderLabel(date);
+        th.style.background = '#f0f0f0';
+        th.style.borderBottom = '2px solid #999';
+        th.style.padding = '12px';
+        th.style.color = '#000';
+        th.style.fontSize = '12px';
         headerRow.appendChild(th);
       });
       thead.appendChild(headerRow);
       table.appendChild(thead);
 
       const tbody = document.createElement('tbody');
-      employees.forEach(emp => {
+      employees.forEach((emp, idx) => {
         const row = document.createElement('tr');
+        row.style.borderBottom = '1px solid #ddd';
+        if (idx % 2 === 1) row.style.background = '#f9f9f9';
+
         const nameCell = document.createElement('td');
         nameCell.className = 'staff-name-cell';
-        nameCell.innerHTML = `<span class="staff-name-label">${escapeHtml(getStaffDisplayName(emp.name))}</span>`;
+        nameCell.style.background = 'transparent';
+        nameCell.style.borderRight = '1px solid #ddd';
+        nameCell.style.textAlign = 'right';
+        nameCell.style.padding = '12px';
+        nameCell.style.color = '#000';
+        nameCell.style.fontWeight = '600';
+
+        const displayName = getStaffDisplayName(emp.name);
+        const status = getStaffStatusForToday(emp.shifts, dates.map(d => parseStaffDateHeader(d)));
+        let statusHtml = '';
+        if (status) {
+          const statusColor = status.key === 'active' ? '#22c55e' : status.key === 'off' ? '#ef4444' : '#f59e0b';
+          statusHtml = `<span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:${statusColor}; margin-left:8px; border: 1px solid #999;"></span>`;
+        }
+
+        nameCell.innerHTML = `${statusHtml}<span class="staff-name-label">${escapeHtml(displayName)}</span>`;
         row.appendChild(nameCell);
 
         emp.shifts.forEach(shift => {
           const td = document.createElement('td');
+          td.style.borderBottom = 'inherit';
+          td.style.borderRight = '1px solid #ddd';
+          td.style.padding = '12px';
+          td.style.textAlign = 'center';
+
           const shiftInfo = getShiftStyleAndClass(shift);
           const shiftDiv = document.createElement('div');
           shiftDiv.className = `shift-cell ${shiftInfo.class}`;
