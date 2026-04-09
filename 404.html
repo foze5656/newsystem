@@ -3183,21 +3183,7 @@
       const contentArea = document.getElementById('contentArea');
       contentArea.innerHTML = `
         <div class="staff-schedule-container">
-          <div class="staff-legend">
-            <div class="legend-item"><div class="legend-color shift-off"></div><span>إجازة</span></div>
-            <div class="legend-item"><div class="legend-color shift-holiday"></div><span>إجازة رسمية</span></div>
-            <div class="legend-item"><div class="legend-color shift-sick"></div><span>مرضية</span></div>
-            <div class="legend-item"><div class="legend-color shift-7-3"></div><span>7:00 - 3:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-8-4"></div><span>8:00 - 4:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-9-5"></div><span>9:00 - 5:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-11-7"></div><span>11:00 - 7:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-12-8"></div><span>12:00 - 8:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-3-11"></div><span>3:00 - 11:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-unknown"></div><span>غير محدد</span></div>
-          </div>
-          
           <div class="staff-controls">
-            <input type="text" id="staffSearch" class="form-control staff-search" placeholder="البحث في أسماء الموظفين...">
             <div class="staff-toggle">
               <button id="toggleCallCenter" class="toggle-btn active">مركز الاتصال</button>
               <button id="toggleBackOffice" class="toggle-btn">المكتب الخلفي</button>
@@ -3234,13 +3220,12 @@
       window.staffScheduleIntervalId = setInterval(() => loadStaffScheduleData(), 5 * 60 * 1000);
 
       // Event listeners
-      document.getElementById('staffSearch').oninput = filterStaffTables;
       document.getElementById('toggleCallCenter').onclick = () => toggleStaffSection('callCenter');
       document.getElementById('toggleBackOffice').onclick = () => toggleStaffSection('backOffice');
     }
 
     function loadStaffScheduleData(force = false) {
-      const sheetId = '1nhjZLD1VoYYusxKi4wUFIP3fdToVlrIREy31WZdipWo'; // Same as driver sheet
+      const sheetId = '1OLqF1d-NpUY2An4KQChU1BIvr4cfmJvu6xoJ81UXTbc';
       const sheetName = 'THIS WEEK';
       const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
 
@@ -3363,11 +3348,9 @@
     }
 
     function getShiftDisplayText(shift) {
-      const s = (shift || '').toString().trim().toLowerCase();
-      if (s === 'off') return 'إجازة';
-      if (s === 'holi day' || s === 'holiday') return 'إجازة رسمية';
-      if (s === 'sick' || s === 'sick leave') return 'مرضية';
-      return shift || '-';
+      const s = (shift || '').toString().trim();
+      if (!s) return '-';
+      return s;
     }
 
     function toggleStaffSection(section) {
@@ -3387,26 +3370,6 @@
         backOfficeSection.classList.remove('hidden');
         callCenterSection.classList.add('hidden');
       }
-    }
-
-    function filterStaffTables() {
-      const searchTerm = document.getElementById('staffSearch').value.toLowerCase().trim();
-      const tables = ['callCenterTable', 'backOfficeTable'];
-
-      tables.forEach(tableId => {
-        const table = document.getElementById(tableId);
-        const rows = table.querySelectorAll('tbody tr');
-
-        rows.forEach(row => {
-          const nameCell = row.querySelector('.staff-name-cell');
-          const name = nameCell ? nameCell.textContent.toLowerCase() : '';
-          if (name.includes(searchTerm)) {
-            row.style.display = '';
-          } else {
-            row.style.display = 'none';
-          }
-        });
-      });
     }
 
     // Render Staff Interface
