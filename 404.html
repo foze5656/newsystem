@@ -3275,24 +3275,20 @@
 
       console.log('Extracted dates:', data.dates);
 
-      let currentSection = null;
-      for (let i = 1; i < rows.length; i++) {
+      let currentSection = 'callCenter'; // Default to call center
+      for (let i = 1; i < rows.length; i++) { // Start from second row (index 1)
         const row = rows[i];
         const firstCell = (row[0] || '').toString().trim().toLowerCase();
 
         console.log(`Row ${i}: firstCell="${firstCell}", full row:`, row);
 
-        if (firstCell.includes('staff names')) {
-          currentSection = 'callCenter';
-          console.log('Set section to callCenter');
-          continue;
-        } else if (firstCell.includes('back office staff')) {
+        if (firstCell.includes('back office staff')) {
           currentSection = 'backOffice';
-          console.log('Set section to backOffice');
+          console.log('Switched to backOffice section');
           continue;
         }
 
-        if (currentSection && row[0] && row[0].toString().trim()) {
+        if (row[0] && row[0].toString().trim()) {
           const employee = {
             name: row[0].toString().trim(),
             shifts: []
@@ -3303,7 +3299,7 @@
           }
 
           data[currentSection].push(employee);
-          console.log('Added employee:', employee);
+          console.log('Added employee to', currentSection, ':', employee);
         }
       }
 
