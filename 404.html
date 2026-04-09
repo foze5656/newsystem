@@ -1902,109 +1902,123 @@
     
     .staff-controls {
       display: flex;
-      gap: 15px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
+      background: #161616;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #2a2a2a;
+      margin-bottom: 12px;
     }
-    
-    .staff-search {
-      flex: 1;
-      min-width: 200px;
-    }
-    
+
     .staff-toggle {
       display: flex;
-      gap: 5px;
+      gap: 3px;
       background: #2a2a2a;
-      border-radius: 8px;
-      padding: 4px;
-      border: 1px solid #404040;
+      border-radius: 6px;
+      padding: 3px;
+      border: 1px solid #3a3a3a;
     }
-    
+
     .toggle-btn {
-      padding: 8px 16px;
+      padding: 6px 12px;
       border: none;
       background: transparent;
-      color: #ccc;
-      border-radius: 6px;
+      color: #999;
+      border-radius: 5px;
       cursor: pointer;
       transition: all 0.2s ease;
-      font-size: 14px;
+      font-size: 12px;
+      white-space: nowrap;
     }
-    
+
     .toggle-btn.active {
-      background: #F2BC1B;
-      color: #000;
+      background: #4a9d6f;
+      color: #fff;
       font-weight: 600;
     }
-    
-    .staff-section {
-      background: #1a1a1a;
-      border-radius: 10px;
-      border: 1px solid #333;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+
+    .copy-btn-small {
+      padding: 6px 14px !important;
+      font-size: 12px !important;
+      white-space: nowrap;
     }
-    
+
+    .staff-section {
+      background: #0f0f0f;
+      border-radius: 10px;
+      border: 1px solid #2a2a2a;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
     .staff-section-header {
-      background: #F2BC1B;
-      color: #000;
-      padding: 12px 16px;
-      font-size: 16px;
+      background: #4a9d6f;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 14px;
       font-weight: 700;
       text-align: center;
     }
     
     .staff-table-container {
       position: relative;
-      max-height: 600px;
+      max-height: 70vh;
       overflow: auto;
+      padding: 10px;
+      background: #0d0d0d;
     }
-    
+
     .staff-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 14px;
+      font-size: 13px;
+      background: #0a0a0a;
+      border: 1px solid #2a2a2a;
     }
-    
+
     .staff-table th {
-      background: #262626;
-      color: #F2BC1B;
-      padding: 12px 8px;
+      background: #1a1a1a;
+      color: #7cb342;
+      padding: 10px 8px;
       text-align: center;
       font-weight: 600;
       position: sticky;
       top: 0;
       z-index: 10;
-      border-bottom: 1px solid #404040;
+      border-bottom: 1px solid #2a2a2a;
       white-space: nowrap;
+      font-size: 12px;
     }
-    
+
     .staff-table td {
-      padding: 8px 6px;
+      padding: 10px 6px;
       text-align: center;
-      border-bottom: 1px solid #333;
+      border-bottom: 1px solid #1a1a1a;
       transition: all 0.2s ease;
+      color: #ccc;
     }
-    
+
     .staff-table tr:hover td {
-      background: #2a2a2a;
+      background: #161616;
     }
-    
+
     .staff-name-cell {
       position: sticky;
       left: 0;
-      background: #1a1a1a;
-      color: #F2BC1B;
+      background: #121212;
+      color: #7cb342;
       font-weight: 600;
       z-index: 5;
-      border-right: 2px solid #F2BC1B;
-      min-width: 150px;
+      border-right: 1px solid #2a2a2a;
+      min-width: 140px;
       text-align: right;
+      font-size: 12px;
     }
-    
+
     .staff-table tr:hover .staff-name-cell {
-      background: #2a2a2a;
+      background: #161616;
     }
     
     .shift-cell {
@@ -3319,9 +3333,9 @@
               <button id="staffFilterCallCenter" class="toggle-btn">كول سنتر</button>
               <button id="staffFilterBackOffice" class="toggle-btn">إدارة</button>
             </div>
-            <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}" style="margin-left: 10px;">فتح الشيت</button>
+            <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}">فتح الشيت</button>
             <button id="staffDownloadBtn" class="copy-btn-small">تحميل صورة</button>
-            <div class="staff-toggle" style="margin-left: 10px;">
+            <div class="staff-toggle">
               <button id="staffLangArBtn" class="toggle-btn ${window._staffScheduleLang === 'ar' ? 'active' : ''}">عربي</button>
               <button id="staffLangEnBtn" class="toggle-btn ${window._staffScheduleLang === 'en' ? 'active' : ''}">English</button>
             </div>
@@ -3584,16 +3598,23 @@
 
       const filter = window._staffScheduleFilter || 'all';
       const employees = [];
+      const allowedUsers = STAFF_EDITORS.map(u => u.toLowerCase());
 
       if (filter === 'all' || filter === 'callCenter') {
         window._staffScheduleData.callCenter.forEach(emp => {
-          employees.push({ section: 'الكول سنتر', ...emp });
+          const nameKey = emp.name.toLowerCase();
+          if (allowedUsers.includes(nameKey)) {
+            employees.push({ section: 'الكول سنتر', ...emp });
+          }
         });
       }
 
       if (filter === 'all' || filter === 'backOffice') {
         window._staffScheduleData.backOffice.forEach(emp => {
-          employees.push({ section: 'الإدارة', ...emp });
+          const nameKey = emp.name.toLowerCase();
+          if (allowedUsers.includes(nameKey)) {
+            employees.push({ section: 'الإدارة', ...emp });
+          }
         });
       }
 
