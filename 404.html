@@ -3611,11 +3611,17 @@
 
       const sheetId = STAFF_SCHEDULE_SHEET_ID;
       const sheetName = STAFF_NAMES_SHEET_NAME;
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+      const csvUrlByName = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+      const csvUrlByGid = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
 
       try {
-        const response = await fetch(csvUrl, { cache: 'no-cache' });
-        if (!response.ok) throw new Error('Failed to load staff names');
+        // Try by sheet name first, then fallback to gid=0 export if the sheet isn't accessible by name
+        let response = await fetch(csvUrlByName, { cache: 'no-cache' });
+        if (!response.ok) {
+          console.warn('Names sheet by name failed, trying export by gid=0');
+          response = await fetch(csvUrlByGid, { cache: 'no-cache' });
+        }
+        if (!response.ok) throw new Error('Failed to load staff names (check sheet sharing settings)');
         const csvText = await response.text();
         const rows = parseCSV(csvText);
         const map = {};
@@ -3638,7 +3644,8 @@
     async function loadStaffScheduleData(force = false) {
       const sheetId = STAFF_SCHEDULE_SHEET_ID;
       const sheetName = STAFF_SCHEDULE_SHEET_NAME;
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+      const csvUrlByName = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+      const csvUrlByGid = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
       const loadingEl = document.getElementById('staffScheduleLoading');
       const errorEl = document.getElementById('staffScheduleError');
 
@@ -3667,9 +3674,14 @@
       }, 10000); // 10s
 
       try {
-        console.debug('Fetching staff schedule from', csvUrl);
-        const response = await fetch(csvUrl, { cache: 'no-cache' });
-        if (!response.ok) throw new Error('Failed to load staff schedule');
+        console.debug('Fetching staff schedule from', csvUrlByName);
+        // Try by sheet name first, then fallback to gid export
+        let response = await fetch(csvUrlByName, { cache: 'no-cache' });
+        if (!response.ok) {
+          console.warn('Schedule by name failed, trying export by gid=0');
+          response = await fetch(csvUrlByGid, { cache: 'no-cache' });
+        }
+        if (!response.ok) throw new Error('Failed to load staff schedule (check sheet sharing settings)');
 
         const csvText = await response.text();
         const rows = parseCSV(csvText);
