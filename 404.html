@@ -1015,7 +1015,7 @@
 
     .date-sub {
       display: block;
-      font-size: 12px;
+      font-size: 14px;
       color: #c9a23a;
       margin-top: 2px;
       font-weight: 700;
@@ -3545,7 +3545,11 @@
           </div>
 
           <div id="callCenterSection" class="staff-section">
-            <div class="staff-section-header">${texts.callCenterTitle}</div>
+                <div class="staff-section-header">
+                  <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+                    <div id="staffHeaderEmployeeBox" style="background:#141414;border:1px solid #333;padding:4px 8px;border-radius:6px;color:#F2BC1B;font-weight:700;">${texts.employee}</div>
+                  </div>
+                </div>
             <div class="staff-table-container">
               <table class="staff-table" id="callCenterTable">
                 <thead id="callCenterHeader"></thead>
@@ -3555,7 +3559,11 @@
           </div>
 
           <div id="backOfficeSection" class="staff-section hidden">
-            <div class="staff-section-header">${texts.backOfficeTitle}</div>
+                <div class="staff-section-header">
+                  <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+                    <div id="staffHeaderEmployeeBoxBack" style="background:#141414;border:1px solid #333;padding:4px 8px;border-radius:6px;color:#F2BC1B;font-weight:700;">${texts.employee}</div>
+                  </div>
+                </div>
             <div class="staff-table-container">
               <table class="staff-table" id="backOfficeTable">
                 <thead id="backOfficeHeader"></thead>
@@ -3939,6 +3947,12 @@
       wrapper.style.width = 'auto';
       wrapper.style.maxWidth = '2000px';
       wrapper.style.margin = '0 auto';
+      // Keep export wrapper off-screen and invisible to avoid a white flash
+      wrapper.style.position = 'fixed';
+      wrapper.style.left = '-9999px';
+      wrapper.style.top = '-9999px';
+      wrapper.style.zIndex = '-1';
+      wrapper.style.opacity = '0';
       wrapper.appendChild(clone);
 
       document.body.appendChild(wrapper);
