@@ -2187,51 +2187,35 @@
     .shift-td { padding: 2px; background: transparent; min-height: 16px; line-height: 1.0; font-size:13px; }
     .shift-td.shift-active { background: #9fd9b7; color: #04230b; font-weight: 700; }
 
-    /* Soft muted colors for specific shift ranges */
-    .shift-td.shift-7-3 { background: #e6f7f1; color: #064035; }   /* soft mint */
-    .shift-td.shift-12-8 { background: #fff8e6; color: #6b4a00; }  /* soft cream */
-    .shift-td.shift-3-11 { background: #eef6ff; color: #083058; }  /* soft sky */
-    .shift-td.shift-11-7 { background: #f5efe6; color: #4b3a2a; }  /* soft beige */
+    /* Soft muted colors for specific shift ranges (user-preferred muted palette) */
+    .shift-td.shift-7-3 { background: #D6EAF8; color: #06406b; }   /* muted soft blue (7-3) */
+    .shift-td.shift-11-7 { background: #ECECEC; color: #333333; }  /* muted gray (11-7) */
+    .shift-td.shift-12-8 { background: #E6F4EA; color: #0f5a2b; }  /* muted green (12-8) */
+    .shift-td.shift-3-11 { background: #FFF9E0; color: #7a5a00; }  /* soft muted yellow (3-11) */
 
-    .shift-td.shift-off { background: #f6e6e6; color: #2b1a1a; }
-    .shift-td.shift-holiday { background: #fff7e6; color: #4a3600; }
-    .shift-td.shift-sick { background: #efe6fb; color: #33204a; }
-    .shift-td.shift-unknown { background: #f2f2f2; color: #222; }
+    .shift-td.shift-off { background: #F8D7D7; color: #7a1a1a; }   /* muted red for OFF / Friday OFF */
+    .shift-td.shift-holiday { background: #FFF4E0; color: #6b4a00; }
+    .shift-td.shift-sick { background: #DFF3F0; color: #0b6659; }   /* pleasant teal for sick */
+    .shift-td.shift-unknown { background: #EADCF7; color: #4b2a6a; } /* muted purple for unknown labels */
+    .shift-td.shift-out { background: #F0F0F0; color: #333333; }    /* OUT / off-duty gray */
 
-    /* Fixed palette per table: Call Center (cool greens/blues) */
-    #callCenterTable .shift-td.shift-7-3 { background: #e6f7f1; color: #064035; }
-    #callCenterTable .shift-td.shift-12-8 { background: #fff8e6; color: #6b4a00; }
-    #callCenterTable .shift-td.shift-3-11 { background: #eef6ff; color: #083058; }
-    #callCenterTable .shift-td.shift-11-7 { background: #f5efe6; color: #4b3a2a; }
-    #callCenterTable .shift-td.shift-off { background: #f6e6e6; color: #2b1a1a; }
-    #callCenterTable .shift-td.shift-holiday { background: #fff7e6; color: #4a3600; }
-    #callCenterTable .shift-td.shift-sick { background: #efe6fb; color: #33204a; }
-
-    /* Fixed palette per table: Back Office (muted blues/greys) */
-    #backOfficeTable .shift-td.shift-7-3 { background: #eaf4ff; color: #05264a; }
-    #backOfficeTable .shift-td.shift-12-8 { background: #fffaf0; color: #6a4b10; }
-    #backOfficeTable .shift-td.shift-3-11 { background: #f0f7f6; color: #073033; }
-    #backOfficeTable .shift-td.shift-11-7 { background: #f7f4ef; color: #4a3d2f; }
-    #backOfficeTable .shift-td.shift-off { background: #f7eaea; color: #3a1f1f; }
-    #backOfficeTable .shift-td.shift-holiday { background: #fff8e6; color: #4a3600; }
-    #backOfficeTable .shift-td.shift-sick { background: #f3eefb; color: #392a48; }
-
+    /* Keep a clear 'active now' highlight only when a shift is active */
+    
     /* Employee name sizing */
     .staff-table td.staff-name-cell, .staff-table th.staff-name-cell { font-size: 20px; padding: 6px 8px; }
     .staff-name-label { font-size: 20px; font-weight: 800; display: inline-block; }
     
-    /* Shift Colors - Optimized */
-    .shift-off { background: #d32f2f; color: #fff; }
-    .shift-holiday { background: #f57c00; color: #fff; }
-    .shift-sick { background: #7b1fa2; color: #fff; }
-    .shift-7-3 { background: #1565c0; color: #fff; }
-    .shift-8-4 { background: #00796b; color: #fff; }
-    .shift-9-5 { background: #283593; color: #fff; }
-    .shift-11-7 { background: #455a64; color: #fff; }
-    .shift-12-8 { background: #1b5e20; color: #fff; }
-    .shift-3-11 { background: #e65100; color: #fff; }
-    .shift-empty { background: rgba(255,255,255,0.04); color: #888; }
-    .shift-unknown { background: #616161; color: #ccc; }
+    /* Shift Colors - Optimized (muted, eye-comfort palette) */
+    .shift-td.shift-7-3, .shift-cell.shift-7-3, .shift-7-3 { background: #D6EAF8; color: #06406b; }
+    .shift-td.shift-11-7, .shift-cell.shift-11-7, .shift-11-7 { background: #ECECEC; color: #333333; }
+    .shift-td.shift-12-8, .shift-cell.shift-12-8, .shift-12-8 { background: #E6F4EA; color: #0f5a2b; }
+    .shift-td.shift-3-11, .shift-cell.shift-3-11, .shift-3-11 { background: #FFF9E0; color: #7a5a00; }
+    .shift-td.shift-off, .shift-cell.shift-off, .shift-off { background: #F8D7D7; color: #7a1a1a; }
+    .shift-td.shift-holiday, .shift-cell.shift-holiday, .shift-holiday { background: #FFF4E0; color: #6b4a00; }
+    .shift-td.shift-sick, .shift-cell.shift-sick, .shift-sick { background: #DFF3F0; color: #0b6659; }
+    .shift-td.shift-out, .shift-cell.shift-out, .shift-out { background: #F0F0F0; color: #333333; }
+    .shift-td.shift-empty, .shift-cell.shift-empty, .shift-empty { background: rgba(255,255,255,0.04); color: #888; }
+    .shift-td.shift-unknown, .shift-cell.shift-unknown, .shift-unknown { background: #EADCF7; color: #4b2a6a; }
 
     .staff-actions {
       display: flex;
@@ -3513,7 +3497,7 @@
     // Render Staff Schedule Interface
     function renderStaffScheduleInterface() {
       if (window.staffScheduleIntervalId) clearInterval(window.staffScheduleIntervalId);
-      window._staffScheduleLang = window._staffScheduleLang || 'ar';
+      window._staffScheduleLang = window._staffScheduleLang || 'en';
 
       const currentUser = (localStorage.getItem('currentUser') || '').trim().toLowerCase();
       const isEditor = STAFF_EDITORS.includes(currentUser);
@@ -3618,6 +3602,10 @@
       document.getElementById('staffLangArBtn').onclick = () => setStaffScheduleLanguage('ar');
       document.getElementById('staffLangEnBtn').onclick = () => setStaffScheduleLanguage('en');
       document.getElementById('staffDownloadBtn').onclick = exportStaffTablesAsImage;
+
+      // User requested English-only table: hide Arabic toggle and force English
+      const staffLangArBtnEl = document.getElementById('staffLangArBtn');
+      if (staffLangArBtnEl) staffLangArBtnEl.style.display = 'none';
       
       // Employee-specific filters removed (Esraa / Fawzi / Salem)
 
