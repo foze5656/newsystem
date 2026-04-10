@@ -3643,15 +3643,31 @@
       const errorEl = document.getElementById('staffScheduleError');
 
       if (!force && window._staffScheduleData) {
-        renderStaffScheduleTables(window._staffScheduleData);
-        updateStaffDownloadOptions(window._staffScheduleData);
+        try {
+          renderStaffScheduleTables(window._staffScheduleData);
+          updateStaffDownloadOptions(window._staffScheduleData);
+        } catch (e) {
+          console.error('Render existing data failed', e);
+        }
         return;
       }
 
       loadingEl.style.display = 'block';
       errorEl.classList.add('hidden');
 
+      // Watchdog: if loading takes too long, show an explicit error to user
+      let watchdog = setTimeout(() => {
+        console.warn('Staff schedule load timeout');
+        loadingEl.style.display = 'none';
+        const lang = window._staffScheduleLang || 'ar';
+        const errorText = lang === 'ar' ? '⚠ تعذر تحميل الجدول - استجابة بطيئة' : '⚠ Failed to load schedule - slow response';
+        errorEl.textContent = errorText;
+        errorEl.classList.remove('hidden');
+        showNotification(errorText, 'error', 6000);
+      }, 10000); // 10s
+
       try {
+        console.debug('Fetching staff schedule from', csvUrl);
         const response = await fetch(csvUrl, { cache: 'no-cache' });
         if (!response.ok) throw new Error('Failed to load staff schedule');
 
@@ -3661,14 +3677,14 @@
 
         await loadStaffNamesData(force);
         const parsedData = parseStaffScheduleData(rows);
-        
+
         // Check if data changed
         const oldData = window._staffScheduleData;
         window._staffScheduleData = parsedData;
-        
+
         renderStaffScheduleTables(parsedData);
         updateStaffDownloadOptions(parsedData);
-        
+
         // Show notification only if this is an auto-update (not initial load)
         if (!force && oldData) {
           const lang = window._staffScheduleLang || 'ar';
@@ -3679,17 +3695,18 @@
           showNotification(msg, 'success', 3000);
         }
       } catch (err) {
-        console.error(err);
+        console.error('loadStaffScheduleData error', err);
         const lang = window._staffScheduleLang || 'ar';
         const errorMsg = lang === 'ar' ? 
           '⚠ خطأ في تحميل الجدول' : 
           '⚠ Error loading schedule';
         showNotification(errorMsg, 'error', 5000);
-        
+
         const errorText = lang === 'ar' ? 'خطأ في تحميل جدول الموظفين: ' + err.message : 'Error loading staff schedule: ' + err.message;
         errorEl.textContent = errorText;
         errorEl.classList.remove('hidden');
       } finally {
+        clearTimeout(watchdog);
         loadingEl.style.display = 'none';
       }
     }
