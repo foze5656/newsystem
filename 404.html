@@ -3528,7 +3528,11 @@
                 <button id="staffLangEnBtn" class="toggle-btn ${window._staffScheduleLang === 'en' ? 'active' : ''}">${texts.english}</button>
               </div>
             </div>
-            <!-- employee-specific filters removed per user request -->
+            <div class="staff-controls-group" id="staffEmployeeFilterGroup" style="display: flex; gap: 4px; flex-wrap: wrap;">
+              <button id="staffFilterEsraa" class="toggle-btn" style="min-width: 60px;">Esraa</button>
+              <button id="staffFilterFawzi" class="toggle-btn" style="min-width: 60px;">Fawzi</button>
+              <button id="staffFilterSalem" class="toggle-btn" style="min-width: 60px;">Salem</button>
+            </div>
             <div class="staff-controls-group">
               <button id="staffDownloadBtn" class="copy-btn-small">${texts.download}</button>
               <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}">${texts.openSheet}</button>
@@ -3643,31 +3647,15 @@
       const errorEl = document.getElementById('staffScheduleError');
 
       if (!force && window._staffScheduleData) {
-        try {
-          renderStaffScheduleTables(window._staffScheduleData);
-          updateStaffDownloadOptions(window._staffScheduleData);
-        } catch (e) {
-          console.error('Render existing data failed', e);
-        }
+        renderStaffScheduleTables(window._staffScheduleData);
+        updateStaffDownloadOptions(window._staffScheduleData);
         return;
       }
 
       loadingEl.style.display = 'block';
       errorEl.classList.add('hidden');
 
-      // Watchdog: if loading takes too long, show an explicit error to user
-      let watchdog = setTimeout(() => {
-        console.warn('Staff schedule load timeout');
-        loadingEl.style.display = 'none';
-        const lang = window._staffScheduleLang || 'ar';
-        const errorText = lang === 'ar' ? '⚠ تعذر تحميل الجدول - استجابة بطيئة' : '⚠ Failed to load schedule - slow response';
-        errorEl.textContent = errorText;
-        errorEl.classList.remove('hidden');
-        showNotification(errorText, 'error', 6000);
-      }, 10000); // 10s
-
       try {
-        console.debug('Fetching staff schedule from', csvUrl);
         const response = await fetch(csvUrl, { cache: 'no-cache' });
         if (!response.ok) throw new Error('Failed to load staff schedule');
 
@@ -3677,14 +3665,14 @@
 
         await loadStaffNamesData(force);
         const parsedData = parseStaffScheduleData(rows);
-
+        
         // Check if data changed
         const oldData = window._staffScheduleData;
         window._staffScheduleData = parsedData;
-
+        
         renderStaffScheduleTables(parsedData);
         updateStaffDownloadOptions(parsedData);
-
+        
         // Show notification only if this is an auto-update (not initial load)
         if (!force && oldData) {
           const lang = window._staffScheduleLang || 'ar';
@@ -3695,18 +3683,17 @@
           showNotification(msg, 'success', 3000);
         }
       } catch (err) {
-        console.error('loadStaffScheduleData error', err);
+        console.error(err);
         const lang = window._staffScheduleLang || 'ar';
         const errorMsg = lang === 'ar' ? 
           '⚠ خطأ في تحميل الجدول' : 
           '⚠ Error loading schedule';
         showNotification(errorMsg, 'error', 5000);
-
+        
         const errorText = lang === 'ar' ? 'خطأ في تحميل جدول الموظفين: ' + err.message : 'Error loading staff schedule: ' + err.message;
         errorEl.textContent = errorText;
         errorEl.classList.remove('hidden');
       } finally {
-        clearTimeout(watchdog);
         loadingEl.style.display = 'none';
       }
     }
@@ -3777,8 +3764,7 @@
         
         const displayName = getStaffDisplayName(employee.name);
         const status = getStaffStatusForToday(employee.shifts, dateObjects);
-        // Show indicator only when employee is actively working now (avoid false green for future shifts)
-        const statusHtml = (status && status.key === 'active') ? `<span class="staff-status-indicator active" title="${escapeHtml(status.label)}"></span>` : '';
+        const statusHtml = status ? `<span class="staff-status-indicator ${status.key}" title="${escapeHtml(status.label)}"></span>` : '';
 
         bodyHtml += `<tr><td class="staff-name-cell" style="position: sticky; left: 0; background: #262626; z-index: 10; width: 90px; min-width: 90px;">${statusHtml}<span class="staff-name-label">${escapeHtml(displayName)}</span></td>`;
         employee.shifts.forEach(shift => {
@@ -3888,86 +3874,53 @@
       const container = document.querySelector('.staff-schedule-container');
       if (!container) return;
 
-      // Build a clean clone to export: remove controls and status indicators
-      const clone = container.cloneNode(true);
-      // Remove interactive controls entirely
-      const controls = clone.querySelectorAll('.staff-controls, .staff-actions, .staff-controls-group');
-      controls.forEach(n => n.parentNode && n.parentNode.removeChild(n));
-      // Remove status indicators
-      const indicators = clone.querySelectorAll('.staff-status-indicator');
-      indicators.forEach(n => n.parentNode && n.parentNode.removeChild(n));
+      // إخفاء الأزرار والتحكمات
+      const controls = container.querySelector('.staff-controls');
+      const originalDisplay = controls ? controls.style.display : null;
+      if (controls) controls.style.display = 'none';
 
-      // Tweak styles in the clone to avoid white gridlines and enlarge date fonts
-      const tables = clone.querySelectorAll('.staff-table');
-      tables.forEach(tbl => {
-        tbl.style.width = '100%';
-        tbl.style.borderCollapse = 'collapse';
-        tbl.style.background = '#ffffff';
-        tbl.style.border = '1px solid #2a2a2a';
-        // header font size
-        const ths = tbl.querySelectorAll('th');
-        ths.forEach(th => {
-          th.style.fontSize = '13px';
-          th.style.background = '#1a1a1a';
-          th.style.color = '#ffffff';
-          th.style.padding = '8px 6px';
-        });
-        const tds = tbl.querySelectorAll('td');
-        tds.forEach(td => {
-          td.style.border = '1px solid #2a2a2a';
-        });
-        const shifts = tbl.querySelectorAll('.shift-cell');
-        shifts.forEach(s => {
-          s.style.display = 'inline-flex';
-          s.style.alignItems = 'center';
-          s.style.justifyContent = 'center';
-          s.style.height = '28px';
-          s.style.padding = '4px 6px';
-        });
-      });
+      const lang = window._staffScheduleLang || 'ar';
+      const titleText = lang === 'ar' ? 'جدول الموظفين' : 'Staff Schedule';
+      const exportHeading = document.createElement('div');
+      exportHeading.className = 'export-heading';
+      exportHeading.textContent = titleText;
+      exportHeading.style.fontSize = '20px';
+      exportHeading.style.fontWeight = '700';
+      exportHeading.style.marginBottom = '14px';
+      exportHeading.style.color = '#000';
+      exportHeading.style.background = '#ffffff';
+      exportHeading.style.padding = '10px 0';
 
-      const wrapper = document.createElement('div');
-      wrapper.className = 'staff-export-capture';
-      wrapper.style.background = '#ffffff';
-      wrapper.style.padding = '16px';
-      wrapper.style.borderRadius = '8px';
-      wrapper.style.color = '#000';
-      wrapper.style.fontFamily = 'sans-serif';
-      wrapper.style.width = 'auto';
-      wrapper.style.maxWidth = '2000px';
-      wrapper.style.margin = '0 auto';
-      wrapper.appendChild(clone);
-
-      document.body.appendChild(wrapper);
+      container.insertBefore(exportHeading, container.firstChild);
 
       try {
         await ensureHtml2Canvas();
-        const canvas = await html2canvas(wrapper, {
+        const canvas = await html2canvas(container, {
           backgroundColor: '#ffffff',
           scale: 2.5,
           useCORS: true,
           logging: false,
           allowTaint: true,
-          windowHeight: wrapper.scrollHeight + 100,
-          windowWidth: wrapper.scrollWidth + 100
+          windowHeight: container.scrollHeight + 100,
+          windowWidth: container.scrollWidth + 100
         });
         const link = document.createElement('a');
         const dateStr = new Date().toISOString().slice(0, 10);
         link.download = `staff-schedule-${dateStr}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
-
-        const lang = window._staffScheduleLang || 'ar';
+        
         const msg = lang === 'ar' ? '✓ تم تحميل الصورة بنجاح' : '✓ Image downloaded successfully';
         showNotification(msg, 'success', 3000);
       } catch (err) {
         console.error('Export failed', err);
-        const lang = window._staffScheduleLang || 'ar';
         const msg = lang === 'ar' ? '⚠ خطأ في تحميل الصورة' : '⚠ Error downloading image';
         showNotification(msg, 'error', 4000);
       } finally {
-        // cleanup
-        if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+        if (exportHeading && exportHeading.parentNode) exportHeading.parentNode.removeChild(exportHeading);
+        // إعادة إظهار الأزرار
+        if (controls && originalDisplay !== null) controls.style.display = originalDisplay;
+        if (controls && originalDisplay === null) controls.style.display = '';
       }
     }
 
