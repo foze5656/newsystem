@@ -1989,7 +1989,7 @@
     }
 
     .staff-table {
-      min-width: 700px;
+      min-width: 600px;
       width: 100%;
       border-collapse: collapse;
       border-spacing: 0;
@@ -2000,7 +2000,7 @@
     .staff-table th,
     .staff-table td {
       padding: 0;
-      font-size: 15px;
+      font-size: 14px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -2184,8 +2184,10 @@
     /* Legacy staff-table rules removed to avoid conflicts with updated table styles above. */
     
     /* shift-fill: fill the entire table cell like Excel */
-    .shift-td { padding: 4px; background: transparent; }
+    .shift-td { padding: 2px; background: transparent; min-height: 22px; line-height: 1.1; }
     .shift-td.shift-active { background: #10b981; color: #000; font-weight: 800; }
+    .staff-table td.staff-name-cell, .staff-table th.staff-name-cell { font-size: 20px; padding: 4px 6px; }
+    .staff-name-label { font-size: 20px; font-weight: 800; display: inline-block; }
     
     /* Shift Colors - Optimized */
     .shift-off { background: #d32f2f; color: #fff; }
