@@ -1991,6 +1991,7 @@
     .staff-table {
       min-width: 600px;
       width: 100%;
+      direction: ltr;
       border-collapse: collapse;
       border-spacing: 0;
       table-layout: fixed;
@@ -2037,7 +2038,7 @@
       z-index: 35;
       min-width: 140px;
       max-width: 220px;
-      text-align: center;
+      text-align: left;
       font-weight: 700;
       color: #F2BC1B;
       border-right: 1px solid #2a2a2a;
@@ -2187,35 +2188,38 @@
     .shift-td { padding: 2px; background: transparent; min-height: 16px; line-height: 1.0; font-size:13px; }
     .shift-td.shift-active { background: #9fd9b7; color: #04230b; font-weight: 700; }
 
-    /* Soft muted colors for specific shift ranges (user-preferred muted palette) */
-    .shift-td.shift-7-3 { background: #D6EAF8; color: #06406b; }   /* muted soft blue (7-3) */
-    .shift-td.shift-11-7 { background: #ECECEC; color: #333333; }  /* muted gray (11-7) */
-    .shift-td.shift-12-8 { background: #E6F4EA; color: #0f5a2b; }  /* muted green (12-8) */
-    .shift-td.shift-3-11 { background: #FFF9E0; color: #7a5a00; }  /* soft muted yellow (3-11) */
+    /* Soft muted colors for specific shift ranges (darker, more contrasted) */
+    .shift-td.shift-7-3 { background: #B6D7F5; color: #023048; }   /* darker muted blue (7-3) */
+    .shift-td.shift-11-7 { background: #CFCFCF; color: #111111; }  /* darker muted gray (11-7) */
+    .shift-td.shift-12-8 { background: #BEE8C9; color: #073f28; }  /* darker muted green (12-8) */
+    .shift-td.shift-3-11 { background: #FFF1A8; color: #6b4a00; }  /* warmer muted yellow (3-11) */
 
-    .shift-td.shift-off { background: #F8D7D7; color: #7a1a1a; }   /* muted red for OFF / Friday OFF */
-    .shift-td.shift-holiday { background: #FFF4E0; color: #6b4a00; }
-    .shift-td.shift-sick { background: #DFF3F0; color: #0b6659; }   /* pleasant teal for sick */
-    .shift-td.shift-unknown { background: #EADCF7; color: #4b2a6a; } /* muted purple for unknown labels */
-    .shift-td.shift-out { background: #F0F0F0; color: #333333; }    /* OUT / off-duty gray */
+    .shift-td.shift-off { background: #F2B7B7; color: #6b1a1a; }   /* deeper muted red for OFF / Friday OFF */
+    .shift-td.shift-holiday { background: #FFD29B; color: #6b3f00; } /* distinct darker holiday color */
+    .shift-td.shift-sick { background: #A7DFD8; color: #04584c; }   /* darker pleasant teal for sick */
+    .shift-td.shift-unknown { background: #C49CEB; color: #3b155f; } /* purple for unknown labels */
+    .shift-td.shift-out { background: #E6E6E6; color: #222; }      /* OUT / off-duty gray */
 
     /* Keep a clear 'active now' highlight only when a shift is active */
-    
+
     /* Employee name sizing */
     .staff-table td.staff-name-cell, .staff-table th.staff-name-cell { font-size: 20px; padding: 6px 8px; }
     .staff-name-label { font-size: 20px; font-weight: 800; display: inline-block; }
     
     /* Shift Colors - Optimized (muted, eye-comfort palette) */
-    .shift-td.shift-7-3, .shift-cell.shift-7-3, .shift-7-3 { background: #D6EAF8; color: #06406b; }
-    .shift-td.shift-11-7, .shift-cell.shift-11-7, .shift-11-7 { background: #ECECEC; color: #333333; }
-    .shift-td.shift-12-8, .shift-cell.shift-12-8, .shift-12-8 { background: #E6F4EA; color: #0f5a2b; }
-    .shift-td.shift-3-11, .shift-cell.shift-3-11, .shift-3-11 { background: #FFF9E0; color: #7a5a00; }
-    .shift-td.shift-off, .shift-cell.shift-off, .shift-off { background: #F8D7D7; color: #7a1a1a; }
-    .shift-td.shift-holiday, .shift-cell.shift-holiday, .shift-holiday { background: #FFF4E0; color: #6b4a00; }
-    .shift-td.shift-sick, .shift-cell.shift-sick, .shift-sick { background: #DFF3F0; color: #0b6659; }
-    .shift-td.shift-out, .shift-cell.shift-out, .shift-out { background: #F0F0F0; color: #333333; }
+    .shift-td.shift-7-3, .shift-cell.shift-7-3, .shift-7-3 { background: #B6D7F5; color: #023048; }
+    .shift-td.shift-11-7, .shift-cell.shift-11-7, .shift-11-7 { background: #CFCFCF; color: #111111; }
+    .shift-td.shift-12-8, .shift-cell.shift-12-8, .shift-12-8 { background: #BEE8C9; color: #073f28; }
+    .shift-td.shift-3-11, .shift-cell.shift-3-11, .shift-3-11 { background: #FFF1A8; color: #6b4a00; }
+    .shift-td.shift-off, .shift-cell.shift-off, .shift-off { background: #F2B7B7; color: #6b1a1a; }
+    .shift-td.shift-holiday, .shift-cell.shift-holiday, .shift-holiday { background: #FFD29B; color: #6b3f00; }
+    .shift-td.shift-sick, .shift-cell.shift-sick, .shift-sick { background: #A7DFD8; color: #04584c; }
+    .shift-td.shift-out, .shift-cell.shift-out, .shift-out { background: #E6E6E6; color: #222; }
     .shift-td.shift-empty, .shift-cell.shift-empty, .shift-empty { background: rgba(255,255,255,0.04); color: #888; }
-    .shift-td.shift-unknown, .shift-cell.shift-unknown, .shift-unknown { background: #EADCF7; color: #4b2a6a; }
+    .shift-td.shift-unknown, .shift-cell.shift-unknown, .shift-unknown { background: #C49CEB; color: #3b155f; }
+
+    /* Larger small-date line in headers (month) */
+    .staff-table thead th .date-sub { font-size: 13px; color: #c9a23a; font-weight: 800; display: block; }
 
     .staff-actions {
       display: flex;
@@ -3606,6 +3610,8 @@
       // User requested English-only table: hide Arabic toggle and force English
       const staffLangArBtnEl = document.getElementById('staffLangArBtn');
       if (staffLangArBtnEl) staffLangArBtnEl.style.display = 'none';
+      const staffLangEnBtnEl = document.getElementById('staffLangEnBtn');
+      if (staffLangEnBtnEl) staffLangEnBtnEl.style.display = 'none';
       
       // Employee-specific filters removed (Esraa / Fawzi / Salem)
 
