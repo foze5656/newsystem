@@ -3850,16 +3850,25 @@
         await ensureHtml2Canvas();
         const canvas = await html2canvas(container, {
           backgroundColor: '#ffffff',
-          scale: 2,
-          useCORS: true
+          scale: 2.5,
+          useCORS: true,
+          logging: false,
+          allowTaint: true,
+          windowHeight: container.scrollHeight + 100,
+          windowWidth: container.scrollWidth + 100
         });
         const link = document.createElement('a');
         const dateStr = new Date().toISOString().slice(0, 10);
         link.download = `staff-schedule-${dateStr}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
+        
+        const msg = lang === 'ar' ? '✓ تم تحميل الصورة بنجاح' : '✓ Image downloaded successfully';
+        showNotification(msg, 'success', 3000);
       } catch (err) {
         console.error('Export failed', err);
+        const msg = lang === 'ar' ? '⚠ خطأ في تحميل الصورة' : '⚠ Error downloading image';
+        showNotification(msg, 'error', 4000);
       } finally {
         if (exportHeading && exportHeading.parentNode) exportHeading.parentNode.removeChild(exportHeading);
       }
