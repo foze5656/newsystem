@@ -2184,18 +2184,23 @@
     /* Legacy staff-table rules removed to avoid conflicts with updated table styles above. */
     
     /* shift-fill: fill the entire table cell like Excel */
-    .shift-td { padding: 2px; background: transparent; min-height: 18px; line-height: 1.1; font-size:14px; }
-    .shift-td.shift-active { background: #8fd6a6; color: #05200a; font-weight: 700; }
+    .shift-td { padding: 2px; background: transparent; min-height: 16px; line-height: 1.0; font-size:13px; }
+    .shift-td.shift-active { background: #9fd9b7; color: #04230b; font-weight: 700; }
 
-    /* soft pastel colors for shift types (muted, not saturated) */
+    /* Soft muted colors for specific shift ranges */
+    .shift-td.shift-7-3 { background: #e6f7f1; color: #064035; }   /* soft mint */
+    .shift-td.shift-12-8 { background: #fff8e6; color: #6b4a00; }  /* soft cream */
+    .shift-td.shift-3-11 { background: #eef6ff; color: #083058; }  /* soft sky */
+    .shift-td.shift-11-7 { background: #f5efe6; color: #4b3a2a; }  /* soft beige */
+
     .shift-td.shift-off { background: #f6e6e6; color: #2b1a1a; }
     .shift-td.shift-holiday { background: #fff7e6; color: #4a3600; }
     .shift-td.shift-sick { background: #efe6fb; color: #33204a; }
-    .shift-td.shift-7-3, .shift-td.shift-12-8, .shift-td.shift-3-11, .shift-td.shift-11-7 { background: #e9f5f2; color: #08302a; }
     .shift-td.shift-unknown { background: #f2f2f2; color: #222; }
 
-    .staff-table td.staff-name-cell, .staff-table th.staff-name-cell { font-size: 14px; padding: 6px 8px; }
-    .staff-name-label { font-size: 14px; font-weight: 700; display: inline-block; }
+    /* Employee name sizing */
+    .staff-table td.staff-name-cell, .staff-table th.staff-name-cell { font-size: 20px; padding: 6px 8px; }
+    .staff-name-label { font-size: 20px; font-weight: 800; display: inline-block; }
     
     /* Shift Colors - Optimized */
     .shift-off { background: #d32f2f; color: #fff; }
