@@ -2244,10 +2244,13 @@
     }
 
     .staff-name-label {
-      font-size: 10px;
+      font-size: 20px;
       text-align: center;
       color: #d1d5db;
       vertical-align: middle;
+    }
+    .staff-name-label.arabic {
+      font-size: 12px !important;
     }
 
     .staff-export-capture {
@@ -3787,7 +3790,9 @@
         // indicator remains for the row if any shift active now
         const statusHtml = (status && status.key === 'active') ? `<span class="staff-status-indicator active" title="${escapeHtml(status.label)}"></span>` : '';
 
-        bodyHtml += `<tr><td class="staff-name-cell">${statusHtml}<span class="staff-name-label">${escapeHtml(displayName)}</span></td>`;
+        const isArabic = /[\u0600-\u06FF]/.test(displayName);
+        const nameClass = `staff-name-label${isArabic ? ' arabic' : ''}`;
+        bodyHtml += `<tr><td class="staff-name-cell">${statusHtml}<span class="${nameClass}">${escapeHtml(displayName)}</span></td>`;
         for (let i = 0; i < dates.length; i++) {
           const shift = employee.shifts[i] || '';
           const displayText = getShiftDisplayText(shift);
@@ -4064,7 +4069,9 @@
         const displayName = getStaffDisplayName(emp.name);
         const status = getStaffStatusForToday(emp.shifts, dates.map(d => parseStaffDateHeader(d)));
         // Hide status indicator in exported image (user requested no status shown)
-        nameCell.innerHTML = `<span class="staff-name-label">${escapeHtml(displayName)}</span>`;
+        const isArabicExport = /[\u0600-\u06FF]/.test(displayName);
+        const nameClassExport = `staff-name-label${isArabicExport ? ' arabic' : ''}`;
+        nameCell.innerHTML = `<span class="${nameClassExport}">${escapeHtml(displayName)}</span>`;
         row.appendChild(nameCell);
 
         emp.shifts.forEach(shift => {
