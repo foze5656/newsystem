@@ -2184,10 +2184,18 @@
     /* Legacy staff-table rules removed to avoid conflicts with updated table styles above. */
     
     /* shift-fill: fill the entire table cell like Excel */
-    .shift-td { padding: 2px; background: transparent; min-height: 22px; line-height: 1.1; }
-    .shift-td.shift-active { background: #10b981; color: #000; font-weight: 800; }
-    .staff-table td.staff-name-cell, .staff-table th.staff-name-cell { font-size: 20px; padding: 4px 6px; }
-    .staff-name-label { font-size: 20px; font-weight: 800; display: inline-block; }
+    .shift-td { padding: 2px; background: transparent; min-height: 18px; line-height: 1.1; font-size:14px; }
+    .shift-td.shift-active { background: #8fd6a6; color: #05200a; font-weight: 700; }
+
+    /* soft pastel colors for shift types (muted, not saturated) */
+    .shift-td.shift-off { background: #f6e6e6; color: #2b1a1a; }
+    .shift-td.shift-holiday { background: #fff7e6; color: #4a3600; }
+    .shift-td.shift-sick { background: #efe6fb; color: #33204a; }
+    .shift-td.shift-7-3, .shift-td.shift-12-8, .shift-td.shift-3-11, .shift-td.shift-11-7 { background: #e9f5f2; color: #08302a; }
+    .shift-td.shift-unknown { background: #f2f2f2; color: #222; }
+
+    .staff-table td.staff-name-cell, .staff-table th.staff-name-cell { font-size: 14px; padding: 6px 8px; }
+    .staff-name-label { font-size: 14px; font-weight: 700; display: inline-block; }
     
     /* Shift Colors - Optimized */
     .shift-off { background: #d32f2f; color: #fff; }
@@ -3781,7 +3789,10 @@
           const dateObj = dateObjects[i] || null;
           const isActive = isShiftActiveOnDate(shift, dateObj);
           const activeClass = isActive ? 'shift-active' : '';
-          bodyHtml += `<td class="shift-td ${activeClass}">${escapeHtml(displayText)}</td>`;
+          const shiftInfo = getShiftStyleAndClass(shift) || {};
+          const typeClass = shiftInfo.class ? shiftInfo.class : '';
+          const inlineStyle = shiftInfo.style ? ` style="${shiftInfo.style}"` : '';
+          bodyHtml += `<td class="shift-td ${typeClass} ${activeClass}"${inlineStyle}>${escapeHtml(displayText)}</td>`;
         }
         bodyHtml += '</tr>';
       });
@@ -4480,10 +4491,10 @@
       select.innerHTML = `<option value="all">${allLabel}</option>` +
         options.map(opt => `<option value="${escapeHtml(opt.value)}">${escapeHtml(opt.label)}</option>`).join('');
       select.value = options.some(opt => opt.value === current) ? current : 'all';
-    }
+    } 
 
     function populateMonthFilter(lang) {
-      const select = document.getElementById('driverMonthFilter');
+      const select = document.getElementById('driverMonthFilter');  
       if (!select) return;
       const monthNames = lang === 'en' 
         ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
