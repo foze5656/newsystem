@@ -3545,11 +3545,12 @@
           </div>
 
           <div id="callCenterSection" class="staff-section">
-                <div class="staff-section-header">
-                  <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
-                    <div id="staffHeaderEmployeeBox" style="background:#141414;border:1px solid #333;padding:4px 8px;border-radius:6px;color:#F2BC1B;font-weight:700;">${texts.employee}</div>
-                  </div>
-                </div>
+                      <div class="staff-section-header">
+                        <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+                          <div id="staffHeaderEmployeeBox" style="background:#141414;border:1px solid #333;padding:2px 6px;border-radius:6px;color:#F2BC1B;font-weight:700;font-size:12px;">${texts.employee}</div>
+                          <div id="staffHeaderDeptLabel" style="color:#c9a23a;font-weight:700;font-size:12px;">كول سنتر / إدارة</div>
+                        </div>
+                      </div>
             <div class="staff-table-container">
               <table class="staff-table" id="callCenterTable">
                 <thead id="callCenterHeader"></thead>
@@ -3559,11 +3560,8 @@
           </div>
 
           <div id="backOfficeSection" class="staff-section hidden">
-                <div class="staff-section-header">
-                  <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
-                    <div id="staffHeaderEmployeeBoxBack" style="background:#141414;border:1px solid #333;padding:4px 8px;border-radius:6px;color:#F2BC1B;font-weight:700;">${texts.employee}</div>
-                  </div>
-                </div>
+                <!-- backOffice header merged into the main header; keep this hidden to avoid duplicate headers -->
+                <div class="staff-section-header hidden"></div>
             <div class="staff-table-container">
               <table class="staff-table" id="backOfficeTable">
                 <thead id="backOfficeHeader"></thead>
@@ -3602,7 +3600,7 @@
       document.getElementById('staffFilterBackOffice').onclick = () => setStaffFilter('backOffice');
       document.getElementById('staffLangArBtn').onclick = () => setStaffScheduleLanguage('ar');
       document.getElementById('staffLangEnBtn').onclick = () => setStaffScheduleLanguage('en');
-      document.getElementById('staffDownloadBtn').onclick = exportStaffScheduleAsImage;
+      document.getElementById('staffDownloadBtn').onclick = exportStaffTablesAsImage;
       
       // Employee-specific filters removed (Esraa / Fawzi / Salem)
 
@@ -3765,8 +3763,46 @@
     }
 
     function renderStaffScheduleTables(data) {
-      renderStaffTable('callCenter', data.callCenter, data.dates);
-      renderStaffTable('backOffice', data.backOffice, data.dates);
+      // Merge callCenter and backOffice into a single table for a more compact layout
+      renderMergedStaffTable(data.callCenter, data.backOffice, data.dates);
+    }
+
+    function renderMergedStaffTable(callCenterArr, backOfficeArr, dates) {
+      const headerEl = document.getElementById(`callCenterHeader`);
+      const bodyEl = document.getElementById(`callCenterBody`);
+      const dateObjects = dates.map(date => parseStaffDateHeader(date));
+      const lang = window._staffScheduleLang;
+      const employeeText = lang === 'ar' ? 'الموظف' : 'Employee';
+
+      let headerHtml = `<tr><th style="position: sticky; left: 0; background: #262626; z-index: 15; width: 120px; min-width: 120px;">${employeeText}</th>`;
+      dates.forEach(date => {
+        headerHtml += `<th>${formatStaffHeaderLabel(date)}</th>`;
+      });
+      headerHtml += '</tr>';
+      headerEl.innerHTML = headerHtml;
+
+      const combined = [];
+      callCenterArr.forEach(e => combined.push(Object.assign({}, e, {dept: 'كول سنتر'})));
+      backOfficeArr.forEach(e => combined.push(Object.assign({}, e, {dept: 'الإدارة'})));
+
+      let bodyHtml = '';
+      combined.forEach(employee => {
+        if (!shouldShowEmployee(employee.name)) return;
+        const displayName = getStaffDisplayName(employee.name);
+        const deptLabel = `<div style="font-size:11px;color:#c9a23a;font-weight:700;margin-bottom:4px;">${employee.dept}</div>`;
+        const status = getStaffStatusForToday(employee.shifts, dateObjects);
+        const statusHtml = (status && status.key === 'active') ? `<span class="staff-status-indicator active" title="${escapeHtml(status.label)}"></span>` : '';
+
+        bodyHtml += `<tr><td class="staff-name-cell" style="position: sticky; left: 0; background: #262626; z-index: 10; width: 120px; min-width: 120px;">${statusHtml}<div style="text-align:right;">${deptLabel}<span class="staff-name-label">${escapeHtml(displayName)}</span></div></td>`;
+        employee.shifts.forEach(shift => {
+          const shiftInfo = getShiftStyleAndClass(shift);
+          const displayText = getShiftDisplayText(shift);
+          bodyHtml += `<td><div class="shift-cell ${shiftInfo.class}" style="${shiftInfo.style}">${escapeHtml(displayText)}</div></td>`;
+        });
+        bodyHtml += '</tr>';
+      });
+
+      bodyEl.innerHTML = bodyHtml;
     }
 
     function renderStaffTable(section, employees, dates) {
@@ -3907,6 +3943,9 @@
       // Remove status indicators
       const indicators = clone.querySelectorAll('.staff-status-indicator');
       indicators.forEach(n => n.parentNode && n.parentNode.removeChild(n));
+      // Remove images from clone to avoid cross-origin tainting which can produce blank/white canvases
+      const imgs = clone.querySelectorAll('img');
+      imgs.forEach(i => i.parentNode && i.parentNode.removeChild(i));
 
       // Tweak styles in the clone to avoid white gridlines and enlarge date fonts
       const tables = clone.querySelectorAll('.staff-table');
@@ -4902,6 +4941,45 @@
         const link = document.createElement('a');
         const dateStr = new Date().toISOString().slice(0, 10);
         link.download = `drivers-table-${dateStr}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (err) {
+        console.error('Export failed', err);
+      } finally {
+        scroll.style.maxHeight = previousMaxHeight;
+        scroll.style.overflowY = previousOverflow;
+        scroll.classList.remove('export-mode');
+        if (exportHeading && exportHeading.parentNode) exportHeading.parentNode.removeChild(exportHeading);
+      }
+    }
+
+    async function exportStaffTablesAsImage() {
+      const container = document.querySelector('.staff-schedule-container');
+      if (!container) return;
+
+      const scroll = container;
+      const previousMaxHeight = scroll.style.maxHeight;
+      const previousOverflow = scroll.style.overflowY;
+      scroll.classList.add('export-mode');
+      const titleEl = document.getElementById('serviceTitle') || document.getElementById('staffTitle');
+      const exportHeading = document.createElement('div');
+      exportHeading.className = 'export-heading';
+      exportHeading.textContent = titleEl ? titleEl.textContent : 'Staff Schedule';
+      scroll.prepend(exportHeading);
+      scroll.style.maxHeight = 'none';
+      scroll.style.overflowY = 'visible';
+      scroll.scrollTop = 0;
+
+      try {
+        await ensureHtml2Canvas();
+        const canvas = await html2canvas(scroll, {
+          backgroundColor: '#1a1a1a',
+          scale: 2,
+          useCORS: true
+        });
+        const link = document.createElement('a');
+        const dateStr = new Date().toISOString().slice(0, 10);
+        link.download = `staff-schedule-${dateStr}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
       } catch (err) {
