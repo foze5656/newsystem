@@ -11398,7 +11398,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           off: 0,
           sick: 0,
           fridayOff: 0,
-          shifts: [],
+          morningShifts: [],
+          afternoonShifts: [],
+          offShifts: [],
+          sickShifts: [],
+          fridayShifts: [],
           dayCount
         };
 
@@ -11409,31 +11413,31 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
 
           if (value.includes('جمعة') || value.includes('friday') || value.includes('fri')) {
             employee.fridayOff++;
-            employee.shifts.push('friday_off');
+            employee.fridayShifts.push(rawValue);
             continue;
           }
 
           if (value.includes('مرض') || value.includes('sick') || value.includes('leave') || value.includes('اجازة مرض') || value.includes('اجازه مرض')) {
             employee.sick++;
-            employee.shifts.push('sick');
+            employee.sickShifts.push(rawValue);
             continue;
           }
 
           if (value.includes('off') || value.includes('عطلة') || value.includes('إجازة') || value.includes('غائب')) {
             employee.off++;
-            employee.shifts.push('off');
+            employee.offShifts.push(rawValue);
             continue;
           }
 
           if (value.includes('صباح') || value.includes('morning')) {
             employee.morning++;
-            employee.shifts.push('morning');
+            employee.morningShifts.push(rawValue);
             continue;
           }
 
           if (value.includes('ظهر') || value.includes('afternoon') || value.includes('مساء')) {
             employee.afternoon++;
-            employee.shifts.push('afternoon');
+            employee.afternoonShifts.push(rawValue);
             continue;
           }
 
@@ -11441,23 +11445,23 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           if (range) {
             if (range.startHour >= 12 || range.startHour === 11 || range.startHour === 15) {
               employee.afternoon++;
-              employee.shifts.push('afternoon');
+              employee.afternoonShifts.push(rawValue);
             } else {
               employee.morning++;
-              employee.shifts.push('morning');
+              employee.morningShifts.push(rawValue);
             }
             continue;
           }
 
           if (value.includes('7-3') || value.includes('7 - 3') || value.includes('07:00') || value.includes('7:00') || value.includes('07-15') || value.includes('7-15')) {
             employee.morning++;
-            employee.shifts.push('morning');
+            employee.morningShifts.push(rawValue);
             continue;
           }
 
           if (value.includes('3-11') || value.includes('3 - 11') || value.includes('15:00') || value.includes('12-8') || value.includes('12 - 8') || value.includes('11-7') || value.includes('11 - 7')) {
             employee.afternoon++;
-            employee.shifts.push('afternoon');
+            employee.afternoonShifts.push(rawValue);
             continue;
           }
         }
@@ -11478,11 +11482,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         const searchable = [
           emp.name,
           emp.department,
-          emp.morning,
-          emp.afternoon,
-          emp.off,
-          emp.sick,
-          emp.fridayOff
+          emp.morningShifts.join(' '),
+          emp.afternoonShifts.join(' '),
+          emp.offShifts.join(' '),
+          emp.sickShifts.join(' '),
+          emp.fridayShifts.join(' ')
         ].join(' ').toLowerCase();
         return searchable.includes(filter);
       });
@@ -11492,125 +11496,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       content.style.display = 'block';
 
       let html = '';
-
-      // Summary Cards
-      const totalEmployees = filteredEmployees.length;
-      const totalMorning = filteredEmployees.reduce((sum, e) => sum + e.morning, 0);
-      const totalAfternoon = filteredEmployees.reduce((sum, e) => sum + e.afternoon, 0);
-      const totalOff = filteredEmployees.reduce((sum, e) => sum + e.off, 0);
-      const totalSick = filteredEmployees.reduce((sum, e) => sum + e.sick, 0);
-      const totalShifts = totalMorning + totalAfternoon;
-      const scheduleWeeks = dayCount > 0 ? Math.ceil(dayCount / 5) : 0;
-      const shiftWeeks = totalShifts > 0 ? Math.ceil(totalShifts / 5) : 0;
-
-      html += `
-        <div class="form-section full-width" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">الموظفين النشطين</div>
-            <div style="color: #F2BC1B; font-size: 24px; font-weight: 700; margin-top: 5px;">${totalEmployees}</div>
-          </div>
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">شفتات الصباح</div>
-            <div style="color: #F2BC1B; font-size: 24px; font-weight: 700; margin-top: 5px;">${totalMorning}</div>
-          </div>
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">شفتات الظهر</div>
-            <div style="color: #F2BC1B; font-size: 24px; font-weight: 700; margin-top: 5px;">${totalAfternoon}</div>
-          </div>
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">OFF أيام</div>
-            <div style="color: #F2BC1B; font-size: 24px; font-weight: 700; margin-top: 5px;">${totalOff}</div>
-          </div>
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">إجازات مرضية</div>
-            <div style="color: #F2BC1B; font-size: 24px; font-weight: 700; margin-top: 5px;">${totalSick}</div>
-          </div>
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">أسابيع الجدول</div>
-            <div style="color: #F2BC1B; font-size: 24px; font-weight: 700; margin-top: 5px;">${scheduleWeeks}</div>
-          </div>
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">أسابيع الشفتات</div>
-            <div style="color: #F2BC1B; font-size: 24px; font-weight: 700; margin-top: 5px;">${shiftWeeks}</div>
-          </div>
-        </div>
-      `;
-
-      // Percentage Stats
-      const attendancePercentage = dayCount > 0 && totalEmployees > 0 ? Math.round((totalShifts / (dayCount * totalEmployees)) * 100) : 0;
-      const leavePercentage = dayCount > 0 && totalEmployees > 0 ? Math.round(((totalOff + totalSick) / (dayCount * totalEmployees)) * 100) : 0;
-      const morningPercentage = totalShifts > 0 ? Math.round((totalMorning / totalShifts) * 100) : 0;
-      const afternoonPercentage = totalShifts > 0 ? Math.round((totalAfternoon / totalShifts) * 100) : 0;
-
-      html += `
-        <div class="form-section full-width" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">نسبة الحضور</div>
-            <div style="color: #10b981; font-size: 24px; font-weight: 700; margin-top: 5px;">${attendancePercentage}%</div>
-          </div>
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">نسبة الإجازات</div>
-            <div style="color: #ef4444; font-size: 24px; font-weight: 700; margin-top: 5px;">${leavePercentage}%</div>
-          </div>
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">الشفتات الصباحية</div>
-            <div style="color: #3b82f6; font-size: 24px; font-weight: 700; margin-top: 5px;">${morningPercentage}%</div>
-          </div>
-          <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 12px; text-align: center;">
-            <div style="color: #999; font-size: 11px; text-transform: uppercase;">الشفتات المسائية</div>
-            <div style="color: #f59e0b; font-size: 24px; font-weight: 700; margin-top: 5px;">${afternoonPercentage}%</div>
-          </div>
-        </div>
-      `;
-
-      // Top Employees Comparison
-      const topCommitted = filteredEmployees.slice().sort((a, b) => (b.morning + b.afternoon) - (a.morning + a.afternoon)).slice(0, 3);
-      const topOff = filteredEmployees.slice().sort((a, b) => b.off - a.off).slice(0, 3);
-      const topSick = filteredEmployees.slice().sort((a, b) => b.sick - a.sick).slice(0, 3);
-
-      html += `
-        <div class="form-section full-width">
-          <h3 class="section-title">🏆 أكثر موظف التزام بالشفتات</h3>
-          <div class="btn-grid">
-            ${topCommitted.map((emp, i) => `
-              <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer;" 
-                   onclick="alert('${emp.name}: ${emp.morning + emp.afternoon} شفتة')">
-                <div style="color: #F2BC1B; font-weight: 700; font-size: 16px; margin-bottom: 5px;">🥇 #${i+1}</div>
-                <div style="color: #fff; font-size: 12px; font-weight: 600; margin-bottom: 5px;">${emp.name}</div>
-                <div style="color: #10b981; font-size: 14px; font-weight: 700;">${emp.morning + emp.afternoon}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <div class="form-section full-width">
-          <h3 class="section-title">📅 أكثر موظف إجازات OFF</h3>
-          <div class="btn-grid">
-            ${topOff.map((emp, i) => `
-              <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer;"
-                   onclick="alert('${emp.name}: ${emp.off} أيام OFF')">
-                <div style="color: #F2BC1B; font-weight: 700; font-size: 16px; margin-bottom: 5px;">🏅 #${i+1}</div>
-                <div style="color: #fff; font-size: 12px; font-weight: 600; margin-bottom: 5px;">${emp.name}</div>
-                <div style="color: #ef4444; font-size: 14px; font-weight: 700;">${emp.off}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <div class="form-section full-width">
-          <h3 class="section-title">🏥 أكثر موظف إجازات مرضية</h3>
-          <div class="btn-grid">
-            ${topSick.map((emp, i) => `
-              <div style="background: #262626; border: 1px solid #333; border-radius: 6px; padding: 10px; text-align: center; cursor: pointer;"
-                   onclick="alert('${emp.name}: ${emp.sick} إجازات مرضية')">
-                <div style="color: #F2BC1B; font-weight: 700; font-size: 16px; margin-bottom: 5px;">🔔 #${i+1}</div>
-                <div style="color: #fff; font-size: 12px; font-weight: 600; margin-bottom: 5px;">${emp.name}</div>
-                <div style="color: #a7dfd8; font-size: 14px; font-weight: 700;">${emp.sick}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
 
       // Detailed Employee Table
       html += `
@@ -11622,8 +11507,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                 <tr>
                   <th>اسم الموظف</th>
                   <th>القسم</th>
-                  <th>الصباح</th>
-                  <th>الظهر</th>
+                  <th>شفتات الصباح</th>
+                  <th>شفتات الظهر</th>
                   <th>OFF</th>
                   <th>إجازات مرضية</th>
                   <th>جمعة</th>
@@ -11635,14 +11520,14 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                   const weeks = Math.ceil((emp.morning + emp.afternoon) / 5);
                   const departmentLabel = emp.department === 'callcenter' ? 'كول سنتر' : 'إدارة';
                   return `
-                    <tr style="cursor: pointer;" onclick="alert('${emp.name}:\\nالقسم: ${departmentLabel}\\nالصباح: ${emp.morning}\\nالظهر: ${emp.afternoon}\\nOFF: ${emp.off}\\nإجازات مرضية: ${emp.sick}\\nجمعة: ${emp.fridayOff}\\nأسابيع الشفتات: ${weeks}')">
+                    <tr style="cursor: pointer;" onclick="alert('${emp.name}:\\nالقسم: ${departmentLabel}\\nشفتات الصباح: ${emp.morningShifts.join(', ') || 'لا توجد'}\\nشفتات الظهر: ${emp.afternoonShifts.join(', ') || 'لا توجد'}\\nOFF: ${emp.offShifts.join(', ') || 'لا توجد'}\\nإجازات مرضية: ${emp.sickShifts.join(', ') || 'لا توجد'}\\nجمعة: ${emp.fridayShifts.join(', ') || 'لا توجد'}\\nأسابيع الشفتات: ${weeks}')">
                       <td style="text-align: right; color: #F2BC1B; font-weight: 600;">${emp.name}</td>
                       <td>${departmentLabel}</td>
-                      <td>${emp.morning}</td>
-                      <td>${emp.afternoon}</td>
-                      <td>${emp.off}</td>
-                      <td>${emp.sick}</td>
-                      <td${emp.fridayOff > 4 ? ' style="background: #4a1a1a; color: #fca5a5;"' : ''}>${emp.fridayOff}</td>
+                      <td>${emp.morningShifts.join(', ') || '-'}</td>
+                      <td>${emp.afternoonShifts.join(', ') || '-'}</td>
+                      <td>${emp.offShifts.join(', ') || '-'}</td>
+                      <td>${emp.sickShifts.join(', ') || '-'}</td>
+                      <td${emp.fridayOff > 4 ? ' style="background: #4a1a1a; color: #fca5a5;"' : ''}>${emp.fridayShifts.join(', ') || '-'}</td>
                       <td>${weeks}</td>
                     </tr>
                   `;
