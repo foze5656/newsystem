@@ -11273,4 +11273,234 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
     }
   </script>
   <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<!-- Admin: Excel importer and monthly aggregator -->
+<style>
+  #admin-panel { position: fixed; right: 12px; bottom: 12px; width: 420px; max-height: 70vh; overflow:auto; background: #fff; border:1px solid #ddd; box-shadow:0 6px 18px rgba(0,0,0,.08); padding:12px; z-index:9999; font-family: sans-serif; }
+  #admin-panel h3 { margin:4px 0 8px 0; font-size:14px; }
+  #admin-panel label{ display:block; font-size:12px; margin-top:8px }
+  #admin-panel input, #admin-panel button, #admin-panel select { width:100%; box-sizing:border-box; margin-top:6px; padding:6px 8px; font-size:13px }
+  #admin-output { margin-top:10px; font-size:13px }
+  #admin-output table{ width:100%; border-collapse:collapse; font-size:12px }
+  #admin-output th, #admin-output td{ border:1px solid #eee; padding:6px; text-align:left }
+  .admin-warning { color:#b30; font-weight:700 }
+</style>
+
+<div id="admin-panel">
+  <h3>Admin: Monthly Summary</h3>
+  <label>Upload Excel files (multi-select)</label>
+  <input id="admin-xlsx-files" type="file" accept=".xlsx,.xls,.csv" multiple />
+
+  <label>Select month</label>
+  <input id="admin-month" type="month" />
+
+  <label>Shift mapping (default)</label>
+  <select id="admin-mapping-select">
+    <option value="default" selected>Use default mapping</option>
+  </select>
+
+  <button id="admin-process">Process files</button>
+  <button id="admin-export-csv">Export CSV</button>
+
+  <div id="admin-output"></div>
+</div>
+
+<!-- Load SheetJS -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script>
+(() => {
+  const filesEl = document.getElementById('admin-xlsx-files');
+  const monthEl = document.getElementById('admin-month');
+  const processBtn = document.getElementById('admin-process');
+  const outputEl = document.getElementById('admin-output');
+  const exportCsvBtn = document.getElementById('admin-export-csv');
+
+  // default mapping: map shift codes to categories
+  const defaultMap = {
+    '7-3':'morning', '7:3':'morning', '7/3':'morning',
+    '11-7':'afternoon','11:7':'afternoon','11/7':'afternoon',
+    '12-8':'night','12:8':'night','12/8':'night',
+    '3-11':'evening','3:11':'evening','3/11':'evening',
+    'OFF':'off','OFF ':'off','OFF\n':'off', 'O':'off',
+    'SICK':'sick','SICK ':'sick','ILL':'sick',
+    'OUT':'out'
+  };
+
+  // enforce maximum Off per month (per user requirement)
+  const MAX_OFF_PER_MONTH = 4;
+
+  // helper: parse workbook and extract per-sheet tables
+  function workbookToSheets(wb) {
+    const sheets = [];
+    wb.SheetNames.forEach(name => {
+      const ws = wb.Sheets[name];
+      const json = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false });
+      sheets.push({ name, data: json });
+    });
+    return sheets;
+  }
+
+  function detectDateColumns(headerRow) {
+    const cols = [];
+    if (!headerRow) return cols;
+    headerRow.forEach((cell, idx) => {
+      if (!cell) return;
+      // try Date parse or year-month patterns
+      const asDate = Date.parse(cell);
+      if (!isNaN(asDate)) cols.push(idx);
+      else if (/\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?/.test(String(cell))) cols.push(idx);
+      else if (/^[A-Za-z]{3,}\s+\d{4}$/.test(String(cell))) cols.push(idx);
+    });
+    return cols;
+  }
+
+  function toISODate(d) {
+    const dt = new Date(d);
+    if (isNaN(dt)) return null;
+    return dt.toISOString().slice(0,10);
+  }
+
+  function normalizeShiftText(v){ if(!v && v!==0) return ''; return String(v).trim(); }
+
+  function mapShiftToCategory(text){
+    const t = normalizeShiftText(text).toUpperCase();
+    if(!t) return 'unknown';
+    if(defaultMap[t]) return defaultMap[t];
+    // try to find by substring
+    if(t.indexOf('OFF')>=0) return 'off';
+    if(t.indexOf('SICK')>=0 || t.indexOf('ILL')>=0) return 'sick';
+    if(t.indexOf('OUT')>=0) return 'out';
+    if(t.match(/\b7\b|7-3|7:3/)) return 'morning';
+    if(t.match(/\b11\b|11-7/)) return 'afternoon';
+    if(t.match(/\b12\b|12-8/)) return 'night';
+    if(t.match(/3-11|3:11/)) return 'evening';
+    return 'unknown';
+  }
+
+  function isSameMonth(isoDate, targetYear, targetMonth) {
+    if(!isoDate) return false;
+    const [y,m] = isoDate.split('-').map(Number);
+    return y===targetYear && m===targetMonth;
+  }
+
+  function compressRanges(dates){
+    if(!dates || dates.length===0) return [];
+    const arr = dates.slice().sort();
+    const ranges = [];
+    let start = arr[0], prev = arr[0];
+    for(let i=1;i<arr.length;i++){
+      const cur = arr[i];
+      const nextDay = new Date(prev); nextDay.setDate(nextDay.getDate()+1);
+      const ndStr = nextDay.toISOString().slice(0,10);
+      if(cur===ndStr){ prev=cur; continue; }
+      ranges.push(start===prev? start : (start+" → "+prev));
+      start=cur; prev=cur;
+    }
+    ranges.push(start===prev? start : (start+" → "+prev));
+    return ranges;
+  }
+
+  function processSheets(sheets, year, month){
+    const employees = {}; // name -> {categories:{...}, datesByCategory:{...}}
+    sheets.forEach(sheet => {
+      const data = sheet.data;
+      if(!data || data.length===0) return;
+      const header = data[0];
+      const dateCols = detectDateColumns(header);
+      if(dateCols.length===0){
+        // try rotate: maybe first column are dates (rows are days)
+        // skip for now
+        return;
+      }
+      for(let r=1;r<data.length;r++){
+        const row = data[r];
+        if(!row) continue;
+        let name = row[0] && String(row[0]).trim();
+        if(!name) name = sheet.name + ' #' + r;
+        if(!employees[name]) employees[name] = { categories:{}, datesByCategory:{} };
+        dateCols.forEach(ci => {
+          const rawDate = header[ci];
+          const iso = toISODate(rawDate) || toISODate(header[ci]);
+          if(!iso) return;
+          if(!isSameMonth(iso, year, month)) return;
+          const cell = row[ci];
+          const cat = mapShiftToCategory(cell);
+          employees[name].categories[cat] = (employees[name].categories[cat]||0)+1;
+          employees[name].datesByCategory[cat] = employees[name].datesByCategory[cat]||[];
+          employees[name].datesByCategory[cat].push(iso);
+        });
+      }
+    });
+    return employees;
+  }
+
+  function renderResults(map){
+    const rows = [];
+    for(const name in map){
+      const obj = map[name];
+      const off = obj.categories.off||0;
+      const fridayOff = (obj.categories.fridayoff||0);
+      const sick = obj.categories.sick||0;
+      const morning = obj.categories.morning||0;
+      const afternoon = obj.categories.afternoon||0;
+      const night = obj.categories.night||0;
+      const out = obj.categories.out||0;
+      const rangesOff = compressRanges(obj.datesByCategory.off||[]).join(', ');
+      const rangesSick = compressRanges(obj.datesByCategory.sick||[]).join(', ');
+      rows.push({ name, morning, afternoon, night, off, fridayOff, sick, out, rangesOff, rangesSick });
+    }
+    // build table
+    let html = '<table><thead><tr><th>Employee</th><th>Morning</th><th>Afternoon</th><th>Night</th><th>Off</th><th>FridayOff</th><th>Sick</th><th>TotalOff</th><th>Off ranges</th></tr></thead><tbody>';
+    rows.sort((a,b)=>a.name.localeCompare(b.name));
+    rows.forEach(r=>{
+      const warn = r.off>MAX_OFF_PER_MONTH ? '<span class="admin-warning">Exceeded</span>' : '';
+      html += `<tr><td>${r.name}</td><td>${r.morning}</td><td>${r.afternoon}</td><td>${r.night}</td><td>${r.off}</td><td>${r.fridayOff}</td><td>${r.sick}</td><td>${r.off} ${warn}</td><td>${r.rangesOff}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    outputEl.innerHTML = html;
+  }
+
+  processBtn.addEventListener('click', ()=>{
+    const files = filesEl.files;
+    if(!files || files.length===0){ alert('Please select one or more Excel files'); return; }
+    const monthVal = monthEl.value;
+    if(!monthVal){ alert('Please select a month'); return; }
+    const [y,m] = monthVal.split('-').map(Number);
+    const readers = [];
+    const allSheets = [];
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try{
+          const data = new Uint8Array(e.target.result);
+          const wb = XLSX.read(data, {type:'array'});
+          const sheets = workbookToSheets(wb);
+          sheets.forEach(s=> allSheets.push(s));
+          // when all loaded, process
+          readers.push(file.name);
+          if(readers.length === files.length){
+            const res = processSheets(allSheets, y, m);
+            renderResults(res);
+          }
+        }catch(err){ console.error('parse err',err); alert('Failed to parse '+file.name); }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  });
+
+  exportCsvBtn.addEventListener('click', ()=>{
+    const html = outputEl.querySelector('table');
+    if(!html) { alert('No results to export'); return; }
+    const rows = Array.from(html.querySelectorAll('tr')).map(tr=> Array.from(tr.querySelectorAll('th,td')).map(td=> '"'+td.innerText.replace(/"/g,'""')+'"').join(','));
+    const csv = rows.join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'monthly_summary.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  });
+
+  // default month to current
+  (function(){ const now = new Date(); monthEl.value = now.toISOString().slice(0,7); })();
+})();
+</script>
+
 </html>
