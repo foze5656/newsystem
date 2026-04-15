@@ -3,8 +3,8 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة إدارة الموظفين</title>
-  <script src="https://apis.google.com/js/api.js"></script>
+  <title>اسعار خدمات بورتراج</title>
+  <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -15,7 +15,7 @@
     
     * {
       font-family: 'Cairo', sans-serif;
-      font-size: 14px;
+      font-size: 18px;
     }
     
     /* Datalist and Select Styling — Black × Gold luxury theme */
@@ -239,8 +239,8 @@
     /* Header Bar */
     .header-bar {
       background: #1a1a1a;
-      border-bottom: 1px solid #F2BC1B;
-      padding: 6px 12px;
+      border-bottom: 2px solid #F2BC1B;
+      padding: 8px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -248,18 +248,18 @@
     }
     
     .header-bar h2 {
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 700;
       color: #F2BC1B;
       margin: 0;
     }
     
     .header-bar .status {
-      font-size: 11px;
+      font-size: 13px;
       color: #10b981;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
     
     .status-dot {
@@ -280,11 +280,11 @@
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 8px;
+      padding: 12px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       grid-auto-rows: max-content;
-      gap: 6px;
+      gap: 10px;
       align-content: start;
     }
     
@@ -304,9 +304,9 @@
     /* Form Sections */
     .form-section {
       background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
-      padding: 8px;
+      border: 1px solid #333;
+      border-radius: 5px;
+      padding: 10px;
       height: fit-content;
     }
     
@@ -341,11 +341,11 @@
     }
     
     .section-title {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
       color: #F2BC1B;
-      margin: 0 0 6px 0;
-      padding-bottom: 4px;
+      margin: 0 0 8px 0;
+      padding-bottom: 5px;
       border-bottom: 1px solid #333;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -353,29 +353,29 @@
     
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 6px;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
     }
     
     .form-field {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
     }
     
     .form-field label {
-      font-size: 11px;
-      color: #888;
+      font-size: 13px;
+      color: #999;
       font-weight: 600;
     }
     
     .form-control {
       background: #262626;
-      border: 1px solid #333;
-      border-radius: 3px;
-      padding: 6px 10px;
+      border: 1px solid #404040;
+      border-radius: 4px;
+      padding: 8px 12px;
       color: #fff;
-      font-size: 12px;
+      font-size: 14px;
       transition: all 0.2s ease;
     }
     
@@ -553,29 +553,21 @@
     /* Buttons */
     .btn-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-      margin-top: 8px;
-    }
-
-    .btn-grid > div {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 90px;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 6px;
+      margin-top: 6px;
     }
     
     .btn-option {
-      background: #252525;
-      border: 1px solid #353535;
-      border-radius: 3px;
-      padding: 8px 6px;
+      background: #2a2a2a;
+      border: 1px solid #404040;
+      border-radius: 4px;
+      padding: 10px 8px;
       cursor: pointer;
       transition: all 0.2s ease;
       text-align: center;
-      font-size: 11px;
-      color: #bbb;
+      font-size: 13px;
+      color: #ccc;
       font-weight: 600;
     }
     
@@ -595,14 +587,14 @@
       background: #F2BC1B;
       color: #000;
       border: none;
-      padding: 8px 14px;
-      border-radius: 3px;
-      font-size: 12px;
+      padding: 12px 20px;
+      border-radius: 5px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
       width: 100%;
-      margin-top: 6px;
+      margin-top: 10px;
     }
     
     .btn-primary:hover {
@@ -613,12 +605,11 @@
     .btn-inline {
       width: auto;
       margin-top: 0;
-      padding: 6px 12px;
+      padding: 10px 18px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      font-size: 11px;
+      gap: 6px;
     }
 
     .btn-outline {
@@ -850,25 +841,24 @@
   .data-table-container {
   grid-column: 1 / -1;
   background: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  border-radius: 4px;
+  border: 1px solid #333;
+  border-radius: 5px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  max-height: 300px;
-    }    
+  max-height: 350px;
+}    
     .table-header {
       background: #F2BC1B;
-      padding: 8px 10px;
-      font-size: 12px;
+      padding: 10px 12px;
+      font-size: 15px;
       font-weight: 700;
       color: #000;
     }
     
     .table-scroll {
       overflow-y: auto;
-      overflow-x: auto;
-      max-height: 250px;
+      max-height: 300px;
     }
     
     .table-scroll::-webkit-scrollbar {
@@ -890,24 +880,24 @@
     }
     
     .data-table th {
-      background: #222;
+      background: #262626;
       color: #F2BC1B;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
-      padding: 8px;
+      padding: 11px;
       text-align: center;
-      border-bottom: none;
+      border-bottom: 1px solid #404040;
       position: sticky;
       top: 0;
       z-index: 10;
     }
     
   .data-table td {
-  padding: 8px;
-  font-size: 12px;
-  color: #bbb;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #ccc;
   text-align: center;
-  border-bottom: none;
+  border-bottom: 1px solid #333;
 }
     
     .data-table tr:hover td {
@@ -988,10 +978,10 @@
     .shift-columns-row td {
       background: #262626 !important;
       color: #F2BC1B !important;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       text-align: center;
-      border-bottom: none;
+      border-bottom: 1px solid #404040;
       padding: 10px 8px;
     }
 
@@ -1019,14 +1009,6 @@
       display: none;
       color: #fbbf24;
       font-weight: 600;
-    }
-
-    .date-sub {
-      display: block;
-      font-size: 14px;
-      color: #c9a23a;
-      margin-top: 2px;
-      font-weight: 700;
     }
 
     .date-hover:hover .date-text {
@@ -1127,32 +1109,32 @@
     /* Info Boxes */
     .info-box {
       background: #1a3a52;
-      border: 1px solid #2a5a8a;
-      border-radius: 3px;
-      padding: 8px 10px;
-      font-size: 11px;
-      color: #7bafde;
-      margin-top: 6px;
+      border: 1px solid #3b82f6;
+      border-radius: 4px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #93c5fd;
+      margin-top: 7px;
     }
     
     .warning-box {
-      background: #3a3018;
-      border: 1px solid #d4860b;
-      border-radius: 3px;
-      padding: 8px 10px;
-      font-size: 11px;
-      color: #e8c66a;
-      margin-top: 6px;
+      background: #4a3a1a;
+      border: 1px solid #f59e0b;
+      border-radius: 4px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #fbbf24;
+      margin-top: 7px;
     }
     
     .error-box {
-      background: #3a1818;
-      border: 1px solid #d42a2a;
-      border-radius: 3px;
-      padding: 8px 10px;
-      font-size: 11px;
-      color: #f88a8a;
-      margin-top: 6px;
+      background: #4a1a1a;
+      border: 1px solid #ef4444;
+      border-radius: 4px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #fca5a5;
+      margin-top: 7px;
     }
     
     /* Loading */
@@ -1887,442 +1869,24 @@
       color: #fff;
     }
 
-    /* ===== NOTIFICATION SYSTEM ===== */
-    .notification-container {
+    /* Completed months floating box */
+    .completed-months {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 10000;
-      max-width: 400px;
-    }
-
-    .notification {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-left: 4px solid #4a9d6f;
+      left: 12px;
+      top: 12px;
+      background: rgba(10,10,10,0.95);
+      border: 1px solid #333;
+      padding: 10px;
       border-radius: 6px;
-      padding: 12px 16px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      animation: slideIn 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 1200;
+      max-height: 80vh;
+      overflow: auto;
+      width: 360px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
-
-    .notification.success {
-      border-left-color: #10b981;
-    }
-
-    .notification.info {
-      border-left-color: #3b82f6;
-    }
-
-    .notification.warning {
-      border-left-color: #f59e0b;
-    }
-
-    .notification.error {
-      border-left-color: #ef4444;
-    }
-
-    .notification-icon {
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-
-    .notification-content {
-      flex: 1;
-      color: #ccc;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .notification-close {
-      background: none;
-      border: none;
-      color: #999;
-      cursor: pointer;
-      font-size: 16px;
-      padding: 0;
-      flex-shrink: 0;
-      transition: color 0.2s;
-    }
-
-    .notification-close:hover {
-      color: #fff;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(400px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-    @keyframes slideOut {
-      from {
-        transform: translateX(0);
-        opacity: 1;
-      }
-      to {
-        transform: translateX(400px);
-        opacity: 0;
-      }
-    }
-
-    .notification.removing {
-      animation: slideOut 0.3s ease;
-    }
-
-    /* ===== STAFF SCHEDULE STYLES ===== */
-    .staff-schedule-container {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      height: 100%;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    /* Staff table improvements: horizontal scroll wrapper, sticky header, fixed first column */
-    .staff-table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .staff-table {
-      min-width: 600px;
-      width: 100%;
-      direction: ltr;
-      border-collapse: collapse;
-      border-spacing: 0;
-      table-layout: fixed;
-      text-align: center;
-    }
-
-    .staff-table th,
-    .staff-table td {
-      padding: 0;
-      font-size: 14px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      border: 1px solid #ffffff;
-      vertical-align: middle;
-      text-align: center;
-      color: #ddd;
-      box-sizing: border-box;
-    }
-
-    /* keep employee name cell padded for readability */
-    .staff-table td.staff-name-cell { padding: 6px 8px; font-size: 20px; min-width: 90px; }
-
-    .staff-table thead th {
-      position: sticky;
-      top: 0;
-      background: #2a2a2a;
-      z-index: 30;
-      color: #F2BC1B;
-    }
-
-    .staff-table tbody tr:nth-child(even) {
-      background: #0f0f0f;
-    }
-
-    .staff-table tbody tr:nth-child(odd) {
-      background: #141414;
-    }
-
-    .staff-name-cell {
-      position: sticky;
-      left: 0;
-      background: #262626;
-      z-index: 35;
-      min-width: 140px;
-      max-width: 220px;
-      text-align: left;
-      font-weight: 700;
-      color: #F2BC1B;
-      border-right: 1px solid #2a2a2a;
-    }
-
-    /* Responsive: reduce minimum width on small screens */
-    @media (max-width: 800px) {
-      .staff-table { min-width: 720px; }
-      .staff-table th, .staff-table td { padding: 10px 8px; font-size: 13px; }
-      .staff-name-cell { min-width: 120px; }
-    }
-
-    .staff-section:last-child {
-      margin-bottom: auto;
-    }
-    
-    .staff-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 8px 10px;
-      background: #1a1a1a;
-      border-radius: 6px;
-      border: 1px solid #2a2a2a;
-      font-size: 11px;
-    }
-    
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 10px;
-      color: #999;
-    }
-    
-    .legend-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-    }
-    
-    .staff-controls {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-      background: #161616;
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid #2a2a2a;
-      justify-content: space-between;
-    }
-
-    @media print {
-      .staff-controls {
-        display: none !important;
-      }
-    }
-
-    .staff-export-capture .staff-controls {
-      display: none !important;
-    }
-
-    .staff-controls-group {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .staff-toggle {
-      display: flex;
-      gap: 2px;
-      background: #2a2a2a;
-      border-radius: 4px;
-      padding: 2px;
-      border: 1px solid #3a3a3a;
-    }
-
-    .toggle-btn {
-      padding: 4px 8px;
-      border: none;
-      background: transparent;
-      color: #999;
-      border-radius: 3px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 10px;
-      white-space: nowrap;
-      min-width: 50px;
-      text-align: center;
-    }
-
-    .toggle-btn.active {
-      background: #4a9d6f;
-      color: #fff;
-      font-weight: 600;
-    }
-
-    .copy-btn-small {
-      padding: 4px 8px !important;
-      font-size: 10px !important;
-      white-space: nowrap;
-      min-width: auto;
-    }
-
-    .staff-section {
-      background: #0f0f0f;
-      border-radius: 6px;
-      border: 1px solid #2a2a2a;
-      overflow: visible;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      flex: 0 1 auto;
-      display: flex;
-      flex-direction: column;
-      min-height: auto;
-      max-height: none;
-    }
-
-    .staff-section-header {
-      background: #2a2a2a;
-      color: #b0b0b0;
-      padding: 5px 8px;
-      font-size: 11px;
-      font-weight: 700;
-      text-align: center;
-      flex-shrink: 0;
-      border-bottom: 2px solid #4a9d6f;
-    }
-    
-    .staff-table-container {
-      position: relative;
-      flex: 1;
-      overflow-x: auto;
-      overflow-y: visible;
-      padding: 4px;
-      background: #0d0d0d;
-      min-height: auto;
-      max-height: none;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Legacy staff-table rules removed to avoid conflicts with updated table styles above. */
-    
-    /* shift-fill: fill the entire table cell like Excel */
-    .shift-td { padding: 2px; background: transparent; min-height: 16px; line-height: 1.0; font-size:13px; }
-    .shift-td.shift-active { background: #9fd9b7; color: #04230b; font-weight: 700; }
-
-    /* Soft muted colors for specific shift ranges (darker, more contrasted) */
-    .shift-td.shift-7-3 { background: #B6D7F5; color: #023048; }   /* darker muted blue (7-3) */
-    .shift-td.shift-11-7 { background: #CFCFCF; color: #111111; }  /* darker muted gray (11-7) */
-    .shift-td.shift-12-8 { background: #BEE8C9; color: #073f28; }  /* darker muted green (12-8) */
-    .shift-td.shift-3-11 { background: #FFF1A8; color: #6b4a00; }  /* warmer muted yellow (3-11) */
-
-    .shift-td.shift-off { background: #F2B7B7; color: #6b1a1a; }   /* deeper muted red for OFF / Friday OFF */
-    .shift-td.shift-holiday { background: #FFD29B; color: #6b3f00; } /* distinct darker holiday color */
-    .shift-td.shift-sick { background: #A7DFD8; color: #04584c; }   /* darker pleasant teal for sick */
-    .shift-td.shift-unknown { background: #C49CEB; color: #3b155f; } /* purple for unknown labels */
-    .shift-td.shift-out { background: #E6E6E6; color: #222; }      /* OUT / off-duty gray */
-
-    /* Keep a clear 'active now' highlight only when a shift is active */
-
-    /* Employee name sizing */
-    .staff-table td.staff-name-cell, .staff-table th.staff-name-cell { font-size: 20px; padding: 6px 8px; }
-    .staff-name-label { font-size: 20px; font-weight: 800; display: inline-block; }
-    
-    /* Shift Colors - Optimized (muted, eye-comfort palette) */
-    .shift-td.shift-7-3, .shift-cell.shift-7-3, .shift-7-3 { background: #B6D7F5; color: #023048; }
-    .shift-td.shift-11-7, .shift-cell.shift-11-7, .shift-11-7 { background: #CFCFCF; color: #111111; }
-    .shift-td.shift-12-8, .shift-cell.shift-12-8, .shift-12-8 { background: #BEE8C9; color: #073f28; }
-    .shift-td.shift-3-11, .shift-cell.shift-3-11, .shift-3-11 { background: #FFF1A8; color: #6b4a00; }
-    .shift-td.shift-off, .shift-cell.shift-off, .shift-off { background: #F2B7B7; color: #6b1a1a; }
-    .shift-td.shift-holiday, .shift-cell.shift-holiday, .shift-holiday { background: #FFD29B; color: #6b3f00; }
-    .shift-td.shift-sick, .shift-cell.shift-sick, .shift-sick { background: #A7DFD8; color: #04584c; }
-    .shift-td.shift-out, .shift-cell.shift-out, .shift-out { background: #E6E6E6; color: #222; }
-    .shift-td.shift-empty, .shift-cell.shift-empty, .shift-empty { background: rgba(255,255,255,0.04); color: #888; }
-    .shift-td.shift-unknown, .shift-cell.shift-unknown, .shift-unknown { background: #C49CEB; color: #3b155f; }
-
-    /* Larger small-date line in headers (month) */
-    .staff-table thead th .date-sub { font-size: 13px; color: #c9a23a; font-weight: 800; display: block; }
-
-    .staff-actions {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: flex-start;
-    }
-
-    .staff-status-indicator {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      margin-right: 4px;
-    }
-
-    .staff-status-indicator.active {
-      background: #4caf50;
-    }
-
-    .staff-status-indicator.off {
-      background: #f44336;
-    }
-
-    .staff-status-indicator.soon {
-      background: #ff9800;
-    }
-
-    .staff-name-label {
-      font-size: 20px;
-      text-align: center;
-      color: #d1d5db;
-      vertical-align: middle;
-    }
-    .staff-name-label.arabic {
-      font-size: 12px !important;
-    }
-
-    .staff-export-capture {
-      position: absolute;
-      left: -9999px;
-      top: -9999px;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .staff-download-select {
-      min-width: 180px;
-      max-width: 300px;
-      background: #121212;
-      color: #fff;
-      border: 1px solid #444;
-      border-radius: 4px;
-      padding: 6px;
-      min-height: 100px;
-      font-size: 10px;
-    }
-
-    .date-sub {
-      display: block;
-      color: #999;
-      font-size: 8px;
-      margin-top: 1px;
-    }
-
-    .staff-loading {
-      text-align: center;
-      padding: 20px;
-      color: #4a9d6f;
-      font-size: 12px;
-    }
-    
-    .staff-error {
-      text-align: center;
-      padding: 12px;
-      background: #3a1a1a;
-      border: 1px solid #ef4444;
-      border-radius: 4px;
-      color: #fca5a5;
-      font-size: 11px;
-      margin: 8px;
-    }
-
-    .animated-highlight { 
-      animation: glowGradient 6s linear infinite; 
-      background: linear-gradient(90deg, rgba(242,188,27,0.12), rgba(242,188,27,0.04)); 
-      border: 1px solid rgba(242,188,27,0.2); 
-    }
-
-    @keyframes glowGradient { 
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; } 
-    }
+    .animated-highlight{ animation: glowGradient 6s linear infinite; background: linear-gradient(90deg, rgba(242,188,27,0.12), rgba(242,188,27,0.04)); border:1px solid rgba(242,188,27,0.2); }
+    @keyframes glowGradient{ 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
+    .completed-months h4{ color: #F2BC1B; margin:0 0 8px 0; font-size:14px }
     .completed-months .month-block{ border-top:1px dashed #333; padding-top:8px; margin-top:8px }
     .completed-months .month-title{ color:#ccc; font-weight:700; font-size:13px; margin-bottom:6px }
     .completed-months .top3{ display:flex; gap:8px; margin-bottom:6px }
@@ -2501,10 +2065,6 @@
      </div>
       <div class="service-item submenu-item" data-service="driver_status"><span class="label">جدولة السائقين</span>
       </div>
-      <div class="service-item submenu-item" data-service="staff_schedule"><span class="label">جدول الموظفين</span>
-      </div>
-      <div class="service-item submenu-item" data-service="staff_analytics"><span class="label">📊 تحليل الموظفين</span>
-      </div>
     </div>
     <div class="service-item" data-service="coords"><span class="icon">📍</span> <span class="label">الاحداثيات</span>
     </div>
@@ -2586,7 +2146,7 @@
     const GOOGLE_SHEET_ID = '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk';
     const USERS_SHEET_NAME = 'users';
     const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${USERS_SHEET_NAME}`;
-    const SITE_VERSION = '1.6';
+    const SITE_VERSION = '1.7';
     
     let usersData = [];
     let isAuthenticated = false;
@@ -3209,8 +2769,6 @@
           'mechanical': 'خدمات ميكانيكية',
           'staff_centers': 'مراكز الطلبات',
           'driver_status': 'جدول السائقين',
-          'staff_schedule': 'جدول الموظفين',
-          'staff_analytics': '📊 تحليل الموظفين',
           'carwash': 'غسيل السيارات',
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات',
@@ -3266,12 +2824,6 @@
             break;
           case 'driver_status':
             renderDriverStatusInterface();
-            break;
-          case 'staff_schedule':
-            renderStaffScheduleInterface();
-            break;
-          case 'staff_analytics':
-            renderStaffAnalyticsInterface();
             break;
           case 'carwash':
             renderCarWashInterface();
@@ -3458,854 +3010,6 @@
       input.addEventListener('paste', () => setTimeout(tryParseAndCopy, 60));
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); tryParseAndCopy(); } });
       clearBtn.onclick = () => { input.value = ''; showToast('تم المسح', 'success'); input.focus(); };
-    }
-
-    const STAFF_SCHEDULE_SHEET_ID = '1OLqF1d-NpUY2An4KQChU1BIvr4cfmJvu6xoJ81UXTbc';
-    const STAFF_SCHEDULE_SHEET_NAME = 'THIS WEEK';
-    const STAFF_NAMES_SHEET_NAME = 'Names';
-    const STAFF_EDITORS = []; // removed individual editor names per user request
-
-    // ===== NOTIFICATION SYSTEM =====
-    function initNotificationContainer() {
-      if (!document.getElementById('notificationContainer')) {
-        const container = document.createElement('div');
-        container.id = 'notificationContainer';
-        container.className = 'notification-container';
-        document.body.appendChild(container);
-      }
-    }
-
-    function showNotification(message, type = 'info', duration = 4000) {
-      initNotificationContainer();
-      const container = document.getElementById('notificationContainer');
-      
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      
-      const icons = {
-        success: '✓',
-        info: 'ℹ',
-        warning: '⚠',
-        error: '✕'
-      };
-      
-      notification.innerHTML = `
-        <span class="notification-icon">${icons[type] || '•'}</span>
-        <div class="notification-content">${message}</div>
-        <button class="notification-close">×</button>
-      `;
-      
-      container.appendChild(notification);
-      
-      const closeBtn = notification.querySelector('.notification-close');
-      const remove = () => {
-        notification.classList.add('removing');
-        setTimeout(() => notification.remove(), 300);
-      };
-      
-      closeBtn.onclick = remove;
-      
-      if (duration > 0) {
-        setTimeout(remove, duration);
-      }
-      
-      return notification;
-    }
-
-    // Render Staff Schedule Interface
-    function renderStaffScheduleInterface() {
-      if (window.staffScheduleIntervalId) clearInterval(window.staffScheduleIntervalId);
-      window._staffScheduleLang = window._staffScheduleLang || 'en';
-
-      const currentUser = (localStorage.getItem('currentUser') || '').trim().toLowerCase();
-      const isEditor = STAFF_EDITORS.includes(currentUser);
-
-      // Hide sidebar
-      const sidebar = document.querySelector('.sidebar');
-      if (sidebar) sidebar.style.display = 'none';
-      const dashboardWrapper = document.querySelector('.dashboard-wrapper');
-      if (dashboardWrapper) dashboardWrapper.style.gridTemplateColumns = '1fr';
-
-      const lang = window._staffScheduleLang;
-      const texts = {
-        back: lang === 'ar' ? '← رجوع' : '← Back',
-        all: lang === 'ar' ? 'الكل' : 'All',
-        callCenter: lang === 'ar' ? 'كول سنتر' : 'Call Center',
-        backOffice: lang === 'ar' ? 'إدارة' : 'Back Office',
-        openSheet: lang === 'ar' ? 'فتح الشيت' : 'Open Sheet',
-        download: lang === 'ar' ? 'تحميل صورة' : 'Download Image',
-        arabic: lang === 'ar' ? 'عربي' : 'Arabic',
-        english: lang === 'ar' ? 'English' : 'English',
-        callCenterTitle: lang === 'ar' ? 'الكول سنتر' : 'Call Center',
-        backOfficeTitle: lang === 'ar' ? 'الإدارة' : 'Back Office',
-        loading: lang === 'ar' ? 'جاري تحميل البيانات...' : 'Loading data...',
-        employee: lang === 'ar' ? 'الموظف' : 'Employee'
-      };
-
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="staff-schedule-container">
-          <div class="staff-controls">
-            <div class="staff-controls-group">
-              <div class="staff-toggle">
-                <button id="staffFilterAll" class="toggle-btn active">${texts.all}</button>
-                <button id="staffFilterCallCenter" class="toggle-btn">${texts.callCenter}</button>
-                <button id="staffFilterBackOffice" class="toggle-btn">${texts.backOffice}</button>
-              </div>
-            </div>
-            <div class="staff-controls-group">
-              <div class="staff-toggle">
-                <button id="staffLangArBtn" class="toggle-btn ${window._staffScheduleLang === 'ar' ? 'active' : ''}">${texts.arabic}</button>
-                <button id="staffLangEnBtn" class="toggle-btn ${window._staffScheduleLang === 'en' ? 'active' : ''}">${texts.english}</button>
-              </div>
-            </div>
-            <!-- employee-specific filters removed per user request -->
-            <div class="staff-controls-group">
-              <button id="staffDownloadBtn" class="copy-btn-small">${texts.download}</button>
-              <button id="staffOpenSheetBtn" class="copy-btn-small ${isEditor ? '' : 'hidden'}">${texts.openSheet}</button>
-              <button id="staffBackBtn" class="copy-btn-small" style="background: #666; color: #fff;">${texts.back}</button>
-            </div>
-          </div>
-
-          <div id="callCenterSection" class="staff-section">
-            <div class="staff-table-container">
-              <div class="staff-table-wrapper">
-                <table class="staff-table" id="callCenterTable">
-                  <thead id="callCenterHeader"></thead>
-                  <tbody id="callCenterBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-              <div id="backOfficeSection" class="staff-section hidden">
-            <div class="staff-table-container">
-              <div class="staff-table-wrapper">
-                <table class="staff-table" id="backOfficeTable">
-                  <thead id="backOfficeHeader"></thead>
-                  <tbody id="backOfficeBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div id="staffScheduleLoading" class="staff-loading">${texts.loading}</div>
-          <div id="staffScheduleError" class="staff-error hidden"></div>
-        </div>
-      `;
-
-      window._staffScheduleFilter = 'all'; // 'all', 'callCenter', 'backOffice'
-
-      document.getElementById('staffBackBtn').onclick = () => {
-        const sidebar = document.querySelector('.sidebar');
-        if (sidebar) sidebar.style.display = '';
-        const dashboardWrapper = document.querySelector('.dashboard-wrapper');
-        if (dashboardWrapper) dashboardWrapper.style.gridTemplateColumns = '';
-        currentService = '';
-        document.querySelectorAll('.service-item').forEach(item => item.classList.remove('active'));
-        const serviceTitle = document.getElementById('serviceTitle');
-        if (serviceTitle) serviceTitle.textContent = 'اختر خدمة من القائمة';
-        const contentAreaReset = document.getElementById('contentArea');
-        if (contentAreaReset) {
-          contentAreaReset.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
-              <h2 style="color: #ccc; margin-bottom: 20px;">اختر خدمة من القائمة الجانبية</h2>
-            </div>
-          `;
-        }
-      };
-      document.getElementById('staffFilterAll').onclick = () => setStaffFilter('all');
-      document.getElementById('staffFilterCallCenter').onclick = () => setStaffFilter('callCenter');
-      document.getElementById('staffFilterBackOffice').onclick = () => setStaffFilter('backOffice');
-      document.getElementById('staffLangArBtn').onclick = () => setStaffScheduleLanguage('ar');
-      document.getElementById('staffLangEnBtn').onclick = () => setStaffScheduleLanguage('en');
-      document.getElementById('staffDownloadBtn').onclick = exportStaffTablesAsImage;
-
-      // User requested English-only table: hide Arabic toggle and force English
-      const staffLangArBtnEl = document.getElementById('staffLangArBtn');
-      if (staffLangArBtnEl) staffLangArBtnEl.style.display = 'none';
-      const staffLangEnBtnEl = document.getElementById('staffLangEnBtn');
-      if (staffLangEnBtnEl) staffLangEnBtnEl.style.display = 'none';
-      
-      // Employee-specific filters removed (Esraa / Fawzi / Salem)
-
-      const openSheetBtn = document.getElementById('staffOpenSheetBtn');
-      if (openSheetBtn) {
-        openSheetBtn.onclick = () => {
-          const url = `https://docs.google.com/spreadsheets/d/${STAFF_SCHEDULE_SHEET_ID}/edit`;
-          window.open(url, '_blank');
-        };
-      }
-
-      loadStaffNamesData(true);
-      loadStaffScheduleData(true);
-      window.staffScheduleIntervalId = setInterval(() => loadStaffScheduleData(), 1 * 60 * 1000);
-    }
-
-    async function loadStaffNamesData(force = false) {
-      if (!force && window._staffNamesMap) return window._staffNamesMap;
-
-      const sheetId = STAFF_SCHEDULE_SHEET_ID;
-      const sheetName = STAFF_NAMES_SHEET_NAME;
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-
-      try {
-        const response = await fetch(csvUrl, { cache: 'no-cache' });
-        if (!response.ok) throw new Error('Failed to load staff names');
-        const csvText = await response.text();
-        const rows = parseCSV(csvText);
-        const map = {};
-        rows.forEach((row, index) => {
-          const eng = (row[0] || '').toString().trim();
-          const arb = (row[1] || '').toString().trim();
-          if (!eng) return;
-          if (index === 0 && /^staff|name/i.test(eng)) return;
-          map[eng.toLowerCase()] = arb || eng;
-        });
-        window._staffNamesMap = map;
-        return map;
-      } catch (e) {
-        console.warn('Names sheet load failed', e);
-        window._staffNamesMap = window._staffNamesMap || {};
-        return window._staffNamesMap;
-      }
-    }
-
-    async function loadStaffScheduleData(force = false) {
-      const sheetId = STAFF_SCHEDULE_SHEET_ID;
-      const sheetName = STAFF_SCHEDULE_SHEET_NAME;
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-      const loadingEl = document.getElementById('staffScheduleLoading');
-      const errorEl = document.getElementById('staffScheduleError');
-
-      if (!force && window._staffScheduleData) {
-        try {
-          renderStaffScheduleTables(window._staffScheduleData);
-          updateStaffDownloadOptions(window._staffScheduleData);
-        } catch (e) {
-          console.error('Render existing data failed', e);
-        }
-        return;
-      }
-
-      loadingEl.style.display = 'block';
-      errorEl.classList.add('hidden');
-
-      // Watchdog: if loading takes too long, show an explicit error to user
-      let watchdog = setTimeout(() => {
-        console.warn('Staff schedule load timeout');
-        loadingEl.style.display = 'none';
-        const lang = window._staffScheduleLang || 'ar';
-        const errorText = lang === 'ar' ? '⚠ تعذر تحميل الجدول - استجابة بطيئة' : '⚠ Failed to load schedule - slow response';
-        errorEl.textContent = errorText;
-        errorEl.classList.remove('hidden');
-        showNotification(errorText, 'error', 6000);
-      }, 10000); // 10s
-
-      try {
-        console.debug('Fetching staff schedule from', csvUrl);
-        const response = await fetch(csvUrl, { cache: 'no-cache' });
-        if (!response.ok) throw new Error('Failed to load staff schedule');
-
-        const csvText = await response.text();
-        const rows = parseCSV(csvText);
-        if (rows.length < 2) throw new Error('No data found');
-
-        await loadStaffNamesData(force);
-        const parsedData = parseStaffScheduleData(rows);
-
-        // Check if data changed
-        const oldData = window._staffScheduleData;
-        window._staffScheduleData = parsedData;
-
-        renderStaffScheduleTables(parsedData);
-        updateStaffDownloadOptions(parsedData);
-
-        // Show notification only if this is an auto-update (not initial load)
-        if (!force && oldData) {
-          const lang = window._staffScheduleLang || 'ar';
-          const totalEmployees = (parsedData.callCenter.length || 0) + (parsedData.backOffice.length || 0);
-          const msg = lang === 'ar' ? 
-            `✓ تم تحديث الجدول - ${totalEmployees} موظف` : 
-            `✓ Schedule updated - ${totalEmployees} employees`;
-          showNotification(msg, 'success', 3000);
-        }
-      } catch (err) {
-        console.error('loadStaffScheduleData error', err);
-        const lang = window._staffScheduleLang || 'ar';
-        const errorMsg = lang === 'ar' ? 
-          '⚠ خطأ في تحميل الجدول' : 
-          '⚠ Error loading schedule';
-        showNotification(errorMsg, 'error', 5000);
-
-        const errorText = lang === 'ar' ? 'خطأ في تحميل جدول الموظفين: ' + err.message : 'Error loading staff schedule: ' + err.message;
-        errorEl.textContent = errorText;
-        errorEl.classList.remove('hidden');
-      } finally {
-        clearTimeout(watchdog);
-        loadingEl.style.display = 'none';
-      }
-    }
-
-    function parseStaffScheduleData(rows) {
-      const headers = rows[0];
-      const data = { callCenter: [], backOffice: [], dates: [] };
-
-      for (let i = 1; i < headers.length; i++) {
-        const header = (headers[i] || '').toString().trim();
-        if (header && !header.toLowerCase().includes('staff names') && !header.toLowerCase().includes('back office staff')) {
-          data.dates.push(header);
-        }
-      }
-
-      let currentSection = 'callCenter';
-      for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        const firstCell = (row[0] || '').toString().trim().toLowerCase();
-
-        if (firstCell.includes('back office staff') || firstCell.includes('backoffice') || firstCell.includes('administration')) {
-          currentSection = 'backOffice';
-          continue;
-        }
-
-        if (!row[0] || !row[0].toString().trim()) continue;
-        const text = row[0].toString().trim();
-        if (text.toLowerCase().includes('staff names')) continue;
-
-        const employee = {
-          name: text,
-          shifts: []
-        };
-
-        for (let j = 1; j < row.length && j - 1 < data.dates.length; j++) {
-          employee.shifts.push((row[j] || '').toString().trim());
-        }
-
-        data[currentSection].push(employee);
-      }
-
-      return data;
-    }
-
-    function renderStaffScheduleTables(data) {
-      // Render two separate tables: callCenter and backOffice
-      renderStaffTable('callCenter', data.callCenter, data.dates);
-      renderStaffTable('backOffice', data.backOffice, data.dates);
-    }
-
-    function renderStaffTable(section, employees, dates) {
-      const headerEl = document.getElementById(`${section}Header`);
-      const bodyEl = document.getElementById(`${section}Body`);
-      const dateObjects = dates.map(date => parseStaffDateHeader(date));
-      const lang = window._staffScheduleLang;
-      const employeeText = lang === 'ar' ? 'الموظف' : 'Employee';
-
-      let headerHtml = `<tr><th class="staff-name-cell">${employeeText}</th>`;
-      dates.forEach(date => {
-        headerHtml += `<th>${formatStaffHeaderLabel(date)}</th>`;
-      });
-      headerHtml += '</tr>';
-      headerEl.innerHTML = headerHtml;
-
-      let bodyHtml = '';
-      employees.forEach((employee) => {
-        // Apply employee filter
-        if (!shouldShowEmployee(employee.name)) return;
-        const displayName = getStaffDisplayName(employee.name);
-        const status = getStaffStatusForToday(employee.shifts, dateObjects);
-        // indicator remains for the row if any shift active now
-        const statusHtml = (status && status.key === 'active') ? `<span class="staff-status-indicator active" title="${escapeHtml(status.label)}"></span>` : '';
-
-        const isArabic = /[\u0600-\u06FF]/.test(displayName);
-        const nameClass = `staff-name-label${isArabic ? ' arabic' : ''}`;
-        bodyHtml += `<tr><td class="staff-name-cell">${statusHtml}<span class="${nameClass}">${escapeHtml(displayName)}</span></td>`;
-        for (let i = 0; i < dates.length; i++) {
-          const shift = employee.shifts[i] || '';
-          const displayText = getShiftDisplayText(shift);
-          const dateObj = dateObjects[i] || null;
-          const isActive = isShiftActiveOnDate(shift, dateObj);
-          const activeClass = isActive ? 'shift-active' : '';
-          const shiftInfo = getShiftStyleAndClass(shift) || {};
-          const typeClass = shiftInfo.class ? shiftInfo.class : '';
-          const inlineStyle = shiftInfo.style ? ` style="${shiftInfo.style}"` : '';
-          bodyHtml += `<td class="shift-td ${typeClass} ${activeClass}"${inlineStyle}>${escapeHtml(displayText)}</td>`;
-        }
-        bodyHtml += '</tr>';
-      });
-
-      bodyEl.innerHTML = bodyHtml;
-    }
-
-    function isShiftActiveOnDate(shiftText, dateObj) {
-      if (!dateObj) return false;
-      const range = parseShiftTimeRange(shiftText);
-      if (!range) return false;
-      const now = new Date();
-      const start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), range.startHour, range.startMinute, 0);
-      const end = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), range.endHour, range.endMinute, 0);
-      if (range.wrapNextDay) end.setDate(end.getDate() + 1);
-      return now >= start && now < end;
-    }
-
-    function getStaffDisplayName(name) {
-      const lang = window._staffScheduleLang || 'ar';
-      const map = window._staffNamesMap || {};
-      const key = (name || '').toString().trim().toLowerCase();
-      if (lang === 'ar' && map[key]) return map[key];
-      return name || '';
-    }
-
-    function setStaffScheduleLanguage(lang) {
-      window._staffScheduleLang = lang;
-      // Re-render the entire interface to update all text
-      renderStaffScheduleInterface();
-    }
-
-    function setStaffFilter(filter) {
-      window._staffScheduleFilter = filter;
-      const allBtn = document.getElementById('staffFilterAll');
-      const ccBtn = document.getElementById('staffFilterCallCenter');
-      const boBtn = document.getElementById('staffFilterBackOffice');
-      if (allBtn && ccBtn && boBtn) {
-        allBtn.classList.toggle('active', filter === 'all');
-        ccBtn.classList.toggle('active', filter === 'callCenter');
-        boBtn.classList.toggle('active', filter === 'backOffice');
-      }
-
-      const callCenterSec = document.getElementById('callCenterSection');
-      const backOfficeSec = document.getElementById('backOfficeSection');
-
-      if (filter === 'all') {
-        if (callCenterSec) callCenterSec.classList.remove('hidden');
-        if (backOfficeSec) backOfficeSec.classList.remove('hidden');
-      } else if (filter === 'callCenter') {
-        if (callCenterSec) callCenterSec.classList.remove('hidden');
-        if (backOfficeSec) backOfficeSec.classList.add('hidden');
-      } else if (filter === 'backOffice') {
-        if (callCenterSec) callCenterSec.classList.add('hidden');
-        if (backOfficeSec) backOfficeSec.classList.remove('hidden');
-      }
-    }
-
-    function setStaffEmployeeFilter(employeeName) {
-      const selectedEmployees = JSON.parse(localStorage.getItem('selectedStaffEmployees') || '[]');
-      const idx = selectedEmployees.indexOf(employeeName);
-      
-      if (idx === -1) {
-        selectedEmployees.push(employeeName);
-      } else {
-        selectedEmployees.splice(idx, 1);
-      }
-      
-      localStorage.setItem('selectedStaffEmployees', JSON.stringify(selectedEmployees));
-      
-      // Update button states
-      // individual employee filter buttons removed; no per-employee toggles
-      
-      // Re-render with filters
-      renderStaffScheduleTables(window._staffScheduleData);
-      
-      const lang = window._staffScheduleLang || 'ar';
-      const msg = lang === 'ar' ? 
-        `تم تحديث الفلتر - ${selectedEmployees.length} موظفين` : 
-        `Filter updated - ${selectedEmployees.length} employees`;
-      showNotification(msg, 'info', 2000);
-    }
-
-    function shouldShowEmployee(employeeName) {
-      const selectedEmployees = JSON.parse(localStorage.getItem('selectedStaffEmployees') || '[]');
-      if (selectedEmployees.length === 0) return true; // Show all if no filter selected
-      return selectedEmployees.some(selected => 
-        employeeName.toLowerCase().includes(selected.toLowerCase()) || 
-        selected.toLowerCase().includes(employeeName.toLowerCase())
-      );
-    }
-
-    function updateStaffDownloadOptions(data) {
-      const select = document.getElementById('staffDownloadSelect');
-      if (!select) return;
-      const employees = [];
-      data.callCenter.forEach(emp => employees.push(emp.name));
-      data.backOffice.forEach(emp => employees.push(emp.name));
-      const unique = Array.from(new Set(employees));
-      const options = ['<option value="__all__">الكل</option>'];
-      unique.forEach(name => {
-        const displayName = getStaffDisplayName(name);
-        options.push(`<option value="${escapeHtml(name)}">${escapeHtml(displayName)}</option>`);
-      });
-      select.innerHTML = options.join('');
-      select.value = '__all__';
-    }
-
-    async function exportStaffScheduleAsImage() {
-      const container = document.querySelector('.staff-schedule-container');
-      if (!container) return;
-
-      // Build a clean clone to export: remove controls and status indicators
-      const clone = container.cloneNode(true);
-      // Remove interactive controls entirely
-      const controls = clone.querySelectorAll('.staff-controls, .staff-actions, .staff-controls-group');
-      controls.forEach(n => n.parentNode && n.parentNode.removeChild(n));
-      // Remove status indicators
-      const indicators = clone.querySelectorAll('.staff-status-indicator');
-      indicators.forEach(n => n.parentNode && n.parentNode.removeChild(n));
-      // Remove images from clone to avoid cross-origin tainting which can produce blank/white canvases
-      const imgs = clone.querySelectorAll('img');
-      imgs.forEach(i => i.parentNode && i.parentNode.removeChild(i));
-
-      // Tweak styles in the clone to avoid white gridlines and enlarge date fonts
-      const tables = clone.querySelectorAll('.staff-table');
-      tables.forEach(tbl => {
-        tbl.style.width = '100%';
-        tbl.style.borderCollapse = 'collapse';
-        tbl.style.background = '#ffffff';
-        tbl.style.border = '1px solid #2a2a2a';
-        // header font size
-        const ths = tbl.querySelectorAll('th');
-        ths.forEach(th => {
-          th.style.fontSize = '13px';
-          th.style.background = '#1a1a1a';
-          th.style.color = '#ffffff';
-          th.style.padding = '8px 6px';
-        });
-        const tds = tbl.querySelectorAll('td');
-        tds.forEach(td => {
-          td.style.border = '1px solid #2a2a2a';
-        });
-        const shifts = tbl.querySelectorAll('.shift-cell');
-        shifts.forEach(s => {
-          s.style.display = 'inline-flex';
-          s.style.alignItems = 'center';
-          s.style.justifyContent = 'center';
-          s.style.height = '28px';
-          s.style.padding = '4px 6px';
-        });
-      });
-
-      const wrapper = document.createElement('div');
-      wrapper.className = 'staff-export-capture';
-      wrapper.style.background = '#ffffff';
-      wrapper.style.padding = '16px';
-      wrapper.style.borderRadius = '8px';
-      wrapper.style.color = '#000';
-      wrapper.style.fontFamily = 'sans-serif';
-      wrapper.style.width = 'auto';
-      wrapper.style.maxWidth = '2000px';
-      wrapper.style.margin = '0 auto';
-      // Keep export wrapper off-screen and invisible to avoid a white flash
-      wrapper.style.position = 'fixed';
-      wrapper.style.left = '-9999px';
-      wrapper.style.top = '-9999px';
-      wrapper.style.zIndex = '-1';
-      wrapper.style.opacity = '0';
-      wrapper.appendChild(clone);
-
-      document.body.appendChild(wrapper);
-
-      try {
-        await ensureHtml2Canvas();
-        const canvas = await html2canvas(wrapper, {
-          backgroundColor: '#ffffff',
-          scale: 2.5,
-          useCORS: true,
-          logging: false,
-          allowTaint: true,
-          windowHeight: wrapper.scrollHeight + 100,
-          windowWidth: wrapper.scrollWidth + 100
-        });
-        const link = document.createElement('a');
-        const dateStr = new Date().toISOString().slice(0, 10);
-        link.download = `staff-schedule-${dateStr}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-
-        const lang = window._staffScheduleLang || 'ar';
-        const msg = lang === 'ar' ? '✓ تم تحميل الصورة بنجاح' : '✓ Image downloaded successfully';
-        showNotification(msg, 'success', 3000);
-      } catch (err) {
-        console.error('Export failed', err);
-        const lang = window._staffScheduleLang || 'ar';
-        const msg = lang === 'ar' ? '⚠ خطأ في تحميل الصورة' : '⚠ Error downloading image';
-        showNotification(msg, 'error', 4000);
-      } finally {
-        // cleanup
-        if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
-      }
-    }
-
-    function buildStaffExportContainer(dates, employees) {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'staff-export-capture';
-      wrapper.style.background = '#ffffff';
-      wrapper.style.padding = '24px';
-      wrapper.style.borderRadius = '16px';
-      wrapper.style.color = '#333';
-      wrapper.style.fontFamily = 'sans-serif';
-      wrapper.style.width = 'auto';
-      wrapper.style.maxWidth = '1600px';
-
-      // Do not include page title in export (user requested only the table be visible)
-
-      const table = document.createElement('table');
-      table.className = 'staff-table';
-      table.style.width = '100%';
-      table.style.borderCollapse = 'collapse';
-      table.style.marginTop = '8px';
-      table.style.background = '#ffffff';
-      table.style.border = 'none';
-
-      const thead = document.createElement('thead');
-      const headerRow = document.createElement('tr');
-      const firstTH = document.createElement('th');
-      firstTH.textContent = 'الموظف';
-      firstTH.style.textAlign = 'center';
-      firstTH.style.minWidth = '180px';
-      firstTH.style.background = '#f0f0f0';
-      firstTH.style.borderBottom = '2px solid #999';
-      firstTH.style.padding = '12px';
-      firstTH.style.color = '#000';
-      headerRow.appendChild(firstTH);
-      dates.forEach(date => {
-        const th = document.createElement('th');
-        th.innerHTML = formatStaffHeaderLabel(date);
-        th.style.background = '#f0f0f0';
-        th.style.borderBottom = 'none';
-        th.style.padding = '12px';
-        th.style.color = '#000';
-        th.style.fontSize = '13px';
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
-
-      const tbody = document.createElement('tbody');
-      employees.forEach((emp, idx) => {
-        const row = document.createElement('tr');
-        row.style.borderBottom = 'none';
-        if (idx % 2 === 1) row.style.background = '#f9f9f9';
-
-        const nameCell = document.createElement('td');
-        nameCell.className = 'staff-name-cell';
-        nameCell.style.background = 'transparent';
-        nameCell.style.textAlign = 'right';
-        nameCell.style.padding = '12px';
-        nameCell.style.color = '#000';
-        nameCell.style.fontWeight = '600';
-
-        const displayName = getStaffDisplayName(emp.name);
-        const status = getStaffStatusForToday(emp.shifts, dates.map(d => parseStaffDateHeader(d)));
-        // Hide status indicator in exported image (user requested no status shown)
-        const isArabicExport = /[\u0600-\u06FF]/.test(displayName);
-        const nameClassExport = `staff-name-label${isArabicExport ? ' arabic' : ''}`;
-        nameCell.innerHTML = `<span class="${nameClassExport}">${escapeHtml(displayName)}</span>`;
-        row.appendChild(nameCell);
-
-        emp.shifts.forEach(shift => {
-          const td = document.createElement('td');
-          td.style.borderBottom = 'inherit';
-          td.style.padding = '12px';
-          td.style.textAlign = 'center';
-
-          const shiftInfo = getShiftStyleAndClass(shift);
-          const shiftDiv = document.createElement('div');
-          shiftDiv.className = `shift-cell ${shiftInfo.class}`;
-          // Ensure shift text is centered inside the box and readable in export
-          shiftDiv.style.cssText = (shiftInfo.style || '') + ';display:inline-flex;align-items:center;justify-content:center;text-align:center;font-size:12px;';
-          shiftDiv.textContent = getShiftDisplayText(shift);
-          td.appendChild(shiftDiv);
-          row.appendChild(td);
-        });
-
-        tbody.appendChild(row);
-      });
-      table.appendChild(tbody);
-      wrapper.appendChild(table);
-      return wrapper;
-    }
-
-    function escapeCsv(value) {
-      const text = (value || '').toString();
-      if (/[",\n\r]/.test(text)) {
-        return '"' + text.replace(/"/g, '""') + '"';
-      }
-      return text;
-    }
-
-    function parseStaffDateHeader(text) {
-      const value = (text || '').toString().trim();
-      if (!value) return null;
-      const parts = value.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
-      if (parts) {
-        let day = parseInt(parts[1], 10);
-        let month = parseInt(parts[2], 10);
-        let year = parseInt(parts[3], 10);
-        if (year < 100) year += 2000;
-        if (month > 12) {
-          [day, month] = [month, day];
-        }
-        if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-          return new Date(year, month - 1, day);
-        }
-      }
-      const parsed = new Date(value);
-      return Number.isNaN(parsed.getTime()) ? null : parsed;
-    }
-
-    function formatStaffHeaderLabel(dateText) {
-      const date = parseStaffDateHeader(dateText);
-      if (!date) return escapeHtml(dateText);
-      const lang = window._staffScheduleLang || 'ar';
-      if (lang === 'ar') {
-        return `${escapeHtml(formatArabicDayName(date))}<span class="date-sub">${escapeHtml(`${date.getDate()}/${date.getMonth() + 1}`)}</span>`;
-      } else {
-        return `${escapeHtml(formatEnglishDayName(date))}<span class="date-sub">${escapeHtml(`${date.getMonth() + 1}/${date.getDate()}`)}</span>`;
-      }
-    }
-
-    function formatArabicDayName(date) {
-      const names = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-      return names[date.getDay()] || '';
-    }
-
-    function formatEnglishDayName(date) {
-      const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      return names[date.getDay()] || '';
-    }
-
-    function getStaffStatusForToday(shifts, dateObjects) {
-      const today = new Date();
-      for (let i = 0; i < dateObjects.length; i++) {
-        const dateObj = dateObjects[i];
-        if (!dateObj) continue;
-        if (isSameDate(dateObj, today)) {
-          return getStaffStatus(shifts[i] || '', dateObj);
-        }
-      }
-      return null;
-    }
-
-    function isSameDate(a, b) {
-      return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-    }
-
-    function getStaffStatus(shift, dateObj) {
-      const raw = (shift || '').toString().trim();
-      const norm = raw.toLowerCase();
-      
-      // Check for OFF
-      if (norm.includes('off') || norm.includes('عطلة')) {
-        return { key: 'off', label: 'عطلة' };
-      }
-      
-      // Check for Holiday/Vacation
-      if (norm.includes('holiday') || norm.includes('holi') || norm.includes('اجازه') || norm.includes('إجازة')) {
-        return { key: 'soon', label: 'إجازة' };
-      }
-      
-      // Check for Sick Leave
-      if (norm.includes('sick') || norm.includes('leave') || norm.includes('مرض')) {
-        return { key: 'off', label: 'إجازة مرضية' };
-      }
-      
-      // No shift data
-      if (!raw) {
-        return null;
-      }
-
-      // Parse time range
-      const range = parseShiftTimeRange(raw);
-      if (!range) {
-        return null;
-      }
-
-      const now = new Date();
-      const start = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), range.startHour, range.startMinute, 0);
-      const end = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), range.endHour, range.endMinute, 0);
-      if (range.wrapNextDay) {
-        end.setDate(end.getDate() + 1);
-      }
-
-      // Working now
-      if (now >= start && now < end) {
-        return { key: 'active', label: 'يعمل الآن' };
-      }
-
-      // Not working today
-      return null;
-    }
-
-    function parseShiftTimeRange(value) {
-      const text = (value || '').toString().trim();
-      const match = text.match(/(\d{1,2}):(\d{2})\s*[-–—]\s*(\d{1,2}):(\d{2})/);
-      if (!match) return null;
-      const startHour = parseInt(match[1], 10);
-      const startMinute = parseInt(match[2], 10);
-      const endHour = parseInt(match[3], 10);
-      const endMinute = parseInt(match[4], 10);
-      const wrapNextDay = endHour < startHour || (endHour === startHour && endMinute <= startMinute);
-      return { startHour, startMinute, endHour, endMinute, wrapNextDay };
-    }
-
-    function getShiftStyleAndClass(shift) {
-      const raw = (shift || '').toString().trim();
-      const norm = raw.toLowerCase();
-      if (!raw) return { class: 'shift-empty', style: '' };
-      if (norm.includes('off') || norm.includes('عطلة')) return { class: 'shift-off', style: '' };
-      if (norm.includes('holiday') || norm.includes('holi') || norm.includes('اجازه') || norm.includes('إجازة')) return { class: 'shift-holiday', style: '' };
-      if (norm.includes('sick') || norm.includes('leave') || norm.includes('مرض')) return { class: 'shift-sick', style: '' };
-      
-      // Check for specific shift times (use stricter matching to avoid accidental numeric matches)
-      if (/\b7\s*[-–—:]\s*3\b/.test(norm) || /\b7:?00\b/.test(norm) && /\b3:?00\b/.test(norm) || norm.includes('7-3')) return { class: 'shift-7-3', style: '' };
-      if (/\b12\s*[-–—:]\s*8\b/.test(norm) || /\b12:?00\b/.test(norm) && /\b8:?00\b/.test(norm) || norm.includes('12-8')) return { class: 'shift-12-8', style: '' };
-      if (/\b3\s*[-–—:]\s*11\b/.test(norm) || /\b3:?00\b/.test(norm) && /\b11:?00\b/.test(norm) || norm.includes('3-11')) return { class: 'shift-3-11', style: '' };
-      if (/\b11\s*[-–—:]\s*7\b/.test(norm) || /\b11:?00\b/.test(norm) && /\b7:?00\b/.test(norm) || norm.includes('11-7')) return { class: 'shift-11-7', style: '' };
-
-      const bg = getColorForString(raw);
-      const fg = getContrastColor(bg);
-      return { class: 'shift-unknown', style: `background: ${bg}; color: ${fg};` };
-    }
-
-    function getColorForString(value) {
-      const palette = ['#2563eb', '#0d9488', '#4338ca', '#16a34a', '#ea580c', '#f97316', '#7c3aed', '#0ea5e9', '#14b8a6', '#f59e0b', '#d946ef', '#e11d48', '#0f766e', '#9333ea', '#854d0e'];
-      let hash = 0;
-      for (let i = 0; i < value.length; i++) {
-        hash = (hash << 5) - hash + value.charCodeAt(i);
-        hash |= 0;
-      }
-      return palette[Math.abs(hash) % palette.length];
-    }
-
-    function getContrastColor(bg) {
-      const hex = bg.replace('#', '');
-      const r = parseInt(hex.substring(0, 2), 16);
-      const g = parseInt(hex.substring(2, 4), 16);
-      const b = parseInt(hex.substring(4, 6), 16);
-      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-      return luminance > 0.55 ? '#000' : '#fff';
-    }
-
-    function getShiftDisplayText(shift) {
-      const s = (shift || '').toString().trim();
-      return s || '-';
-    }
-
-    function toggleStaffSection(section) {
-      const callCenterBtn = document.getElementById('toggleCallCenter');
-      const backOfficeBtn = document.getElementById('toggleBackOffice');
-      const callCenterSection = document.getElementById('callCenterSection');
-      const backOfficeSection = document.getElementById('backOfficeSection');
-
-      if (section === 'callCenter') {
-        callCenterBtn.classList.add('active');
-        backOfficeBtn.classList.remove('active');
-        callCenterSection.classList.remove('hidden');
-        backOfficeSection.classList.add('hidden');
-      } else {
-        backOfficeBtn.classList.add('active');
-        callCenterBtn.classList.remove('active');
-        backOfficeSection.classList.remove('hidden');
-        callCenterSection.classList.add('hidden');
-      }
     }
 
     // Render Staff Interface
@@ -4529,10 +3233,10 @@
       select.innerHTML = `<option value="all">${allLabel}</option>` +
         options.map(opt => `<option value="${escapeHtml(opt.value)}">${escapeHtml(opt.label)}</option>`).join('');
       select.value = options.some(opt => opt.value === current) ? current : 'all';
-    } 
+    }
 
     function populateMonthFilter(lang) {
-      const select = document.getElementById('driverMonthFilter');  
+      const select = document.getElementById('driverMonthFilter');
       if (!select) return;
       const monthNames = lang === 'en' 
         ? ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -4958,60 +3662,6 @@
         scroll.style.overflowY = previousOverflow;
         scroll.classList.remove('export-mode');
         if (exportHeading && exportHeading.parentNode) exportHeading.parentNode.removeChild(exportHeading);
-      }
-    }
-
-    async function exportStaffTablesAsImage() {
-      const container = document.querySelector('.staff-schedule-container');
-      if (!container) return;
-
-      // Build a clean clone for export to avoid CORS image taint and visible flashes
-      const clone = container.cloneNode(true);
-      // Remove images from clone to avoid cross-origin tainting
-      const imgs = clone.querySelectorAll('img');
-      imgs.forEach(i => i.parentNode && i.parentNode.removeChild(i));
-
-      const wrapper = document.createElement('div');
-      wrapper.className = 'staff-export-capture';
-      wrapper.style.background = '#0a0a0a';
-      wrapper.style.padding = '12px';
-      wrapper.style.borderRadius = '8px';
-      wrapper.style.color = '#fff';
-      wrapper.style.fontFamily = 'sans-serif';
-      wrapper.style.width = 'auto';
-      wrapper.style.maxWidth = '2200px';
-      // keep off-screen while rendering
-      wrapper.style.position = 'fixed';
-      wrapper.style.left = '-9999px';
-      wrapper.style.top = '-9999px';
-      wrapper.style.zIndex = '-1';
-      wrapper.style.opacity = '0';
-
-      const titleEl = document.getElementById('serviceTitle') || document.getElementById('staffTitle');
-      const exportHeading = document.createElement('div');
-      exportHeading.className = 'export-heading';
-      exportHeading.textContent = titleEl ? titleEl.textContent : 'Staff Schedule';
-      wrapper.appendChild(exportHeading);
-      wrapper.appendChild(clone);
-      document.body.appendChild(wrapper);
-
-      try {
-        await ensureHtml2Canvas();
-        const canvas = await html2canvas(wrapper, {
-          backgroundColor: '#0a0a0a',
-          scale: 3,
-          useCORS: true,
-          logging: false
-        });
-        const link = document.createElement('a');
-        const dateStr = new Date().toISOString().slice(0, 10);
-        link.download = `staff-schedule-${dateStr}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      } catch (err) {
-        console.error('Export failed', err);
-      } finally {
-        if (wrapper && wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
       }
     }
 
@@ -7895,7 +6545,7 @@
                   loadAreaOptionsDatalist('خدمات ميكانيكية', [8, 9, 10, 12, 13, 14], calculateMechanicalPrice);
                 } else if (formData.oilSource === 'ours') {
                   // Open external oil website
-                  openFullscreenIframe('https://portarageoils.netlify.app/', 'زيت وفلتر');
+                  openFullscreenIframe('https://poroils.netlify.app/', 'زيت وفلتر');
                 }
               };
             });
@@ -11267,7 +9917,6 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         setTimeout(() => { el.style.display = 'none'; }, 200);
       }, 1800);
     }
-
     async function copyToClipboard(text) {
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -11285,261 +9934,209 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         console.warn('Clipboard copy failed', e);
       }
     }
-
-    // ===== STAFF ANALYTICS SYSTEM =====
-    const STAFF_ANALYTICS_SHEET_ID = '1OLqF1d-NpUY2An4KQChU1BIvr4cfmJvu6xoJ81UXTbc';
-    let staffAnalyticsData = {};
-
-    async function renderStaffAnalyticsInterface() {
-      const contentArea = document.getElementById('contentArea');
-      const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-      const now = new Date();
-      const currentMonth = (now.getMonth() + 1);
-
-      contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <h3 class="section-title">📊 تحليل الموظفين</h3>
-          <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
-            <div class="form-field">
-              <label>اختر الشهر</label>
-              <select id="analyticsMonthSelect" class="form-control">
-                ${monthNames.map((m, i) => `<option value="${i+1}" ${i+1 === currentMonth ? 'selected' : ''}>${m}</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-field">
-              <label>فلتر القسم</label>
-              <select id="analyticsDepartmentSelect" class="form-control">
-                <option value="all">الكل</option>
-                <option value="callcenter">كول سنتر</option>
-                <option value="admin">إدارة</option>
-              </select>
-            </div>
-            <div class="form-field" style="grid-column: 1 / -1;">
-              <label>بحث الموظفين</label>
-              <input id="analyticsEmployeeFilter" type="search" class="form-control" placeholder="ابحث باسم الموظف أو حالة الإجازة">
-            </div>
-          </div>
-        </div>
-
-        <div id="analyticsLoading" class="info-box" style="text-align: center; margin-top: 20px;">جاري تحميل البيانات...</div>
-        <div id="analyticsContent" style="display: none;"></div>
-      `;
-
-      const monthSelect = document.getElementById('analyticsMonthSelect');
-      const deptSelect = document.getElementById('analyticsDepartmentSelect');
-
-      const updateAnalytics = () => {
-        loadStaffAnalyticsData(parseInt(monthSelect.value), deptSelect.value);
-      };
-
-      monthSelect.addEventListener('change', updateAnalytics);
-      deptSelect.addEventListener('change', updateAnalytics);
-
-      const employeeFilterInput = document.getElementById('analyticsEmployeeFilter');
-      window._staffAnalyticsFilter = '';
-      if (employeeFilterInput) {
-        employeeFilterInput.addEventListener('input', () => {
-          window._staffAnalyticsFilter = employeeFilterInput.value.trim().toLowerCase();
-          if (window._staffAnalyticsEmployees) {
-            displayStaffAnalytics(window._staffAnalyticsEmployees, parseInt(monthSelect.value, 10), window._staffAnalyticsTotalDays || 0);
-          }
-        });
-      }
-
-      updateAnalytics();
-    }
-
-    async function loadStaffAnalyticsData(month, department = 'all') {
-      try {
-        const sheets = [
-          { name: 'كول سنتر', dept: 'callcenter' },
-          { name: 'إدارة', dept: 'admin' }
-        ];
-
-        let allEmployees = [];
-        let totalDays = 0;
-
-        for (const sheet of sheets) {
-          if (department !== 'all' && sheet.dept !== department) continue;
-
-          const csvUrl = `https://docs.google.com/spreadsheets/d/${STAFF_ANALYTICS_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheet.name)}`;
-          const response = await fetch(csvUrl);
-          const csv = await response.text();
-          const rows = parseCSV(csv);
-          totalDays = Math.max(totalDays, Math.max(0, rows[0] ? rows[0].length - 1 : 0));
-
-          // Parse employee data
-          const employees = parseEmployeeData(rows, month, sheet.dept);
-          allEmployees = allEmployees.concat(employees);
-        }
-
-        window._staffAnalyticsEmployees = allEmployees;
-        window._staffAnalyticsTotalDays = totalDays;
-        displayStaffAnalytics(allEmployees, month, totalDays);
-      } catch (error) {
-        console.error('Error loading analytics:', error);
-        document.getElementById('analyticsLoading').innerHTML = '❌ خطأ في تحميل البيانات';
-      }
-    }
-
-    function parseEmployeeData(rows, month, department) {
-      const employees = [];
-      const dayCount = rows[0] ? Math.max(0, rows[0].length - 1) : 0;
-
-      for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        if (!row[0] || !row[0].toString().trim()) continue;
-
-        const employee = {
-          name: row[0].toString().trim(),
-          department,
-          morning: 0,
-          afternoon: 0,
-          off: 0,
-          sick: 0,
-          fridayOff: 0,
-          morningShifts: [],
-          afternoonShifts: [],
-          offShifts: [],
-          sickShifts: [],
-          fridayShifts: [],
-          dayCount
-        };
-
-        for (let j = 1; j < row.length; j++) {
-          const rawValue = (row[j] || '').toString().trim();
-          const value = rawValue.toLowerCase();
-          if (!rawValue) continue;
-
-          if (value.includes('جمعة') || value.includes('friday') || value.includes('fri')) {
-            employee.fridayOff++;
-            employee.fridayShifts.push(rawValue);
-            continue;
-          }
-
-          if (value.includes('مرض') || value.includes('sick') || value.includes('leave') || value.includes('اجازة مرض') || value.includes('اجازه مرض')) {
-            employee.sick++;
-            employee.sickShifts.push(rawValue);
-            continue;
-          }
-
-          if (value.includes('off') || value.includes('عطلة') || value.includes('إجازة') || value.includes('غائب')) {
-            employee.off++;
-            employee.offShifts.push(rawValue);
-            continue;
-          }
-
-          if (value.includes('صباح') || value.includes('morning')) {
-            employee.morning++;
-            employee.morningShifts.push(rawValue);
-            continue;
-          }
-
-          if (value.includes('ظهر') || value.includes('afternoon') || value.includes('مساء')) {
-            employee.afternoon++;
-            employee.afternoonShifts.push(rawValue);
-            continue;
-          }
-
-          const range = parseShiftTimeRange(rawValue);
-          if (range) {
-            if (range.startHour >= 12 || range.startHour === 11 || range.startHour === 15) {
-              employee.afternoon++;
-              employee.afternoonShifts.push(rawValue);
-            } else {
-              employee.morning++;
-              employee.morningShifts.push(rawValue);
-            }
-            continue;
-          }
-
-          if (value.includes('7-3') || value.includes('7 - 3') || value.includes('07:00') || value.includes('7:00') || value.includes('07-15') || value.includes('7-15')) {
-            employee.morning++;
-            employee.morningShifts.push(rawValue);
-            continue;
-          }
-
-          if (value.includes('3-11') || value.includes('3 - 11') || value.includes('15:00') || value.includes('12-8') || value.includes('12 - 8') || value.includes('11-7') || value.includes('11 - 7')) {
-            employee.afternoon++;
-            employee.afternoonShifts.push(rawValue);
-            continue;
-          }
-        }
-
-        employee.totalShifts = employee.morning + employee.afternoon;
-        employee.totalEntries = employee.totalShifts + employee.off + employee.sick + employee.fridayOff;
-        employees.push(employee);
-      }
-
-      return employees;
-    }
-
-    function displayStaffAnalytics(employees, month, dayCount = 0) {
-      const monthNames = ['','يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-      const filter = (window._staffAnalyticsFilter || '').toString().trim().toLowerCase();
-      const filteredEmployees = employees.filter(emp => {
-        if (!filter) return true;
-        const searchable = [
-          emp.name,
-          emp.department,
-          emp.morningShifts.join(' '),
-          emp.afternoonShifts.join(' '),
-          emp.offShifts.join(' '),
-          emp.sickShifts.join(' '),
-          emp.fridayShifts.join(' ')
-        ].join(' ').toLowerCase();
-        return searchable.includes(filter);
-      });
-      
-      document.getElementById('analyticsLoading').style.display = 'none';
-      const content = document.getElementById('analyticsContent');
-      content.style.display = 'block';
-
-      let html = '';
-
-      // Detailed Employee Table
-      html += `
-        <div class="data-table-container" style="grid-column: 1 / -1;">
-          <div class="table-header">جدول تفصيلي للموظفين</div>
-          <div class="table-scroll">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>اسم الموظف</th>
-                  <th>القسم</th>
-                  <th>شفتات الصباح</th>
-                  <th>شفتات الظهر</th>
-                  <th>OFF</th>
-                  <th>إجازات مرضية</th>
-                  <th>جمعة</th>
-                  <th>أسابيع</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${filteredEmployees.map(emp => {
-                  const weeks = Math.ceil((emp.morning + emp.afternoon) / 5);
-                  const departmentLabel = emp.department === 'callcenter' ? 'كول سنتر' : 'إدارة';
-                  return `
-                    <tr style="cursor: pointer;" onclick="alert('${emp.name}:\\nالقسم: ${departmentLabel}\\nشفتات الصباح: ${emp.morningShifts.join(', ') || 'لا توجد'}\\nشفتات الظهر: ${emp.afternoonShifts.join(', ') || 'لا توجد'}\\nOFF: ${emp.offShifts.join(', ') || 'لا توجد'}\\nإجازات مرضية: ${emp.sickShifts.join(', ') || 'لا توجد'}\\nجمعة: ${emp.fridayShifts.join(', ') || 'لا توجد'}\\nأسابيع الشفتات: ${weeks}')">
-                      <td style="text-align: right; color: #F2BC1B; font-weight: 600;">${emp.name}</td>
-                      <td>${departmentLabel}</td>
-                      <td>${emp.morningShifts.join(', ') || '-'}</td>
-                      <td>${emp.afternoonShifts.join(', ') || '-'}</td>
-                      <td>${emp.offShifts.join(', ') || '-'}</td>
-                      <td>${emp.sickShifts.join(', ') || '-'}</td>
-                      <td${emp.fridayOff > 4 ? ' style="background: #4a1a1a; color: #fca5a5;"' : ''}>${emp.fridayShifts.join(', ') || '-'}</td>
-                      <td>${weeks}</td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
-
-      content.innerHTML = html;
-    }
   </script>
+</script>
+
+  <!-- Mechanic services step-by-step calculator -->
+  <div class="form-section full-width" id="mechanicCalculator" style="margin:12px;">
+    <h3 class="section-title">حاسبة أسعار الميكانيك (تفاعلية)</h3>
+    <div id="mc-step" style="min-height:160px;">
+      <div id="mc-intro">
+        <p>اختر نوع الخدمة للبدء (اضغط على الزر):</p>
+        <div id="mc-services" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+      </div>
+      <div id="mc-vehicle-type" style="display:none;margin-top:8px">
+        <p>اختر نوع السيارة:</p>
+        <div id="mc-vehicle-buttons" style="display:flex;gap:8px"></div>
+      </div>
+      <div id="mc-extra-options" style="display:none;margin-top:8px">
+        <p id="mc-extra-prompt"></p>
+        <div id="mc-extra-buttons" style="display:flex;gap:8px"></div>
+      </div>
+      <div id="mc-origin" style="display:none;margin-top:8px">
+        <p>اختر منشأ السيارة:</p>
+        <div style="display:flex;gap:8px"><button class="mc-btn" data-origin="german" style="padding:8px 12px">ألماني</button><button class="mc-btn" data-origin="other" style="padding:8px 12px">أمريكي / ياباني</button></div>
+      </div>
+      <div id="mc-special" style="display:none;margin-top:8px">
+        <p>هل السيارة من النوع الذي تزيد أسعاره؟</p>
+        <div style="display:flex;gap:8px"><button class="mc-btn" data-special="no" style="padding:8px 12px">عادي</button><button class="mc-btn" data-special="yes" style="padding:8px 12px">نعم (انفينيتي/كاديلاك/رينج روفر)</button></div>
+      </div>
+      <div id="mc-result" style="display:none;margin-top:12px;padding:10px;border:1px solid #333;background:#0f0f0f">
+        <h4>السعر النهائي:</h4>
+        <div id="mc-price" style="font-weight:700;color:#F2BC1B;font-size:20px">0 د.ك</div>
+        <p style="color:#ccc;margin-top:8px">ملاحظة: هذا السعر يخص فقط رسوم الخدمة (شغل اليد). زيادات قطع الغيار حسب سعر القطعة. السيارات الخاصة (انفينيتي/كاديلاك/رينج روفر) تكلف أكثر.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    // Pricing tables
+    const prices = {
+      german: {
+        salon: {
+          'طرمبة بنزين':15,'طرمبة ماي':40,'غايش':10,'فلتر هوا':5,'فلتر مكيف':5,'بكرات غايش':10,'شداد غايش':20,'شيالات':10,'اكسات':60,'دسكات':10,
+          'سفايف-تايرين':10,'سفايف-4':20,'بلاكات-4':10,'بلاكات-6':15
+        },
+        jeep: {
+          'طرمبة بنزين':25,'طرمبة ماي':50,'غايش':10,'فلتر هوا':5,'فلتر مكيف':5,'بكرات غايش':10,'شداد غايش':30,'شيالات':20,'اكسات-عادي':80,'اكسات-دبل':120,'دسكات':15,
+          'سفايف-تايرين':10,'سفايف-4':20,'بلاكات-6':15,'بلاكات-8':20
+        },
+        'نص جيب': {
+          'طرمبة بنزين':50,'طرمبة ماي':30,'غايش':10,'فلتر هوا':1,'فلتر مكيف':1,'بكرات غايش':10,'شداد غايش':10,'شيالات':5,'اكسات':25,'دسكات':5,
+          'سفايف-تايرين':5,'سفايف-4':15,'بلاكات-6':10,'بلاكات-8':15
+        },
+        extra: {'معاونات':30,'استبلايزر':5,'كرسي معاون':30}
+      },
+      other: { // american + japanese
+        salon: {
+          'طرمبة بنزين':10,'طرمبة ماي':10,'غايش':5,'فلتر هوا':1,'فلتر مكيف':1,'بكرات غايش':5,'شداد غايش':5,'شيالات':5,'اكسات':20,'دسكات':5,
+          'سفايف-تايرين':5,'سفايف-4':15,'بلاكات-4':5,'بلاكات-6':10
+        },
+        jeep: {
+          'طرمبة بنزين':30,'طرمبة ماي':15,'غايش':5,'فلتر هوا':1,'فلتر مكيف':1,'بكرات غايش':5,'شداد غايش':5,'شيالات':10,'اكسات':25,'دسكات':5,
+          'سفايف-تايرين':5,'سفايف-4':15,'بلاكات-6':10,'بلاكات-8':15
+        },
+        'نص جيب': {
+          'طرمبة بنزين':50,'طرمبة ماي':30,'غايش':10,'فلتر هوا':1,'فلتر مكيف':1,'بكرات غايش':10,'شداد غايش':10,'شيالات':5,'اكسات':25,'دسكات':5,
+          'سفايف-تايرين':5,'سفايف-4':15,'بلاكات-6':10,'بلاكات-8':15
+        },
+        extra: {'معاونات-جيب':15,'معاونات-نص جيب':10,'معاونات-صالون':10,'استبلايزر':5,'كرسي معاون':10}
+      }
+    };
+
+    // Flatten list of available services from german.salon + jeep + نص جيب + extra
+    const serviceSet = new Set();
+    ['german','other'].forEach(k=>{
+      Object.keys(prices[k]).forEach(vt=>{
+        if(vt==='extra'){
+          Object.keys(prices[k].extra).forEach(s=>serviceSet.add(s.replace(/-.*$/,'')));
+        } else {
+          Object.keys(prices[k][vt]).forEach(s=>{
+            const name = s.split('-')[0]; serviceSet.add(name);
+          });
+        }
+      });
+    });
+
+    const services = Array.from(serviceSet).filter(s=>s).sort();
+
+    const mcServices = document.getElementById('mc-services');
+    const mcVehicleBtns = document.getElementById('mc-vehicle-buttons');
+    const mcExtra = document.getElementById('mc-extra-options');
+    const mcExtraPrompt = document.getElementById('mc-extra-prompt');
+    const mcExtraBtns = document.getElementById('mc-extra-buttons');
+    const mcOrigin = document.getElementById('mc-origin');
+    const mcSpecial = document.getElementById('mc-special');
+    const mcResult = document.getElementById('mc-result');
+    const mcPrice = document.getElementById('mc-price');
+
+    let state = { service:null, vehicleType:null, extraChoice:null, origin:null, special:false };
+
+    function makeBtn(text,attrs={}){
+      const b=document.createElement('button'); b.type='button'; b.className='mc-btn'; b.textContent=text;
+      b.style.padding='8px 12px'; b.style.border='1px solid #444'; b.style.background='#111'; b.style.color='#F2BC1B'; b.style.cursor='pointer';
+      Object.keys(attrs).forEach(k=>b.setAttribute(k,attrs[k]));
+      return b;
+    }
+
+    // render service buttons
+    services.forEach(s=>{
+      const btn = makeBtn(s);
+      btn.onclick = ()=>{
+        state.service = s;
+        // show vehicle types
+        document.getElementById('mc-intro').style.display='none';
+        mcVehicleBtns.innerHTML='';
+        ['صالون','جيب','نص جيب'].forEach(vt=>{
+          const b=makeBtn(vt); b.onclick=()=>{ state.vehicleType=vt; onVehicleSelected();}; mcVehicleBtns.appendChild(b);
+        });
+        document.getElementById('mc-vehicle-type').style.display='block';
+        mcExtra.style.display='none'; mcOrigin.style.display='none'; mcSpecial.style.display='none'; mcResult.style.display='none';
+      };
+      mcServices.appendChild(btn);
+    });
+
+    function onVehicleSelected(){
+      // determine if service needs extra options
+      const needTires = state.service === 'سفايف' || state.service === 'سفايف';
+      const needBrakes = state.service === 'بلاكات' || state.service === 'بلاكات';
+      mcExtraBtns.innerHTML='';
+      if(state.service === 'اكسات'){
+        // special for اكسات choices
+        mcExtraPrompt.textContent = 'اختر نوع الاكسات (اذا متوفر):';
+        mcExtraBtns.appendChild(makeBtn('عادي')).onclick = ()=>{ state.extraChoice='عادي'; showOriginStep(); };
+        mcExtraBtns.appendChild(makeBtn('دبل')).onclick = ()=>{ state.extraChoice='دبل'; showOriginStep(); };
+        mcExtra.style.display='block'; mcOrigin.style.display='none'; mcSpecial.style.display='none'; mcResult.style.display='none';
+        return;
+      }
+      if(needTires || state.service === 'سفايف'){
+        mcExtraPrompt.textContent = 'كم عدد التواير؟';
+        mcExtraBtns.appendChild(makeBtn('تايرين')).onclick = ()=>{ state.extraChoice='تايرين'; showOriginStep(); };
+        mcExtraBtns.appendChild(makeBtn('4 تواير')).onclick = ()=>{ state.extraChoice='4'; showOriginStep(); };
+        mcExtra.style.display='block'; mcOrigin.style.display='none'; mcSpecial.style.display='none'; mcResult.style.display='none';
+        return;
+      }
+      if(needBrakes || state.service === 'بلاكات'){
+        mcExtraPrompt.textContent = 'كم سلندر السيارة؟';
+        ['4','6','8'].forEach(n=>{ const b=makeBtn(n); b.onclick=()=>{ state.extraChoice=n; showOriginStep(); }; mcExtraBtns.appendChild(b); });
+        mcExtra.style.display='block'; mcOrigin.style.display='none'; mcSpecial.style.display='none'; mcResult.style.display='none';
+        return;
+      }
+      // no extra
+      mcExtra.style.display='none'; showOriginStep();
+    }
+
+    function showOriginStep(){
+      mcOrigin.style.display='block'; mcSpecial.style.display='none'; mcResult.style.display='none';
+      // attach origin buttons
+      document.querySelectorAll('#mc-origin .mc-btn').forEach(b=>{ b.onclick = ()=>{ state.origin = b.getAttribute('data-origin'); showSpecialStep(); }; });
+    }
+
+    function showSpecialStep(){
+      mcSpecial.style.display='block'; mcResult.style.display='none';
+      document.querySelectorAll('#mc-special .mc-btn').forEach(b=>{ b.onclick = ()=>{ state.special = b.getAttribute('data-special')==='yes'; computeAndShow(); }; });
+    }
+
+    function computeAndShow(){
+      // compute price based on state
+      const originKey = state.origin === 'german' ? 'german' : 'other';
+      const vtKey = state.vehicleType === 'صالون' ? 'salon' : (state.vehicleType === 'جيب' ? 'jeep' : 'نص جيب');
+      let base = 0;
+      const svc = state.service;
+      const table = prices[originKey];
+      if(!table) return;
+      // handle extra mapping
+      if(svc === 'سفايف'){
+        const key = `سفايف-${state.extraChoice==='4'?'4':'تايرين'}`;
+        base = (table[vtKey][key] !== undefined) ? table[vtKey][key] : 0;
+      } else if(svc === 'بلاكات'){
+        const key = `بلاكات-${state.extraChoice}`;
+        base = (table[vtKey][key] !== undefined) ? table[vtKey][key] : 0;
+      } else if(svc === 'اكسات'){
+        const key = state.extraChoice === 'دبل' ? 'اكسات-دبل' : 'اكسات' ;
+        // in some tables اكسات-عادي key exists
+        base = (table[vtKey][key] !== undefined) ? table[vtKey][key] : (table[vtKey]['اكسات-عادي']||table[vtKey]['اكسات']||0);
+      } else {
+        // direct lookup
+        base = (table[vtKey][svc] !== undefined) ? table[vtKey][svc] : 0;
+        // check extras table
+        if(base===0 && table.extra){
+          const extraKey = Object.keys(table.extra).find(k=>k.startsWith(svc));
+          if(extraKey) base = table.extra[extraKey];
+        }
+      }
+
+      // if special brand add surcharge 25%
+      if(state.special) base = Math.round(base * 1.25);
+
+      mcPrice.textContent = base + ' د.ك';
+      mcResult.style.display='block';
+      // reset steps to allow new calculation
+    }
+
+  })();
+  </script>
+
   <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
