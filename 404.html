@@ -6754,6 +6754,11 @@
                   formData.origin = formData.origin || tb.closest('#fuelpumpTypeSection').dataset.origin;
                   formData.type = tb.dataset.fuelType;
 
+                  // Clear brakes mode and options selections when type changes
+                  modeSection.querySelectorAll('[data-brakes-mode]').forEach(b => b.classList.remove('active'));
+                  optionsSection.innerHTML = '';
+                  document.getElementById('mechResultSection').classList.add('hidden');
+
                   // show mode selector for brakes (سفايف / ديسكات / كلاهما)
                   modeSection.classList.remove('hidden');
                   optionsSection.classList.add('hidden');
@@ -6761,6 +6766,8 @@
                   // render options according to chosen mode; for 'both' we show sequential questions
                   const renderModeFlow = (mode) => {
                     optionsSection.innerHTML = '';
+                    // Clear result when mode changes
+                    document.getElementById('mechResultSection').classList.add('hidden');
 
                     const makeBtn = (text, key) => {
                       const b = document.createElement('button');
@@ -6810,26 +6817,12 @@
                       });
 
                     } else if (mode === 'discs') {
-                      const container = document.createElement('div');
-                      container.className = 'btn-grid';
-                      container.style.gridTemplateColumns = 'repeat(2, 1fr)';
-                      const newBtn = makeBtn('ديسكات جديدة', 'new_discs');
-                      const installBtn = makeBtn('تركيب ديسكات فقط', 'install_discs');
-                      container.appendChild(newBtn);
-                      container.appendChild(installBtn);
-                      optionsSection.appendChild(container);
-                      optionsSection.classList.remove('hidden');
-
-                      [newBtn, installBtn].forEach(b => {
-                        b.onclick = () => {
-                          container.querySelectorAll('.btn-option').forEach(x => x.classList.remove('active'));
-                          b.classList.add('active');
-                          const opt = b.dataset.brakeOpt;
-                          const row = DISCS_PRICING[formData.type] || {};
-                          const discsPrice = row[formData.origin] || 0;
-                          showResult(0, discsPrice, 0);
-                        };
-                      });
+                      // Show result directly without asking for new discs or installation only
+                      const row = DISCS_PRICING[formData.type] || {};
+                      const discsPrice = row[formData.origin] || 0;
+                      showResult(0, discsPrice, 0);
+                      optionsSection.innerHTML = '';
+                      optionsSection.classList.add('hidden');
 
                     } else { // both: sequential
                       // first: shafayef selection
@@ -6919,6 +6912,18 @@
                 document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
                 o.classList.add('active');
                 formData.origin = o.dataset.fuelOrigin;
+                
+                // Clear other selections when origin changes
+                formData.type = null;
+                formData.brakesMode = null;
+                document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                document.getElementById('brakesModeSection').classList.add('hidden');
+                document.getElementById('brakesOptionsSection').classList.add('hidden');
+                document.getElementById('mechResultSection').classList.add('hidden');
+                // Remove previous cylinder container if exists (for blocks)
+                const prevBlocks = document.getElementById('blocksCylContainer');
+                if (prevBlocks) prevBlocks.remove();
+                
                 makeTypeButtons(formData.origin);
               };
             });
@@ -6997,6 +7002,11 @@
                       tb.classList.add('active');
                       formData.type = tb.dataset.fuelType;
 
+                      // Clear previous cylinder container and result when type changes
+                      document.getElementById('mechResultSection').classList.add('hidden');
+                      const prevBlocks = document.getElementById('blocksCylContainer');
+                      if (prevBlocks) prevBlocks.remove();
+
                       // show cylinder choices
                       const cylContainer = document.createElement('div');
                       cylContainer.className = 'btn-grid';
@@ -7050,6 +7060,18 @@
                     document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
                     o.classList.add('active');
                     formData.origin = o.dataset.fuelOrigin;
+                    
+                    // Clear other selections when origin changes
+                    formData.type = null;
+                    document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                    document.getElementById('mechResultSection').classList.add('hidden');
+                    // Remove previous cylinder container
+                    const prevBlocks = document.getElementById('blocksCylContainer');
+                    if (prevBlocks) prevBlocks.remove();
+                    // Clear type button selections
+                    typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                    typesContainer.innerHTML = '';
+                    
                     makeBlockTypeButtons(formData.origin);
                   };
                 });
