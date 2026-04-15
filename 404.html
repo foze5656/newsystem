@@ -6801,6 +6801,7 @@
                         if (surcharge) html += `<tr><td>مخرطة ديسكات</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
                         html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td></tr>`;
                         tbody.innerHTML = html;
+                        updateMechResultNote();
                         document.getElementById('mechResultSection').classList.remove('hidden');
                       }
                     };
@@ -7072,6 +7073,7 @@
                               <tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>
                             `;
                             tbody.innerHTML = html;
+                            updateMechResultNote();
                             document.getElementById('mechResultSection').classList.remove('hidden');
                           }
                         };
@@ -7171,6 +7173,7 @@
                           }
                           html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>`;
                           tbody.innerHTML = html;
+                          updateMechResultNote();
                           document.getElementById('mechResultSection').classList.remove('hidden');
                         }
                       } else if (formData.type === 'suv') {
@@ -7226,6 +7229,7 @@
                                 }
                                 html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>`;
                                 tbody.innerHTML = html;
+                                updateMechResultNote();
                                 document.getElementById('mechResultSection').classList.remove('hidden');
                               }
                             };
@@ -7263,6 +7267,7 @@
                             }
                             html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>`;
                             tbody.innerHTML = html;
+                            updateMechResultNote();
                             document.getElementById('mechResultSection').classList.remove('hidden');
                           }
                         }
@@ -7403,6 +7408,7 @@
                           </tr>
                         `;
                         tbody.innerHTML = html;
+                        updateMechResultNote();
                       }
                     };
                   });
@@ -7429,6 +7435,37 @@
       const groupsCircleBtn = document.getElementById('groupsCircleBtn');
       if (groupsCircleBtn) {
         groupsCircleBtn.onclick = () => openGroupsModal();
+      }
+    }
+
+    function updateMechResultNote() {
+      const noteDiv = document.getElementById('mechNote');
+      if (!noteDiv) return;
+      if (formData.mechanicalService === 'coolant') {
+        noteDiv.innerHTML = `
+          <div style="line-height: 1.6;">
+            ١- لازم تسالون العميل لو السياره فيها حراره ولو ارتفعت الحراره بعد ما عبينا لازم توديها كراج ويشيك على التسريب لنه ما عندنا خدمه تصليح او فحص تسريب<br>
+            ٢-هذا السعر في حال العميل طلب تعبئه ماي راديتر و(ليس تبديل) التبديل يختلف سعره عن التعبئه يرجى التأكد من الاداره
+          </div>
+        `;
+        noteDiv.classList.remove('hidden');
+        return;
+      }
+      if (formData.mechanicalService === 'oilfilter' && formData.oilSource === 'customer') {
+        noteDiv.textContent = 'إذا القطع من عند العميل';
+        noteDiv.classList.remove('hidden');
+        return;
+      }
+      const noteServices = new Set([
+        'fuelpump', 'waterpump', 'gaysh', 'airfilter', 'acfilter', 'gaysh_rollers',
+        'gaysh_shadad', 'shialat', 'assistants', 'stabilizer', 'assistant_seat',
+        'blocks', 'axles', 'brakes'
+      ]);
+      if (noteServices.has(formData.mechanicalService)) {
+        noteDiv.innerHTML = `هذه فقط رسوم الخدمة (شغل الايد)<br>تزيد الأسعار إذا سيارة انفينيتي أو كاديلاك أو رينج روفر`;
+        noteDiv.classList.remove('hidden');
+      } else {
+        noteDiv.classList.add('hidden');
       }
     }
 
@@ -7470,40 +7507,17 @@
       }
       
       const tbody = document.getElementById('mechResultBody');
-      const noteDiv = document.getElementById('mechNote');
-      
-      if (formData.mechanicalService === 'brakes') {
-        // When brakes prices come from sheet, present base price (surcharge handled in UI flow)
-        tbody.innerHTML = `
-          <tr>
-            <td>سعر الخدمة</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-      } else {
-        tbody.innerHTML = `
-          <tr>
-            <td>سعر الخدمة</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-        
-        if (formData.mechanicalService === 'brakes' || formData.mechanicalService === 'oilfilter') {
-          noteDiv.textContent = 'إذا القطع من عند العميل';
-          noteDiv.classList.remove('hidden');
-        } else {
-          noteDiv.classList.add('hidden');
-        }
-      }
-      
+      tbody.innerHTML = `
+        <tr>
+          <td>سعر الخدمة</td>
+          <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+        </tr>
+        <tr>
+          <td>رسوم الإلغاء</td>
+          <td>${cancellation}</td>
+        </tr>
+      `;
+      updateMechResultNote();
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
 
@@ -7636,18 +7650,7 @@
       }
 
       // Add note for coolant
-      if (formData.mechanicalService === 'coolant') {
-        noteDiv.innerHTML = `
-          <div style="line-height: 1.6;">
-            ١- لازم تسالون العميل لو السياره فيها حراره ولو ارتفعت الحراره بعد ما عبينا لازم توديها كراج ويشيك على التسريب لنه ما عندنا خدمه تصليح او فحص تسريب<br>
-            ٢-هذا السعر في حال العميل طلب تعبئه ماي راديتر و(ليس تبديل) التبديل يختلف سعره عن التعبئه يرجى التأكد من الاداره
-          </div>
-        `;
-        noteDiv.classList.remove('hidden');
-      } else {
-        noteDiv.classList.add('hidden');
-      }
-
+      updateMechResultNote();
       resultSection.classList.remove('hidden');
     }
 
@@ -7688,8 +7691,7 @@
         </tr>
       `;
 
-      const noteDiv = document.getElementById('mechNote');
-      if (noteDiv) noteDiv.classList.add('hidden');
+      updateMechResultNote();
 
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
@@ -8043,8 +8045,7 @@
         </tr>
       `;
       
-      const noteDiv = document.getElementById('mechNote');
-      if (noteDiv) noteDiv.classList.add('hidden');
+      updateMechResultNote();
 
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
