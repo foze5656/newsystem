@@ -6858,6 +6858,7 @@
 
                         const holder = document.createElement('div');
                         holder.className = 'discs-block';
+                        holder.style.marginTop = '8px';
                         holder.appendChild(discsContainer);
                         optionsSection.appendChild(holder);
 
@@ -6867,8 +6868,16 @@
                             btn.classList.add('active');
                             const opt = btn.dataset.brakeOpt;
                             const discsRow = DISCS_PRICING[formData.type] || {};
-                            const discsPrice = discsRow[formData.origin] || 0;
-                            const turnSurcharge = (btn.dataset.brakeOpt === 'discs_with_turn') ? 5 : 0;
+                            // If user chose "مخرطه ديسكات معاهم" we only add the +5 surcharge, do NOT add full discs price
+                            let discsPrice = 0;
+                            let turnSurcharge = 0;
+                            if (btn.dataset.brakeOpt === 'discs_with_turn') {
+                              discsPrice = 0;
+                              turnSurcharge = 5;
+                            } else {
+                              discsPrice = discsRow[formData.origin] || 0;
+                              turnSurcharge = 0;
+                            }
                             showResult(shafayefPrice, discsPrice, turnSurcharge);
                           };
                         });
@@ -6999,7 +7008,11 @@
                       // compute price from BLOCKS_PRICING
                       const row = (BLOCKS_PRICING[formData.type] || {})[c] || {};
                       const price = row[formData.origin] || 0;
-                      const desc = `بلاكات (${formData.origin} + ${formData.type} + ${c} سلندر)`;
+                      const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                      const typeLabelMap = { salon: 'صالون', half_suv: 'نص جيب', suv: 'جيب' };
+                      const originLabel = originLabelMap[formData.origin] || formData.origin;
+                      const typeLabel = typeLabelMap[formData.type] || formData.type;
+                      const desc = `بلاكات (${originLabel} + ${typeLabel} + ${c} سلندر)`;
                       const tbody = document.getElementById('mechResultBody');
                       if (tbody) {
                         tbody.innerHTML = `
