@@ -7349,9 +7349,11 @@
     }
 
     function calculateFluidPrice() {
+      console.log('calculateFluidPrice called, area:', formData.area, 'service:', formData.mechanicalService);
       if (!formData.area) return;
 
       const rows = sheetsData['خدمات5'];
+      console.log('sheetsData[خدمات5]:', rows);
       if (!rows) return;
 
       const columns = [0, 1, 2, 4, 5, 6];
@@ -7382,6 +7384,8 @@
           }
         }
       }
+
+      console.log('basePrice:', basePrice, 'regionSurcharge:', regionSurcharge);
 
       // Determine service name
       let serviceName = '';
@@ -7422,6 +7426,7 @@
       tbody.innerHTML = html;
 
       // Auto-expand the result container
+      resultSection.classList.remove('hidden');
       resultSection.style.maxHeight = 'none';
       resultSection.style.overflow = 'visible';
       const tableScroll = resultSection.querySelector('.table-scroll');
