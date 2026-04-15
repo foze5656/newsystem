@@ -6653,8 +6653,8 @@
 
       // Region surcharges for mechanical services
       const REGION_SURCHARGES = {
-        10: ['علي صباح السالم (أم الهيمان)', 'شعيبة', 'ميناء عبدالله', 'جليعة', 'بنيدر', 'الخيران', 'النويصيب', 'الروضتين', 'المطلاع', 'العبدلي', 'الصبية', 'جبد', 'صباح الأحمد', 'الوفره'],
-        5: ['جابر الأحمد', 'سعد العبدالله', 'الجهراء', 'فحيحيل', 'الأحمدي', 'غرب عبدالله مبارك']
+        10: ['علي صباح السالم (أم الهيمان)', 'علي صباح السالم', 'شعيبة', 'ميناء عبدالله', 'جليعة', 'بنيدر', 'الخيران', 'النويصيب', 'الروضتين', 'المطلاع', 'العبدلي', 'الصبية', 'جبد', 'صباح الأحمد', 'الوفره'],
+        5: ['جابر الأحمد', 'سعد العبدالله', 'الجهراء', 'فحيحيل', 'الأحمدي', 'غرب عبدالله مبارك', 'جنوب عبدالله مبارك']
       };
       
       document.querySelectorAll('[data-mech]').forEach(btn => {
@@ -6960,10 +6960,16 @@
             document.getElementById('mechAreaSection').classList.remove('hidden');
             loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], calculateFluidPrice);
           } else if (formData.mechanicalService === 'blocks') {
-            // بلاكات flow: choose origin -> type -> cylinders
-            document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+            // بلاكات flow: choose area -> origin -> type -> cylinders
+            document.getElementById('mechAreaSection').classList.remove('hidden');
+            document.getElementById('fuelpumpOriginSection').classList.add('hidden');
             document.getElementById('fuelpumpTypeSection').classList.add('hidden');
             document.getElementById('brakesOptionsSection').classList.add('hidden');
+
+            loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
+              document.getElementById('mechAreaSection').classList.add('hidden');
+              document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+            });
 
             const typesContainer = document.getElementById('fuelpumpTypeButtons');
             const makeBlockTypeButtons = (origin) => {
@@ -9904,7 +9910,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           return;
         }
         
-        if (formData.area && callback) {
+        const isExactAreaMatch = uniqueAreas.includes(formData.area);
+        if (isExactAreaMatch && callback) {
           callback();
         }
       };
