@@ -6395,6 +6395,14 @@
             <button class="btn-option" data-mech="brakefluid">زيت بريك</button>
             <button class="btn-option" data-mech="transmission">زيت سكان</button>
             <button class="btn-option" data-mech="fuelpump">طرمبه بنزين</button>
+            <button class="btn-option" data-mech="waterpump">طرمبه ماي</button>
+            <button class="btn-option" data-mech="gaysh">غايش</button>
+            <button class="btn-option" data-mech="airfilter">فلتر هوا</button>
+            <button class="btn-option" data-mech="acfilter">فلتر مكيف</button>
+            <button class="btn-option" data-mech="gaysh_rollers">بكرات غايش</button>
+            <button class="btn-option" data-mech="gaysh_shadad">شداد غايش</button>
+            <button class="btn-option" data-mech="shialat">شيالات</button>
+            <button class="btn-option" data-mech="assistants">معاونات</button>
           </div>
         </div>
         
@@ -6515,8 +6523,65 @@
         'acgas': 'تعبئه غاز مكيف',
         'coolant': 'ماي راديتر',
         'brakefluid': 'زيت بريك',
-        'transmission': 'زيت سكان'
-        ,'fuelpump': 'طرمبه بنزين'
+        'transmission': 'زيت سكان',
+        'fuelpump': 'طرمبه بنزين',
+        'waterpump': 'طرمبه ماي',
+        'gaysh': 'غايش',
+        'airfilter': 'فلتر هوا',
+        'acfilter': 'فلتر مكيف',
+        'gaysh_rollers': 'بكرات غايش',
+        'gaysh_shadad': 'شداد غايش',
+        'shialat': 'شيالات',
+        'assistants': 'معاونات'
+      };
+
+      // Pricing table: service -> origin -> type -> price (number)
+      const PRICING = {
+        fuelpump: {
+          german: { salon: 15, suv: 25 },
+          american: { salon: 10, half_suv: 50, suv: 30 },
+          japanese: { salon: 10, half_suv: 50, suv: 30 }
+        },
+        waterpump: {
+          german: { salon: 40, suv: 50 },
+          american: { salon: 10, half_suv: 15, suv: 15 },
+          japanese: { salon: 10, half_suv: 15, suv: 15 }
+        },
+        gaysh: {
+          german: { salon: 10, suv: 10 },
+          american: { salon: 5, half_suv: 10, suv: 5 },
+          japanese: { salon: 5, half_suv: 10, suv: 5 }
+        },
+        airfilter: {
+          german: { salon: 5, suv: 5 },
+          american: { salon: 1, half_suv: 1, suv: 1 },
+          japanese: { salon: 1, half_suv: 1, suv: 1 }
+        },
+        acfilter: {
+          german: { salon: 5, suv: 5 },
+          american: { salon: 1, half_suv: 1, suv: 1 },
+          japanese: { salon: 1, half_suv: 1, suv: 1 }
+        },
+        gaysh_rollers: {
+          german: { salon: 10, suv: 10 },
+          american: { salon: 5, half_suv: 10, suv: 5 },
+          japanese: { salon: 5, half_suv: 10, suv: 5 }
+        },
+        gaysh_shadad: {
+          german: { salon: 20, suv: 30 },
+          american: { salon: 5, half_suv: 10, suv: 5 },
+          japanese: { salon: 5, half_suv: 10, suv: 5 }
+        },
+        shialat: {
+          german: { salon: 10, suv: 20 },
+          american: { salon: 5, half_suv: 5, suv: 10 },
+          japanese: { salon: 5, half_suv: 5, suv: 10 }
+        },
+        assistants: {
+          german: { salon: 30, suv: 30 },
+          american: { salon: 10, half_suv: 10, suv: 15 },
+          japanese: { salon: 10, half_suv: 10, suv: 15 }
+        }
       };
       
       document.querySelectorAll('[data-mech]').forEach(btn => {
@@ -6623,23 +6688,29 @@
           } else if (formData.mechanicalService === 'coolant' || formData.mechanicalService === 'brakefluid' || formData.mechanicalService === 'transmission') {
             document.getElementById('mechAreaSection').classList.remove('hidden');
             loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], calculateFluidPrice);
-          } else if (formData.mechanicalService === 'fuelpump') {
-            // Show back button and origin selection
+          } else if (Object.keys(PRICING).includes(formData.mechanicalService)) {
+            const svc = formData.mechanicalService;
+            const svcDisplay = serviceNames[svc] || svc;
+
+            // Show back and origin UI
             document.getElementById('mechTypeSection').style.display = 'none';
             document.getElementById('mechBackButtonSection').style.display = 'block';
-            document.getElementById('mechSelectedService').textContent = serviceNames['fuelpump'];
+            document.getElementById('mechSelectedService').textContent = svcDisplay;
             document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
             document.getElementById('fuelpumpTypeSection').classList.add('hidden');
             document.getElementById('mechResultSection').classList.add('hidden');
 
-            // origin buttons
+            // attach origin handlers (reuse same origin buttons)
             document.querySelectorAll('[data-fuel-origin]').forEach(o => {
               o.onclick = () => {
                 document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
                 o.classList.add('active');
-                formData.fuelOrigin = o.dataset.fuelOrigin; // german / american / japanese
+                formData.origin = o.dataset.fuelOrigin; // german / american / japanese
 
-                // prepare type buttons based on origin
+                const pricingForSvc = PRICING[svc] || {};
+                const typesForOrigin = pricingForSvc[formData.origin] || {};
+
+                // prepare type buttons based on available types for this origin
                 const typesContainer = document.getElementById('fuelpumpTypeButtons');
                 typesContainer.innerHTML = '';
                 const createBtn = (text, value) => {
@@ -6651,14 +6722,16 @@
                   return b;
                 };
 
-                if (formData.fuelOrigin === 'german') {
-                  typesContainer.appendChild(createBtn('صالون', 'salon'));
-                  typesContainer.appendChild(createBtn('جيب', 'suv'));
-                } else {
-                  typesContainer.appendChild(createBtn('صالون', 'salon'));
-                  typesContainer.appendChild(createBtn('نص جيب', 'half_suv'));
-                  typesContainer.appendChild(createBtn('جيب', 'suv'));
-                }
+                const typeMapLabel = {
+                  salon: 'صالون',
+                  half_suv: 'نص جيب',
+                  suv: 'جيب'
+                };
+
+                Object.keys(typesForOrigin).forEach(tk => {
+                  const lbl = typeMapLabel[tk] || tk;
+                  typesContainer.appendChild(createBtn(lbl, tk));
+                });
 
                 // show type section
                 document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
@@ -6666,30 +6739,23 @@
                 // attach handlers to type buttons
                 typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
                   tb.onclick = () => {
-                    // clear previous active
                     typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
                     tb.classList.add('active');
-                    formData.fuelType = tb.dataset.fuelType;
+                    formData.type = tb.dataset.fuelType;
 
-                    // compute price
-                    let label = '';
-                    let price = 0;
-                    if (formData.fuelOrigin === 'german') {
-                      if (formData.fuelType === 'salon') { label = 'الماني صالون'; price = 15; }
-                      else if (formData.fuelType === 'suv') { label = 'الماني جيب'; price = 25; }
-                    } else {
-                      const originLabel = formData.fuelOrigin === 'american' ? 'امريكي' : 'ياباني';
-                      if (formData.fuelType === 'salon') { label = originLabel + ' صالون'; price = 10; }
-                      else if (formData.fuelType === 'half_suv') { label = originLabel + ' نص جيب'; price = 50; }
-                      else if (formData.fuelType === 'suv') { label = originLabel + ' جيب'; price = 30; }
-                    }
+                    const price = (pricingForSvc[formData.origin] && pricingForSvc[formData.origin][formData.type]) || 0;
 
+                    const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                    const originLabel = originLabelMap[formData.origin] || formData.origin;
+                    const typeLabel = typeMapLabel[formData.type] || formData.type;
+
+                    const desc = `${svcDisplay} (${originLabel} + ${typeLabel})`;
                     const tbody = document.getElementById('mechResultBody');
                     if (tbody) {
                       document.getElementById('mechResultSection').classList.remove('hidden');
                       tbody.innerHTML = `
                         <tr>
-                          <td>${escapeHtml(label)}</td>
+                          <td>${escapeHtml(desc)}</td>
                           <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
                         </tr>
                       `;
