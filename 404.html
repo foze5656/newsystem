@@ -6782,7 +6782,8 @@
                         let regionSurcharge = 0;
                         if (formData.area) {
                           for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
-                            if (regions.includes(formData.area)) {
+                            const normalizedArea = formData.area.replace(/^ال/, '');
+                            if (regions.includes(formData.area) || regions.includes(normalizedArea) || regions.includes('ال' + normalizedArea)) {
                               regionSurcharge = parseInt(amount, 10);
                               break;
                             }
@@ -7034,7 +7035,23 @@
                     b.onclick = () => {
                       // compute price from BLOCKS_PRICING
                       const row = (BLOCKS_PRICING[formData.type] || {})[c] || {};
-                      const price = row[formData.origin] || 0;
+                      const basePrice = row[formData.origin] || 0;
+                      
+                      // Calculate region surcharge
+                      let regionSurcharge = 0;
+                      if (formData.area) {
+                        for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                          const normalizedArea = formData.area.replace(/^ال/, '');
+                          if (regions.includes(formData.area) || regions.includes(normalizedArea) || regions.includes('ال' + normalizedArea)) {
+                            regionSurcharge = parseInt(amount, 10);
+                            break;
+                          }
+                        }
+                      }
+                      console.log('Selected area:', formData.area, 'Region surcharge:', regionSurcharge);
+                      
+                      const totalPrice = basePrice + regionSurcharge;
+                      
                       const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
                       const typeLabelMap = { salon: 'صالون', half_suv: 'نص جيب', suv: 'جيب' };
                       const originLabel = originLabelMap[formData.origin] || formData.origin;
@@ -7042,9 +7059,22 @@
                       const desc = `بلاكات (${originLabel} + ${typeLabel} + ${c} سلندر)`;
                       const tbody = document.getElementById('mechResultBody');
                       if (tbody) {
-                        tbody.innerHTML = `
-                          <tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>
-                        `;
+                        let html = `
+                          <tr>
+                            <td>${escapeHtml(desc)}</td>
+                            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+                          </tr>`;
+                        if (regionSurcharge > 0) {
+                          html += `<tr>
+                            <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
+                            <td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td>
+                          </tr>`;
+                        }
+                        html += `<tr style="background: #262626;">
+                            <td><strong>الإجمالي</strong></td>
+                            <td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td>
+                          </tr>`;
+                        tbody.innerHTML = html;
                         document.getElementById('mechResultSection').classList.remove('hidden');
                       }
                     };
@@ -7143,7 +7173,8 @@
                       let surcharge = 0;
                       if (formData.area) {
                         for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
-                          if (regions.includes(formData.area)) {
+                          const normalizedArea = formData.area.replace(/^ال/, '');
+                          if (regions.includes(formData.area) || regions.includes(normalizedArea) || regions.includes('ال' + normalizedArea)) {
                             surcharge = parseInt(amount, 10);
                             break;
                           }
@@ -7249,7 +7280,8 @@
       let regionSurcharge = 0;
       if (formData.area) {
         for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
-          if (regions.includes(formData.area)) {
+          const normalizedArea = formData.area.replace(/^ال/, '');
+          if (regions.includes(formData.area) || regions.includes(normalizedArea) || regions.includes('ال' + normalizedArea)) {
             regionSurcharge = parseInt(amount, 10);
             break;
           }
@@ -7343,7 +7375,8 @@
       let regionSurcharge = 0;
       if (formData.area) {
         for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
-          if (regions.includes(formData.area)) {
+          const normalizedArea = formData.area.replace(/^ال/, '');
+          if (regions.includes(formData.area) || regions.includes(normalizedArea) || regions.includes('ال' + normalizedArea)) {
             regionSurcharge = parseInt(amount, 10);
             break;
           }
@@ -7442,7 +7475,8 @@
       let regionSurcharge = 0;
       if (formData.area) {
         for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
-          if (regions.includes(formData.area)) {
+          const normalizedArea = formData.area.replace(/^ال/, '');
+          if (regions.includes(formData.area) || regions.includes(normalizedArea) || regions.includes('ال' + normalizedArea)) {
             regionSurcharge = parseInt(amount, 10);
             break;
           }
@@ -7806,7 +7840,8 @@
       let regionSurcharge = 0;
       if (formData.area) {
         for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
-          if (regions.includes(formData.area)) {
+          const normalizedArea = formData.area.replace(/^ال/, '');
+          if (regions.includes(formData.area) || regions.includes(normalizedArea) || regions.includes('ال' + normalizedArea)) {
             regionSurcharge = parseInt(amount, 10);
             break;
           }
