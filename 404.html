@@ -6449,6 +6449,15 @@
             <button class="btn-option" data-brake-opt="install_discs">تركيب ديسكات فقط</button>
           </div>
         </div>
+
+        <div id="brakesModeSection" class="form-section hidden">
+          <h3 class="section-title">اختر النوع</h3>
+          <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <button class="btn-option" data-brakes-mode="shafayef">سفايف فقط</button>
+            <button class="btn-option" data-brakes-mode="discs">ديسكات فقط</button>
+            <button class="btn-option" data-brakes-mode="both">سفايف وديسكات</button>
+          </div>
+        </div>
         
         <div id="mechAreaSection" class="form-section hidden">
           <h3 class="section-title">اختيار المنطقة</h3>
@@ -6672,6 +6681,11 @@
           document.getElementById('mechAreaSection').classList.add('hidden');
           document.getElementById('diskTurningSection').classList.add('hidden');
           document.getElementById('alternatorSupplierPriceSection').classList.add('hidden');
+          document.getElementById('fuelpumpOriginSection').classList.add('hidden');
+          document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+          document.getElementById('brakesOptionsSection').classList.add('hidden');
+          document.getElementById('brakesModeSection').classList.add('hidden');
+          const prevBlocks = document.getElementById('blocksCylContainer'); if (prevBlocks) prevBlocks.remove();
           
           if (formData.mechanicalService === 'oilfilter') {
             // Show oil source selection
@@ -6751,61 +6765,131 @@
                   formData.origin = formData.origin || tb.closest('#fuelpumpTypeSection').dataset.origin;
                   formData.type = tb.dataset.fuelType;
 
-                  // show brakes options
-                  optionsSection.classList.remove('hidden');
+                  // show mode selector for brakes (سفايف / ديسكات / كلاهما)
+                  const modeSection = document.getElementById('brakesModeSection');
+                  modeSection.classList.remove('hidden');
+                  optionsSection.classList.add('hidden');
 
-                  // attach option handlers
-                  optionsSection.querySelectorAll('[data-brake-opt]').forEach(optBtn => {
-                    optBtn.onclick = () => {
-                      optionsSection.querySelectorAll('[data-brake-opt]').forEach(b => b.classList.remove('active'));
-                      optBtn.classList.add('active');
-                      const opt = optBtn.dataset.brakeOpt; // tyres / four / new_discs / install_discs
+                  const renderOptions = (mode) => {
+                    // build options buttons based on mode
+                    optionsSection.innerHTML = '';
+                    const container = document.createElement('div');
+                    container.className = 'btn-grid';
+                    container.style.gridTemplateColumns = 'repeat(4, 1fr)';
 
-                      const originMap = { german: 'german', american: 'american', japanese: 'japanese' };
-                      const orig = formData.origin;
-                      const t = formData.type;
+                    const makeBtn = (text, key) => {
+                      const b = document.createElement('button');
+                      b.className = 'btn-option';
+                      b.type = 'button';
+                      b.textContent = text;
+                      b.dataset.brakeOpt = key;
+                      return b;
+                    };
 
-                      let price = 0;
-                      let desc = '';
+                    if (mode === 'shafayef') {
+                      container.appendChild(makeBtn('تايرين', 'tyres'));
+                      container.appendChild(makeBtn('4 تواير', 'four'));
+                    } else if (mode === 'discs') {
+                      container.appendChild(makeBtn('ديسكات جديدة', 'new_discs'));
+                      container.appendChild(makeBtn('تركيب ديسكات فقط', 'install_discs'));
+                    } else { // both - allow multi-select
+                      container.appendChild(makeBtn('تايرين', 'tyres'));
+                      container.appendChild(makeBtn('4 تواير', 'four'));
+                      container.appendChild(makeBtn('ديسكات جديدة', 'new_discs'));
+                      container.appendChild(makeBtn('تركيب ديسكات فقط', 'install_discs'));
+                    }
 
-                      if (opt === 'tyres' || opt === 'four') {
-                        const map = BRAKES_PRICING[t] || {};
-                        const row = map[opt] || {};
-                        price = row[orig] || 0;
-                        desc = `سفايف وديسكات - ${opt === 'tyres' ? 'تايرين' : '4 تواير'}`;
-                      } else if (opt === 'new_discs' || opt === 'install_discs') {
-                        const row = DISCS_PRICING[t] || {};
-                        price = row[orig] || 0;
-                        desc = opt === 'new_discs' ? 'ديسكات جديدة' : 'تركيب ديسكات فقط';
-                      }
+                    optionsSection.appendChild(container);
+                    optionsSection.classList.remove('hidden');
 
-                      // apply disk turning surcharge if active (only for options that include discs work)
-                      const surcharge = (formData.diskTurning === 'yes') ? 5 : 0;
-                      const total = price + surcharge;
+                    // attach handlers
+                    if (mode === 'both') {
+                      // multi-select: toggle buttons and recompute totals
+                      optionsSection.querySelectorAll('[data-brake-opt]').forEach(optBtn => {
+                        optBtn.onclick = () => {
+                          optBtn.classList.toggle('active');
 
-                      const tbody = document.getElementById('mechResultBody');
-                      if (tbody) {
-                        let rowsHtml = `
-                          <tr>
-                            <td>${escapeHtml(desc)}</td>
-                            <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
-                          </tr>`;
-                        if (surcharge) {
-                          rowsHtml += `
-                            <tr>
-                              <td>مخرطة ديسكات</td>
-                              <td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td>
-                            </tr>`;
-                        }
-                        rowsHtml += `
-                          <tr style="background: #262626;">
-                            <td><strong>الإجمالي</strong></td>
-                            <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
-                          </tr>`;
+                          const orig = formData.origin;
+                          const t = formData.type;
+                          let shafayefPrice = 0;
+                          let discsPrice = 0;
+                          const active = Array.from(optionsSection.querySelectorAll('[data-brake-opt].active')).map(n => n.dataset.brakeOpt);
 
-                        tbody.innerHTML = rowsHtml;
-                        document.getElementById('mechResultSection').classList.remove('hidden');
-                      }
+                          active.forEach(opt => {
+                            if (opt === 'tyres' || opt === 'four') {
+                              const map = BRAKES_PRICING[t] || {};
+                              const row = map[opt] || {};
+                              shafayefPrice += row[orig] || 0;
+                            }
+                            if (opt === 'new_discs' || opt === 'install_discs') {
+                              const row = DISCS_PRICING[t] || {};
+                              discsPrice += row[orig] || 0;
+                            }
+                          });
+
+                          const includesShafayef = active.some(a => a === 'tyres' || a === 'four');
+                          const surcharge = (formData.diskTurning === 'yes' && includesShafayef) ? 5 : 0;
+                          const total = shafayefPrice + discsPrice + surcharge;
+
+                          const tbody = document.getElementById('mechResultBody');
+                          if (tbody) {
+                            let html = '';
+                            if (shafayefPrice) html += `<tr><td>سعر الشفايف</td><td class="highlight">${shafayefPrice.toFixed(2)} ${config.currency}</td></tr>`;
+                            if (discsPrice) html += `<tr><td>سعر الديسكات</td><td class="highlight">${discsPrice.toFixed(2)} ${config.currency}</td></tr>`;
+                            if (surcharge) html += `<tr><td>مخرطة ديسكات</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                            html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td></tr>`;
+                            tbody.innerHTML = html;
+                            document.getElementById('mechResultSection').classList.remove('hidden');
+                          }
+                        };
+                      });
+                    } else {
+                      optionsSection.querySelectorAll('[data-brake-opt]').forEach(optBtn => {
+                        optBtn.onclick = () => {
+                          optionsSection.querySelectorAll('[data-brake-opt]').forEach(b => b.classList.remove('active'));
+                          optBtn.classList.add('active');
+                          const opt = optBtn.dataset.brakeOpt;
+                          const orig = formData.origin;
+                          const t = formData.type;
+
+                          let shafayefPrice = 0;
+                          let discsPrice = 0;
+                          if (opt === 'tyres' || opt === 'four') {
+                            const map = BRAKES_PRICING[t] || {};
+                            const row = map[opt] || {};
+                            shafayefPrice = row[orig] || 0;
+                          }
+                          if (opt === 'new_discs' || opt === 'install_discs') {
+                            const row = DISCS_PRICING[t] || {};
+                            discsPrice = row[orig] || 0;
+                          }
+                          const includesShafayef = (opt === 'tyres' || opt === 'four');
+                          const surcharge = (formData.diskTurning === 'yes' && includesShafayef) ? 5 : 0;
+                          const total = shafayefPrice + discsPrice + surcharge;
+
+                          const tbody = document.getElementById('mechResultBody');
+                          if (tbody) {
+                            let html = '';
+                            if (shafayefPrice) html += `<tr><td>سعر الشفايف</td><td class="highlight">${shafayefPrice.toFixed(2)} ${config.currency}</td></tr>`;
+                            if (discsPrice) html += `<tr><td>سعر الديسكات</td><td class="highlight">${discsPrice.toFixed(2)} ${config.currency}</td></tr>`;
+                            if (surcharge) html += `<tr><td>مخرطة ديسكات</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                            html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td></tr>`;
+                            tbody.innerHTML = html;
+                            document.getElementById('mechResultSection').classList.remove('hidden');
+                          }
+                        };
+                      });
+                    }
+                  };
+
+                  // attach mode buttons
+                  const modeBtns = document.querySelectorAll('[data-brakes-mode]');
+                  modeBtns.forEach(mb => {
+                    mb.onclick = () => {
+                      modeBtns.forEach(x => x.classList.remove('active'));
+                      mb.classList.add('active');
+                      const mode = mb.dataset.brakesMode; // shafayef / discs / both
+                      renderOptions(mode);
                     };
                   });
                 };
