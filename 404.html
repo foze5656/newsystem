@@ -7339,20 +7339,6 @@
         }
       }
 
-      // Determine service name and type
-      let serviceName = '';
-      let typeFilter = '';
-      if (formData.mechanicalService === 'coolant') {
-        serviceName = 'ماي راديتر';
-        typeFilter = 'COOLANT';
-      } else if (formData.mechanicalService === 'brakefluid') {
-        serviceName = 'زيت بريك';
-        typeFilter = 'BREAK LIQUIDO';
-      } else if (formData.mechanicalService === 'transmission') {
-        serviceName = 'زيت سكان';
-        typeFilter = 'TRANSMISIONES';
-      }
-
       // Calculate region surcharge
       let regionSurcharge = 0;
       if (formData.area) {
@@ -7364,120 +7350,51 @@
         }
       }
 
+      // Determine service name
+      let serviceName = '';
+      if (formData.mechanicalService === 'coolant') {
+        serviceName = 'ماي راديتر';
+      } else if (formData.mechanicalService === 'brakefluid') {
+        serviceName = 'زيت بريك';
+      } else if (formData.mechanicalService === 'transmission') {
+        serviceName = 'زيت سكان';
+      }
+
       const tbody = document.getElementById('mechResultBody');
       const noteDiv = document.getElementById('mechNote');
       const resultSection = document.getElementById('mechResultSection');
 
-      // Load brands from 'others' sheet - retry if not loaded
-      let brands = [];
-      const othersRows = sheetsData['others'];
-      
-      if (!othersRows) {
-        // If data not loaded, retry in a moment
-        setTimeout(() => {
-          calculateFluidPrice();
-        }, 500);
-        return;
+      // Display service price with region surcharge
+      const totalPrice = basePrice + regionSurcharge;
+      let html = `
+        <tr>
+          <td>رسوم خدمة ${serviceName}</td>
+          <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+        </tr>`;
+      if (regionSurcharge > 0) {
+        html += `<tr>
+          <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
+          <td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td>
+        </tr>`;
       }
-      
-      if (othersRows) {
-        for (let i = 1; i < othersRows.length; i++) { // start from 1 to skip header
-          const row = othersRows[i];
-          if (row[1] === typeFilter) { // column B is type
-            let country = row[2] || ''; // column C
-            if (country === 'Spain') country = 'إسبانيا';
-            else if (country === 'Britain') country = 'بريطانيا';
-            else if (country === 'Cepsa') country = 'سيسبا';
-            else if (country === 'dukhum') country = 'داكهام';
-            const brand = row[0] || ''; // column A
-            const price = parseFloat(row[3]) || 0; // column D
-            if (brand && !isNaN(price)) {
-              brands.push({ brand, country, price });
-            }
-          }
-        }
-      }
+      html += `<tr style="background: #262626;">
+          <td><strong>الإجمالي</strong></td>
+          <td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td>
+        </tr>
+        <tr>
+          <td>رسوم الإلغاء</td>
+          <td>${cancellation}</td>
+        </tr>
+      `;
+      tbody.innerHTML = html;
 
-      // Build table rows - only details, no headers
-      let tableHtml = '';
-      
-      if (brands.length > 0) {
-        brands.forEach(b => {
-          const brandTotal = basePrice + b.price + regionSurcharge;
-          tableHtml += `
-            <tr>
-              <td>${b.brand} (${b.price.toFixed(2)} ${config.currency}) - رسوم خدمة التعبئه: ${basePrice.toFixed(2)} ${config.currency}</td>
-              <td class="highlight">${brandTotal.toFixed(2)} ${config.currency}</td>
-            </tr>
-          `;
-        });
-        
-        // Add region surcharge row if applicable
-        if (regionSurcharge > 0) {
-          tableHtml += `
-            <tr>
-              <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
-              <td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td>
-            </tr>
-          `;
-        }
-        
-        // Add cancellation fee once at the bottom
-        tableHtml += `
-          <tr style="border-top: 1px solid #333; padding-top: 8px; margin-top: 8px;">
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-      } else {
-        // If no brands, just show service price
-        const totalWithSurcharge = basePrice + regionSurcharge;
-        tableHtml = `
-          <tr>
-            <td>رسوم خدمة تعبئه ${serviceName}</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-        `;
-        if (regionSurcharge > 0) {
-          tableHtml += `
-            <tr>
-              <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
-              <td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td>
-            </tr>
-          `;
-        }
-        tableHtml += `
-          <tr style="background: #262626;">
-            <td><strong>الإجمالي</strong></td>
-            <td class="highlight"><strong>${totalWithSurcharge.toFixed(2)} ${config.currency}</strong></td>
-          </tr>
-          <tr>
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-      }
-
-      tbody.innerHTML = tableHtml;
-
-      // Auto-expand the result container when there are multiple brands
-      if (brands.length > 1) {
-        resultSection.style.maxHeight = 'none';
-        resultSection.style.overflow = 'visible';
-        const tableScroll = resultSection.querySelector('.table-scroll');
-        if (tableScroll) {
-          tableScroll.style.maxHeight = 'none';
-          tableScroll.style.overflow = 'visible';
-        }
-      } else {
-        // Reset to normal for single brand or no brands
-        resultSection.style.maxHeight = '350px';
-        resultSection.style.overflow = 'hidden';
-        const tableScroll = resultSection.querySelector('.table-scroll');
-        if (tableScroll) {
-          tableScroll.style.maxHeight = '300px';
-          tableScroll.style.overflowY = 'auto';
-        }
+      // Auto-expand the result container
+      resultSection.style.maxHeight = 'none';
+      resultSection.style.overflow = 'visible';
+      const tableScroll = resultSection.querySelector('.table-scroll');
+      if (tableScroll) {
+        tableScroll.style.maxHeight = 'none';
+        tableScroll.style.overflow = 'visible';
       }
 
       // Add note for coolant
