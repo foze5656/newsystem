@@ -6650,6 +6650,12 @@
         suv: { german: 15, american: 5, japanese: 5 },
         half_suv: { american: 5, japanese: 5 }
       };
+
+      // Region surcharges for mechanical services
+      const REGION_SURCHARGES = {
+        10: ['علي صباح السالم (أم الهيمان)', 'شعيبة', 'ميناء عبدالله', 'جليعة', 'بنيدر', 'الخيران', 'النويصيب', 'الروضتين', 'المطلاع', 'العبدلي', 'الصبية', 'جبد', 'صباح الأحمد', 'الوفره'],
+        5: ['جابر الأحمد', 'سعد العبدالله', 'الجهراء', 'فحيحيل', 'الأحمدي', 'غرب عبدالله مبارك']
+      };
       
       document.querySelectorAll('[data-mech]').forEach(btn => {
         btn.onclick = () => {
@@ -7047,77 +7053,111 @@
             const svc = formData.mechanicalService;
             const svcDisplay = serviceNames[svc] || svc;
 
-            // Show back and origin UI
+            // Show back and area UI first
             document.getElementById('mechTypeSection').style.display = 'none';
             document.getElementById('mechBackButtonSection').style.display = 'block';
             document.getElementById('mechSelectedService').textContent = svcDisplay;
-            document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+            document.getElementById('mechAreaSection').classList.remove('hidden');
+            document.getElementById('fuelpumpOriginSection').classList.add('hidden');
             document.getElementById('fuelpumpTypeSection').classList.add('hidden');
             document.getElementById('mechResultSection').classList.add('hidden');
 
-            // attach origin handlers (reuse same origin buttons)
-            document.querySelectorAll('[data-fuel-origin]').forEach(o => {
-              o.onclick = () => {
-                document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
-                o.classList.add('active');
-                formData.origin = o.dataset.fuelOrigin; // german / american / japanese
+            // Load areas from coolant sheet (خدمات5) columns [0,1,2,4,5,6]
+            loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
+              // After area selected, show origin
+              document.getElementById('mechAreaSection').classList.add('hidden');
+              document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
 
-                const pricingForSvc = PRICING[svc] || {};
-                const typesForOrigin = pricingForSvc[formData.origin] || {};
+              // attach origin handlers
+              document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+                o.onclick = () => {
+                  document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                  o.classList.add('active');
+                  formData.origin = o.dataset.fuelOrigin; // german / american / japanese
 
-                // prepare type buttons based on available types for this origin
-                const typesContainer = document.getElementById('fuelpumpTypeButtons');
-                typesContainer.innerHTML = '';
-                const createBtn = (text, value) => {
-                  const b = document.createElement('button');
-                  b.className = 'btn-option';
-                  b.type = 'button';
-                  b.textContent = text;
-                  b.dataset.fuelType = value;
-                  return b;
-                };
+                  const pricingForSvc = PRICING[svc] || {};
+                  const typesForOrigin = pricingForSvc[formData.origin] || {};
 
-                const typeMapLabel = {
-                  salon: 'صالون',
-                  half_suv: 'نص جيب',
-                  suv: 'جيب'
-                };
-
-                Object.keys(typesForOrigin).forEach(tk => {
-                  const lbl = typeMapLabel[tk] || tk;
-                  typesContainer.appendChild(createBtn(lbl, tk));
-                });
-
-                // show type section
-                document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
-
-                // attach handlers to type buttons
-                typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
-                  tb.onclick = () => {
-                    typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
-                    tb.classList.add('active');
-                    formData.type = tb.dataset.fuelType;
-
-                    const price = (pricingForSvc[formData.origin] && pricingForSvc[formData.origin][formData.type]) || 0;
-
-                    const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
-                    const originLabel = originLabelMap[formData.origin] || formData.origin;
-                    const typeLabel = typeMapLabel[formData.type] || formData.type;
-
-                    const desc = `${svcDisplay} (${originLabel} + ${typeLabel})`;
-                    const tbody = document.getElementById('mechResultBody');
-                    if (tbody) {
-                      document.getElementById('mechResultSection').classList.remove('hidden');
-                      tbody.innerHTML = `
-                        <tr>
-                          <td>${escapeHtml(desc)}</td>
-                          <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
-                        </tr>
-                      `;
-                    }
+                  // prepare type buttons based on available types for this origin
+                  const typesContainer = document.getElementById('fuelpumpTypeButtons');
+                  typesContainer.innerHTML = '';
+                  const createBtn = (text, value) => {
+                    const b = document.createElement('button');
+                    b.className = 'btn-option';
+                    b.type = 'button';
+                    b.textContent = text;
+                    b.dataset.fuelType = value;
+                    return b;
                   };
-                });
-              };
+
+                  const typeMapLabel = {
+                    salon: 'صالون',
+                    half_suv: 'نص جيب',
+                    suv: 'جيب'
+                  };
+
+                  Object.keys(typesForOrigin).forEach(tk => {
+                    const lbl = typeMapLabel[tk] || tk;
+                    typesContainer.appendChild(createBtn(lbl, tk));
+                  });
+
+                  // show type section
+                  document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+
+                  // attach handlers to type buttons
+                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                    tb.onclick = () => {
+                      typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                      tb.classList.add('active');
+                      formData.type = tb.dataset.fuelType;
+
+                      const basePrice = (pricingForSvc[formData.origin] && pricingForSvc[formData.origin][formData.type]) || 0;
+
+                      // Check for region surcharge
+                      let surcharge = 0;
+                      if (formData.area) {
+                        for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                          if (regions.includes(formData.area)) {
+                            surcharge = parseInt(amount, 10);
+                            break;
+                          }
+                        }
+                      }
+                      const totalPrice = basePrice + surcharge;
+
+                      const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                      const originLabel = originLabelMap[formData.origin] || formData.origin;
+                      const typeLabel = typeMapLabel[formData.type] || formData.type;
+
+                      const tbody = document.getElementById('mechResultBody');
+                      if (tbody) {
+                        document.getElementById('mechResultSection').classList.remove('hidden');
+                        let html = `
+                          <tr>
+                            <td>${escapeHtml(svcDisplay)} (${escapeHtml(originLabel)} + ${escapeHtml(typeLabel)})</td>
+                            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+                          </tr>
+                        `;
+                        if (surcharge > 0) {
+                          html += `
+                            <tr>
+                              <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
+                              <td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td>
+                            </tr>
+                          `;
+                        }
+                        html += `
+                          <tr style="background: #262626;">
+                            <td><strong>الإجمالي</strong></td>
+                            <td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td>
+                          </tr>
+                        `;
+                        tbody.innerHTML = html;
+                      }
+                    };
+                  });
+                };
+              });
             });
           }
         };
