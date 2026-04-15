@@ -6931,6 +6931,8 @@
                   document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
                   o.classList.add('active');
                   formData.origin = o.dataset.fuelOrigin;
+                  // Hide result when origin changes
+                  document.getElementById('mechResultSection').classList.add('hidden');
                   makeTypeButtons(formData.origin);
                 };
               });
@@ -7065,6 +7067,8 @@
                 document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
                 o.classList.add('active');
                 formData.origin = o.dataset.fuelOrigin;
+                // Hide result when origin changes
+                document.getElementById('mechResultSection').classList.add('hidden');
                 makeBlockTypeButtons(formData.origin);
               };
             });
@@ -7093,6 +7097,9 @@
                   document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
                   o.classList.add('active');
                   formData.origin = o.dataset.fuelOrigin; // german / american / japanese
+                  
+                  // Hide result when origin changes
+                  document.getElementById('mechResultSection').classList.add('hidden');
 
                   const pricingForSvc = PRICING[svc] || {};
                   const typesForOrigin = pricingForSvc[formData.origin] || {};
@@ -7237,33 +7244,66 @@
           break;
         }
       }
+
+      // Calculate region surcharge
+      let regionSurcharge = 0;
+      if (formData.area) {
+        for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+          if (regions.includes(formData.area)) {
+            regionSurcharge = parseInt(amount, 10);
+            break;
+          }
+        }
+      }
       
       const tbody = document.getElementById('mechResultBody');
       const noteDiv = document.getElementById('mechNote');
       
       if (formData.mechanicalService === 'brakes') {
         // When brakes prices come from sheet, present base price (surcharge handled in UI flow)
-        tbody.innerHTML = `
+        let html = `
           <tr>
             <td>سعر الخدمة</td>
             <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+          </tr>`;
+        if (regionSurcharge > 0) {
+          html += `<tr>
+            <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
+            <td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td>
+          </tr>`;
+        }
+        html += `<tr style="background: #262626;">
+            <td><strong>الإجمالي</strong></td>
+            <td class="highlight"><strong>${(basePrice + regionSurcharge).toFixed(2)} ${config.currency}</strong></td>
           </tr>
           <tr>
             <td>رسوم الإلغاء</td>
             <td>${cancellation}</td>
           </tr>
         `;
+        tbody.innerHTML = html;
       } else {
-        tbody.innerHTML = `
+        let html = `
           <tr>
             <td>سعر الخدمة</td>
             <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+          </tr>`;
+        if (regionSurcharge > 0) {
+          html += `<tr>
+            <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
+            <td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td>
+          </tr>`;
+        }
+        html += `<tr style="background: #262626;">
+            <td><strong>الإجمالي</strong></td>
+            <td class="highlight"><strong>${(basePrice + regionSurcharge).toFixed(2)} ${config.currency}</strong></td>
           </tr>
           <tr>
             <td>رسوم الإلغاء</td>
             <td>${cancellation}</td>
           </tr>
         `;
+        tbody.innerHTML = html;
         
         if (formData.mechanicalService === 'brakes' || formData.mechanicalService === 'oilfilter') {
           noteDiv.textContent = 'إذا القطع من عند العميل';
@@ -7363,14 +7403,24 @@
       
       if (brands.length > 0) {
         brands.forEach(b => {
-          const total = basePrice + b.price;
+          const brandTotal = basePrice + b.price + regionSurcharge;
           tableHtml += `
             <tr>
               <td>${b.brand} (${b.price.toFixed(2)} ${config.currency}) - رسوم خدمة التعبئه: ${basePrice.toFixed(2)} ${config.currency}</td>
-              <td class="highlight">${total.toFixed(2)} ${config.currency}</td>
+              <td class="highlight">${brandTotal.toFixed(2)} ${config.currency}</td>
             </tr>
           `;
         });
+        
+        // Add region surcharge row if applicable
+        if (regionSurcharge > 0) {
+          tableHtml += `
+            <tr>
+              <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
+              <td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td>
+            </tr>
+          `;
+        }
         
         // Add cancellation fee once at the bottom
         tableHtml += `
@@ -7381,10 +7431,25 @@
         `;
       } else {
         // If no brands, just show service price
+        const totalWithSurcharge = basePrice + regionSurcharge;
         tableHtml = `
           <tr>
             <td>رسوم خدمة تعبئه ${serviceName}</td>
             <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+          </tr>
+        `;
+        if (regionSurcharge > 0) {
+          tableHtml += `
+            <tr>
+              <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
+              <td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td>
+            </tr>
+          `;
+        }
+        tableHtml += `
+          <tr style="background: #262626;">
+            <td><strong>الإجمالي</strong></td>
+            <td class="highlight"><strong>${totalWithSurcharge.toFixed(2)} ${config.currency}</strong></td>
           </tr>
           <tr>
             <td>رسوم الإلغاء</td>
@@ -9942,6 +10007,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
       
       newAreaSelect.oninput = () => {
+        const oldArea = formData.area;
         formData.area = newAreaSelect.value.trim();
         
         const resultSection = document.getElementById('serviceResultSection') || 
@@ -9971,6 +10037,11 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
           // reset other service-specific temporary selections as needed
           
           return;
+        }
+        
+        // Hide result if area changed (different from old area)
+        if (oldArea !== formData.area && resultSection) {
+          resultSection.classList.add('hidden');
         }
         
         const isExactAreaMatch = uniqueAreas.includes(formData.area);
