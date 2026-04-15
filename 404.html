@@ -6394,6 +6394,7 @@
             <button class="btn-option" data-mech="coolant">ماي راديتر</button>
             <button class="btn-option" data-mech="brakefluid">زيت بريك</button>
             <button class="btn-option" data-mech="transmission">زيت سكان</button>
+            <button class="btn-option" data-mech="fuelpump">طرمبه بنزين</button>
           </div>
         </div>
         
@@ -6501,6 +6502,7 @@
         'coolant': 'ماي راديتر',
         'brakefluid': 'زيت بريك',
         'transmission': 'زيت سكان'
+        ,'fuelpump': 'طرمبه بنزين'
       };
       
       document.querySelectorAll('[data-mech]').forEach(btn => {
@@ -6607,6 +6609,51 @@
           } else if (formData.mechanicalService === 'coolant' || formData.mechanicalService === 'brakefluid' || formData.mechanicalService === 'transmission') {
             document.getElementById('mechAreaSection').classList.remove('hidden');
             loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], calculateFluidPrice);
+          } else if (formData.mechanicalService === 'fuelpump') {
+            // Fuel pump flow: ask origin then (for German) ask صالون/جيب, for American/Japanese ask صالون/نص جيب/جيب
+            (async () => {
+              const originRaw = prompt('اختر المنشأ: الماني أو امريكي أو ياباني');
+              if (!originRaw) return;
+              const origin = originRaw.toString().trim().toLowerCase();
+              const isGerman = origin.includes('المان') || origin.includes('الماني') || origin.includes('german');
+              const isAmerican = origin.includes('امريك') || origin.includes('امريكي') || origin.includes('american');
+              const isJapanese = origin.includes('يابان') || origin.includes('ياباني') || origin.includes('japan');
+
+              let label = '';
+              let price = null;
+
+              if (isGerman) {
+                const v = prompt('هل السيارة صالون أم جيب؟ اكتب صالون أو جيب');
+                if (!v) return;
+                const vv = v.toString().trim();
+                if (vv.includes('صالون')) { label = 'الماني صالون'; price = 15; }
+                else if (vv.includes('جيب')) { label = 'الماني جيب'; price = 25; }
+                else { alert('نوع السيارة غير معروف'); return; }
+              } else if (isAmerican || isJapanese) {
+                const v = prompt('اختر: صالون، نص جيب، جيب');
+                if (!v) return;
+                const vv = v.toString().trim();
+                if (vv.includes('صالون')) { label = (isAmerican ? 'امريكي' : 'ياباني') + ' صالون'; price = 10; }
+                else if (vv.includes('نص')) { label = (isAmerican ? 'امريكي' : 'ياباني') + ' نص جيب'; price = 50; }
+                else if (vv.includes('جيب')) { label = (isAmerican ? 'امريكي' : 'ياباني') + ' جيب'; price = 30; }
+                else { alert('نوع السيارة غير معروف'); return; }
+              } else {
+                alert('المنشأ غير مدعوم');
+                return;
+              }
+
+              // Show result
+              const tbody = document.getElementById('mechResultBody');
+              if (tbody) {
+                document.getElementById('mechResultSection').classList.remove('hidden');
+                tbody.innerHTML = `
+                  <tr>
+                    <td>${escapeHtml(label)}</td>
+                    <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
+                  </tr>
+                `;
+              }
+            })();
           }
         };
       });
@@ -9917,6 +9964,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         setTimeout(() => { el.style.display = 'none'; }, 200);
       }, 1800);
     }
+
     async function copyToClipboard(text) {
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -9935,208 +9983,5 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       }
     }
   </script>
-</script>
-
-  <!-- Mechanic services step-by-step calculator -->
-  <div class="form-section full-width" id="mechanicCalculator" style="margin:12px;">
-    <h3 class="section-title">حاسبة أسعار الميكانيك (تفاعلية)</h3>
-    <div id="mc-step" style="min-height:160px;">
-      <div id="mc-intro">
-        <p>اختر نوع الخدمة للبدء (اضغط على الزر):</p>
-        <div id="mc-services" style="display:flex;gap:8px;flex-wrap:wrap"></div>
-      </div>
-      <div id="mc-vehicle-type" style="display:none;margin-top:8px">
-        <p>اختر نوع السيارة:</p>
-        <div id="mc-vehicle-buttons" style="display:flex;gap:8px"></div>
-      </div>
-      <div id="mc-extra-options" style="display:none;margin-top:8px">
-        <p id="mc-extra-prompt"></p>
-        <div id="mc-extra-buttons" style="display:flex;gap:8px"></div>
-      </div>
-      <div id="mc-origin" style="display:none;margin-top:8px">
-        <p>اختر منشأ السيارة:</p>
-        <div style="display:flex;gap:8px"><button class="mc-btn" data-origin="german" style="padding:8px 12px">ألماني</button><button class="mc-btn" data-origin="other" style="padding:8px 12px">أمريكي / ياباني</button></div>
-      </div>
-      <div id="mc-special" style="display:none;margin-top:8px">
-        <p>هل السيارة من النوع الذي تزيد أسعاره؟</p>
-        <div style="display:flex;gap:8px"><button class="mc-btn" data-special="no" style="padding:8px 12px">عادي</button><button class="mc-btn" data-special="yes" style="padding:8px 12px">نعم (انفينيتي/كاديلاك/رينج روفر)</button></div>
-      </div>
-      <div id="mc-result" style="display:none;margin-top:12px;padding:10px;border:1px solid #333;background:#0f0f0f">
-        <h4>السعر النهائي:</h4>
-        <div id="mc-price" style="font-weight:700;color:#F2BC1B;font-size:20px">0 د.ك</div>
-        <p style="color:#ccc;margin-top:8px">ملاحظة: هذا السعر يخص فقط رسوم الخدمة (شغل اليد). زيادات قطع الغيار حسب سعر القطعة. السيارات الخاصة (انفينيتي/كاديلاك/رينج روفر) تكلف أكثر.</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-  (function(){
-    // Pricing tables
-    const prices = {
-      german: {
-        salon: {
-          'طرمبة بنزين':15,'طرمبة ماي':40,'غايش':10,'فلتر هوا':5,'فلتر مكيف':5,'بكرات غايش':10,'شداد غايش':20,'شيالات':10,'اكسات':60,'دسكات':10,
-          'سفايف-تايرين':10,'سفايف-4':20,'بلاكات-4':10,'بلاكات-6':15
-        },
-        jeep: {
-          'طرمبة بنزين':25,'طرمبة ماي':50,'غايش':10,'فلتر هوا':5,'فلتر مكيف':5,'بكرات غايش':10,'شداد غايش':30,'شيالات':20,'اكسات-عادي':80,'اكسات-دبل':120,'دسكات':15,
-          'سفايف-تايرين':10,'سفايف-4':20,'بلاكات-6':15,'بلاكات-8':20
-        },
-        'نص جيب': {
-          'طرمبة بنزين':50,'طرمبة ماي':30,'غايش':10,'فلتر هوا':1,'فلتر مكيف':1,'بكرات غايش':10,'شداد غايش':10,'شيالات':5,'اكسات':25,'دسكات':5,
-          'سفايف-تايرين':5,'سفايف-4':15,'بلاكات-6':10,'بلاكات-8':15
-        },
-        extra: {'معاونات':30,'استبلايزر':5,'كرسي معاون':30}
-      },
-      other: { // american + japanese
-        salon: {
-          'طرمبة بنزين':10,'طرمبة ماي':10,'غايش':5,'فلتر هوا':1,'فلتر مكيف':1,'بكرات غايش':5,'شداد غايش':5,'شيالات':5,'اكسات':20,'دسكات':5,
-          'سفايف-تايرين':5,'سفايف-4':15,'بلاكات-4':5,'بلاكات-6':10
-        },
-        jeep: {
-          'طرمبة بنزين':30,'طرمبة ماي':15,'غايش':5,'فلتر هوا':1,'فلتر مكيف':1,'بكرات غايش':5,'شداد غايش':5,'شيالات':10,'اكسات':25,'دسكات':5,
-          'سفايف-تايرين':5,'سفايف-4':15,'بلاكات-6':10,'بلاكات-8':15
-        },
-        'نص جيب': {
-          'طرمبة بنزين':50,'طرمبة ماي':30,'غايش':10,'فلتر هوا':1,'فلتر مكيف':1,'بكرات غايش':10,'شداد غايش':10,'شيالات':5,'اكسات':25,'دسكات':5,
-          'سفايف-تايرين':5,'سفايف-4':15,'بلاكات-6':10,'بلاكات-8':15
-        },
-        extra: {'معاونات-جيب':15,'معاونات-نص جيب':10,'معاونات-صالون':10,'استبلايزر':5,'كرسي معاون':10}
-      }
-    };
-
-    // Flatten list of available services from german.salon + jeep + نص جيب + extra
-    const serviceSet = new Set();
-    ['german','other'].forEach(k=>{
-      Object.keys(prices[k]).forEach(vt=>{
-        if(vt==='extra'){
-          Object.keys(prices[k].extra).forEach(s=>serviceSet.add(s.replace(/-.*$/,'')));
-        } else {
-          Object.keys(prices[k][vt]).forEach(s=>{
-            const name = s.split('-')[0]; serviceSet.add(name);
-          });
-        }
-      });
-    });
-
-    const services = Array.from(serviceSet).filter(s=>s).sort();
-
-    const mcServices = document.getElementById('mc-services');
-    const mcVehicleBtns = document.getElementById('mc-vehicle-buttons');
-    const mcExtra = document.getElementById('mc-extra-options');
-    const mcExtraPrompt = document.getElementById('mc-extra-prompt');
-    const mcExtraBtns = document.getElementById('mc-extra-buttons');
-    const mcOrigin = document.getElementById('mc-origin');
-    const mcSpecial = document.getElementById('mc-special');
-    const mcResult = document.getElementById('mc-result');
-    const mcPrice = document.getElementById('mc-price');
-
-    let state = { service:null, vehicleType:null, extraChoice:null, origin:null, special:false };
-
-    function makeBtn(text,attrs={}){
-      const b=document.createElement('button'); b.type='button'; b.className='mc-btn'; b.textContent=text;
-      b.style.padding='8px 12px'; b.style.border='1px solid #444'; b.style.background='#111'; b.style.color='#F2BC1B'; b.style.cursor='pointer';
-      Object.keys(attrs).forEach(k=>b.setAttribute(k,attrs[k]));
-      return b;
-    }
-
-    // render service buttons
-    services.forEach(s=>{
-      const btn = makeBtn(s);
-      btn.onclick = ()=>{
-        state.service = s;
-        // show vehicle types
-        document.getElementById('mc-intro').style.display='none';
-        mcVehicleBtns.innerHTML='';
-        ['صالون','جيب','نص جيب'].forEach(vt=>{
-          const b=makeBtn(vt); b.onclick=()=>{ state.vehicleType=vt; onVehicleSelected();}; mcVehicleBtns.appendChild(b);
-        });
-        document.getElementById('mc-vehicle-type').style.display='block';
-        mcExtra.style.display='none'; mcOrigin.style.display='none'; mcSpecial.style.display='none'; mcResult.style.display='none';
-      };
-      mcServices.appendChild(btn);
-    });
-
-    function onVehicleSelected(){
-      // determine if service needs extra options
-      const needTires = state.service === 'سفايف' || state.service === 'سفايف';
-      const needBrakes = state.service === 'بلاكات' || state.service === 'بلاكات';
-      mcExtraBtns.innerHTML='';
-      if(state.service === 'اكسات'){
-        // special for اكسات choices
-        mcExtraPrompt.textContent = 'اختر نوع الاكسات (اذا متوفر):';
-        mcExtraBtns.appendChild(makeBtn('عادي')).onclick = ()=>{ state.extraChoice='عادي'; showOriginStep(); };
-        mcExtraBtns.appendChild(makeBtn('دبل')).onclick = ()=>{ state.extraChoice='دبل'; showOriginStep(); };
-        mcExtra.style.display='block'; mcOrigin.style.display='none'; mcSpecial.style.display='none'; mcResult.style.display='none';
-        return;
-      }
-      if(needTires || state.service === 'سفايف'){
-        mcExtraPrompt.textContent = 'كم عدد التواير؟';
-        mcExtraBtns.appendChild(makeBtn('تايرين')).onclick = ()=>{ state.extraChoice='تايرين'; showOriginStep(); };
-        mcExtraBtns.appendChild(makeBtn('4 تواير')).onclick = ()=>{ state.extraChoice='4'; showOriginStep(); };
-        mcExtra.style.display='block'; mcOrigin.style.display='none'; mcSpecial.style.display='none'; mcResult.style.display='none';
-        return;
-      }
-      if(needBrakes || state.service === 'بلاكات'){
-        mcExtraPrompt.textContent = 'كم سلندر السيارة؟';
-        ['4','6','8'].forEach(n=>{ const b=makeBtn(n); b.onclick=()=>{ state.extraChoice=n; showOriginStep(); }; mcExtraBtns.appendChild(b); });
-        mcExtra.style.display='block'; mcOrigin.style.display='none'; mcSpecial.style.display='none'; mcResult.style.display='none';
-        return;
-      }
-      // no extra
-      mcExtra.style.display='none'; showOriginStep();
-    }
-
-    function showOriginStep(){
-      mcOrigin.style.display='block'; mcSpecial.style.display='none'; mcResult.style.display='none';
-      // attach origin buttons
-      document.querySelectorAll('#mc-origin .mc-btn').forEach(b=>{ b.onclick = ()=>{ state.origin = b.getAttribute('data-origin'); showSpecialStep(); }; });
-    }
-
-    function showSpecialStep(){
-      mcSpecial.style.display='block'; mcResult.style.display='none';
-      document.querySelectorAll('#mc-special .mc-btn').forEach(b=>{ b.onclick = ()=>{ state.special = b.getAttribute('data-special')==='yes'; computeAndShow(); }; });
-    }
-
-    function computeAndShow(){
-      // compute price based on state
-      const originKey = state.origin === 'german' ? 'german' : 'other';
-      const vtKey = state.vehicleType === 'صالون' ? 'salon' : (state.vehicleType === 'جيب' ? 'jeep' : 'نص جيب');
-      let base = 0;
-      const svc = state.service;
-      const table = prices[originKey];
-      if(!table) return;
-      // handle extra mapping
-      if(svc === 'سفايف'){
-        const key = `سفايف-${state.extraChoice==='4'?'4':'تايرين'}`;
-        base = (table[vtKey][key] !== undefined) ? table[vtKey][key] : 0;
-      } else if(svc === 'بلاكات'){
-        const key = `بلاكات-${state.extraChoice}`;
-        base = (table[vtKey][key] !== undefined) ? table[vtKey][key] : 0;
-      } else if(svc === 'اكسات'){
-        const key = state.extraChoice === 'دبل' ? 'اكسات-دبل' : 'اكسات' ;
-        // in some tables اكسات-عادي key exists
-        base = (table[vtKey][key] !== undefined) ? table[vtKey][key] : (table[vtKey]['اكسات-عادي']||table[vtKey]['اكسات']||0);
-      } else {
-        // direct lookup
-        base = (table[vtKey][svc] !== undefined) ? table[vtKey][svc] : 0;
-        // check extras table
-        if(base===0 && table.extra){
-          const extraKey = Object.keys(table.extra).find(k=>k.startsWith(svc));
-          if(extraKey) base = table.extra[extraKey];
-        }
-      }
-
-      // if special brand add surcharge 25%
-      if(state.special) base = Math.round(base * 1.25);
-
-      mcPrice.textContent = base + ' د.ك';
-      mcResult.style.display='block';
-      // reset steps to allow new calculation
-    }
-
-  })();
-  </script>
-
   <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b5a74feb5de51ca',t:'MTc2NzAyMzQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
