@@ -6414,6 +6414,20 @@
             <button class="btn-option" data-oil-source="ours">من عندنا</button>
           </div>
         </div>
+
+        <div id="fuelpumpOriginSection" class="form-section hidden">
+          <h3 class="section-title">منشأ السيارة</h3>
+          <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <button class="btn-option" data-fuel-origin="german">ألماني</button>
+            <button class="btn-option" data-fuel-origin="american">أمريكي</button>
+            <button class="btn-option" data-fuel-origin="japanese">ياباني</button>
+          </div>
+        </div>
+
+        <div id="fuelpumpTypeSection" class="form-section hidden">
+          <h3 class="section-title">نوع المركبة</h3>
+          <div id="fuelpumpTypeButtons" class="btn-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
+        </div>
         
         <div id="mechAreaSection" class="form-section hidden">
           <h3 class="section-title">اختيار المنطقة</h3>
@@ -6610,50 +6624,80 @@
             document.getElementById('mechAreaSection').classList.remove('hidden');
             loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], calculateFluidPrice);
           } else if (formData.mechanicalService === 'fuelpump') {
-            // Fuel pump flow: ask origin then (for German) ask صالون/جيب, for American/Japanese ask صالون/نص جيب/جيب
-            (async () => {
-              const originRaw = prompt('اختر المنشأ: الماني أو امريكي أو ياباني');
-              if (!originRaw) return;
-              const origin = originRaw.toString().trim().toLowerCase();
-              const isGerman = origin.includes('المان') || origin.includes('الماني') || origin.includes('german');
-              const isAmerican = origin.includes('امريك') || origin.includes('امريكي') || origin.includes('american');
-              const isJapanese = origin.includes('يابان') || origin.includes('ياباني') || origin.includes('japan');
+            // Show back button and origin selection
+            document.getElementById('mechTypeSection').style.display = 'none';
+            document.getElementById('mechBackButtonSection').style.display = 'block';
+            document.getElementById('mechSelectedService').textContent = serviceNames['fuelpump'];
+            document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+            document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+            document.getElementById('mechResultSection').classList.add('hidden');
 
-              let label = '';
-              let price = null;
+            // origin buttons
+            document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+              o.onclick = () => {
+                document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                o.classList.add('active');
+                formData.fuelOrigin = o.dataset.fuelOrigin; // german / american / japanese
 
-              if (isGerman) {
-                const v = prompt('هل السيارة صالون أم جيب؟ اكتب صالون أو جيب');
-                if (!v) return;
-                const vv = v.toString().trim();
-                if (vv.includes('صالون')) { label = 'الماني صالون'; price = 15; }
-                else if (vv.includes('جيب')) { label = 'الماني جيب'; price = 25; }
-                else { alert('نوع السيارة غير معروف'); return; }
-              } else if (isAmerican || isJapanese) {
-                const v = prompt('اختر: صالون، نص جيب، جيب');
-                if (!v) return;
-                const vv = v.toString().trim();
-                if (vv.includes('صالون')) { label = (isAmerican ? 'امريكي' : 'ياباني') + ' صالون'; price = 10; }
-                else if (vv.includes('نص')) { label = (isAmerican ? 'امريكي' : 'ياباني') + ' نص جيب'; price = 50; }
-                else if (vv.includes('جيب')) { label = (isAmerican ? 'امريكي' : 'ياباني') + ' جيب'; price = 30; }
-                else { alert('نوع السيارة غير معروف'); return; }
-              } else {
-                alert('المنشأ غير مدعوم');
-                return;
-              }
+                // prepare type buttons based on origin
+                const typesContainer = document.getElementById('fuelpumpTypeButtons');
+                typesContainer.innerHTML = '';
+                const createBtn = (text, value) => {
+                  const b = document.createElement('button');
+                  b.className = 'btn-option';
+                  b.type = 'button';
+                  b.textContent = text;
+                  b.dataset.fuelType = value;
+                  return b;
+                };
 
-              // Show result
-              const tbody = document.getElementById('mechResultBody');
-              if (tbody) {
-                document.getElementById('mechResultSection').classList.remove('hidden');
-                tbody.innerHTML = `
-                  <tr>
-                    <td>${escapeHtml(label)}</td>
-                    <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
-                  </tr>
-                `;
-              }
-            })();
+                if (formData.fuelOrigin === 'german') {
+                  typesContainer.appendChild(createBtn('صالون', 'salon'));
+                  typesContainer.appendChild(createBtn('جيب', 'suv'));
+                } else {
+                  typesContainer.appendChild(createBtn('صالون', 'salon'));
+                  typesContainer.appendChild(createBtn('نص جيب', 'half_suv'));
+                  typesContainer.appendChild(createBtn('جيب', 'suv'));
+                }
+
+                // show type section
+                document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+
+                // attach handlers to type buttons
+                typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                  tb.onclick = () => {
+                    // clear previous active
+                    typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                    tb.classList.add('active');
+                    formData.fuelType = tb.dataset.fuelType;
+
+                    // compute price
+                    let label = '';
+                    let price = 0;
+                    if (formData.fuelOrigin === 'german') {
+                      if (formData.fuelType === 'salon') { label = 'الماني صالون'; price = 15; }
+                      else if (formData.fuelType === 'suv') { label = 'الماني جيب'; price = 25; }
+                    } else {
+                      const originLabel = formData.fuelOrigin === 'american' ? 'امريكي' : 'ياباني';
+                      if (formData.fuelType === 'salon') { label = originLabel + ' صالون'; price = 10; }
+                      else if (formData.fuelType === 'half_suv') { label = originLabel + ' نص جيب'; price = 50; }
+                      else if (formData.fuelType === 'suv') { label = originLabel + ' جيب'; price = 30; }
+                    }
+
+                    const tbody = document.getElementById('mechResultBody');
+                    if (tbody) {
+                      document.getElementById('mechResultSection').classList.remove('hidden');
+                      tbody.innerHTML = `
+                        <tr>
+                          <td>${escapeHtml(label)}</td>
+                          <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
+                        </tr>
+                      `;
+                    }
+                  };
+                });
+              };
+            });
           }
         };
       });
