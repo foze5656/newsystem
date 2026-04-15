@@ -6406,6 +6406,7 @@
             <button class="btn-option" data-mech="stabilizer">استبلايزر</button>
             <button class="btn-option" data-mech="assistant_seat">كرسي معاون</button>
             <button class="btn-option" data-mech="blocks">بلاكات</button>
+            <button class="btn-option" data-mech="axles">اكسات</button>
           </div>
         </div>
         
@@ -6552,6 +6553,7 @@
         ,'stabilizer': 'استبلايزر'
         ,'assistant_seat': 'كرسي معاون'
         ,'blocks': 'بلاكات'
+        ,'axles': 'اكسات'
       };
 
       // Pricing table: service -> origin -> type -> price (number)
@@ -6563,8 +6565,8 @@
         },
         waterpump: {
           german: { salon: 40, suv: 50 },
-          american: { salon: 10, half_suv: 15, suv: 15 },
-          japanese: { salon: 10, half_suv: 15, suv: 15 }
+          american: { salon: 10, half_suv: 30, suv: 15 },
+          japanese: { salon: 10, half_suv: 30, suv: 15 }
         },
         gaysh: {
           german: { salon: 10, suv: 10 },
@@ -6610,6 +6612,16 @@
           german: { salon: 30, half_suv: 30, suv: 30 },
           american: { salon: 10, half_suv: 10, suv: 10 },
           japanese: { salon: 10, half_suv: 10, suv: 10 }
+        }
+      };
+
+      // Axles pricing with special handling for German dual option
+      const AXLES_PRICING = {
+        salon: { german: 60, american: 20, japanese: 20 },
+        suv: {
+          german: { normal: 80, dual: 120 },
+          american: 25,
+          japanese: 25
         }
       };
 
@@ -7027,7 +7039,20 @@
                         b.onclick = () => {
                           // compute price from BLOCKS_PRICING
                           const row = (BLOCKS_PRICING[formData.type] || {})[c] || {};
-                          const price = row[formData.origin] || 0;
+                          const basePrice = row[formData.origin] || 0;
+                          
+                          // Check for region surcharge
+                          let surcharge = 0;
+                          if (formData.area) {
+                            for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                              if (regions.includes(formData.area)) {
+                                surcharge = parseInt(amount, 10);
+                                break;
+                              }
+                            }
+                          }
+                          
+                          const totalPrice = basePrice + surcharge;
                           const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
                           const typeLabelMap = { salon: 'صالون', half_suv: 'نص جيب', suv: 'جيب' };
                           const originLabel = originLabelMap[formData.origin] || formData.origin;
@@ -7035,9 +7060,18 @@
                           const desc = `بلاكات (${originLabel} + ${typeLabel} + ${c} سلندر)`;
                           const tbody = document.getElementById('mechResultBody');
                           if (tbody) {
-                            tbody.innerHTML = `
-                              <tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>
+                            let html = `
+                              <tr><td>${escapeHtml(desc)}</td><td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td></tr>
                             `;
+                            if (surcharge > 0) {
+                              html += `
+                                <tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>
+                              `;
+                            }
+                            html += `
+                              <tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>
+                            `;
+                            tbody.innerHTML = html;
                             document.getElementById('mechResultSection').classList.remove('hidden');
                           }
                         };
@@ -7073,6 +7107,194 @@
                     typesContainer.innerHTML = '';
                     
                     makeBlockTypeButtons(formData.origin);
+                  };
+                });
+              }
+            });
+          } else if (formData.mechanicalService === 'axles') {
+            // اكسات flow: ask for AREA FIRST, then choose origin -> type -> dual/normal (for german SUV)
+            document.getElementById('mechAreaSection').classList.remove('hidden');
+            loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
+              // After area is selected, show origin selection
+              if (formData.area) {
+                document.getElementById('mechAreaSection').classList.add('hidden');
+                document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+                document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                document.getElementById('brakesOptionsSection').classList.add('hidden');
+
+                const typesContainer = document.getElementById('fuelpumpTypeButtons');
+                const makeAxleTypeButtons = (origin) => {
+                  typesContainer.innerHTML = '';
+                  const createBtn = (text, value) => {
+                    const b = document.createElement('button');
+                    b.className = 'btn-option';
+                    b.type = 'button';
+                    b.textContent = text;
+                    b.dataset.fuelType = value;
+                    return b;
+                  };
+                  // For axles, only salon and suv are available
+                  typesContainer.appendChild(createBtn('صالون', 'salon'));
+                  typesContainer.appendChild(createBtn('جيب', 'suv'));
+                  
+                  document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                    tb.onclick = () => {
+                      typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                      tb.classList.add('active');
+                      formData.type = tb.dataset.fuelType;
+
+                      // If salon, show price directly
+                      if (formData.type === 'salon') {
+                        const price = AXLES_PRICING.salon[formData.origin] || 0;
+                        
+                        // Check for region surcharge
+                        let surcharge = 0;
+                        if (formData.area) {
+                          for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                            if (regions.includes(formData.area)) {
+                              surcharge = parseInt(amount, 10);
+                              break;
+                            }
+                          }
+                        }
+                        const totalPrice = price + surcharge;
+                        
+                        const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                        const originLabel = originLabelMap[formData.origin] || formData.origin;
+                        const desc = `اكسات (${originLabel} + صالون)`;
+                        const tbody = document.getElementById('mechResultBody');
+                        if (tbody) {
+                          let html = `<tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>`;
+                          if (surcharge > 0) {
+                            html += `<tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                          }
+                          html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>`;
+                          tbody.innerHTML = html;
+                          document.getElementById('mechResultSection').classList.remove('hidden');
+                        }
+                      } else if (formData.type === 'suv') {
+                        // For SUV, if german show dual/normal options, else show price directly
+                        if (formData.origin === 'german') {
+                          const dualContainer = document.createElement('div');
+                          dualContainer.className = 'btn-grid';
+                          dualContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                          dualContainer.style.marginTop = '8px';
+                          
+                          const normalBtn = document.createElement('button');
+                          normalBtn.className = 'btn-option';
+                          normalBtn.type = 'button';
+                          normalBtn.textContent = 'عادي';
+                          
+                          const dualBtn = document.createElement('button');
+                          dualBtn.className = 'btn-option';
+                          dualBtn.type = 'button';
+                          dualBtn.textContent = 'دبل';
+                          
+                          dualContainer.appendChild(normalBtn);
+                          dualContainer.appendChild(dualBtn);
+                          
+                          [normalBtn, dualBtn].forEach(btn => {
+                            btn.onclick = () => {
+                              dualContainer.querySelectorAll('.btn-option').forEach(x => x.classList.remove('active'));
+                              btn.classList.add('active');
+                              
+                              const dualType = btn === dualBtn ? 'dual' : 'normal';
+                              const price = formData.origin === 'german' ? AXLES_PRICING.suv.german[dualType] : 0;
+                              
+                              // Check for region surcharge
+                              let surcharge = 0;
+                              if (formData.area) {
+                                for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                                  if (regions.includes(formData.area)) {
+                                    surcharge = parseInt(amount, 10);
+                                    break;
+                                  }
+                                }
+                              }
+                              const totalPrice = price + surcharge;
+                              
+                              const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                              const originLabel = originLabelMap[formData.origin] || formData.origin;
+                              const dualLabel = dualType === 'dual' ? 'دبل' : 'عادي';
+                              const desc = `اكسات (${originLabel} + جيب + ${dualLabel})`;
+                              const tbody = document.getElementById('mechResultBody');
+                              if (tbody) {
+                                let html = `<tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>`;
+                                if (surcharge > 0) {
+                                  html += `<tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                                }
+                                html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>`;
+                                tbody.innerHTML = html;
+                                document.getElementById('mechResultSection').classList.remove('hidden');
+                              }
+                            };
+                          });
+                          
+                          const host = document.getElementById('fuelpumpTypeSection');
+                          const prevDual = document.getElementById('axlesDualContainer');
+                          if (prevDual) prevDual.remove();
+                          dualContainer.id = 'axlesDualContainer';
+                          host.appendChild(dualContainer);
+                        } else {
+                          // American or Japanese: show price directly
+                          const price = formData.origin === 'american' ? 25 : 25;
+                          
+                          // Check for region surcharge
+                          let surcharge = 0;
+                          if (formData.area) {
+                            for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                              if (regions.includes(formData.area)) {
+                                surcharge = parseInt(amount, 10);
+                                break;
+                              }
+                            }
+                          }
+                          const totalPrice = price + surcharge;
+                          
+                          const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                          const originLabel = originLabelMap[formData.origin] || formData.origin;
+                          const desc = `اكسات (${originLabel} + جيب)`;
+                          const tbody = document.getElementById('mechResultBody');
+                          if (tbody) {
+                            let html = `<tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>`;
+                            if (surcharge > 0) {
+                              html += `<tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                            }
+                            html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>`;
+                            tbody.innerHTML = html;
+                            document.getElementById('mechResultSection').classList.remove('hidden');
+                          }
+                        }
+                      }
+                      
+                      // Clear previous dual container if switching to salon
+                      if (formData.type === 'salon') {
+                        const prevDual = document.getElementById('axlesDualContainer');
+                        if (prevDual) prevDual.remove();
+                      }
+                    };
+                  });
+                };
+
+                document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+                  o.onclick = () => {
+                    document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                    o.classList.add('active');
+                    formData.origin = o.dataset.fuelOrigin;
+                    
+                    // Clear other selections when origin changes
+                    formData.type = null;
+                    document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                    document.getElementById('mechResultSection').classList.add('hidden');
+                    // Remove previous dual container
+                    const prevDual = document.getElementById('axlesDualContainer');
+                    if (prevDual) prevDual.remove();
+                    // Clear type button selections
+                    typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                    typesContainer.innerHTML = '';
+                    
+                    makeAxleTypeButtons(formData.origin);
                   };
                 });
               }
