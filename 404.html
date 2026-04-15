@@ -6403,6 +6403,9 @@
             <button class="btn-option" data-mech="gaysh_shadad">شداد غايش</button>
             <button class="btn-option" data-mech="shialat">شيالات</button>
             <button class="btn-option" data-mech="assistants">معاونات</button>
+            <button class="btn-option" data-mech="stabilizer">استبلايزر</button>
+            <button class="btn-option" data-mech="assistant_seat">كرسي معاون</button>
+            <button class="btn-option" data-mech="blocks">بلاكات</button>
           </div>
         </div>
         
@@ -6435,6 +6438,16 @@
         <div id="fuelpumpTypeSection" class="form-section hidden">
           <h3 class="section-title">نوع المركبة</h3>
           <div id="fuelpumpTypeButtons" class="btn-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
+        </div>
+        
+        <div id="brakesOptionsSection" class="form-section hidden">
+          <h3 class="section-title">خيارات سفايف وديسكات</h3>
+          <div class="btn-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <button class="btn-option" data-brake-opt="tyres">تايرين</button>
+            <button class="btn-option" data-brake-opt="four">4 تواير</button>
+            <button class="btn-option" data-brake-opt="new_discs">ديسكات جديدة</button>
+            <button class="btn-option" data-brake-opt="install_discs">تركيب ديسكات فقط</button>
+          </div>
         </div>
         
         <div id="mechAreaSection" class="form-section hidden">
@@ -6533,6 +6546,9 @@
         'gaysh_shadad': 'شداد غايش',
         'shialat': 'شيالات',
         'assistants': 'معاونات'
+        ,'stabilizer': 'استبلايزر'
+        ,'assistant_seat': 'كرسي معاون'
+        ,'blocks': 'بلاكات'
       };
 
       // Pricing table: service -> origin -> type -> price (number)
@@ -6554,13 +6570,13 @@
         },
         airfilter: {
           german: { salon: 5, suv: 5 },
-          american: { salon: 1, half_suv: 1, suv: 1 },
-          japanese: { salon: 1, half_suv: 1, suv: 1 }
+          american: { salon: 5, half_suv: 5, suv: 5 },
+          japanese: { salon: 5, half_suv: 5, suv: 5 }
         },
         acfilter: {
           german: { salon: 5, suv: 5 },
-          american: { salon: 1, half_suv: 1, suv: 1 },
-          japanese: { salon: 1, half_suv: 1, suv: 1 }
+          american: { salon: 5, half_suv: 5, suv: 5 },
+          japanese: { salon: 5, half_suv: 5, suv: 5 }
         },
         gaysh_rollers: {
           german: { salon: 10, suv: 10 },
@@ -6582,6 +6598,54 @@
           american: { salon: 10, half_suv: 10, suv: 15 },
           japanese: { salon: 10, half_suv: 10, suv: 15 }
         }
+        ,stabilizer: {
+          german: { salon: 5, half_suv: 5, suv: 5 },
+          american: { salon: 5, half_suv: 5, suv: 5 },
+          japanese: { salon: 5, half_suv: 5, suv: 5 }
+        }
+        ,assistant_seat: {
+          german: { salon: 30, half_suv: 30, suv: 30 },
+          american: { salon: 10, half_suv: 10, suv: 10 },
+          japanese: { salon: 10, half_suv: 10, suv: 10 }
+        }
+      };
+
+      // Blocks (بلاكات) pricing with cylinder options
+      const BLOCKS_PRICING = {
+        salon: {
+          '4': { german: 10, american: 5, japanese: 5 },
+          '6': { german: 15, american: 10, japanese: 10 }
+        },
+        suv: {
+          '6': { german: 15, american: 10, japanese: 10 },
+          '8': { german: 20, american: 15, japanese: 15 }
+        },
+        half_suv: {
+          '6': { american: 10, japanese: 10 },
+          '8': { american: 15, japanese: 15 }
+        }
+      };
+
+      // Brakes and discs pricing (internal)
+      const BRAKES_PRICING = {
+        salon: {
+          tyres: { german: 10, american: 5, japanese: 5 },
+          four: { german: 20, american: 15, japanese: 15 }
+        },
+        suv: {
+          tyres: { german: 10, american: 5, japanese: 5 },
+          four: { german: 20, american: 15, japanese: 15 }
+        },
+        half_suv: {
+          tyres: { american: 5, japanese: 5 },
+          four: { american: 15, japanese: 15 }
+        }
+      };
+
+      const DISCS_PRICING = {
+        salon: { german: 10, american: 5, japanese: 5 },
+        suv: { german: 15, american: 5, japanese: 5 },
+        half_suv: { american: 5, japanese: 5 }
       };
       
       document.querySelectorAll('[data-mech]').forEach(btn => {
@@ -6637,21 +6701,127 @@
             // Use خدمات ميكانيكية for inspection areas (A,B,C and E,F,G)
             loadAreaOptionsDatalist('خدمات ميكانيكية', [0, 1, 2, 4, 5, 6], calculateMechanicalPrice);
           } else if (formData.mechanicalService === 'brakes') {
+            // Internal brakes/discs flow (no Google Sheet)
             document.getElementById('diskTurningSection').classList.remove('hidden');
-            document.getElementById('mechAreaSection').classList.remove('hidden');
-            formData.diskTurning = 'no';
-            
+            formData.diskTurning = formData.diskTurning || 'no';
+
+            // disk turning toggle
             document.querySelectorAll('[data-disk]').forEach(diskBtn => {
               diskBtn.onclick = () => {
                 document.querySelectorAll('[data-disk]').forEach(b => b.classList.remove('active'));
                 diskBtn.classList.add('active');
-                
                 formData.diskTurning = diskBtn.dataset.disk;
-                if (formData.area) calculateMechanicalPrice();
               };
             });
-            
-            loadAreaOptionsDatalist('خدمات ميكانيكية', [16, 17, 18, 20, 21, 22], calculateMechanicalPrice);
+
+            // Show origin selector and hide other sections
+            document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+            document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+            document.getElementById('brakesOptionsSection').classList.add('hidden');
+
+            const typesContainer = document.getElementById('fuelpumpTypeButtons');
+            const optionsSection = document.getElementById('brakesOptionsSection');
+
+            const makeTypeButtons = (origin) => {
+              typesContainer.innerHTML = '';
+              const createBtn = (text, value) => {
+                const b = document.createElement('button');
+                b.className = 'btn-option';
+                b.type = 'button';
+                b.textContent = text;
+                b.dataset.fuelType = value;
+                return b;
+              };
+
+              if (origin === 'german') {
+                typesContainer.appendChild(createBtn('صالون', 'salon'));
+                typesContainer.appendChild(createBtn('جيب', 'suv'));
+              } else {
+                typesContainer.appendChild(createBtn('صالون', 'salon'));
+                typesContainer.appendChild(createBtn('نص جيب', 'half_suv'));
+                typesContainer.appendChild(createBtn('جيب', 'suv'));
+              }
+
+              document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+
+              typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                tb.onclick = () => {
+                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                  tb.classList.add('active');
+                  formData.origin = formData.origin || tb.closest('#fuelpumpTypeSection').dataset.origin;
+                  formData.type = tb.dataset.fuelType;
+
+                  // show brakes options
+                  optionsSection.classList.remove('hidden');
+
+                  // attach option handlers
+                  optionsSection.querySelectorAll('[data-brake-opt]').forEach(optBtn => {
+                    optBtn.onclick = () => {
+                      optionsSection.querySelectorAll('[data-brake-opt]').forEach(b => b.classList.remove('active'));
+                      optBtn.classList.add('active');
+                      const opt = optBtn.dataset.brakeOpt; // tyres / four / new_discs / install_discs
+
+                      const originMap = { german: 'german', american: 'american', japanese: 'japanese' };
+                      const orig = formData.origin;
+                      const t = formData.type;
+
+                      let price = 0;
+                      let desc = '';
+
+                      if (opt === 'tyres' || opt === 'four') {
+                        const map = BRAKES_PRICING[t] || {};
+                        const row = map[opt] || {};
+                        price = row[orig] || 0;
+                        desc = `سفايف وديسكات - ${opt === 'tyres' ? 'تايرين' : '4 تواير'}`;
+                      } else if (opt === 'new_discs' || opt === 'install_discs') {
+                        const row = DISCS_PRICING[t] || {};
+                        price = row[orig] || 0;
+                        desc = opt === 'new_discs' ? 'ديسكات جديدة' : 'تركيب ديسكات فقط';
+                      }
+
+                      // apply disk turning surcharge if active (only for options that include discs work)
+                      const surcharge = (formData.diskTurning === 'yes') ? 5 : 0;
+                      const total = price + surcharge;
+
+                      const tbody = document.getElementById('mechResultBody');
+                      if (tbody) {
+                        let rowsHtml = `
+                          <tr>
+                            <td>${escapeHtml(desc)}</td>
+                            <td class="highlight">${price.toFixed(2)} ${config.currency}</td>
+                          </tr>`;
+                        if (surcharge) {
+                          rowsHtml += `
+                            <tr>
+                              <td>مخرطة ديسكات</td>
+                              <td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td>
+                            </tr>`;
+                        }
+                        rowsHtml += `
+                          <tr style="background: #262626;">
+                            <td><strong>الإجمالي</strong></td>
+                            <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
+                          </tr>`;
+
+                        tbody.innerHTML = rowsHtml;
+                        document.getElementById('mechResultSection').classList.remove('hidden');
+                      }
+                    };
+                  });
+                };
+              });
+            };
+
+            // attach origin buttons
+            document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+              o.onclick = () => {
+                document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                o.classList.add('active');
+                formData.origin = o.dataset.fuelOrigin;
+                makeTypeButtons(formData.origin);
+              };
+            });
+          } else if (formData.mechanicalService === 'wipers') {
           } else if (formData.mechanicalService === 'wipers') {
             // تبديل المساحات — مناطق من خدمات ميكانيكية2 (أعمدة I,J,K و M,N,O)
             document.getElementById('mechAreaSection').classList.remove('hidden');
@@ -6688,6 +6858,92 @@
           } else if (formData.mechanicalService === 'coolant' || formData.mechanicalService === 'brakefluid' || formData.mechanicalService === 'transmission') {
             document.getElementById('mechAreaSection').classList.remove('hidden');
             loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], calculateFluidPrice);
+          } else if (formData.mechanicalService === 'blocks') {
+            // بلاكات flow: choose origin -> type -> cylinders
+            document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+            document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+            document.getElementById('brakesOptionsSection').classList.add('hidden');
+
+            const typesContainer = document.getElementById('fuelpumpTypeButtons');
+            const makeBlockTypeButtons = (origin) => {
+              typesContainer.innerHTML = '';
+              const createBtn = (text, value) => {
+                const b = document.createElement('button');
+                b.className = 'btn-option';
+                b.type = 'button';
+                b.textContent = text;
+                b.dataset.fuelType = value;
+                return b;
+              };
+              // types similar to others
+              if (origin === 'german') {
+                typesContainer.appendChild(createBtn('صالون', 'salon'));
+                typesContainer.appendChild(createBtn('جيب', 'suv'));
+              } else {
+                typesContainer.appendChild(createBtn('صالون', 'salon'));
+                typesContainer.appendChild(createBtn('نص جيب', 'half_suv'));
+                typesContainer.appendChild(createBtn('جيب', 'suv'));
+              }
+              document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+              typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                tb.onclick = () => {
+                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                  tb.classList.add('active');
+                  formData.origin = formData.origin || tb.closest('#fuelpumpTypeSection').dataset.origin;
+                  formData.type = tb.dataset.fuelType;
+
+                  // show cylinder choices
+                  const cylContainer = document.createElement('div');
+                  cylContainer.className = 'btn-grid';
+                  cylContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                  cylContainer.style.marginTop = '8px';
+                  const options = [];
+                  if (formData.type === 'salon') options.push('4','6');
+                  if (formData.type === 'suv') options.push('6','8');
+                  if (formData.type === 'half_suv') options.push('6','8');
+
+                  cylContainer.innerHTML = '';
+                  options.forEach(c => {
+                    const b = document.createElement('button');
+                    b.className = 'btn-option';
+                    b.type = 'button';
+                    b.textContent = c + ' سلندر';
+                    b.dataset.cyl = c;
+                    b.onclick = () => {
+                      // compute price from BLOCKS_PRICING
+                      const row = (BLOCKS_PRICING[formData.type] || {})[c] || {};
+                      const price = row[formData.origin] || 0;
+                      const desc = `بلاكات (${formData.origin} + ${formData.type} + ${c} سلندر)`;
+                      const tbody = document.getElementById('mechResultBody');
+                      if (tbody) {
+                        tbody.innerHTML = `
+                          <tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>
+                        `;
+                        document.getElementById('mechResultSection').classList.remove('hidden');
+                      }
+                    };
+                    cylContainer.appendChild(b);
+                  });
+
+                  // append cylinder choices below type buttons
+                  const host = document.getElementById('fuelpumpTypeSection');
+                  // remove previous if any
+                  const prev = document.getElementById('blocksCylContainer');
+                  if (prev) prev.remove();
+                  cylContainer.id = 'blocksCylContainer';
+                  host.appendChild(cylContainer);
+                };
+              });
+            };
+
+            document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+              o.onclick = () => {
+                document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                o.classList.add('active');
+                formData.origin = o.dataset.fuelOrigin;
+                makeBlockTypeButtons(formData.origin);
+              };
+            });
           } else if (Object.keys(PRICING).includes(formData.mechanicalService)) {
             const svc = formData.mechanicalService;
             const svcDisplay = serviceNames[svc] || svc;
