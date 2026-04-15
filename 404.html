@@ -6960,94 +6960,100 @@
             document.getElementById('mechAreaSection').classList.remove('hidden');
             loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], calculateFluidPrice);
           } else if (formData.mechanicalService === 'blocks') {
-            // بلاكات flow: choose origin -> type -> cylinders
-            document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
-            document.getElementById('fuelpumpTypeSection').classList.add('hidden');
-            document.getElementById('brakesOptionsSection').classList.add('hidden');
+            // بلاكات flow: ask for AREA FIRST, then choose origin -> type -> cylinders
+            document.getElementById('mechAreaSection').classList.remove('hidden');
+            loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
+              // After area is selected, show origin selection and continue with blocks flow
+              if (formData.area) {
+                document.getElementById('mechAreaSection').classList.add('hidden');
+                document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+                document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                document.getElementById('brakesOptionsSection').classList.add('hidden');
 
-            const typesContainer = document.getElementById('fuelpumpTypeButtons');
-            const makeBlockTypeButtons = (origin) => {
-              typesContainer.innerHTML = '';
-              const createBtn = (text, value) => {
-                const b = document.createElement('button');
-                b.className = 'btn-option';
-                b.type = 'button';
-                b.textContent = text;
-                b.dataset.fuelType = value;
-                return b;
-              };
-              // types similar to others
-              if (origin === 'german') {
-                typesContainer.appendChild(createBtn('صالون', 'salon'));
-                typesContainer.appendChild(createBtn('جيب', 'suv'));
-              } else {
-                typesContainer.appendChild(createBtn('صالون', 'salon'));
-                typesContainer.appendChild(createBtn('نص جيب', 'half_suv'));
-                typesContainer.appendChild(createBtn('جيب', 'suv'));
-              }
-              document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
-              typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
-                tb.onclick = () => {
-                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
-                  tb.classList.add('active');
-                  formData.origin = formData.origin || tb.closest('#fuelpumpTypeSection').dataset.origin;
-                  formData.type = tb.dataset.fuelType;
-
-                  // show cylinder choices
-                  const cylContainer = document.createElement('div');
-                  cylContainer.className = 'btn-grid';
-                  cylContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                  cylContainer.style.marginTop = '8px';
-                  const options = [];
-                  if (formData.type === 'salon') options.push('4','6');
-                  if (formData.type === 'suv') options.push('6','8');
-                  if (formData.type === 'half_suv') options.push('6','8');
-
-                  cylContainer.innerHTML = '';
-                  options.forEach(c => {
+                const typesContainer = document.getElementById('fuelpumpTypeButtons');
+                const makeBlockTypeButtons = (origin) => {
+                  typesContainer.innerHTML = '';
+                  const createBtn = (text, value) => {
                     const b = document.createElement('button');
                     b.className = 'btn-option';
                     b.type = 'button';
-                    b.textContent = c + ' سلندر';
-                    b.dataset.cyl = c;
-                    b.onclick = () => {
-                      // compute price from BLOCKS_PRICING
-                      const row = (BLOCKS_PRICING[formData.type] || {})[c] || {};
-                      const price = row[formData.origin] || 0;
-                      const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
-                      const typeLabelMap = { salon: 'صالون', half_suv: 'نص جيب', suv: 'جيب' };
-                      const originLabel = originLabelMap[formData.origin] || formData.origin;
-                      const typeLabel = typeLabelMap[formData.type] || formData.type;
-                      const desc = `بلاكات (${originLabel} + ${typeLabel} + ${c} سلندر)`;
-                      const tbody = document.getElementById('mechResultBody');
-                      if (tbody) {
-                        tbody.innerHTML = `
-                          <tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>
-                        `;
-                        document.getElementById('mechResultSection').classList.remove('hidden');
-                      }
+                    b.textContent = text;
+                    b.dataset.fuelType = value;
+                    return b;
+                  };
+                  // types similar to others
+                  if (origin === 'german') {
+                    typesContainer.appendChild(createBtn('صالون', 'salon'));
+                    typesContainer.appendChild(createBtn('جيب', 'suv'));
+                  } else {
+                    typesContainer.appendChild(createBtn('صالون', 'salon'));
+                    typesContainer.appendChild(createBtn('نص جيب', 'half_suv'));
+                    typesContainer.appendChild(createBtn('جيب', 'suv'));
+                  }
+                  document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                    tb.onclick = () => {
+                      typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                      tb.classList.add('active');
+                      formData.type = tb.dataset.fuelType;
+
+                      // show cylinder choices
+                      const cylContainer = document.createElement('div');
+                      cylContainer.className = 'btn-grid';
+                      cylContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                      cylContainer.style.marginTop = '8px';
+                      const options = [];
+                      if (formData.type === 'salon') options.push('4','6');
+                      if (formData.type === 'suv') options.push('6','8');
+                      if (formData.type === 'half_suv') options.push('6','8');
+
+                      cylContainer.innerHTML = '';
+                      options.forEach(c => {
+                        const b = document.createElement('button');
+                        b.className = 'btn-option';
+                        b.type = 'button';
+                        b.textContent = c + ' سلندر';
+                        b.dataset.cyl = c;
+                        b.onclick = () => {
+                          // compute price from BLOCKS_PRICING
+                          const row = (BLOCKS_PRICING[formData.type] || {})[c] || {};
+                          const price = row[formData.origin] || 0;
+                          const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                          const typeLabelMap = { salon: 'صالون', half_suv: 'نص جيب', suv: 'جيب' };
+                          const originLabel = originLabelMap[formData.origin] || formData.origin;
+                          const typeLabel = typeLabelMap[formData.type] || formData.type;
+                          const desc = `بلاكات (${originLabel} + ${typeLabel} + ${c} سلندر)`;
+                          const tbody = document.getElementById('mechResultBody');
+                          if (tbody) {
+                            tbody.innerHTML = `
+                              <tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>
+                            `;
+                            document.getElementById('mechResultSection').classList.remove('hidden');
+                          }
+                        };
+                        cylContainer.appendChild(b);
+                      });
+
+                      // append cylinder choices below type buttons
+                      const host = document.getElementById('fuelpumpTypeSection');
+                      // remove previous if any
+                      const prev = document.getElementById('blocksCylContainer');
+                      if (prev) prev.remove();
+                      cylContainer.id = 'blocksCylContainer';
+                      host.appendChild(cylContainer);
                     };
-                    cylContainer.appendChild(b);
                   });
-
-                  // append cylinder choices below type buttons
-                  const host = document.getElementById('fuelpumpTypeSection');
-                  // remove previous if any
-                  const prev = document.getElementById('blocksCylContainer');
-                  if (prev) prev.remove();
-                  cylContainer.id = 'blocksCylContainer';
-                  host.appendChild(cylContainer);
                 };
-              });
-            };
 
-            document.querySelectorAll('[data-fuel-origin]').forEach(o => {
-              o.onclick = () => {
-                document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
-                o.classList.add('active');
-                formData.origin = o.dataset.fuelOrigin;
-                makeBlockTypeButtons(formData.origin);
-              };
+                document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+                  o.onclick = () => {
+                    document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                    o.classList.add('active');
+                    formData.origin = o.dataset.fuelOrigin;
+                    makeBlockTypeButtons(formData.origin);
+                  };
+                });
+              }
             });
           } else if (Object.keys(PRICING).includes(formData.mechanicalService)) {
             const svc = formData.mechanicalService;
@@ -9872,7 +9878,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const newAreaSelect = areaSelect.cloneNode(true);
       areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
       
-      newAreaSelect.oninput = () => {
+      // Use change event instead of input to only trigger when a datalist option is selected or user finishes typing
+      newAreaSelect.onchange = () => {
         formData.area = newAreaSelect.value.trim();
         
         const resultSection = document.getElementById('serviceResultSection') || 
