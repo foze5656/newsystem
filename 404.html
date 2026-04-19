@@ -2146,7 +2146,7 @@
     const GOOGLE_SHEET_ID = '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk';
     const USERS_SHEET_NAME = 'users';
     const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${USERS_SHEET_NAME}`;
-    const SITE_VERSION = '1.7';
+    const SITE_VERSION = '1.8';
     
     let usersData = [];
     let isAuthenticated = false;
@@ -6729,9 +6729,15 @@
             // Removed separate disk-turning checkbox; integrate surcharge into discs question.
 
             // Show origin selector and hide other sections
-            document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
-            document.getElementById('fuelpumpTypeSection').classList.add('hidden');
-            document.getElementById('brakesOptionsSection').classList.add('hidden');
+                // First ask for area, then proceed to origin/type/options
+                document.getElementById('mechAreaSection').classList.remove('hidden');
+                // Load area options then show origin/type UI after selection
+                loadAreaOptionsDatalist('خدمات ميكانيكية', [8, 9, 10, 12, 13, 14], () => {
+                  document.getElementById('mechAreaSection').classList.add('hidden');
+                  document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+                  document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                  document.getElementById('brakesOptionsSection').classList.add('hidden');
+                });
 
             const typesContainer = document.getElementById('fuelpumpTypeButtons');
             const optionsSection = document.getElementById('brakesOptionsSection');
@@ -6791,14 +6797,25 @@
                     };
 
                     const showResult = (shafayefPrice, discsPrice, turnSurcharge) => {
-                      const surcharge = turnSurcharge || 0;
-                      const total = (shafayefPrice || 0) + (discsPrice || 0) + surcharge;
+                      // compute region surcharge (if any)
+                      let regionSurcharge = 0;
+                      if (formData.area) {
+                        for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                          if (regions.includes(formData.area)) {
+                            regionSurcharge = parseInt(amount, 10) || 0;
+                            break;
+                          }
+                        }
+                      }
+                      const extraTurn = turnSurcharge || 0;
+                      const total = (shafayefPrice || 0) + (discsPrice || 0) + extraTurn + regionSurcharge;
                       const tbody = document.getElementById('mechResultBody');
                       if (tbody) {
                         let html = '';
                         if (shafayefPrice) html += `<tr><td>سعر الشفايف</td><td class="highlight">${shafayefPrice.toFixed(2)} ${config.currency}</td></tr>`;
                         if (discsPrice) html += `<tr><td>سعر الديسكات</td><td class="highlight">${discsPrice.toFixed(2)} ${config.currency}</td></tr>`;
-                        if (surcharge) html += `<tr><td>مخرطة ديسكات</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                        if (extraTurn) html += `<tr><td>مخرطة ديسكات</td><td class="highlight">${extraTurn.toFixed(2)} ${config.currency}</td></tr>`;
+                        if (regionSurcharge > 0) html += `<tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td></tr>`;
                         html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td></tr>`;
                         tbody.innerHTML = html;
                         updateMechResultNote();
@@ -6860,7 +6877,7 @@
                         discsContainer.className = 'btn-grid';
                         discsContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
                         const newDiscsBtn = makeBtn('ديسكات جديدة', 'new_discs');
-                        const turnDiscsBtn = makeBtn('مخرطه ديسكات معاهم', 'discs_with_turn');
+                        const turnDiscsBtn = makeBtn('مخرطه ديسكات', 'discs_with_turn');
                         discsContainer.appendChild(newDiscsBtn);
                         discsContainer.appendChild(turnDiscsBtn);
 
