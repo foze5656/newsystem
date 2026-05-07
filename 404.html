@@ -4247,9 +4247,6 @@
               <strong>⚠️ ملاحظة:</strong> في حال انتظار المخفر: 5 د.ك لكل نصف ساعة | 10 د.ك لكل ساعة
             </div>
           </div>
-          <div id="qalsNote" class="info-box hidden" style="margin-top: 10px; background: #0F172A; border-color: #60A5FA; color: #D7EFFF;">
-            <strong>ملاحظة قلص طراد:</strong> الي يطلع ادريس بالوانيت، بس اهم شي تاكدو من حجم الطراد ومن سلامه الهيئه والتواير الخاصه بالعربانه.
-          </div>
         </div>
         
         <div id="towResultSection" class="data-table-container hidden">
@@ -4266,11 +4263,10 @@
               </tbody>
             </table>
           </div>
+          <div id="qalsNote" class="info-box hidden" style="margin-top: 10px; background: #0F172A; border-color: #60A5FA; color: #D7EFFF;">
+            <strong>ملاحظة قلص طراد:</strong> الي يطلع ادريس بالوانيت، بس اهم شي تاكدو من حجم الطراد ومن سلامه الهيئه والتواير الخاصه بالعربانه.
+          </div>
           <div id="towPortarageNote" class="info-box hidden" style="margin-top: 10px;">
-            في حال العميل طلب ونش<br>
-            (تبلغون العميل نقدر نوفر لك سيارة فولفو مع سايق يوصلك لاي منطقة داخل الكويت السعر الخدمة 10 دك لاي منطقة (باستثناء المناطق الي عقب الاحمدي 18 دك <br><br>
-            في حال العميل سأل عن مدة الوصول 15 ل 25 اقصى مدة والخدمة متوفرة 24 ساعة على مدار اليوم<br><br>
-            ضروري تبلغون العميل انه في حال انتظار لسايق اول ربع ساعة مجانية وبعد الربع ساعة 0.150 فلس (لكل دقيقه) ويدفعها وهو بالطريج قبل لا يوصل وجهته
           </div>
         </div>
       `;
@@ -4316,13 +4312,18 @@
           formData.towType = null;
           formData.from = null;
           formData.to = null;
+          formData.qalsSize = null;
           formData.extraCharges = 'no';
+          formData.flatbedPortarageExtraCharges = 'no';
           
           // Hide sections
           document.getElementById('towTypeSection').classList.add('hidden');
           document.getElementById('towLocationsSection').classList.add('hidden');
           document.getElementById('towResultSection').classList.add('hidden');
           document.getElementById('flatbedOnlyNote').classList.add('hidden');
+          document.getElementById('qalsSizeSection').classList.add('hidden');
+          document.getElementById('qalsNote').classList.add('hidden');
+          document.querySelectorAll('[data-qals-size]').forEach(b => b.classList.remove('active'));
           
           updateTowTypeOptions();
         });
@@ -4342,7 +4343,7 @@
           formData.qalsSize = btn.dataset.qalsSize;
           document.getElementById('towLocationsSection').classList.remove('hidden');
           document.getElementById('qalsSizeSection').classList.remove('hidden');
-          document.getElementById('qalsNote').classList.remove('hidden');
+          document.getElementById('qalsNote').classList.add('hidden');
           updateTowLocations();
         };
       });
@@ -4530,6 +4531,7 @@
             qalsNote.classList.add('hidden');
             document.getElementById('towLocationsSection').classList.add('hidden');
             formData.qalsSize = null;
+            document.querySelectorAll('[data-qals-size]').forEach(b => b.classList.remove('active'));
             
             flatbedOnlyNote.classList.add('hidden');
             flatbedExtraChargesSection.classList.add('hidden');
@@ -4537,6 +4539,7 @@
             qalsSizeSection.classList.add('hidden');
             qalsNote.classList.add('hidden');
             formData.qalsSize = null;
+            document.querySelectorAll('[data-qals-size]').forEach(b => b.classList.remove('active'));
             
             if (formData.towType === 'flatbed' || formData.towType === 'flatbedClose') {
               flatbedOnlyNote.classList.add('hidden');
@@ -4882,12 +4885,16 @@
       tbody.innerHTML = rows;
       document.getElementById('towResultSection').classList.remove('hidden');
 
-      if (portarageNote) {
-        if (formData.companyArabic === 'بورتراج' && (formData.towType === 'normal' || formData.towType === 'flatbed' || formData.towType === 'flatbedClose' || formData.towType === 'jetSki')) {
-          portarageNote.classList.remove('hidden');
+      const qalsNoteEl = document.getElementById('qalsNote');
+      if (qalsNoteEl) {
+        if (formData.companyArabic === 'بورتراج' && formData.towType === 'jetSki') {
+          qalsNoteEl.classList.remove('hidden');
         } else {
-          portarageNote.classList.add('hidden');
+          qalsNoteEl.classList.add('hidden');
         }
+      }
+      if (portarageNote) {
+        portarageNote.classList.add('hidden');
       }
       
       setTimeout(() => {
