@@ -1869,178 +1869,20 @@
       color: #fff;
     }
 
-    /* Staff Schedule Styles */
-    .staff-schedule-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    
-    .staff-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 15px;
-      background: #1a1a1a;
-      border-radius: 10px;
+    /* Completed months floating box */
+    .completed-months {
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      background: rgba(10,10,10,0.95);
       border: 1px solid #333;
-    }
-    
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: #ccc;
-    }
-    
-    .legend-color {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-    }
-    
-    .staff-controls {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .staff-search {
-      flex: 1;
-      min-width: 200px;
-    }
-    
-    .staff-toggle {
-      display: flex;
-      gap: 5px;
-      background: #2a2a2a;
-      border-radius: 8px;
-      padding: 4px;
-      border: 1px solid #404040;
-    }
-    
-    .toggle-btn {
-      padding: 8px 16px;
-      border: none;
-      background: transparent;
-      color: #ccc;
+      padding: 10px;
       border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 14px;
-    }
-    
-    .toggle-btn.active {
-      background: #F2BC1B;
-      color: #000;
-      font-weight: 600;
-    }
-    
-    .staff-section {
-      background: #1a1a1a;
-      border-radius: 10px;
-      border: 1px solid #333;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    }
-    
-    .staff-section-header {
-      background: #F2BC1B;
-      color: #000;
-      padding: 12px 16px;
-      font-size: 16px;
-      font-weight: 700;
-      text-align: center;
-    }
-    
-    .staff-table-container {
-      position: relative;
-      max-height: 600px;
+      z-index: 1200;
+      max-height: 80vh;
       overflow: auto;
-    }
-    
-    .staff-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    
-    .staff-table th {
-      background: #262626;
-      color: #F2BC1B;
-      padding: 12px 8px;
-      text-align: center;
-      font-weight: 600;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      border-bottom: 1px solid #404040;
-      white-space: nowrap;
-    }
-    
-    .staff-table td {
-      padding: 8px 6px;
-      text-align: center;
-      border-bottom: 1px solid #333;
-      transition: all 0.2s ease;
-    }
-    
-    .staff-table tr:hover td {
-      background: #2a2a2a;
-    }
-    
-    .staff-name-cell {
-      position: sticky;
-      left: 0;
-      background: #1a1a1a;
-      color: #F2BC1B;
-      font-weight: 600;
-      z-index: 5;
-      border-right: 2px solid #F2BC1B;
-      min-width: 150px;
-      text-align: right;
-    }
-    
-    .staff-table tr:hover .staff-name-cell {
-      background: #2a2a2a;
-    }
-    
-    .shift-cell {
-      min-width: 80px;
-      border-radius: 6px;
-      margin: 2px;
-      font-weight: 500;
-    }
-    
-    /* Shift Colors */
-    .shift-off { background: #dc2626; color: #fff; }
-    .shift-holiday { background: #eab308; color: #000; }
-    .shift-sick { background: #9333ea; color: #fff; }
-    .shift-7-3 { background: #2563eb; color: #fff; }
-    .shift-8-4 { background: #0d9488; color: #fff; }
-    .shift-9-5 { background: #4338ca; color: #fff; }
-    .shift-11-7 { background: #374151; color: #fff; }
-    .shift-12-8 { background: #16a34a; color: #fff; }
-    .shift-3-11 { background: #ea580c; color: #fff; }
-    .shift-unknown { background: #6b7280; color: #fff; }
-    
-    .staff-loading {
-      text-align: center;
-      padding: 40px;
-      color: #F2BC1B;
-      font-size: 16px;
-    }
-    
-    .staff-error {
-      text-align: center;
-      padding: 20px;
-      background: #4a1a1a;
-      border: 1px solid #ef4444;
-      border-radius: 8px;
-      color: #fca5a5;
-      margin: 20px;
+      width: 360px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
     .animated-highlight{ animation: glowGradient 6s linear infinite; background: linear-gradient(90deg, rgba(242,188,27,0.12), rgba(242,188,27,0.04)); border:1px solid rgba(242,188,27,0.2); }
     @keyframes glowGradient{ 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
@@ -2223,8 +2065,6 @@
      </div>
       <div class="service-item submenu-item" data-service="driver_status"><span class="label">جدولة السائقين</span>
       </div>
-      <div class="service-item submenu-item" data-service="staff_schedule"><span class="label">جدول الموظفين</span>
-      </div>
     </div>
     <div class="service-item" data-service="coords"><span class="icon">📍</span> <span class="label">الاحداثيات</span>
     </div>
@@ -2306,7 +2146,7 @@
     const GOOGLE_SHEET_ID = '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk';
     const USERS_SHEET_NAME = 'users';
     const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${USERS_SHEET_NAME}`;
-    const SITE_VERSION = '1.6';
+    const SITE_VERSION = '2.2';
     
     let usersData = [];
     let isAuthenticated = false;
@@ -2929,7 +2769,6 @@
           'mechanical': 'خدمات ميكانيكية',
           'staff_centers': 'مراكز الطلبات',
           'driver_status': 'جدول السائقين',
-          'staff_schedule': 'جدول الموظفين',
           'carwash': 'غسيل السيارات',
           'protection': 'الحمايه والتغيم',
           'insurance': 'تأمينات',
@@ -2985,9 +2824,6 @@
             break;
           case 'driver_status':
             renderDriverStatusInterface();
-            break;
-          case 'staff_schedule':
-            renderStaffScheduleInterface();
             break;
           case 'carwash':
             renderCarWashInterface();
@@ -3174,239 +3010,6 @@
       input.addEventListener('paste', () => setTimeout(tryParseAndCopy, 60));
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); tryParseAndCopy(); } });
       clearBtn.onclick = () => { input.value = ''; showToast('تم المسح', 'success'); input.focus(); };
-    }
-
-    // Render Staff Schedule Interface
-    function renderStaffScheduleInterface() {
-      if (window.staffScheduleIntervalId) clearInterval(window.staffScheduleIntervalId);
-
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="staff-schedule-container">
-          <div class="staff-legend">
-            <div class="legend-item"><div class="legend-color shift-off"></div><span>إجازة</span></div>
-            <div class="legend-item"><div class="legend-color shift-holiday"></div><span>إجازة رسمية</span></div>
-            <div class="legend-item"><div class="legend-color shift-sick"></div><span>مرضية</span></div>
-            <div class="legend-item"><div class="legend-color shift-7-3"></div><span>7:00 - 3:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-8-4"></div><span>8:00 - 4:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-9-5"></div><span>9:00 - 5:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-11-7"></div><span>11:00 - 7:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-12-8"></div><span>12:00 - 8:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-3-11"></div><span>3:00 - 11:00</span></div>
-            <div class="legend-item"><div class="legend-color shift-unknown"></div><span>غير محدد</span></div>
-          </div>
-          
-          <div class="staff-controls">
-            <input type="text" id="staffSearch" class="form-control staff-search" placeholder="البحث في أسماء الموظفين...">
-            <div class="staff-toggle">
-              <button id="toggleCallCenter" class="toggle-btn active">مركز الاتصال</button>
-              <button id="toggleBackOffice" class="toggle-btn">المكتب الخلفي</button>
-            </div>
-          </div>
-          
-          <div id="callCenterSection" class="staff-section">
-            <div class="staff-section-header">مركز الاتصال</div>
-            <div class="staff-table-container">
-              <table class="staff-table" id="callCenterTable">
-                <thead id="callCenterHeader"></thead>
-                <tbody id="callCenterBody"></tbody>
-              </table>
-            </div>
-          </div>
-          
-          <div id="backOfficeSection" class="staff-section hidden">
-            <div class="staff-section-header">المكتب الخلفي</div>
-            <div class="staff-table-container">
-              <table class="staff-table" id="backOfficeTable">
-                <thead id="backOfficeHeader"></thead>
-                <tbody id="backOfficeBody"></tbody>
-              </table>
-            </div>
-          </div>
-          
-          <div id="staffScheduleLoading" class="staff-loading">جاري تحميل البيانات...</div>
-          <div id="staffScheduleError" class="staff-error hidden"></div>
-        </div>
-      `;
-
-      // Initialize
-      loadStaffScheduleData(true);
-      window.staffScheduleIntervalId = setInterval(() => loadStaffScheduleData(), 5 * 60 * 1000);
-
-      // Event listeners
-      document.getElementById('staffSearch').oninput = filterStaffTables;
-      document.getElementById('toggleCallCenter').onclick = () => toggleStaffSection('callCenter');
-      document.getElementById('toggleBackOffice').onclick = () => toggleStaffSection('backOffice');
-    }
-
-    function loadStaffScheduleData(force = false) {
-      const sheetId = '1nhjZLD1VoYYusxKi4wUFIP3fdToVlrIREy31WZdipWo'; // Same as driver sheet
-      const sheetName = 'THIS WEEK';
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-
-      if (!force && window._staffScheduleData) {
-        renderStaffScheduleTables(window._staffScheduleData);
-        return;
-      }
-
-      document.getElementById('staffScheduleLoading').style.display = 'block';
-      document.getElementById('staffScheduleError').classList.add('hidden');
-
-      fetch(csvUrl, { cache: 'no-cache' })
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to load staff schedule');
-          return res.text();
-        })
-        .then(csvText => {
-          const rows = parseCSV(csvText);
-          if (rows.length < 2) throw new Error('No data found');
-
-          const parsedData = parseStaffScheduleData(rows);
-          window._staffScheduleData = parsedData;
-          renderStaffScheduleTables(parsedData);
-        })
-        .catch(err => {
-          console.error(err);
-          document.getElementById('staffScheduleError').textContent = 'خطأ في تحميل جدول الموظفين: ' + err.message;
-          document.getElementById('staffScheduleError').classList.remove('hidden');
-        })
-        .finally(() => {
-          document.getElementById('staffScheduleLoading').style.display = 'none';
-        });
-    }
-
-    function parseStaffScheduleData(rows) {
-      const headers = rows[0];
-      const data = { callCenter: [], backOffice: [], dates: [] };
-
-      // Find date columns (skip first column which is names)
-      for (let i = 1; i < headers.length; i++) {
-        const header = (headers[i] || '').toString().trim();
-        if (header && !header.toLowerCase().includes('staff names') && !header.toLowerCase().includes('back office staff')) {
-          data.dates.push(header);
-        }
-      }
-
-      let currentSection = null;
-      for (let i = 1; i < rows.length; i++) {
-        const row = rows[i];
-        const firstCell = (row[0] || '').toString().trim().toLowerCase();
-
-        if (firstCell.includes('staff names')) {
-          currentSection = 'callCenter';
-          continue;
-        } else if (firstCell.includes('back office staff')) {
-          currentSection = 'backOffice';
-          continue;
-        }
-
-        if (currentSection && row[0] && row[0].toString().trim()) {
-          const employee = {
-            name: row[0].toString().trim(),
-            shifts: []
-          };
-
-          for (let j = 1; j < row.length && j - 1 < data.dates.length; j++) {
-            employee.shifts.push((row[j] || '').toString().trim());
-          }
-
-          data[currentSection].push(employee);
-        }
-      }
-
-      return data;
-    }
-
-    function renderStaffScheduleTables(data) {
-      renderStaffTable('callCenter', data.callCenter, data.dates);
-      renderStaffTable('backOffice', data.backOffice, data.dates);
-    }
-
-    function renderStaffTable(section, employees, dates) {
-      const headerEl = document.getElementById(`${section}Header`);
-      const bodyEl = document.getElementById(`${section}Body`);
-
-      // Header
-      let headerHtml = '<tr><th style="position: sticky; left: 0; background: #262626; z-index: 15;">الموظف</th>';
-      dates.forEach(date => {
-        headerHtml += `<th>${escapeHtml(date)}</th>`;
-      });
-      headerHtml += '</tr>';
-      headerEl.innerHTML = headerHtml;
-
-      // Body
-      let bodyHtml = '';
-      employees.forEach(employee => {
-        bodyHtml += `<tr><td class="staff-name-cell">${escapeHtml(employee.name)}</td>`;
-        employee.shifts.forEach(shift => {
-          const shiftClass = getShiftClass(shift);
-          const displayText = getShiftDisplayText(shift);
-          bodyHtml += `<td><div class="shift-cell ${shiftClass}">${escapeHtml(displayText)}</div></td>`;
-        });
-        bodyHtml += '</tr>';
-      });
-      bodyEl.innerHTML = bodyHtml;
-    }
-
-    function getShiftClass(shift) {
-      const s = (shift || '').toString().trim().toLowerCase();
-      if (s === 'off') return 'shift-off';
-      if (s === 'holi day' || s === 'holiday') return 'shift-holiday';
-      if (s === 'sick' || s === 'sick leave') return 'shift-sick';
-      if (s === '7:00 - 3:00') return 'shift-7-3';
-      if (s === '8:00 - 4:00') return 'shift-8-4';
-      if (s === '9:00 - 5:00') return 'shift-9-5';
-      if (s === '11:00 - 7:00') return 'shift-11-7';
-      if (s === '12:00 - 8:00') return 'shift-12-8';
-      if (s === '3:00 - 11:00') return 'shift-3-11';
-      return 'shift-unknown';
-    }
-
-    function getShiftDisplayText(shift) {
-      const s = (shift || '').toString().trim().toLowerCase();
-      if (s === 'off') return 'إجازة';
-      if (s === 'holi day' || s === 'holiday') return 'إجازة رسمية';
-      if (s === 'sick' || s === 'sick leave') return 'مرضية';
-      return shift || '-';
-    }
-
-    function toggleStaffSection(section) {
-      const callCenterBtn = document.getElementById('toggleCallCenter');
-      const backOfficeBtn = document.getElementById('toggleBackOffice');
-      const callCenterSection = document.getElementById('callCenterSection');
-      const backOfficeSection = document.getElementById('backOfficeSection');
-
-      if (section === 'callCenter') {
-        callCenterBtn.classList.add('active');
-        backOfficeBtn.classList.remove('active');
-        callCenterSection.classList.remove('hidden');
-        backOfficeSection.classList.add('hidden');
-      } else {
-        backOfficeBtn.classList.add('active');
-        callCenterBtn.classList.remove('active');
-        backOfficeSection.classList.remove('hidden');
-        callCenterSection.classList.add('hidden');
-      }
-    }
-
-    function filterStaffTables() {
-      const searchTerm = document.getElementById('staffSearch').value.toLowerCase().trim();
-      const tables = ['callCenterTable', 'backOfficeTable'];
-
-      tables.forEach(tableId => {
-        const table = document.getElementById(tableId);
-        const rows = table.querySelectorAll('tbody tr');
-
-        rows.forEach(row => {
-          const nameCell = row.querySelector('.staff-name-cell');
-          const name = nameCell ? nameCell.textContent.toLowerCase() : '';
-          if (name.includes(searchTerm)) {
-            row.style.display = '';
-          } else {
-            row.style.display = 'none';
-          }
-        });
-      });
     }
 
     // Render Staff Interface
@@ -4014,7 +3617,7 @@
 
       return nameEn === 'drivers name en'
         && nameAr === 'drivers name ar'
-        && (type === 'type' || type === 'vehicle type')
+        && (type === 'TYPE' || type === 'vehicle type')
         && (shift === 'sheeft time' || shift === 'shift time')
         && off1 === 'days off'
         && off2 === 'days off'
@@ -4575,18 +4178,8 @@
           <div class="btn-grid" id="towTypeButtons" style="grid-template-columns: repeat(2, 1fr);">
             <button class="btn-option" data-type="normal">ونش عادي</button>
             <button class="btn-option" data-type="flatbed">ونش فل داون</button>
-          </div>
-          
-          
-          <div id="lockedOption" class="hidden" style="margin-top: 10px;">
-            <h3 class="section-title">ونش مسكر</h3>
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: #262626; border-radius: 4px; border: 1px solid #404040;">
-              <input type="checkbox" id="lockedCheckbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: #F2BC1B;">
-              <span style="color: #F2BC1B; font-size: 12px; font-weight: 600;">تفعيل ونش مسكر (+5 د.ك)</span>
-            </label>
-            <div id="lockedYesNote" class="warning-box hidden">
-              <strong>⚠️ تنويه:</strong> إذا القير ما يتبوش او السيارة فيها حادث ما نقدر نشيلها بالونش المسكر
-            </div>
+            <button class="btn-option" data-type="flatbedClose">ونش فل داون مصكر</button>
+            <button class="btn-option" data-type="jetSki">جت سكي - بقي</button>
           </div>
           
           <div id="flatbedOnlyNote" class="info-box hidden" style="margin-top: 10px;">
@@ -4693,7 +4286,6 @@
             
             formData.companyArabic = 'بورتراج';
             formData.company = 'portarage towtruk';
-            formData.isLocked = false;
             formData.gearWorks = true;
             updateTowTypeOptions();
           }
@@ -4713,15 +4305,12 @@
           formData.towType = null;
           formData.from = null;
           formData.to = null;
-          formData.isLocked = false;
           formData.extraCharges = 'no';
           
           // Hide sections
           document.getElementById('towTypeSection').classList.add('hidden');
           document.getElementById('towLocationsSection').classList.add('hidden');
           document.getElementById('towResultSection').classList.add('hidden');
-          document.getElementById('lockedOption').classList.add('hidden');
-          document.getElementById('lockedYesNote').classList.add('hidden');
           document.getElementById('flatbedOnlyNote').classList.add('hidden');
           
           updateTowTypeOptions();
@@ -4731,7 +4320,6 @@
       // Set default to بورتراج
       formData.companyArabic = 'بورتراج';
       formData.company = 'portarage towtruk';
-      formData.isLocked = false;
       formData.gearWorks = true;
       updateTowTypeOptions();
     }
@@ -4849,11 +4437,15 @@
       const rows = sheetsData[sheetName];
       let hasNormal = false;
       let hasFlatbed = false;
+      let hasFlatbedClose = false;
+      let hasJetSki = false;
       
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
         if (row[4] || row[1]) hasNormal = true;
         if (row[12] || row[9]) hasFlatbed = true;
+        if (row[22] || row[16]) hasFlatbedClose = true;
+        if (row[22] || row[16]) hasJetSki = true;
       }
       
       // Update buttons visibility
@@ -4865,6 +4457,10 @@
         if (type === 'normal' && !hasNormal) {
           btn.style.display = 'none';
         } else if (type === 'flatbed' && !hasFlatbed) {
+          btn.style.display = 'none';
+        } else if (type === 'flatbedClose' && !hasFlatbedClose) {
+          btn.style.display = 'none';
+        } else if (type === 'jetSki' && !hasJetSki) {
           btn.style.display = 'none';
         } else {
           btn.style.display = 'block';
@@ -4879,7 +4475,6 @@
       if (!formData.towType) {
         document.getElementById('towLocationsSection').classList.add('hidden');
         document.getElementById('towResultSection').classList.add('hidden');
-        document.getElementById('lockedOption').classList.add('hidden');
       }
       
       // Tow type selection
@@ -4901,59 +4496,17 @@
           if (fromSelect) fromSelect.value = '';
           if (toSelect) toSelect.value = '';
           
-          const lockedOption = document.getElementById('lockedOption');
           const flatbedOnlyNote = document.getElementById('flatbedOnlyNote');
-          const lockedCheckbox = document.getElementById('lockedCheckbox');
           const flatbedExtraChargesSection = document.getElementById('flatbedExtraChargesSection');
           
-          if (formData.towType === 'flatbed') {
-            if (formData.companyArabic === 'بورتراج') {
-              lockedOption.classList.remove('hidden');
-              flatbedOnlyNote.classList.add('hidden');
-              flatbedExtraChargesSection.classList.add('hidden');
-              
-              if (formData.isLocked === undefined) {
-                formData.isLocked = false;
-              }
-              
-              if (lockedCheckbox) {
-                lockedCheckbox.checked = formData.isLocked;
-              }
-              
-              if (lockedCheckbox) {
-                lockedCheckbox.onchange = () => {
-                  formData.isLocked = lockedCheckbox.checked;
-                  
-                  const lockedYesNote = document.getElementById('lockedYesNote');
-                  
-                  if (formData.isLocked) {
-                    lockedYesNote.classList.remove('hidden');
-                  } else {
-                    lockedYesNote.classList.add('hidden');
-                  }
-                  
-                  if (formData.from && formData.to) {
-                    calculateTowPrice();
-                  }
-                };
-              }
-            } else {
-              // For other companies - NO gear question for flatbed
-              lockedOption.classList.add('hidden');
-              flatbedOnlyNote.classList.add('hidden');
-              document.getElementById('lockedYesNote').classList.add('hidden');
-              flatbedExtraChargesSection.classList.add('hidden');
-              formData.isLocked = false;
-              formData.flatbedExtraCharges = 'no';
-            }
-          } else {
-            lockedOption.classList.add('hidden');
+          if (formData.towType === 'flatbed' || formData.towType === 'flatbedClose' || formData.towType === 'jetSki') {
             flatbedOnlyNote.classList.add('hidden');
             flatbedExtraChargesSection.classList.add('hidden');
-            document.getElementById('lockedYesNote').classList.add('hidden');
+          } else {
+            flatbedOnlyNote.classList.add('hidden');
+            flatbedExtraChargesSection.classList.add('hidden');
             document.getElementById('flatbedExtraChargesNote').classList.add('hidden');
-            formData.isLocked = false;
-            formData.flatbedExtraCharges = 'no';
+            formData.flatbedPortarageExtraCharges = 'no';
           }
           
           updateTowLocations();
@@ -5021,8 +4574,8 @@
         }
         
         if (formData.to) {
-          // Show gear question ONLY for بورتراج flatbed
-          if (formData.companyArabic === 'بورتراج' && formData.towType === 'flatbed') {
+          // Show Portarage flatbed extra charges for Portarage flatbed-like services
+          if (formData.companyArabic === 'بورتراج' && (formData.towType === 'flatbed' || formData.towType === 'flatbedClose' || formData.towType === 'jetSki')) {
             document.getElementById('flatbedPortarageExtraChargesSection').classList.remove('hidden');
             document.getElementById('extraChargesSection').classList.add('hidden');
             
@@ -5112,6 +4665,21 @@
           if (from && toK && priceJ) {
             routes.push({ from, to: toK, price: priceJ, cancelCol: 8 });
           }
+        } else if (towType === 'flatbedClose' || towType === 'jetSki') {
+          const from = row[22];
+          const toU = row[21];
+          const priceU = row[20];
+          const cancelU = row[19];
+          const toReturn = row[18];
+          const priceReturn = row[17];
+          const cancelReturn = row[16];
+          
+          if (from && toU && priceU) {
+            routes.push({ from, to: toU, price: priceU, cancelCol: 19 });
+          }
+          if (from && toReturn && priceReturn) {
+            routes.push({ from, to: toReturn, price: priceReturn, cancelCol: 16 });
+          }
         }
       }
       
@@ -5136,28 +4704,12 @@
       if (formData.towType === 'normal') {
         // For normal tow بورتراج
         extraCharges = (formData.companyArabic === 'بورتراج' && formData.extraCharges === 'yes') ? 10 : 0;
-      } else if (formData.towType === 'flatbed') {
+      } else if (formData.towType === 'flatbed' || formData.towType === 'flatbedClose' || formData.towType === 'jetSki') {
         if (formData.companyArabic === 'بورتراج') {
-          // For flatbed بورتراج - use flatbedPortarageExtraCharges
+          // For flatbed-like Portarage services - use the same extra charges flow
           extraCharges = (formData.flatbedPortarageExtraCharges === 'yes') ? 10 : 0;
         } else {
-          // For flatbed other companies - no charges
           extraCharges = 0;
-        }
-      }
-      
-      const lockedCharge = (formData.towType === 'flatbed' && formData.isLocked) ? 5 : 0;
-      
-      let portaragePrice = companyPrice;
-      let discount = 0;
-      
-      if (formData.company.toLowerCase() !== 'portarage towtruk') {
-        const portarageRoutes = getTowRoutes('portarage towtruk', formData.towType);
-        const portarageRoute = portarageRoutes.find(r => r.from === formData.from && r.to === formData.to);
-        
-        if (portarageRoute) {
-          portaragePrice = parseFloat(portarageRoute.price) || 0;
-          discount = portaragePrice - companyPrice;
         }
       }
       
@@ -5165,40 +4717,22 @@
       let rows = '';
       
       if (formData.company.toLowerCase() !== 'portarage towtruk') {
-        const finalPrice = companyPrice + extraCharges + lockedCharge;
+        const finalPrice = companyPrice + extraCharges;
         
         rows = `
           <tr>
-            <td>سعر ${formData.companyArabic}</td>
+            <td>السعر الخاص لشركة ${formData.companyArabic}</td>
             <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>السعر الأصلي (بورتراج)</td>
-            <td>${portaragePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr style="background: #1a4a2a;">
-            <td><strong>قيمة الخصم</strong></td>
-            <td class="highlight" style="color: #10b981;"><strong>${discount.toFixed(2)} ${config.currency}</strong></td>
           </tr>
         `;
         
-        if (lockedCharge > 0 || extraCharges > 0) {
-          if (lockedCharge > 0) {
-            rows += `
-              <tr>
-                <td>إضافة ونش مسكر</td>
-                <td class="highlight">${lockedCharge.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          if (extraCharges > 0) {
-            rows += `
-              <tr>
-                <td>رسوم عربانات (القير لا يعمل)</td>
-                <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
+        if (extraCharges > 0) {
+          rows += `
+            <tr>
+              <td>رسوم عربانات (القير لا يعمل)</td>
+              <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
+            </tr>
+          `;
           rows += `
             <tr style="background: #262626;">
               <td><strong>الإجمالي النهائي</strong></td>
@@ -5214,24 +4748,14 @@
           </tr>
         `;
         
-        if (lockedCharge > 0 || extraCharges > 0) {
-          if (lockedCharge > 0) {
-            rows += `
-              <tr>
-                <td>إضافة ونش مسكر</td>
-                <td class="highlight">${lockedCharge.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          if (extraCharges > 0) {
-            rows += `
-              <tr>
-                <td>رسوم عربانات (القير لا يعمل)</td>
-                <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          const total = companyPrice + lockedCharge + extraCharges;
+        if (extraCharges > 0) {
+          rows += `
+            <tr>
+              <td>رسوم عربانات (القير لا يعمل)</td>
+              <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
+            </tr>
+          `;
+          const total = companyPrice + extraCharges;
           rows += `
             <tr style="background: #262626;">
               <td><strong>الإجمالي</strong></td>
@@ -5255,7 +4779,7 @@
       document.getElementById('towResultSection').classList.remove('hidden');
 
       if (portarageNote) {
-        if (formData.companyArabic === 'بورتراج' && (formData.towType === 'normal' || formData.towType === 'flatbed')) {
+        if (formData.companyArabic === 'بورتراج' && (formData.towType === 'normal' || formData.towType === 'flatbed' || formData.towType === 'flatbedClose' || formData.towType === 'jetSki')) {
           portarageNote.classList.remove('hidden');
         } else {
           portarageNote.classList.add('hidden');
@@ -5290,6 +4814,13 @@
           }
           if (row[14] === from && row[10] === to && row[8]) {
             return `${parseFloat(row[8]).toFixed(2)} ${config.currency}`;
+          }
+        } else if (towType === 'flatbedClose' || towType === 'jetSki') {
+          if (row[22] === from && row[21] === to && row[19]) {
+            return `${parseFloat(row[19]).toFixed(2)} ${config.currency}`;
+          }
+          if (row[22] === from && row[18] === to && row[16]) {
+            return `${parseFloat(row[16]).toFixed(2)} ${config.currency}`;
           }
         }
       }
@@ -6791,6 +6322,19 @@
             <button class="btn-option" data-mech="coolant">ماي راديتر</button>
             <button class="btn-option" data-mech="brakefluid">زيت بريك</button>
             <button class="btn-option" data-mech="transmission">زيت سكان</button>
+            <button class="btn-option" data-mech="fuelpump">طرمبه بنزين</button>
+            <button class="btn-option" data-mech="waterpump">طرمبه ماي</button>
+            <button class="btn-option" data-mech="gaysh">غايش</button>
+            <button class="btn-option" data-mech="airfilter">فلتر هوا</button>
+            <button class="btn-option" data-mech="acfilter">فلتر مكيف</button>
+            <button class="btn-option" data-mech="gaysh_rollers">بكرات غايش</button>
+            <button class="btn-option" data-mech="gaysh_shadad">شداد غايش</button>
+            <button class="btn-option" data-mech="shialat">شيالات</button>
+            <button class="btn-option" data-mech="assistants">معاونات</button>
+            <button class="btn-option" data-mech="stabilizer">استبلايزر</button>
+            <button class="btn-option" data-mech="assistant_seat">كرسي معاون</button>
+            <button class="btn-option" data-mech="blocks">بلاكات</button>
+            <button class="btn-option" data-mech="axles">اكسات</button>
           </div>
         </div>
         
@@ -6810,6 +6354,39 @@
             <button class="btn-option" data-oil-source="ours">من عندنا</button>
           </div>
         </div>
+
+        <div id="fuelpumpOriginSection" class="form-section hidden">
+          <h3 class="section-title">منشأ السيارة</h3>
+          <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <button class="btn-option" data-fuel-origin="german">ألماني</button>
+            <button class="btn-option" data-fuel-origin="american">أمريكي</button>
+            <button class="btn-option" data-fuel-origin="japanese">ياباني</button>
+          </div>
+        </div>
+
+        <div id="fuelpumpTypeSection" class="form-section hidden">
+          <h3 class="section-title">نوع المركبة</h3>
+          <div id="fuelpumpTypeButtons" class="btn-grid" style="grid-template-columns: repeat(3, 1fr);"></div>
+        </div>
+        
+        <div id="brakesOptionsSection" class="form-section hidden">
+          <h3 class="section-title">خيارات سفايف وديسكات</h3>
+          <div class="btn-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <button class="btn-option" data-brake-opt="tyres">تايرين</button>
+            <button class="btn-option" data-brake-opt="four">4 تواير</button>
+            <button class="btn-option" data-brake-opt="new_discs">ديسكات جديدة</button>
+            <button class="btn-option" data-brake-opt="install_discs">تركيب ديسكات فقط</button>
+          </div>
+        </div>
+
+        <div id="brakesModeSection" class="form-section hidden">
+          <h3 class="section-title">اختر النوع</h3>
+          <div class="btn-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <button class="btn-option" data-brakes-mode="shafayef">سفايف فقط</button>
+            <button class="btn-option" data-brakes-mode="discs">ديسكات فقط</button>
+            <button class="btn-option" data-brakes-mode="both">سفايف وديسكات</button>
+          </div>
+        </div>
         
         <div id="mechAreaSection" class="form-section hidden">
           <h3 class="section-title">اختيار المنطقة</h3>
@@ -6819,13 +6396,7 @@
           </div>
         </div>
         
-        <div id="diskTurningSection" class="form-section hidden">
-          <h3 class="section-title">مخرطة ديسكات</h3>
-          <div class="btn-grid" style="grid-template-columns: 1fr 1fr;">
-            <button class="btn-option active" data-disk="no">لا</button>
-            <button class="btn-option" data-disk="yes">نعم (+5 د.ك)</button>
-          </div>
-        </div>
+        <!-- disk turning removed: integrated into discs question as requested -->
         
         <div id="alternatorSupplierPriceSection" class="form-section hidden">
           <h3 class="section-title">سعر المورد</h3>
@@ -6897,7 +6468,133 @@
         'acgas': 'تعبئه غاز مكيف',
         'coolant': 'ماي راديتر',
         'brakefluid': 'زيت بريك',
-        'transmission': 'زيت سكان'
+        'transmission': 'زيت سكان',
+        'fuelpump': 'طرمبه بنزين',
+        'waterpump': 'طرمبه ماي',
+        'gaysh': 'غايش',
+        'airfilter': 'فلتر هوا',
+        'acfilter': 'فلتر مكيف',
+        'gaysh_rollers': 'بكرات غايش',
+        'gaysh_shadad': 'شداد غايش',
+        'shialat': 'شيالات',
+        'assistants': 'معاونات'
+        ,'stabilizer': 'استبلايزر'
+        ,'assistant_seat': 'كرسي معاون'
+        ,'blocks': 'بلاكات'
+        ,'axles': 'اكسات'
+      };
+
+      // Pricing table: service -> origin -> type -> price (number)
+      const PRICING = {
+        fuelpump: {
+          german: { salon: 15, suv: 25 },
+          american: { salon: 10, half_suv: 50, suv: 30 },
+          japanese: { salon: 10, half_suv: 50, suv: 30 }
+        },
+        waterpump: {
+          german: { salon: 40, suv: 50 },
+          american: { salon: 10, half_suv: 30, suv: 15 },
+          japanese: { salon: 10, half_suv: 30, suv: 15 }
+        },
+        gaysh: {
+          german: { salon: 10, suv: 10 },
+          american: { salon: 5, half_suv: 10, suv: 5 },
+          japanese: { salon: 5, half_suv: 10, suv: 5 }
+        },
+        airfilter: {
+          german: { salon: 5, suv: 5 },
+          american: { salon: 5, half_suv: 5, suv: 5 },
+          japanese: { salon: 5, half_suv: 5, suv: 5 }
+        },
+        acfilter: {
+          german: { salon: 5, suv: 5 },
+          american: { salon: 5, half_suv: 5, suv: 5 },
+          japanese: { salon: 5, half_suv: 5, suv: 5 }
+        },
+        gaysh_rollers: {
+          german: { salon: 10, suv: 10 },
+          american: { salon: 5, half_suv: 10, suv: 5 },
+          japanese: { salon: 5, half_suv: 10, suv: 5 }
+        },
+        gaysh_shadad: {
+          german: { salon: 20, suv: 30 },
+          american: { salon: 5, half_suv: 10, suv: 5 },
+          japanese: { salon: 5, half_suv: 10, suv: 5 }
+        },
+        shialat: {
+          german: { salon: 10, suv: 20 },
+          american: { salon: 5, half_suv: 5, suv: 10 },
+          japanese: { salon: 5, half_suv: 5, suv: 10 }
+        },
+        assistants: {
+          german: { salon: 30, suv: 30 },
+          american: { salon: 10, half_suv: 10, suv: 15 },
+          japanese: { salon: 10, half_suv: 10, suv: 15 }
+        }
+        ,stabilizer: {
+          german: { salon: 5, half_suv: 5, suv: 5 },
+          american: { salon: 5, half_suv: 5, suv: 5 },
+          japanese: { salon: 5, half_suv: 5, suv: 5 }
+        }
+        ,assistant_seat: {
+          german: { salon: 30, half_suv: 30, suv: 30 },
+          american: { salon: 10, half_suv: 10, suv: 10 },
+          japanese: { salon: 10, half_suv: 10, suv: 10 }
+        }
+      };
+
+      // Axles pricing with special handling for German dual option
+      const AXLES_PRICING = {
+        salon: { german: 60, american: 20, japanese: 20 },
+        suv: {
+          german: { normal: 80, dual: 120 },
+          american: 25,
+          japanese: 25
+        }
+      };
+
+      // Blocks (بلاكات) pricing with cylinder options
+      const BLOCKS_PRICING = {
+        salon: {
+          '4': { german: 10, american: 5, japanese: 5 },
+          '6': { german: 15, american: 10, japanese: 10 }
+        },
+        suv: {
+          '6': { german: 15, american: 10, japanese: 10 },
+          '8': { german: 20, american: 15, japanese: 15 }
+        },
+        half_suv: {
+          '6': { american: 10, japanese: 10 },
+          '8': { american: 15, japanese: 15 }
+        }
+      };
+
+      // Brakes and discs pricing (internal)
+      const BRAKES_PRICING = {
+        salon: {
+          tyres: { german: 10, american: 5, japanese: 5 },
+          four: { german: 20, american: 15, japanese: 15 }
+        },
+        suv: {
+          tyres: { german: 10, american: 5, japanese: 5 },
+          four: { german: 20, american: 15, japanese: 15 }
+        },
+        half_suv: {
+          tyres: { american: 5, japanese: 5 },
+          four: { american: 15, japanese: 15 }
+        }
+      };
+
+      const DISCS_PRICING = {
+        salon: { german: 10, american: 5, japanese: 5 },
+        suv: { german: 15, american: 5, japanese: 5 },
+        half_suv: { american: 5, japanese: 5 }
+      };
+
+      // Region surcharges for mechanical services
+      const REGION_SURCHARGES = {
+        10: ['علي صباح السالم', 'الشعيبه', 'ميناء عبدالله', 'الجليعة', 'بنيدر', 'الخيران', 'النويصيب', 'الروضتين', 'المطلاع', 'العبدلي', 'الصبية', 'كبد', 'صباح الاحمد', 'الوفرة'],
+        5: ['جابر الاحمد', 'سعد العبدالله', 'الجهراء', 'الفحيحيل', 'الاحمدي', 'غرب عبدالله مبارك', 'جنوب عبدلله مبارك']
       };
       
       document.querySelectorAll('[data-mech]').forEach(btn => {
@@ -6922,8 +6619,12 @@
           // Hide all dynamic sections
           document.getElementById('oilFilterSourceSection').classList.add('hidden');
           document.getElementById('mechAreaSection').classList.add('hidden');
-          document.getElementById('diskTurningSection').classList.add('hidden');
           document.getElementById('alternatorSupplierPriceSection').classList.add('hidden');
+          document.getElementById('fuelpumpOriginSection').classList.add('hidden');
+          document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+          document.getElementById('brakesOptionsSection').classList.add('hidden');
+          document.getElementById('brakesModeSection').classList.add('hidden');
+          const prevBlocks = document.getElementById('blocksCylContainer'); if (prevBlocks) prevBlocks.remove();
           
           if (formData.mechanicalService === 'oilfilter') {
             // Show oil source selection
@@ -6942,32 +6643,249 @@
                   loadAreaOptionsDatalist('خدمات ميكانيكية', [8, 9, 10, 12, 13, 14], calculateMechanicalPrice);
                 } else if (formData.oilSource === 'ours') {
                   // Open external oil website
-                  openFullscreenIframe('https://portarageoils.netlify.app/', 'زيت وفلتر');
+                  openFullscreenIframe('https://poroils.netlify.app/', 'زيت وفلتر');
                 }
               };
             });
             
           } else if (formData.mechanicalService === 'inspection' || formData.mechanicalService === 'acgas') {
-            document.getElementById('diskTurningSection').classList.add('hidden');
             document.getElementById('mechAreaSection').classList.remove('hidden');
             // Use خدمات ميكانيكية for inspection areas (A,B,C and E,F,G)
             loadAreaOptionsDatalist('خدمات ميكانيكية', [0, 1, 2, 4, 5, 6], calculateMechanicalPrice);
           } else if (formData.mechanicalService === 'brakes') {
-            document.getElementById('diskTurningSection').classList.remove('hidden');
-            document.getElementById('mechAreaSection').classList.remove('hidden');
-            formData.diskTurning = 'no';
-            
-            document.querySelectorAll('[data-disk]').forEach(diskBtn => {
-              diskBtn.onclick = () => {
-                document.querySelectorAll('[data-disk]').forEach(b => b.classList.remove('active'));
-                diskBtn.classList.add('active');
+            // Internal brakes/discs flow (no Google Sheet)
+            // Removed separate disk-turning checkbox; integrate surcharge into discs question.
+
+            // Show origin selector and hide other sections
+                // First ask for area, then proceed to origin/type/options
+                document.getElementById('mechAreaSection').classList.remove('hidden');
+                // Load area options then show origin/type UI after selection
+                loadAreaOptionsDatalist('خدمات ميكانيكية', [8, 9, 10, 12, 13, 14], () => {
+                  document.getElementById('mechAreaSection').classList.add('hidden');
+                  document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+                  document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                  document.getElementById('brakesOptionsSection').classList.add('hidden');
+                });
+
+            const typesContainer = document.getElementById('fuelpumpTypeButtons');
+            const optionsSection = document.getElementById('brakesOptionsSection');
+            const modeSection = document.getElementById('brakesModeSection');
+
+            const makeTypeButtons = (origin) => {
+              typesContainer.innerHTML = '';
+              const createBtn = (text, value) => {
+                const b = document.createElement('button');
+                b.className = 'btn-option';
+                b.type = 'button';
+                b.textContent = text;
+                b.dataset.fuelType = value;
+                return b;
+              };
+
+              if (origin === 'german') {
+                typesContainer.appendChild(createBtn('صالون', 'salon'));
+                typesContainer.appendChild(createBtn('جيب', 'suv'));
+              } else {
+                typesContainer.appendChild(createBtn('صالون', 'salon'));
+                typesContainer.appendChild(createBtn('نص جيب', 'half_suv'));
+                typesContainer.appendChild(createBtn('جيب', 'suv'));
+              }
+
+              document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+
+              typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                tb.onclick = () => {
+                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                  tb.classList.add('active');
+                  formData.origin = formData.origin || tb.closest('#fuelpumpTypeSection').dataset.origin;
+                  formData.type = tb.dataset.fuelType;
+
+                  // Clear brakes mode and options selections when type changes
+                  modeSection.querySelectorAll('[data-brakes-mode]').forEach(b => b.classList.remove('active'));
+                  optionsSection.innerHTML = '';
+                  document.getElementById('mechResultSection').classList.add('hidden');
+
+                  // show mode selector for brakes (سفايف / ديسكات / كلاهما)
+                  modeSection.classList.remove('hidden');
+                  optionsSection.classList.add('hidden');
+
+                  // render options according to chosen mode; for 'both' we show sequential questions
+                  const renderModeFlow = (mode) => {
+                    optionsSection.innerHTML = '';
+                    // Clear result when mode changes
+                    document.getElementById('mechResultSection').classList.add('hidden');
+
+                    const makeBtn = (text, key) => {
+                      const b = document.createElement('button');
+                      b.className = 'btn-option';
+                      b.type = 'button';
+                      b.textContent = text;
+                      b.dataset.brakeOpt = key;
+                      return b;
+                    };
+
+                    const showResult = (shafayefPrice, discsPrice, turnSurcharge) => {
+                      // compute region surcharge (if any)
+                      let regionSurcharge = 0;
+                      if (formData.area) {
+                        for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                          if (regions.includes(formData.area)) {
+                            regionSurcharge = parseInt(amount, 10) || 0;
+                            break;
+                          }
+                        }
+                      }
+                      const extraTurn = turnSurcharge || 0;
+                      const total = (shafayefPrice || 0) + (discsPrice || 0) + extraTurn + regionSurcharge;
+                      const tbody = document.getElementById('mechResultBody');
+                      if (tbody) {
+                        let html = '';
+                        if (shafayefPrice) html += `<tr><td>سعر الشفايف</td><td class="highlight">${shafayefPrice.toFixed(2)} ${config.currency}</td></tr>`;
+                        if (discsPrice) html += `<tr><td>سعر الديسكات</td><td class="highlight">${discsPrice.toFixed(2)} ${config.currency}</td></tr>`;
+                        if (extraTurn) html += `<tr><td>مخرطة ديسكات</td><td class="highlight">${extraTurn.toFixed(2)} ${config.currency}</td></tr>`;
+                        if (regionSurcharge > 0) html += `<tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${regionSurcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                        html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td></tr>`;
+                        tbody.innerHTML = html;
+                        updateMechResultNote();
+                        document.getElementById('mechResultSection').classList.remove('hidden');
+                      }
+                    };
+
+                    if (mode === 'shafayef') {
+                      const container = document.createElement('div');
+                      container.className = 'btn-grid';
+                      container.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                      const tyresBtn = makeBtn('تايرين', 'tyres');
+                      const fourBtn = makeBtn('4 تواير', 'four');
+                      container.appendChild(tyresBtn);
+                      container.appendChild(fourBtn);
+                      optionsSection.appendChild(container);
+                      optionsSection.classList.remove('hidden');
+
+                      [tyresBtn, fourBtn].forEach(b => {
+                        b.onclick = () => {
+                          container.querySelectorAll('.btn-option').forEach(x => x.classList.remove('active'));
+                          b.classList.add('active');
+                          const opt = b.dataset.brakeOpt;
+                          const map = BRAKES_PRICING[formData.type] || {};
+                          const row = map[opt] || {};
+                          const shafayefPrice = row[formData.origin] || 0;
+                          showResult(shafayefPrice, 0, 0);
+                        };
+                      });
+
+                    } else if (mode === 'discs') {
+                      // Show result directly without asking for new discs or installation only
+                      const row = DISCS_PRICING[formData.type] || {};
+                      const discsPrice = row[formData.origin] || 0;
+                      showResult(0, discsPrice, 0);
+                      optionsSection.innerHTML = '';
+                      optionsSection.classList.add('hidden');
+
+                    } else { // both: sequential
+                      // first: shafayef selection
+                      const shContainer = document.createElement('div');
+                      shContainer.className = 'btn-grid';
+                      shContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                      const tyresBtn = makeBtn('تايرين', 'tyres');
+                      const fourBtn = makeBtn('4 تواير', 'four');
+                      shContainer.appendChild(tyresBtn);
+                      shContainer.appendChild(fourBtn);
+                      optionsSection.appendChild(shContainer);
+                      optionsSection.classList.remove('hidden');
+
+                      const onShafayefChosen = (chosenOpt) => {
+                        // when a shafayef option chosen, show discs question
+                        const map = BRAKES_PRICING[formData.type] || {};
+                        const row = map[chosenOpt] || {};
+                        const shafayefPrice = row[formData.origin] || 0;
+
+                        // build discs container
+                        const discsContainer = document.createElement('div');
+                        discsContainer.className = 'btn-grid';
+                        discsContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                        const newDiscsBtn = makeBtn('ديسكات جديدة', 'new_discs');
+                        const turnDiscsBtn = makeBtn('مخرطه ديسكات', 'discs_with_turn');
+                        discsContainer.appendChild(newDiscsBtn);
+                        discsContainer.appendChild(turnDiscsBtn);
+
+                        // remove previous discs area if any
+                        const existing = optionsSection.querySelector('.discs-block');
+                        if (existing) existing.remove();
+
+                        const holder = document.createElement('div');
+                        holder.className = 'discs-block';
+                        holder.style.marginTop = '8px';
+                        holder.appendChild(discsContainer);
+                        optionsSection.appendChild(holder);
+
+                        [newDiscsBtn, turnDiscsBtn].forEach(btn => {
+                          btn.onclick = () => {
+                            discsContainer.querySelectorAll('.btn-option').forEach(x => x.classList.remove('active'));
+                            btn.classList.add('active');
+                            const opt = btn.dataset.brakeOpt;
+                            const discsRow = DISCS_PRICING[formData.type] || {};
+                            // If user chose "مخرطه ديسكات معاهم" we only add the +5 surcharge, do NOT add full discs price
+                            let discsPrice = 0;
+                            let turnSurcharge = 0;
+                            if (btn.dataset.brakeOpt === 'discs_with_turn') {
+                              discsPrice = 0;
+                              turnSurcharge = 5;
+                            } else {
+                              discsPrice = discsRow[formData.origin] || 0;
+                              turnSurcharge = 0;
+                            }
+                            showResult(shafayefPrice, discsPrice, turnSurcharge);
+                          };
+                        });
+                      };
+
+                      [tyresBtn, fourBtn].forEach(b => {
+                        b.onclick = () => {
+                          shContainer.querySelectorAll('.btn-option').forEach(x => x.classList.remove('active'));
+                          b.classList.add('active');
+                          onShafayefChosen(b.dataset.brakeOpt);
+                        };
+                      });
+                    }
+                  };
+
+                  // attach mode buttons
+                  const modeBtns = document.querySelectorAll('[data-brakes-mode]');
+                  modeBtns.forEach(mb => {
+                    mb.onclick = () => {
+                      modeBtns.forEach(x => x.classList.remove('active'));
+                      mb.classList.add('active');
+                      const mode = mb.dataset.brakesMode; // shafayef / discs / both
+                      renderModeFlow(mode);
+                    };
+                  });
+                };
+              });
+            };
+
+            // attach origin buttons
+            document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+              o.onclick = () => {
+                document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                o.classList.add('active');
+                formData.origin = o.dataset.fuelOrigin;
                 
-                formData.diskTurning = diskBtn.dataset.disk;
-                if (formData.area) calculateMechanicalPrice();
+                // Clear other selections when origin changes
+                formData.type = null;
+                formData.brakesMode = null;
+                document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                document.getElementById('brakesModeSection').classList.add('hidden');
+                document.getElementById('brakesOptionsSection').classList.add('hidden');
+                document.getElementById('mechResultSection').classList.add('hidden');
+                // Remove previous cylinder container if exists (for blocks)
+                const prevBlocks = document.getElementById('blocksCylContainer');
+                if (prevBlocks) prevBlocks.remove();
+                
+                makeTypeButtons(formData.origin);
               };
             });
-            
-            loadAreaOptionsDatalist('خدمات ميكانيكية', [16, 17, 18, 20, 21, 22], calculateMechanicalPrice);
+          } else if (formData.mechanicalService === 'wipers') {
           } else if (formData.mechanicalService === 'wipers') {
             // تبديل المساحات — مناطق من خدمات ميكانيكية2 (أعمدة I,J,K و M,N,O)
             document.getElementById('mechAreaSection').classList.remove('hidden');
@@ -7004,6 +6922,444 @@
           } else if (formData.mechanicalService === 'coolant' || formData.mechanicalService === 'brakefluid' || formData.mechanicalService === 'transmission') {
             document.getElementById('mechAreaSection').classList.remove('hidden');
             loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], calculateFluidPrice);
+          } else if (formData.mechanicalService === 'blocks') {
+            // بلاكات flow: ask for AREA FIRST, then choose origin -> type -> cylinders
+            document.getElementById('mechAreaSection').classList.remove('hidden');
+            loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
+              // After area is selected, show origin selection and continue with blocks flow
+              if (formData.area) {
+                document.getElementById('mechAreaSection').classList.add('hidden');
+                document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+                document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                document.getElementById('brakesOptionsSection').classList.add('hidden');
+
+                const typesContainer = document.getElementById('fuelpumpTypeButtons');
+                const makeBlockTypeButtons = (origin) => {
+                  typesContainer.innerHTML = '';
+                  const createBtn = (text, value) => {
+                    const b = document.createElement('button');
+                    b.className = 'btn-option';
+                    b.type = 'button';
+                    b.textContent = text;
+                    b.dataset.fuelType = value;
+                    return b;
+                  };
+                  // types similar to others
+                  if (origin === 'german') {
+                    typesContainer.appendChild(createBtn('صالون', 'salon'));
+                    typesContainer.appendChild(createBtn('جيب', 'suv'));
+                  } else {
+                    typesContainer.appendChild(createBtn('صالون', 'salon'));
+                    typesContainer.appendChild(createBtn('نص جيب', 'half_suv'));
+                    typesContainer.appendChild(createBtn('جيب', 'suv'));
+                  }
+                  document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                    tb.onclick = () => {
+                      typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                      tb.classList.add('active');
+                      formData.type = tb.dataset.fuelType;
+
+                      // Clear previous cylinder container and result when type changes
+                      document.getElementById('mechResultSection').classList.add('hidden');
+                      const prevBlocks = document.getElementById('blocksCylContainer');
+                      if (prevBlocks) prevBlocks.remove();
+
+                      // show cylinder choices
+                      const cylContainer = document.createElement('div');
+                      cylContainer.className = 'btn-grid';
+                      cylContainer.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                      cylContainer.style.marginTop = '8px';
+                      const options = [];
+                      if (formData.type === 'salon') options.push('4','6');
+                      if (formData.type === 'suv') options.push('6','8');
+                      if (formData.type === 'half_suv') options.push('6','8');
+
+                      cylContainer.innerHTML = '';
+                      options.forEach(c => {
+                        const b = document.createElement('button');
+                        b.className = 'btn-option';
+                        b.type = 'button';
+                        b.textContent = c + ' سلندر';
+                        b.dataset.cyl = c;
+                        b.onclick = () => {
+                          // compute price from BLOCKS_PRICING
+                          const row = (BLOCKS_PRICING[formData.type] || {})[c] || {};
+                          const basePrice = row[formData.origin] || 0;
+                          
+                          // Check for region surcharge
+                          let surcharge = 0;
+                          if (formData.area) {
+                            for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                              if (regions.includes(formData.area)) {
+                                surcharge = parseInt(amount, 10);
+                                break;
+                              }
+                            }
+                          }
+                          
+                          const totalPrice = basePrice + surcharge;
+                          const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                          const typeLabelMap = { salon: 'صالون', half_suv: 'نص جيب', suv: 'جيب' };
+                          const originLabel = originLabelMap[formData.origin] || formData.origin;
+                          const typeLabel = typeLabelMap[formData.type] || formData.type;
+                          const desc = `بلاكات (${originLabel} + ${typeLabel} + ${c} سلندر)`;
+                          const tbody = document.getElementById('mechResultBody');
+                          if (tbody) {
+                            let html = `
+                              <tr><td>${escapeHtml(desc)}</td><td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td></tr>
+                            `;
+                            if (surcharge > 0) {
+                              html += `
+                                <tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>
+                              `;
+                            }
+                            html += `
+                              <tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>
+                            `;
+                            tbody.innerHTML = html;
+                            updateMechResultNote();
+                            document.getElementById('mechResultSection').classList.remove('hidden');
+                          }
+                        };
+                        cylContainer.appendChild(b);
+                      });
+
+                      // append cylinder choices below type buttons
+                      const host = document.getElementById('fuelpumpTypeSection');
+                      // remove previous if any
+                      const prev = document.getElementById('blocksCylContainer');
+                      if (prev) prev.remove();
+                      cylContainer.id = 'blocksCylContainer';
+                      host.appendChild(cylContainer);
+                    };
+                  });
+                };
+
+                document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+                  o.onclick = () => {
+                    document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                    o.classList.add('active');
+                    formData.origin = o.dataset.fuelOrigin;
+                    
+                    // Clear other selections when origin changes
+                    formData.type = null;
+                    document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                    document.getElementById('mechResultSection').classList.add('hidden');
+                    // Remove previous cylinder container
+                    const prevBlocks = document.getElementById('blocksCylContainer');
+                    if (prevBlocks) prevBlocks.remove();
+                    // Clear type button selections
+                    typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                    typesContainer.innerHTML = '';
+                    
+                    makeBlockTypeButtons(formData.origin);
+                  };
+                });
+              }
+            });
+          } else if (formData.mechanicalService === 'axles') {
+            // اكسات flow: ask for AREA FIRST, then choose origin -> type -> dual/normal (for german SUV)
+            document.getElementById('mechAreaSection').classList.remove('hidden');
+            loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
+              // After area is selected, show origin selection
+              if (formData.area) {
+                document.getElementById('mechAreaSection').classList.add('hidden');
+                document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+                document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                document.getElementById('brakesOptionsSection').classList.add('hidden');
+
+                const typesContainer = document.getElementById('fuelpumpTypeButtons');
+                const makeAxleTypeButtons = (origin) => {
+                  typesContainer.innerHTML = '';
+                  const createBtn = (text, value) => {
+                    const b = document.createElement('button');
+                    b.className = 'btn-option';
+                    b.type = 'button';
+                    b.textContent = text;
+                    b.dataset.fuelType = value;
+                    return b;
+                  };
+                  // For axles, only salon and suv are available
+                  typesContainer.appendChild(createBtn('صالون', 'salon'));
+                  typesContainer.appendChild(createBtn('جيب', 'suv'));
+                  
+                  document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                    tb.onclick = () => {
+                      typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                      tb.classList.add('active');
+                      formData.type = tb.dataset.fuelType;
+
+                      // If salon, show price directly
+                      if (formData.type === 'salon') {
+                        const price = AXLES_PRICING.salon[formData.origin] || 0;
+                        
+                        // Check for region surcharge
+                        let surcharge = 0;
+                        if (formData.area) {
+                          for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                            if (regions.includes(formData.area)) {
+                              surcharge = parseInt(amount, 10);
+                              break;
+                            }
+                          }
+                        }
+                        const totalPrice = price + surcharge;
+                        
+                        const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                        const originLabel = originLabelMap[formData.origin] || formData.origin;
+                        const desc = `اكسات (${originLabel} + صالون)`;
+                        const tbody = document.getElementById('mechResultBody');
+                        if (tbody) {
+                          let html = `<tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>`;
+                          if (surcharge > 0) {
+                            html += `<tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                          }
+                          html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>`;
+                          tbody.innerHTML = html;
+                          updateMechResultNote();
+                          document.getElementById('mechResultSection').classList.remove('hidden');
+                        }
+                      } else if (formData.type === 'suv') {
+                        // For SUV, if german show dual/normal options, else show price directly
+                        if (formData.origin === 'german') {
+                          const dualContainer = document.createElement('div');
+                          dualContainer.className = 'btn-grid';
+                          dualContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                          dualContainer.style.marginTop = '8px';
+                          
+                          const normalBtn = document.createElement('button');
+                          normalBtn.className = 'btn-option';
+                          normalBtn.type = 'button';
+                          normalBtn.textContent = 'عادي';
+                          
+                          const dualBtn = document.createElement('button');
+                          dualBtn.className = 'btn-option';
+                          dualBtn.type = 'button';
+                          dualBtn.textContent = 'دبل';
+                          
+                          dualContainer.appendChild(normalBtn);
+                          dualContainer.appendChild(dualBtn);
+                          
+                          [normalBtn, dualBtn].forEach(btn => {
+                            btn.onclick = () => {
+                              dualContainer.querySelectorAll('.btn-option').forEach(x => x.classList.remove('active'));
+                              btn.classList.add('active');
+                              
+                              const dualType = btn === dualBtn ? 'dual' : 'normal';
+                              const price = formData.origin === 'german' ? AXLES_PRICING.suv.german[dualType] : 0;
+                              
+                              // Check for region surcharge
+                              let surcharge = 0;
+                              if (formData.area) {
+                                for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                                  if (regions.includes(formData.area)) {
+                                    surcharge = parseInt(amount, 10);
+                                    break;
+                                  }
+                                }
+                              }
+                              const totalPrice = price + surcharge;
+                              
+                              const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                              const originLabel = originLabelMap[formData.origin] || formData.origin;
+                              const dualLabel = dualType === 'dual' ? 'دبل' : 'عادي';
+                              const desc = `اكسات (${originLabel} + جيب + ${dualLabel})`;
+                              const tbody = document.getElementById('mechResultBody');
+                              if (tbody) {
+                                let html = `<tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>`;
+                                if (surcharge > 0) {
+                                  html += `<tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                                }
+                                html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>`;
+                                tbody.innerHTML = html;
+                                updateMechResultNote();
+                                document.getElementById('mechResultSection').classList.remove('hidden');
+                              }
+                            };
+                          });
+                          
+                          const host = document.getElementById('fuelpumpTypeSection');
+                          const prevDual = document.getElementById('axlesDualContainer');
+                          if (prevDual) prevDual.remove();
+                          dualContainer.id = 'axlesDualContainer';
+                          host.appendChild(dualContainer);
+                        } else {
+                          // American or Japanese: show price directly
+                          const price = formData.origin === 'american' ? 25 : 25;
+                          
+                          // Check for region surcharge
+                          let surcharge = 0;
+                          if (formData.area) {
+                            for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                              if (regions.includes(formData.area)) {
+                                surcharge = parseInt(amount, 10);
+                                break;
+                              }
+                            }
+                          }
+                          const totalPrice = price + surcharge;
+                          
+                          const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                          const originLabel = originLabelMap[formData.origin] || formData.origin;
+                          const desc = `اكسات (${originLabel} + جيب)`;
+                          const tbody = document.getElementById('mechResultBody');
+                          if (tbody) {
+                            let html = `<tr><td>${escapeHtml(desc)}</td><td class="highlight">${price.toFixed(2)} ${config.currency}</td></tr>`;
+                            if (surcharge > 0) {
+                              html += `<tr><td>زيادة منطقة (${escapeHtml(formData.area)})</td><td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td></tr>`;
+                            }
+                            html += `<tr style="background: #262626;"><td><strong>الإجمالي</strong></td><td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td></tr>`;
+                            tbody.innerHTML = html;
+                            updateMechResultNote();
+                            document.getElementById('mechResultSection').classList.remove('hidden');
+                          }
+                        }
+                      }
+                      
+                      // Clear previous dual container if switching to salon
+                      if (formData.type === 'salon') {
+                        const prevDual = document.getElementById('axlesDualContainer');
+                        if (prevDual) prevDual.remove();
+                      }
+                    };
+                  });
+                };
+
+                document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+                  o.onclick = () => {
+                    document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                    o.classList.add('active');
+                    formData.origin = o.dataset.fuelOrigin;
+                    
+                    // Clear other selections when origin changes
+                    formData.type = null;
+                    document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+                    document.getElementById('mechResultSection').classList.add('hidden');
+                    // Remove previous dual container
+                    const prevDual = document.getElementById('axlesDualContainer');
+                    if (prevDual) prevDual.remove();
+                    // Clear type button selections
+                    typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                    typesContainer.innerHTML = '';
+                    
+                    makeAxleTypeButtons(formData.origin);
+                  };
+                });
+              }
+            });
+          } else if (Object.keys(PRICING).includes(formData.mechanicalService)) {
+            const svc = formData.mechanicalService;
+            const svcDisplay = serviceNames[svc] || svc;
+
+            // Show back and area UI first
+            document.getElementById('mechTypeSection').style.display = 'none';
+            document.getElementById('mechBackButtonSection').style.display = 'block';
+            document.getElementById('mechSelectedService').textContent = svcDisplay;
+            document.getElementById('mechAreaSection').classList.remove('hidden');
+            document.getElementById('fuelpumpOriginSection').classList.add('hidden');
+            document.getElementById('fuelpumpTypeSection').classList.add('hidden');
+            document.getElementById('mechResultSection').classList.add('hidden');
+
+            // Load areas from coolant sheet (خدمات5) columns [0,1,2,4,5,6]
+            loadAreaOptionsDatalist('خدمات5', [0, 1, 2, 4, 5, 6], () => {
+              // After area selected, show origin
+              document.getElementById('mechAreaSection').classList.add('hidden');
+              document.getElementById('fuelpumpOriginSection').classList.remove('hidden');
+
+              // attach origin handlers
+              document.querySelectorAll('[data-fuel-origin]').forEach(o => {
+                o.onclick = () => {
+                  document.querySelectorAll('[data-fuel-origin]').forEach(x => x.classList.remove('active'));
+                  o.classList.add('active');
+                  formData.origin = o.dataset.fuelOrigin; // german / american / japanese
+
+                  const pricingForSvc = PRICING[svc] || {};
+                  const typesForOrigin = pricingForSvc[formData.origin] || {};
+
+                  // prepare type buttons based on available types for this origin
+                  const typesContainer = document.getElementById('fuelpumpTypeButtons');
+                  typesContainer.innerHTML = '';
+                  const createBtn = (text, value) => {
+                    const b = document.createElement('button');
+                    b.className = 'btn-option';
+                    b.type = 'button';
+                    b.textContent = text;
+                    b.dataset.fuelType = value;
+                    return b;
+                  };
+
+                  const typeMapLabel = {
+                    salon: 'صالون',
+                    half_suv: 'نص جيب',
+                    suv: 'جيب'
+                  };
+
+                  Object.keys(typesForOrigin).forEach(tk => {
+                    const lbl = typeMapLabel[tk] || tk;
+                    typesContainer.appendChild(createBtn(lbl, tk));
+                  });
+
+                  // show type section
+                  document.getElementById('fuelpumpTypeSection').classList.remove('hidden');
+
+                  // attach handlers to type buttons
+                  typesContainer.querySelectorAll('[data-fuel-type]').forEach(tb => {
+                    tb.onclick = () => {
+                      typesContainer.querySelectorAll('[data-fuel-type]').forEach(b => b.classList.remove('active'));
+                      tb.classList.add('active');
+                      formData.type = tb.dataset.fuelType;
+
+                      const basePrice = (pricingForSvc[formData.origin] && pricingForSvc[formData.origin][formData.type]) || 0;
+
+                      // Check for region surcharge
+                      let surcharge = 0;
+                      if (formData.area) {
+                        for (const [amount, regions] of Object.entries(REGION_SURCHARGES)) {
+                          if (regions.includes(formData.area)) {
+                            surcharge = parseInt(amount, 10);
+                            break;
+                          }
+                        }
+                      }
+                      const totalPrice = basePrice + surcharge;
+
+                      const originLabelMap = { german: 'ألماني', american: 'أمريكي', japanese: 'ياباني' };
+                      const originLabel = originLabelMap[formData.origin] || formData.origin;
+                      const typeLabel = typeMapLabel[formData.type] || formData.type;
+
+                      const tbody = document.getElementById('mechResultBody');
+                      if (tbody) {
+                        document.getElementById('mechResultSection').classList.remove('hidden');
+                        let html = `
+                          <tr>
+                            <td>${escapeHtml(svcDisplay)} (${escapeHtml(originLabel)} + ${escapeHtml(typeLabel)})</td>
+                            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+                          </tr>
+                        `;
+                        if (surcharge > 0) {
+                          html += `
+                            <tr>
+                              <td>زيادة منطقة (${escapeHtml(formData.area)})</td>
+                              <td class="highlight">${surcharge.toFixed(2)} ${config.currency}</td>
+                            </tr>
+                          `;
+                        }
+                        html += `
+                          <tr style="background: #262626;">
+                            <td><strong>الإجمالي</strong></td>
+                            <td class="highlight"><strong>${totalPrice.toFixed(2)} ${config.currency}</strong></td>
+                          </tr>
+                        `;
+                        tbody.innerHTML = html;
+                        updateMechResultNote();
+                      }
+                    };
+                  });
+                };
+              });
+            });
           }
         };
       });
@@ -7024,6 +7380,37 @@
       const groupsCircleBtn = document.getElementById('groupsCircleBtn');
       if (groupsCircleBtn) {
         groupsCircleBtn.onclick = () => openGroupsModal();
+      }
+    }
+
+    function updateMechResultNote() {
+      const noteDiv = document.getElementById('mechNote');
+      if (!noteDiv) return;
+      if (formData.mechanicalService === 'coolant') {
+        noteDiv.innerHTML = `
+          <div style="line-height: 1.6;">
+            ١- لازم تسالون العميل لو السياره فيها حراره ولو ارتفعت الحراره بعد ما عبينا لازم توديها كراج ويشيك على التسريب لنه ما عندنا خدمه تصليح او فحص تسريب<br>
+            ٢-هذا السعر في حال العميل طلب تعبئه ماي راديتر و(ليس تبديل) التبديل يختلف سعره عن التعبئه يرجى التأكد من الاداره
+          </div>
+        `;
+        noteDiv.classList.remove('hidden');
+        return;
+      }
+      if (formData.mechanicalService === 'oilfilter' && formData.oilSource === 'customer') {
+        noteDiv.textContent = 'إذا القطع من عند العميل';
+        noteDiv.classList.remove('hidden');
+        return;
+      }
+      const noteServices = new Set([
+        'fuelpump', 'waterpump', 'gaysh', 'airfilter', 'acfilter', 'gaysh_rollers',
+        'gaysh_shadad', 'shialat', 'assistants', 'stabilizer', 'assistant_seat',
+        'blocks', 'axles', 'brakes'
+      ]);
+      if (noteServices.has(formData.mechanicalService)) {
+        noteDiv.innerHTML = `هذه فقط رسوم الخدمة (شغل الايد)<br>تزيد الأسعار إذا سيارة انفينيتي أو كاديلاك أو رينج روفر`;
+        noteDiv.classList.remove('hidden');
+      } else {
+        noteDiv.classList.add('hidden');
       }
     }
 
@@ -7065,51 +7452,17 @@
       }
       
       const tbody = document.getElementById('mechResultBody');
-      const noteDiv = document.getElementById('mechNote');
-      
-      if (formData.mechanicalService === 'brakes' && formData.diskTurning === 'yes') {
-        const total = basePrice + 5;
-        
-        tbody.innerHTML = `
-          <tr>
-            <td>سعر الخدمة الأساسي</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>مخرطة ديسكات</td>
-            <td class="highlight">5.00 ${config.currency}</td>
-          </tr>
-          <tr style="background: #262626;">
-            <td><strong>الإجمالي</strong></td>
-            <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
-          </tr>
-          <tr>
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-        noteDiv.textContent = 'إذا القطع من عند العميل';
-        noteDiv.classList.remove('hidden');
-      } else {
-        tbody.innerHTML = `
-          <tr>
-            <td>سعر الخدمة</td>
-            <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>رسوم الإلغاء</td>
-            <td>${cancellation}</td>
-          </tr>
-        `;
-        
-        if (formData.mechanicalService === 'brakes' || formData.mechanicalService === 'oilfilter') {
-          noteDiv.textContent = 'إذا القطع من عند العميل';
-          noteDiv.classList.remove('hidden');
-        } else {
-          noteDiv.classList.add('hidden');
-        }
-      }
-      
+      tbody.innerHTML = `
+        <tr>
+          <td>سعر الخدمة</td>
+          <td class="highlight">${basePrice.toFixed(2)} ${config.currency}</td>
+        </tr>
+        <tr>
+          <td>رسوم الإلغاء</td>
+          <td>${cancellation}</td>
+        </tr>
+      `;
+      updateMechResultNote();
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
 
@@ -7242,18 +7595,7 @@
       }
 
       // Add note for coolant
-      if (formData.mechanicalService === 'coolant') {
-        noteDiv.innerHTML = `
-          <div style="line-height: 1.6;">
-            ١- لازم تسالون العميل لو السياره فيها حراره ولو ارتفعت الحراره بعد ما عبينا لازم توديها كراج ويشيك على التسريب لنه ما عندنا خدمه تصليح او فحص تسريب<br>
-            ٢-هذا السعر في حال العميل طلب تعبئه ماي راديتر و(ليس تبديل) التبديل يختلف سعره عن التعبئه يرجى التأكد من الاداره
-          </div>
-        `;
-        noteDiv.classList.remove('hidden');
-      } else {
-        noteDiv.classList.add('hidden');
-      }
-
+      updateMechResultNote();
       resultSection.classList.remove('hidden');
     }
 
@@ -7294,8 +7636,7 @@
         </tr>
       `;
 
-      const noteDiv = document.getElementById('mechNote');
-      if (noteDiv) noteDiv.classList.add('hidden');
+      updateMechResultNote();
 
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
@@ -7649,8 +7990,7 @@
         </tr>
       `;
       
-      const noteDiv = document.getElementById('mechNote');
-      if (noteDiv) noteDiv.classList.add('hidden');
+      updateMechResultNote();
 
       document.getElementById('mechResultSection').classList.remove('hidden');
     }
@@ -9728,7 +10068,8 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       const newAreaSelect = areaSelect.cloneNode(true);
       areaSelect.parentNode.replaceChild(newAreaSelect, areaSelect);
       
-      newAreaSelect.oninput = () => {
+      // Use change event instead of input to only trigger when a datalist option is selected or user finishes typing
+      newAreaSelect.onchange = () => {
         formData.area = newAreaSelect.value.trim();
         
         const resultSection = document.getElementById('serviceResultSection') || 
@@ -9755,15 +10096,7 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
             }
           }
           
-          if (currentService === 'mechanical' && formData.mechanicalService === 'brakes') {
-            document.querySelectorAll('[data-disk]').forEach(btn => {
-              btn.classList.remove('active');
-              if (btn.dataset.disk === 'no') {
-                btn.classList.add('active');
-              }
-            });
-            formData.diskTurning = 'no';
-          }
+          // reset other service-specific temporary selections as needed
           
           return;
         }
@@ -9920,33 +10253,21 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         
         <div id="termsModal" class="modal-overlay hidden">
           <div class="modal" style="max-height: 80vh; overflow-y: auto;">
-            <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            <div style="display:flex; gap:8px; align-items:center; justify-content:flex-end;">
+              <button id="termsCopyBtn" type="button" class="btn-outline" aria-label="نسخ" title="نسخ النص">📋</button>
+              <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            </div>
             <h3 style="color: #F2BC1B; text-align: center; margin-bottom: 16px;">شروط وأحكام الاشتراك السنوي</h3>
             <div id="termsContent" style="color: #ddd; font-size: 13px; line-height: 1.6;">
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">1. مدة اشتراك العضوية</strong> - سنة كاملة.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">2. تفعيل الاشتراك</strong> - يتم تفعيل الاشتراك بعد ثلاث أيام عمل من شراء العضوية.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">3. صلاحية الاشتراك</strong> - يجب أن يكون الاشتراك صالح عند طلب الخدمة.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">4. دفتر السيارة</strong> - يجب أن يكون دفتر السيارة صالح.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">5. تسجيل البيانات</strong> - الاشتراك للسيارات التي تم تسجيل بياناتها فقط.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">6. الأمن والسلامة</strong> - أولويتنا أمن وسلامة موظفين الشركة، بحيث لا يمكن استخدام الاشتراك في أماكن مجهولة وخطرة.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">7. خدمة نقل المركبة</strong> - غير متاحة / لا يمكن استخدامها في حال وقوف السيارة امام منزل العميل.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">8. الخدمات المتاحة</strong> - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق الآتية:
-                <ul style="margin: 8px 0 0 0; padding-right: 20px;">
+              <div style="margin-bottom: 8px;">1- مدة اشتراك العضوية - سنة كاملة.</div>
+              <div style="margin-bottom: 8px;">2- تفعيل الاشتراك - يتم تفعيل الاشتراك بعد ثلاث أيام عمل من شراء العضوية.</div>
+              <div style="margin-bottom: 8px;">3- صلاحية الاشتراك - يجب أن يكون الاشتراك صالح عند طلب الخدمة.</div>
+              <div style="margin-bottom: 8px;">4- دفتر السيارة - يجب أن يكون دفتر السيارة صالح.</div>
+              <div style="margin-bottom: 8px;">5- تسجيل البيانات - الاشتراك للسيارات التي تم تسجيل بياناتها فقط.</div>
+              <div style="margin-bottom: 8px;">6- الأمن والسلامة - أولويتنا أمن وسلامة موظفين الشركة، بحيث لا يمكن استخدام الاشتراك في أماكن مجهولة وخطرة.</div>
+              <div style="margin-bottom: 8px;">7- خدمة نقل المركبة - غير متاحة / لا يمكن استخدامها في حال وقوف السيارة امام منزل العميل.</div>
+              <div style="margin-bottom: 8px;">8- الخدمات المتاحة - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق الآتية:
+                <ul style="margin: 6px 0 0 0; padding-right: 20px;">
                   <li>خدمات نقل السيارة</li>
                   <li>خدمات شحن البطارية</li>
                   <li>خدمات تصليح الإطار</li>
@@ -9954,62 +10275,37 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                   <li>خدمات فتح قفل السيارة</li>
                 </ul>
               </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">9. حالات الطوارئ</strong> - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق المشمولة في الاشتراك في حالة الطوارئ فقط.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">10. عمر المركبة</strong> - يجب ألا يكون موديل المركبة أقدم من 15 سنة.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">11. النقل على السطحات</strong> - الاشتراك لا يشمل نقل المركبة على السطحات الفل داون.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">12. خدمات نقل السيارة</strong> - تشمل نقل السيارة في حالة العطل الميكانيكي أو الكهربائي ولجهة واحدة محددة، ولا يشمل نقل السيارة من والى محلات البيع أو المزاد أو المهرجانات أو السكراب.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">13. حوادث الاصطدام</strong> - خدمات نقل السيارة لا يشملها نقلها من حادث.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">14. أنواع المركبات</strong> - تقتصر الخدمات على مركبات السيدان والدفع الرباعي. ولا تشمل المركبات التجارية والشاحنات.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">15. خدمات الوقود</strong> - تستخدم فقط عند توقف السيارة على الطريق، ويتم دفع قيمة الوقود من قبل المشترك.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">16. تبديل الإطارات</strong> - خدمات تبديل الإطارات في حال توفر الإطار الاحتياطي فقط.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">17. الكوارث الطبيعية</strong> - لا يتم توفير الخدمات في حالة الكوارث الطبيعية والحوادث المرورية وانغماس المركبات في الماء أو الرمال.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">18. المنطقة الجغرافية</strong> - يتم توفير الخدمات فقط داخل حدود دولة الكويت.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">19. عدد الطلبات اليومية</strong> - للمشترك الحق بطلب خدمة واحدة في اليوم الواحد.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">20. تجديد الرخصة</strong> - اشتراكات تجديد الرخصة تشمل فقط السيارات الخاصة ولا تشمل نقل خاص (الوانيت) ولا نقل خاص (باص خاص).
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">21. صلاحية التراخيص</strong> - تجديد ترخيص المركبة يشمل فقط التراخيص المنتهية من تاريخ 12/3/2020 إلى تاريخ 16/8/2020.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">22. سوء الاستخدام</strong> - للمشترك الحق في استخدام العضوية وفي حالة ثبوت سوء الاستخدام بصورة تتنافى مع شروط وأحكام البرنامج، يحق لشركة بورتراج للجر والمساعدة للمركبات على الطريق إلغاء الاشتراك.
-              </div>
-              <div style="margin-bottom: 12px;">
-                <strong style="color: #F2BC1B;">23. الامتثال للشروط</strong> - كمستخدم لخدمات شركة بورتراج للجر والمساعدة للمركبات على الطريق وبقبول هذا العرض، يوافق المشترك على الامتثال لشروط وأحكام شركة بورتراج للجر والمساعدة للمركبات على الطريق.
-              </div>
+              <div style="margin-bottom: 8px;">9- حالات الطوارئ - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق المشمولة في الاشتراك في حالة الطوارئ فقط.</div>
+              <div style="margin-bottom: 8px;">10- عمر المركبة - يجب ألا يكون موديل المركبة أقدم من 10 سنوات.</div>
+              <div style="margin-bottom: 8px;">11- النقل على السطحات - الاشتراك لا يشمل نقل المركبة على السطحات الفل داون.</div>
+              <div style="margin-bottom: 8px;">12- خدمات نقل السيارة - تشمل نقل السيارة في حالة العطل الميكانيكي أو الكهربائي ولجهة واحدة محددة، ولا يشمل نقل السيارة من والى محلات البيع أو المزاد أو المهرجانات أو السكراب.</div>
+              <div style="margin-bottom: 8px;">13- حوادث الاصطدام - خدمات نقل السيارة لا يشملها نقلها من حادث.</div>
+              <div style="margin-bottom: 8px;">14- أنواع المركبات - تقتصر الخدمات على مركبات السيدان والدفع الرباعي. ولا تشمل المركبات التجارية والشاحنات.</div>
+              <div style="margin-bottom: 8px;">15- خدمات الوقود - تستخدم فقط عند توقف السيارة على الطريق، ويتم دفع قيمة الوقود من قبل المشترك.</div>
+              <div style="margin-bottom: 8px;">16- تبديل الإطارات - خدمات تبديل الإطارات في حال توفر الإطار الاحتياطي فقط , ويدفع قيمة الاطار.</div>
+              <div style="margin-bottom: 8px;">17- الكوارث الطبيعية - لا يتم توفير الخدمات في حالة الكوارث الطبيعية والحوادث المرورية وانغماس المركبات في الماء أو الرمال.</div>
+              <div style="margin-bottom: 8px;">18- المنطقة الجغرافية - يتم توفير الخدمات فقط داخل حدود دولة الكويت.</div>
+              <div style="margin-bottom: 8px;">19- عدد الطلبات اليومية - للمشترك الحق بطلب خدمة واحدة في اليوم الواحد.</div>
+              <div style="margin-bottom: 8px;">20- سياسه الإلغاء – لا يحق للمشترك استرداد قيمه الاشتراك بعد مرور ثلاثة أيام على الدفع (تفعيل الاشتراك) حتى وإن لم يتم الانتفاع بالخدمات.</div>
+              <div style="margin-bottom: 8px;">21- سوء الاستخدام - للمشترك الحق في استخدام العضوية وفي حالة ثبوت سوء الاستخدام بصورة تتنافى مع شروط وأحكام البرنامج، يحق لشركة بورتراج للجر والمساعدة للمركبات على الطريق إلغاء الاشتراك.</div>
+              <div style="margin-bottom: 8px;">22- الامتثال للشروط - كمستخدم لخدمات شركة بورتراج للجر والمساعدة للمركبات على الطريق وبقبول هذا العرض، يوافق المشترك على الامتثال لشروط وأحكام شركة بورتراج للجر والمساعدة للمركبات على الطريق.</div>
             </div>
-            <button id="termsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+            <div style="display:flex;gap:8px;margin-top:16px;">
+              <button id="termsCopyBottomBtn" type="button" class="btn-outline">نسخ</button>
+              <button id="termsCloseBtn" class="btn-primary" style="flex:1;">إغلاق</button>
+            </div>
           </div>
         </div>
         
         <div id="detailsModal" class="modal-overlay hidden">
           <div class="modal" style="max-height: 80vh; overflow-y: auto;">
-            <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            <div style="display:flex; gap:8px; align-items:center; justify-content:flex-end;">
+              <button id="detailsCopyBtn" type="button" class="btn-outline" aria-label="نسخ" title="نسخ النص">📋</button>
+              <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            </div>
             <h3 style="color: #F2BC1B; text-align: center; margin-bottom: 16px;">تفاصيل الاشتراك السنوي</h3>
             <div id="detailsContent" style="color: #ddd; font-size: 13px; line-height: 1.6;">
-              <div style="margin-bottom: 16px; padding: 12px; border-bottom: 2px solid #F2BC1B;">
+              <div style="margin-bottom: 12px; padding: 12px; border-bottom: 2px solid #F2BC1B;">
                 <strong style="color: #F2BC1B; font-size: 14px;">الاشتراك السنوي - شركة بورتراج</strong>
               </div>
               
@@ -10054,7 +10350,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                 <div style="font-size: 12px; color: #fde68a; margin-top: 6px;">الاشتراك يتفعل بعد الدفع ب 3 أيام عمل. كل 24 ساعة لك خدمة واحدة فقط.</div>
               </div>
             </div>
-            <button id="detailsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+            <div style="display:flex;gap:8px;margin-top:16px;">
+              <button id="detailsCopyBottomBtn" type="button" class="btn-outline">نسخ</button>
+              <button id="detailsCloseBtn" class="btn-primary" style="flex:1;">إغلاق</button>
+            </div>
           </div>
         </div>
       `;
@@ -10077,6 +10376,29 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       
       termsModal.querySelector('.modal-close').onclick = () => termsModal.classList.add('hidden');
       detailsModal.querySelector('.modal-close').onclick = () => detailsModal.classList.add('hidden');
+
+      // Copy buttons (top and bottom) for terms and details
+      const termsCopyTop = document.getElementById('termsCopyBtn');
+      const termsCopyBottom = document.getElementById('termsCopyBottomBtn');
+      const detailsCopyTop = document.getElementById('detailsCopyBtn');
+      const detailsCopyBottom = document.getElementById('detailsCopyBottomBtn');
+
+      const doCopy = async (sourceId) => {
+        try {
+          const el = document.getElementById(sourceId);
+          if (!el) return;
+          const text = el.innerText || el.textContent || '';
+          await copyToClipboard(text);
+          showToast('تم النسخ');
+        } catch (e) {
+          console.warn('copy failed', e);
+        }
+      };
+
+      if (termsCopyTop) termsCopyTop.onclick = () => doCopy('termsContent');
+      if (termsCopyBottom) termsCopyBottom.onclick = () => doCopy('termsContent');
+      if (detailsCopyTop) detailsCopyTop.onclick = () => doCopy('detailsContent');
+      if (detailsCopyBottom) detailsCopyBottom.onclick = () => doCopy('detailsContent');
 
       // Handle subscription selection
       document.querySelectorAll('[data-subscription]').forEach(btn => {
