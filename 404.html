@@ -4179,25 +4179,11 @@
             <button class="btn-option" data-type="normal">ونش عادي</button>
             <button class="btn-option" data-type="flatbed">ونش فل داون</button>
             <button class="btn-option" data-type="flatbedClose">ونش فل داون مصكر</button>
-            <button class="btn-option" data-type="trawler">قلص طراد</button>
-          </div>
-          
-          <div id="trawlerTypeSection" class="hidden" style="margin-top: 10px;">
-            <h3 class="section-title">نوع القلص الطراد</h3>
-            <div class="btn-grid" style="grid-template-columns: 1fr;">
-              <button class="btn-option" data-trawler-type="small">قلص طراد (أقل من 27 قدم)</button>
-              <button class="btn-option" data-trawler-type="large">قلص طراد (28 قدم فما فوق)</button>
-            </div>
+            <button class="btn-option" data-type="jetSki">جت سكي - بقي</button>
           </div>
           
           <div id="flatbedOnlyNote" class="info-box hidden" style="margin-top: 10px;">
             <strong>ℹ️ تنويه:</strong> السيارة تحتاج ونش فل داون بدون مسكر (+10 د.ك رسوم عربانات)
-          </div>
-          
-          <div id="trawlerNote" class="info-box hidden" style="margin-top: 10px; background: #1a3a52; border-color: #3b82f6; color: #93c5fd;">
-            <strong>ℹ️ ملاحظة للقلص فقط:</strong><br>
-            الي يطلع ادريس بالوانيت<br>
-            بس اهم شي تاكدو من حجم الطراد ومن سلامه الهيئه والتواير الخاصه بالعربانه
           </div>
           
           <div id="flatbedExtraChargesSection" class="hidden" style="margin-top: 10px;">
@@ -4452,14 +4438,14 @@
       let hasNormal = false;
       let hasFlatbed = false;
       let hasFlatbedClose = false;
-      let hasTrawler = false;
+      let hasJetSki = false;
       
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
-        if (row[3] || row[1]) hasNormal = true;
-        if (row[8] || row[6]) hasFlatbed = true;
-        if (row[13] || row[11]) hasFlatbedClose = true;
-        if (row[18] || row[23] || row[16] || row[21]) hasTrawler = true;
+        if (row[4] || row[1]) hasNormal = true;
+        if (row[12] || row[9]) hasFlatbed = true;
+        if (row[22] || row[16]) hasFlatbedClose = true;
+        if (row[22] || row[16]) hasJetSki = true;
       }
       
       // Update buttons visibility
@@ -4474,13 +4460,12 @@
           btn.style.display = 'none';
         } else if (type === 'flatbedClose' && !hasFlatbedClose) {
           btn.style.display = 'none';
-        } else if (type === 'trawler' && !hasTrawler) {
+        } else if (type === 'jetSki' && !hasJetSki) {
           btn.style.display = 'none';
         } else {
           btn.style.display = 'block';
         }
       });
-
       
       const visibleButtons = Array.from(buttons).filter(btn => btn.style.display !== 'none');
       towTypeButtons.style.gridTemplateColumns = `repeat(${visibleButtons.length}, 1fr)`;
@@ -4531,39 +4516,6 @@
 
     function updateTowLocations() {
       const towLocationsSection = document.getElementById('towLocationsSection');
-      const trawlerTypeSection = document.getElementById('trawlerTypeSection');
-      
-      // For trawler, show size selection first, then locations
-      if (formData.towType === 'trawler') {
-        // Show trawler size selection
-        trawlerTypeSection.classList.remove('hidden');
-        
-        // Set up trawler size buttons
-        const trawlerButtons = document.querySelectorAll('[data-trawler-type]');
-        
-        trawlerButtons.forEach(btn => {
-          btn.onclick = () => {
-            trawlerButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            formData.trawlerType = btn.dataset.trawlerType;
-            
-            // Reset locations and result when trawler size changes
-            formData.from = null;
-            formData.to = null;
-            document.getElementById('towLocationsSection').classList.add('hidden');
-            document.getElementById('towResultSection').classList.add('hidden');
-            
-            // Now show the locations section
-            showTowLocationForTrawler();
-          };
-        });
-        
-        return;
-      }
-      
-      // For non-trawler services
-      trawlerTypeSection.classList.add('hidden');
       towLocationsSection.classList.remove('hidden');
       
       const routes = getTowRoutes(formData.company, formData.towType);
@@ -4601,18 +4553,21 @@
       toSelect.oninput = () => {
         formData.to = toSelect.value;
         const currentToInput = toSelect.value.toLowerCase();
-        if (formData.from) {
-          const routes = getTowRoutes(formData.company, formData.towType);
-          const filteredToLocations = [...new Set(
-            routes
-              .filter(r => r.from === formData.from && r.to.toLowerCase().includes(currentToInput))
-              .map(r => r.to)
-          )].filter(Boolean);
-          const toDatalist = document.getElementById('toLocations');
-          toDatalist.innerHTML = filteredToLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-        }
+      if (formData.from) {
+        const routes = getTowRoutes(formData.company, formData.towType);
+        const filteredToLocations = [...new Set(
+          routes
+            .filter(r => r.from === formData.from && r.to.toLowerCase().includes(currentToInput))
+            .map(r => r.to)
+        )].filter(Boolean);
+
+        const toDatalist = document.getElementById('toLocations');
+        toDatalist.innerHTML = filteredToLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
+      }
         if (!formData.to) {
           document.getElementById('towResultSection').classList.add('hidden');
+          
+          // Hide gear question sections
           document.getElementById('extraChargesSection').classList.add('hidden');
           document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
           return;
@@ -4664,7 +4619,7 @@
               calculateTowPrice();
             };
           } else {
-            // For other companies and trawler - no gear question at all
+            // For other companies - no gear question at all
             document.getElementById('extraChargesSection').classList.add('hidden');
             document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
           }
@@ -4675,69 +4630,7 @@
       };
     }
 
-    function showTowLocationForTrawler() {
-      const towLocationsSection = document.getElementById('towLocationsSection');
-      towLocationsSection.classList.remove('hidden');
-      
-      // Get routes for the selected trawler size
-      const routes = getTowRoutes(formData.company, formData.towType, formData.trawlerType);
-      const fromLocations = [...new Set(routes.map(r => r.from))].filter(Boolean);
-      
-      const fromDatalist = document.getElementById('fromLocations');
-      fromDatalist.innerHTML = fromLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-      
-      const fromSelect = document.getElementById('fromSelect');
-      const toSelect = document.getElementById('toSelect');
-      
-      // Clear previous values
-      fromSelect.value = '';
-      toSelect.value = '';
-      formData.from = null;
-      formData.to = null;
-      
-      fromSelect.oninput = () => {
-        formData.from = fromSelect.value;
-        
-        const currentTo = toSelect.value;
-        
-        if (formData.from) {
-          const toLocations = [...new Set(routes.filter(r => r.from === formData.from).map(r => r.to))].filter(Boolean);
-          const toDatalist = document.getElementById('toLocations');
-          toDatalist.innerHTML = toLocations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
-          
-          if (currentTo && toLocations.includes(currentTo)) {
-            toSelect.value = currentTo;
-            formData.to = currentTo;
-          } else {
-            toSelect.value = '';
-            formData.to = null;
-            document.getElementById('towResultSection').classList.add('hidden');
-          }
-        } else {
-          document.getElementById('towResultSection').classList.add('hidden');
-        }
-      };
-      
-      toSelect.oninput = () => {
-        formData.to = toSelect.value;
-        
-        if (!formData.to) {
-          document.getElementById('towResultSection').classList.add('hidden');
-          return;
-        }
-        
-        // No extra charges section for trawler
-        document.getElementById('extraChargesSection').classList.add('hidden');
-        document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
-        
-        // Show trawler info box
-        document.getElementById('trawlerNote').classList.remove('hidden');
-        
-        calculateTowPrice();
-      };
-    }
-
-    function getTowRoutes(sheetName, towType, trawlerType = null) {
+    function getTowRoutes(sheetName, towType) {
       const rows = sheetsData[sheetName];
       if (!rows || rows.length < 3) return [];
       
@@ -4747,54 +4640,45 @@
         const row = rows[i];
         
         if (towType === 'normal') {
-          const from = row[3];
-          const to = row[2];
-          const price = row[1];
-          const cancel = row[0];
+          const from = row[6];
+          const toF = row[5];
+          const toC = row[2];
+          const priceE = row[4];
+          const priceB = row[1];
           
-          if (from && to && price) {
-            routes.push({ from, to, price, cancelCol: 0 });
+          if (from && toF && priceE) {
+            routes.push({ from, to: toF, price: priceE, cancelCol: 3 });
+          }
+          if (from && toC && priceB) {
+            routes.push({ from, to: toC, price: priceB, cancelCol: 0 });
           }
         } else if (towType === 'flatbed') {
-          const from = row[8];
-          const to = row[7];
-          const price = row[6];
-          const cancel = row[5];
+          const from = row[14];
+          const toN = row[13];
+          const toK = row[10];
+          const priceM = row[12];
+          const priceJ = row[9];
           
-          if (from && to && price) {
-            routes.push({ from, to, price, cancelCol: 5 });
+          if (from && toN && priceM) {
+            routes.push({ from, to: toN, price: priceM, cancelCol: 11 });
           }
-        } else if (towType === 'flatbedClose') {
-          const from = row[13];
-          const to = row[12];
-          const price = row[11];
-          const cancel = row[10];
+          if (from && toK && priceJ) {
+            routes.push({ from, to: toK, price: priceJ, cancelCol: 8 });
+          }
+        } else if (towType === 'flatbedClose' || towType === 'jetSki') {
+          const from = row[22];
+          const toU = row[21];
+          const priceU = row[20];
+          const cancelU = row[19];
+          const toReturn = row[18];
+          const priceReturn = row[17];
+          const cancelReturn = row[16];
           
-          if (from && to && price) {
-            routes.push({ from, to, price, cancelCol: 10 });
+          if (from && toU && priceU) {
+            routes.push({ from, to: toU, price: priceU, cancelCol: 19 });
           }
-        } else if (towType === 'trawler') {
-          // For trawler, trawlerType must be specified (small or large)
-          if (trawlerType === 'small') {
-            // Trawler <27ft: P(15)=cancel, Q(16)=price, R(17)=to, S(18)=from
-            const from = row[18];
-            const to = row[17];
-            const price = row[16];
-            const cancel = row[15];
-            
-            if (from && to && price) {
-              routes.push({ from, to, price, cancelCol: 15 });
-            }
-          } else if (trawlerType === 'large') {
-            // Trawler ≥28ft: U(20)=cancel, V(21)=price, W(22)=to, X(23)=from
-            const from = row[23];
-            const to = row[22];
-            const price = row[21];
-            const cancel = row[20];
-            
-            if (from && to && price) {
-              routes.push({ from, to, price, cancelCol: 20 });
-            }
+          if (from && toReturn && priceReturn) {
+            routes.push({ from, to: toReturn, price: priceReturn, cancelCol: 16 });
           }
         }
       }
@@ -4803,14 +4687,7 @@
     }
 
     function calculateTowPrice() {
-      // For trawler, use the trawlerType parameter
-      let routes;
-      if (formData.towType === 'trawler') {
-        routes = getTowRoutes(formData.company, formData.towType, formData.trawlerType);
-      } else {
-        routes = getTowRoutes(formData.company, formData.towType);
-      }
-      
+      const routes = getTowRoutes(formData.company, formData.towType);
       const route = routes.find(r => r.from === formData.from && r.to === formData.to);
       const portarageNote = document.getElementById('towPortarageNote');
       
@@ -4829,23 +4706,20 @@
         extraCharges = (formData.companyArabic === 'بورتراج' && formData.extraCharges === 'yes') ? 10 : 0;
       } else if (formData.towType === 'flatbed' || formData.towType === 'flatbedClose' || formData.towType === 'jetSki') {
         if (formData.companyArabic === 'بورتراج') {
-          // For flatbed-like Portarage services
+          // For flatbed-like Portarage services - use the same extra charges flow
           extraCharges = (formData.flatbedPortarageExtraCharges === 'yes') ? 10 : 0;
         } else {
           extraCharges = 0;
         }
-      } else if (formData.towType === 'trawler') {
-        // For trawler - NO extra charges/gear questions at all
-        extraCharges = 0;
       }
       
       const tbody = document.getElementById('towResultBody');
-      let rows_html = '';
+      let rows = '';
       
       if (formData.company.toLowerCase() !== 'portarage towtruk') {
         const finalPrice = companyPrice + extraCharges;
         
-        rows_html = `
+        rows = `
           <tr>
             <td>السعر الخاص لشركة ${formData.companyArabic}</td>
             <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
@@ -4853,13 +4727,13 @@
         `;
         
         if (extraCharges > 0) {
-          rows_html += `
+          rows += `
             <tr>
               <td>رسوم عربانات (القير لا يعمل)</td>
               <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
             </tr>
           `;
-          rows_html += `
+          rows += `
             <tr style="background: #262626;">
               <td><strong>الإجمالي النهائي</strong></td>
               <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong></td>
@@ -4867,7 +4741,7 @@
           `;
         }
       } else {
-        rows_html = `
+        rows = `
           <tr>
             <td>سعر بورتراج الأساسي</td>
             <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
@@ -4875,14 +4749,14 @@
         `;
         
         if (extraCharges > 0) {
-          rows_html += `
+          rows += `
             <tr>
               <td>رسوم عربانات (القير لا يعمل)</td>
               <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
             </tr>
           `;
           const total = companyPrice + extraCharges;
-          rows_html += `
+          rows += `
             <tr style="background: #262626;">
               <td><strong>الإجمالي</strong></td>
               <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
@@ -4890,16 +4764,9 @@
           `;
         }
         
-        // Get cancellation price
-        let cancelPrice = null;
-        if (formData.towType === 'trawler') {
-          cancelPrice = getCancellationPrice(formData.from, formData.to, formData.towType, formData.trawlerType);
-        } else {
-          cancelPrice = getCancellationPrice(formData.from, formData.to, formData.towType);
-        }
-        
+        const cancelPrice = getCancellationPrice(formData.from, formData.to, formData.towType);
         if (cancelPrice) {
-          rows_html += `
+          rows += `
             <tr>
               <td>رسوم الإلغاء</td>
               <td>${cancelPrice}</td>
@@ -4908,7 +4775,7 @@
         }
       }
       
-      tbody.innerHTML = rows_html;
+      tbody.innerHTML = rows;
       document.getElementById('towResultSection').classList.remove('hidden');
 
       if (portarageNote) {
