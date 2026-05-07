@@ -4187,6 +4187,13 @@
             </div>
           </div>
 
+          <div id="towRequestNote" class="info-box hidden" style="margin-top: 10px;">
+            <strong>ملاحظة ونش:</strong>
+            <br>في حال العميل طلب ونش تبلّغون العميل: نقدر نوفر لك سيارة فولفو مع سايق يوصلك لأي منطقة داخل الكويت، السعر الخدمة 10 د.ك لأي منطقة (باستثناء المناطق اللي بعد الأحمدي 18 د.ك).
+            <br>في حال العميل سأل عن مدة الوصول: 15 إلى 25 دقيقة أقصى مدة، والخدمة متوفرة 24 ساعة على مدار اليوم.
+            <br>ضروري تبلغون العميل أنه في حال انتظار للسايق أول ربع ساعة مجانية، وبعد الربع ساعة 0.150 فلس لكل دقيقة، ويدفعها وهو بالطريق قبل ما يوصل وجهته.
+          </div>
+
           <div id="qalsSizeSection" class="form-section hidden" style="margin-top: 12px;">
             <h3 class="section-title">نوع قلص الطراد</h3>
             <div class="btn-grid" style="grid-template-columns: repeat(2, 1fr); gap: 8px;">
@@ -4521,6 +4528,13 @@
         document.getElementById('towResultSection').classList.add('hidden');
       }
       
+      const towRequestNote = document.getElementById('towRequestNote');
+      if (formData.towType === 'normal' || formData.towType === 'flatbed' || formData.towType === 'flatbedClose') {
+        towRequestNote?.classList.remove('hidden');
+      } else {
+        towRequestNote?.classList.add('hidden');
+      }
+
       if (!formData.towType) {
         document.getElementById('towLocationsSection').classList.add('hidden');
         document.getElementById('towResultSection').classList.add('hidden');
@@ -4549,6 +4563,7 @@
           const flatbedExtraChargesSection = document.getElementById('flatbedExtraChargesSection');
           const qalsSizeSection = document.getElementById('qalsSizeSection');
           const qalsNote = document.getElementById('qalsNote');
+          const towRequestNote = document.getElementById('towRequestNote');
           
           if (formData.towType === 'jetSki') {
             qalsSizeSection.classList.remove('hidden');
@@ -4559,6 +4574,7 @@
             
             flatbedOnlyNote.classList.add('hidden');
             flatbedExtraChargesSection.classList.add('hidden');
+            towRequestNote?.classList.add('hidden');
           } else if (formData.towType === 'jetskiBaqi') {
             qalsSizeSection.classList.add('hidden');
             qalsNote.classList.add('hidden');
@@ -4567,6 +4583,7 @@
             
             flatbedOnlyNote.classList.add('hidden');
             flatbedExtraChargesSection.classList.add('hidden');
+            towRequestNote?.classList.add('hidden');
           } else {
             qalsSizeSection.classList.add('hidden');
             qalsNote.classList.add('hidden');
@@ -4582,6 +4599,7 @@
               document.getElementById('flatbedExtraChargesNote').classList.add('hidden');
               formData.flatbedPortarageExtraCharges = 'no';
             }
+            towRequestNote?.classList.remove('hidden');
           }
           
           updateTowLocations();
