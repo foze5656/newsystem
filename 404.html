@@ -4175,10 +4175,11 @@
         
         <div id="towTypeSection" class="form-section hidden">
           <h3 class="section-title">نوع الونش</h3>
-          <div class="btn-grid" id="towTypeButtons" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="btn-grid" id="towTypeButtons" style="grid-template-columns: repeat(5, 1fr);">
             <button class="btn-option" data-type="normal">ونش عادي</button>
             <button class="btn-option" data-type="flatbed">ونش فل داون</button>
             <button class="btn-option" data-type="flatbedClose">ونش فل داون مصكر</button>
+            <button class="btn-option" data-type="jetskiBaqi">جت سكي - بقي</button>
             <button class="btn-option" data-type="jetSki">قلص طراد</button>
           </div>
 
@@ -4265,6 +4266,11 @@
           </div>
           <div id="qalsNote" class="info-box hidden" style="margin-top: 10px; background: #0F172A; border-color: #60A5FA; color: #D7EFFF;">
             <strong>ملاحظة قلص طراد:</strong> الي يطلع ادريس بالوانيت، بس اهم شي تاكدو من حجم الطراد ومن سلامه الهيئه والتواير الخاصه بالعربانه.
+          </div>
+          <div id="jetskiBaqiNote" class="info-box hidden" style="margin-top: 10px; background: #0F172A; border-color: #60A5FA; color: #D7EFFF;">
+            <strong>ملاحظة جت سكي - بقي:</strong> يرجى التأكد من الونش الذي سيتم توجيه الى العميل.
+            <br>سيكل: التأكد من وجود قاعدة السكيل مع الفني.
+            <br>جت سكي: اذا كان بامكانه نقله ام فني اخر.
           </div>
           <div id="towPortarageNote" class="info-box hidden" style="margin-top: 10px;">
           </div>
@@ -4464,6 +4470,7 @@
       let hasFlatbed = false;
       let hasFlatbedClose = false;
       let hasJetSki = false;
+      let hasJetSkiBaqi = false;
       
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
@@ -4471,6 +4478,7 @@
         if (row[12] || row[9]) hasFlatbed = true;
         if (row[22] || row[16]) hasFlatbedClose = true;
         if (row[22] || row[16]) hasJetSki = true;
+        if (row[4] || row[1]) hasJetSkiBaqi = true;
       }
       
       // Update buttons visibility
@@ -4484,6 +4492,8 @@
         } else if (type === 'flatbed' && !hasFlatbed) {
           btn.style.display = 'none';
         } else if (type === 'flatbedClose' && !hasFlatbedClose) {
+          btn.style.display = 'none';
+        } else if (type === 'jetskiBaqi' && !hasJetSkiBaqi) {
           btn.style.display = 'none';
         } else if (type === 'jetSki' && !hasJetSki) {
           btn.style.display = 'none';
@@ -4530,6 +4540,14 @@
             qalsSizeSection.classList.remove('hidden');
             qalsNote.classList.add('hidden');
             document.getElementById('towLocationsSection').classList.add('hidden');
+            formData.qalsSize = null;
+            document.querySelectorAll('[data-qals-size]').forEach(b => b.classList.remove('active'));
+            
+            flatbedOnlyNote.classList.add('hidden');
+            flatbedExtraChargesSection.classList.add('hidden');
+          } else if (formData.towType === 'jetskiBaqi') {
+            qalsSizeSection.classList.add('hidden');
+            qalsNote.classList.add('hidden');
             formData.qalsSize = null;
             document.querySelectorAll('[data-qals-size]').forEach(b => b.classList.remove('active'));
             
@@ -4743,6 +4761,14 @@
                 routes.push({ from, to, price, cancelCol });
               }
             }
+          } else if (towType === 'jetskiBaqi') {
+            const from = row[3];
+            const to = row[2];
+            const price = row[1];
+            const cancelCol = 0;
+            if (from && to && price) {
+              routes.push({ from, to, price, cancelCol });
+            }
           }
         } else {
           if (towType === 'normal') {
@@ -4893,8 +4919,20 @@
           qalsNoteEl.classList.add('hidden');
         }
       }
+      const jetskiBaqiNoteEl = document.getElementById('jetskiBaqiNote');
+      if (jetskiBaqiNoteEl) {
+        if (formData.companyArabic === 'بورتراج' && formData.towType === 'jetskiBaqi') {
+          jetskiBaqiNoteEl.classList.remove('hidden');
+        } else {
+          jetskiBaqiNoteEl.classList.add('hidden');
+        }
+      }
       if (portarageNote) {
-        portarageNote.classList.add('hidden');
+        if (formData.companyArabic === 'بورتراج' && (formData.towType === 'normal' || formData.towType === 'flatbed' || formData.towType === 'flatbedClose')) {
+          portarageNote.classList.remove('hidden');
+        } else {
+          portarageNote.classList.add('hidden');
+        }
       }
       
       setTimeout(() => {
@@ -4930,6 +4968,10 @@
           }
           if (qalsSize === '28plus' && row[23] === from && row[22] === to && row[20]) {
             return `${parseFloat(row[20]).toFixed(2)} ${config.currency}`;
+          }
+        } else if (towType === 'jetskiBaqi') {
+          if (row[3] === from && row[2] === to && row[0]) {
+            return `${parseFloat(row[0]).toFixed(2)} ${config.currency}`;
           }
         }
       }
