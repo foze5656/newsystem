@@ -2146,7 +2146,7 @@
     const GOOGLE_SHEET_ID = '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk';
     const USERS_SHEET_NAME = 'users';
     const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${USERS_SHEET_NAME}`;
-    const SITE_VERSION = '1.8';
+    const SITE_VERSION = '2.2';
     
     let usersData = [];
     let isAuthenticated = false;
@@ -3617,7 +3617,7 @@
 
       return nameEn === 'drivers name en'
         && nameAr === 'drivers name ar'
-        && (type === 'type' || type === 'vehicle type')
+        && (type === 'TYPE' || type === 'vehicle type')
         && (shift === 'sheeft time' || shift === 'shift time')
         && off1 === 'days off'
         && off2 === 'days off'
@@ -4175,21 +4175,11 @@
         
         <div id="towTypeSection" class="form-section hidden">
           <h3 class="section-title">نوع الونش</h3>
-          <div class="btn-grid" id="towTypeButtons" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="btn-grid" id="towTypeButtons" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
             <button class="btn-option" data-type="normal">ونش عادي</button>
             <button class="btn-option" data-type="flatbed">ونش فل داون</button>
-          </div>
-          
-          
-          <div id="lockedOption" class="hidden" style="margin-top: 10px;">
-            <h3 class="section-title">ونش مسكر</h3>
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: #262626; border-radius: 4px; border: 1px solid #404040;">
-              <input type="checkbox" id="lockedCheckbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: #F2BC1B;">
-              <span style="color: #F2BC1B; font-size: 12px; font-weight: 600;">تفعيل ونش مسكر (+5 د.ك)</span>
-            </label>
-            <div id="lockedYesNote" class="warning-box hidden">
-              <strong>⚠️ تنويه:</strong> إذا القير ما يتبوش او السيارة فيها حادث ما نقدر نشيلها بالونش المسكر
-            </div>
+            <button class="btn-option" data-type="flatbed_masked">ونش فل داون مصكر</button>
+            <button class="btn-option" data-type="jet_ski_baki">جت سكي - بقي</button>
           </div>
           
           <div id="flatbedOnlyNote" class="info-box hidden" style="margin-top: 10px;">
@@ -4296,7 +4286,6 @@
             
             formData.companyArabic = 'بورتراج';
             formData.company = 'portarage towtruk';
-            formData.isLocked = false;
             formData.gearWorks = true;
             updateTowTypeOptions();
           }
@@ -4316,14 +4305,12 @@
           formData.towType = null;
           formData.from = null;
           formData.to = null;
-          formData.isLocked = false;
           formData.extraCharges = 'no';
           
           // Hide sections
           document.getElementById('towTypeSection').classList.add('hidden');
           document.getElementById('towLocationsSection').classList.add('hidden');
           document.getElementById('towResultSection').classList.add('hidden');
-          document.getElementById('lockedOption').classList.add('hidden');
           document.getElementById('lockedYesNote').classList.add('hidden');
           document.getElementById('flatbedOnlyNote').classList.add('hidden');
           
@@ -4334,7 +4321,6 @@
       // Set default to بورتراج
       formData.companyArabic = 'بورتراج';
       formData.company = 'portarage towtruk';
-      formData.isLocked = false;
       formData.gearWorks = true;
       updateTowTypeOptions();
     }
@@ -4482,7 +4468,6 @@
       if (!formData.towType) {
         document.getElementById('towLocationsSection').classList.add('hidden');
         document.getElementById('towResultSection').classList.add('hidden');
-        document.getElementById('lockedOption').classList.add('hidden');
       }
       
       // Tow type selection
@@ -4504,58 +4489,41 @@
           if (fromSelect) fromSelect.value = '';
           if (toSelect) toSelect.value = '';
           
-          const lockedOption = document.getElementById('lockedOption');
           const flatbedOnlyNote = document.getElementById('flatbedOnlyNote');
-          const lockedCheckbox = document.getElementById('lockedCheckbox');
           const flatbedExtraChargesSection = document.getElementById('flatbedExtraChargesSection');
           
           if (formData.towType === 'flatbed') {
             if (formData.companyArabic === 'بورتراج') {
-              lockedOption.classList.remove('hidden');
               flatbedOnlyNote.classList.add('hidden');
-              flatbedExtraChargesSection.classList.add('hidden');
-              
-              if (formData.isLocked === undefined) {
-                formData.isLocked = false;
-              }
-              
-              if (lockedCheckbox) {
-                lockedCheckbox.checked = formData.isLocked;
-              }
-              
-              if (lockedCheckbox) {
-                lockedCheckbox.onchange = () => {
-                  formData.isLocked = lockedCheckbox.checked;
-                  
-                  const lockedYesNote = document.getElementById('lockedYesNote');
-                  
-                  if (formData.isLocked) {
-                    lockedYesNote.classList.remove('hidden');
-                  } else {
-                    lockedYesNote.classList.add('hidden');
-                  }
-                  
-                  if (formData.from && formData.to) {
-                    calculateTowPrice();
-                  }
-                };
-              }
+              flatbedExtraChargesSection.classList.remove('hidden');
             } else {
               // For other companies - NO gear question for flatbed
-              lockedOption.classList.add('hidden');
               flatbedOnlyNote.classList.add('hidden');
-              document.getElementById('lockedYesNote').classList.add('hidden');
               flatbedExtraChargesSection.classList.add('hidden');
-              formData.isLocked = false;
+              formData.flatbedExtraCharges = 'no';
+            }
+          } else if (formData.towType === 'flatbed_masked') {
+            if (formData.companyArabic === 'بورتراج') {
+              flatbedOnlyNote.classList.add('hidden');
+              flatbedExtraChargesSection.classList.remove('hidden');
+            } else {
+              flatbedOnlyNote.classList.add('hidden');
+              flatbedExtraChargesSection.classList.add('hidden');
+              formData.flatbedExtraCharges = 'no';
+            }
+          } else if (formData.towType === 'jet_ski_baki') {
+            if (formData.companyArabic === 'بورتراج') {
+              flatbedOnlyNote.classList.add('hidden');
+              flatbedExtraChargesSection.classList.remove('hidden');
+            } else {
+              flatbedOnlyNote.classList.add('hidden');
+              flatbedExtraChargesSection.classList.add('hidden');
               formData.flatbedExtraCharges = 'no';
             }
           } else {
-            lockedOption.classList.add('hidden');
             flatbedOnlyNote.classList.add('hidden');
             flatbedExtraChargesSection.classList.add('hidden');
-            document.getElementById('lockedYesNote').classList.add('hidden');
             document.getElementById('flatbedExtraChargesNote').classList.add('hidden');
-            formData.isLocked = false;
             formData.flatbedExtraCharges = 'no';
           }
           
@@ -4624,8 +4592,8 @@
         }
         
         if (formData.to) {
-          // Show gear question ONLY for بورتراج flatbed
-          if (formData.companyArabic === 'بورتراج' && formData.towType === 'flatbed') {
+          // Show gear question ONLY for بورتراج flatbed types
+          if (formData.companyArabic === 'بورتراج' && (formData.towType === 'flatbed' || formData.towType === 'flatbed_masked' || formData.towType === 'jet_ski_baki')) {
             document.getElementById('flatbedPortarageExtraChargesSection').classList.remove('hidden');
             document.getElementById('extraChargesSection').classList.add('hidden');
             
@@ -4715,6 +4683,32 @@
           if (from && toK && priceJ) {
             routes.push({ from, to: toK, price: priceJ, cancelCol: 8 });
           }
+        } else if (towType === 'flatbed_masked') {
+          const from = row[22];
+          const toV = row[21];
+          const toS = row[18];
+          const priceU = row[20];
+          const priceR = row[17];
+          
+          if (from && toV && priceU) {
+            routes.push({ from, to: toV, price: priceU, cancelCol: 19 });
+          }
+          if (from && toS && priceR) {
+            routes.push({ from, to: toS, price: priceR, cancelCol: 16 });
+          }
+        } else if (towType === 'jet_ski_baki') {
+          const from = row[14];
+          const toN = row[13];
+          const toK = row[10];
+          const priceM = row[12];
+          const priceJ = row[9];
+          
+          if (from && toN && priceM) {
+            routes.push({ from, to: toN, price: priceM, cancelCol: 11 });
+          }
+          if (from && toK && priceJ) {
+            routes.push({ from, to: toK, price: priceJ, cancelCol: 8 });
+          }
         }
       }
       
@@ -4747,9 +4741,21 @@
           // For flatbed other companies - no charges
           extraCharges = 0;
         }
+      } else if (formData.towType === 'flatbed_masked') {
+        // Flatbed masked has +5 KD base charge
+        extraCharges = 5;
+        if (formData.companyArabic === 'بورتراج') {
+          extraCharges += (formData.flatbedPortarageExtraCharges === 'yes') ? 10 : 0;
+        }
+      } else if (formData.towType === 'jet_ski_baki') {
+        if (formData.companyArabic === 'بورتراج') {
+          extraCharges = (formData.flatbedPortarageExtraCharges === 'yes') ? 10 : 0;
+        } else {
+          extraCharges = 0;
+        }
       }
       
-      const lockedCharge = (formData.towType === 'flatbed' && formData.isLocked) ? 5 : 0;
+      const lockedCharge = 0; // Removed since masked is now separate category
       
       let portaragePrice = companyPrice;
       let discount = 0;
@@ -4768,7 +4774,7 @@
       let rows = '';
       
       if (formData.company.toLowerCase() !== 'portarage towtruk') {
-        const finalPrice = companyPrice + extraCharges + lockedCharge;
+        const finalPrice = companyPrice + extraCharges;
         
         rows = `
           <tr>
@@ -4785,23 +4791,13 @@
           </tr>
         `;
         
-        if (lockedCharge > 0 || extraCharges > 0) {
-          if (lockedCharge > 0) {
-            rows += `
-              <tr>
-                <td>إضافة ونش مسكر</td>
-                <td class="highlight">${lockedCharge.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          if (extraCharges > 0) {
-            rows += `
-              <tr>
-                <td>رسوم عربانات (القير لا يعمل)</td>
-                <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
+        if (extraCharges > 0) {
+          rows += `
+            <tr>
+              <td>رسوم إضافية</td>
+              <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
+            </tr>
+          `;
           rows += `
             <tr style="background: #262626;">
               <td><strong>الإجمالي النهائي</strong></td>
@@ -4810,6 +4806,8 @@
           `;
         }
       } else {
+        const finalPrice = portaragePrice + extraCharges;
+        
         rows = `
           <tr>
             <td>سعر بورتراج الأساسي</td>
@@ -4817,35 +4815,14 @@
           </tr>
         `;
         
-        if (lockedCharge > 0 || extraCharges > 0) {
-          if (lockedCharge > 0) {
-            rows += `
-              <tr>
-                <td>إضافة ونش مسكر</td>
-                <td class="highlight">${lockedCharge.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          if (extraCharges > 0) {
-            rows += `
-              <tr>
-                <td>رسوم عربانات (القير لا يعمل)</td>
-                <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
-              </tr>
-            `;
-          }
-          const total = companyPrice + lockedCharge + extraCharges;
+        if (extraCharges > 0) {
           rows += `
-            <tr style="background: #262626;">
-              <td><strong>الإجمالي</strong></td>
-              <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
+            <tr>
+              <td>رسوم إضافية</td>
+              <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
             </tr>
           `;
-        }
-        
-        const cancelPrice = getCancellationPrice(formData.from, formData.to, formData.towType);
-        if (cancelPrice) {
-          rows += `
+          const total = companyPrice + extraCharges;
             <tr>
               <td>رسوم الإلغاء</td>
               <td>${cancelPrice}</td>
@@ -4858,7 +4835,7 @@
       document.getElementById('towResultSection').classList.remove('hidden');
 
       if (portarageNote) {
-        if (formData.companyArabic === 'بورتراج' && (formData.towType === 'normal' || formData.towType === 'flatbed')) {
+        if (formData.companyArabic === 'بورتراج' && (formData.towType === 'normal' || formData.towType === 'flatbed' || formData.towType === 'flatbed_masked' || formData.towType === 'jet_ski_baki')) {
           portarageNote.classList.remove('hidden');
         } else {
           portarageNote.classList.add('hidden');
@@ -4888,6 +4865,20 @@
             return `${parseFloat(row[0]).toFixed(2)} ${config.currency}`;
           }
         } else if (towType === 'flatbed') {
+          if (row[14] === from && row[13] === to && row[11]) {
+            return `${parseFloat(row[11]).toFixed(2)} ${config.currency}`;
+          }
+          if (row[14] === from && row[10] === to && row[8]) {
+            return `${parseFloat(row[8]).toFixed(2)} ${config.currency}`;
+          }
+        } else if (towType === 'flatbed_masked') {
+          if (row[22] === from && row[21] === to && row[19]) {
+            return `${parseFloat(row[19]).toFixed(2)} ${config.currency}`;
+          }
+          if (row[22] === from && row[18] === to && row[16]) {
+            return `${parseFloat(row[16]).toFixed(2)} ${config.currency}`;
+          }
+        } else if (towType === 'jet_ski_baki') {
           if (row[14] === from && row[13] === to && row[11]) {
             return `${parseFloat(row[11]).toFixed(2)} ${config.currency}`;
           }
@@ -10325,33 +10316,21 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
         
         <div id="termsModal" class="modal-overlay hidden">
           <div class="modal" style="max-height: 80vh; overflow-y: auto;">
-            <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            <div style="display:flex; gap:8px; align-items:center; justify-content:flex-end;">
+              <button id="termsCopyBtn" type="button" class="btn-outline" aria-label="نسخ" title="نسخ النص">📋</button>
+              <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            </div>
             <h3 style="color: #F2BC1B; text-align: center; margin-bottom: 16px;">شروط وأحكام الاشتراك السنوي</h3>
             <div id="termsContent" style="color: #ddd; font-size: 13px; line-height: 1.6;">
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">1. مدة اشتراك العضوية</strong> - سنة كاملة.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">2. تفعيل الاشتراك</strong> - يتم تفعيل الاشتراك بعد ثلاث أيام عمل من شراء العضوية.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">3. صلاحية الاشتراك</strong> - يجب أن يكون الاشتراك صالح عند طلب الخدمة.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">4. دفتر السيارة</strong> - يجب أن يكون دفتر السيارة صالح.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">5. تسجيل البيانات</strong> - الاشتراك للسيارات التي تم تسجيل بياناتها فقط.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">6. الأمن والسلامة</strong> - أولويتنا أمن وسلامة موظفين الشركة، بحيث لا يمكن استخدام الاشتراك في أماكن مجهولة وخطرة.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">7. خدمة نقل المركبة</strong> - غير متاحة / لا يمكن استخدامها في حال وقوف السيارة امام منزل العميل.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">8. الخدمات المتاحة</strong> - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق الآتية:
-                <ul style="margin: 8px 0 0 0; padding-right: 20px;">
+              <div style="margin-bottom: 8px;">1- مدة اشتراك العضوية - سنة كاملة.</div>
+              <div style="margin-bottom: 8px;">2- تفعيل الاشتراك - يتم تفعيل الاشتراك بعد ثلاث أيام عمل من شراء العضوية.</div>
+              <div style="margin-bottom: 8px;">3- صلاحية الاشتراك - يجب أن يكون الاشتراك صالح عند طلب الخدمة.</div>
+              <div style="margin-bottom: 8px;">4- دفتر السيارة - يجب أن يكون دفتر السيارة صالح.</div>
+              <div style="margin-bottom: 8px;">5- تسجيل البيانات - الاشتراك للسيارات التي تم تسجيل بياناتها فقط.</div>
+              <div style="margin-bottom: 8px;">6- الأمن والسلامة - أولويتنا أمن وسلامة موظفين الشركة، بحيث لا يمكن استخدام الاشتراك في أماكن مجهولة وخطرة.</div>
+              <div style="margin-bottom: 8px;">7- خدمة نقل المركبة - غير متاحة / لا يمكن استخدامها في حال وقوف السيارة امام منزل العميل.</div>
+              <div style="margin-bottom: 8px;">8- الخدمات المتاحة - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق الآتية:
+                <ul style="margin: 6px 0 0 0; padding-right: 20px;">
                   <li>خدمات نقل السيارة</li>
                   <li>خدمات شحن البطارية</li>
                   <li>خدمات تصليح الإطار</li>
@@ -10359,62 +10338,37 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                   <li>خدمات فتح قفل السيارة</li>
                 </ul>
               </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">9. حالات الطوارئ</strong> - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق المشمولة في الاشتراك في حالة الطوارئ فقط.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">10. عمر المركبة</strong> - يجب ألا يكون موديل المركبة أقدم من 15 سنة.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">11. النقل على السطحات</strong> - الاشتراك لا يشمل نقل المركبة على السطحات الفل داون.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">12. خدمات نقل السيارة</strong> - تشمل نقل السيارة في حالة العطل الميكانيكي أو الكهربائي ولجهة واحدة محددة، ولا يشمل نقل السيارة من والى محلات البيع أو المزاد أو المهرجانات أو السكراب.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">13. حوادث الاصطدام</strong> - خدمات نقل السيارة لا يشملها نقلها من حادث.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">14. أنواع المركبات</strong> - تقتصر الخدمات على مركبات السيدان والدفع الرباعي. ولا تشمل المركبات التجارية والشاحنات.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">15. خدمات الوقود</strong> - تستخدم فقط عند توقف السيارة على الطريق، ويتم دفع قيمة الوقود من قبل المشترك.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">16. تبديل الإطارات</strong> - خدمات تبديل الإطارات في حال توفر الإطار الاحتياطي فقط.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">17. الكوارث الطبيعية</strong> - لا يتم توفير الخدمات في حالة الكوارث الطبيعية والحوادث المرورية وانغماس المركبات في الماء أو الرمال.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">18. المنطقة الجغرافية</strong> - يتم توفير الخدمات فقط داخل حدود دولة الكويت.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">19. عدد الطلبات اليومية</strong> - للمشترك الحق بطلب خدمة واحدة في اليوم الواحد.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">20. تجديد الرخصة</strong> - اشتراكات تجديد الرخصة تشمل فقط السيارات الخاصة ولا تشمل نقل خاص (الوانيت) ولا نقل خاص (باص خاص).
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">21. صلاحية التراخيص</strong> - تجديد ترخيص المركبة يشمل فقط التراخيص المنتهية من تاريخ 12/3/2020 إلى تاريخ 16/8/2020.
-              </div>
-              <div style="margin-bottom: 12px; padding: 0 0 12px 0; border-bottom: 1px solid #333;">
-                <strong style="color: #F2BC1B;">22. سوء الاستخدام</strong> - للمشترك الحق في استخدام العضوية وفي حالة ثبوت سوء الاستخدام بصورة تتنافى مع شروط وأحكام البرنامج، يحق لشركة بورتراج للجر والمساعدة للمركبات على الطريق إلغاء الاشتراك.
-              </div>
-              <div style="margin-bottom: 12px;">
-                <strong style="color: #F2BC1B;">23. الامتثال للشروط</strong> - كمستخدم لخدمات شركة بورتراج للجر والمساعدة للمركبات على الطريق وبقبول هذا العرض، يوافق المشترك على الامتثال لشروط وأحكام شركة بورتراج للجر والمساعدة للمركبات على الطريق.
-              </div>
+              <div style="margin-bottom: 8px;">9- حالات الطوارئ - يمكن للمشترك الاستفادة من خدمات المساعدة على الطريق المشمولة في الاشتراك في حالة الطوارئ فقط.</div>
+              <div style="margin-bottom: 8px;">10- عمر المركبة - يجب ألا يكون موديل المركبة أقدم من 10 سنوات.</div>
+              <div style="margin-bottom: 8px;">11- النقل على السطحات - الاشتراك لا يشمل نقل المركبة على السطحات الفل داون.</div>
+              <div style="margin-bottom: 8px;">12- خدمات نقل السيارة - تشمل نقل السيارة في حالة العطل الميكانيكي أو الكهربائي ولجهة واحدة محددة، ولا يشمل نقل السيارة من والى محلات البيع أو المزاد أو المهرجانات أو السكراب.</div>
+              <div style="margin-bottom: 8px;">13- حوادث الاصطدام - خدمات نقل السيارة لا يشملها نقلها من حادث.</div>
+              <div style="margin-bottom: 8px;">14- أنواع المركبات - تقتصر الخدمات على مركبات السيدان والدفع الرباعي. ولا تشمل المركبات التجارية والشاحنات.</div>
+              <div style="margin-bottom: 8px;">15- خدمات الوقود - تستخدم فقط عند توقف السيارة على الطريق، ويتم دفع قيمة الوقود من قبل المشترك.</div>
+              <div style="margin-bottom: 8px;">16- تبديل الإطارات - خدمات تبديل الإطارات في حال توفر الإطار الاحتياطي فقط , ويدفع قيمة الاطار.</div>
+              <div style="margin-bottom: 8px;">17- الكوارث الطبيعية - لا يتم توفير الخدمات في حالة الكوارث الطبيعية والحوادث المرورية وانغماس المركبات في الماء أو الرمال.</div>
+              <div style="margin-bottom: 8px;">18- المنطقة الجغرافية - يتم توفير الخدمات فقط داخل حدود دولة الكويت.</div>
+              <div style="margin-bottom: 8px;">19- عدد الطلبات اليومية - للمشترك الحق بطلب خدمة واحدة في اليوم الواحد.</div>
+              <div style="margin-bottom: 8px;">20- سياسه الإلغاء – لا يحق للمشترك استرداد قيمه الاشتراك بعد مرور ثلاثة أيام على الدفع (تفعيل الاشتراك) حتى وإن لم يتم الانتفاع بالخدمات.</div>
+              <div style="margin-bottom: 8px;">21- سوء الاستخدام - للمشترك الحق في استخدام العضوية وفي حالة ثبوت سوء الاستخدام بصورة تتنافى مع شروط وأحكام البرنامج، يحق لشركة بورتراج للجر والمساعدة للمركبات على الطريق إلغاء الاشتراك.</div>
+              <div style="margin-bottom: 8px;">22- الامتثال للشروط - كمستخدم لخدمات شركة بورتراج للجر والمساعدة للمركبات على الطريق وبقبول هذا العرض، يوافق المشترك على الامتثال لشروط وأحكام شركة بورتراج للجر والمساعدة للمركبات على الطريق.</div>
             </div>
-            <button id="termsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+            <div style="display:flex;gap:8px;margin-top:16px;">
+              <button id="termsCopyBottomBtn" type="button" class="btn-outline">نسخ</button>
+              <button id="termsCloseBtn" class="btn-primary" style="flex:1;">إغلاق</button>
+            </div>
           </div>
         </div>
         
         <div id="detailsModal" class="modal-overlay hidden">
           <div class="modal" style="max-height: 80vh; overflow-y: auto;">
-            <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            <div style="display:flex; gap:8px; align-items:center; justify-content:flex-end;">
+              <button id="detailsCopyBtn" type="button" class="btn-outline" aria-label="نسخ" title="نسخ النص">📋</button>
+              <button type="button" class="modal-close" aria-label="إغلاق">×</button>
+            </div>
             <h3 style="color: #F2BC1B; text-align: center; margin-bottom: 16px;">تفاصيل الاشتراك السنوي</h3>
             <div id="detailsContent" style="color: #ddd; font-size: 13px; line-height: 1.6;">
-              <div style="margin-bottom: 16px; padding: 12px; border-bottom: 2px solid #F2BC1B;">
+              <div style="margin-bottom: 12px; padding: 12px; border-bottom: 2px solid #F2BC1B;">
                 <strong style="color: #F2BC1B; font-size: 14px;">الاشتراك السنوي - شركة بورتراج</strong>
               </div>
               
@@ -10459,7 +10413,10 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
                 <div style="font-size: 12px; color: #fde68a; margin-top: 6px;">الاشتراك يتفعل بعد الدفع ب 3 أيام عمل. كل 24 ساعة لك خدمة واحدة فقط.</div>
               </div>
             </div>
-            <button id="detailsCloseBtn" class="btn-primary" style="width: 100%; margin-top: 16px;">إغلاق</button>
+            <div style="display:flex;gap:8px;margin-top:16px;">
+              <button id="detailsCopyBottomBtn" type="button" class="btn-outline">نسخ</button>
+              <button id="detailsCloseBtn" class="btn-primary" style="flex:1;">إغلاق</button>
+            </div>
           </div>
         </div>
       `;
@@ -10482,6 +10439,29 @@ ${wash.services.map(s => `• ${s}`).join('\n')}
       
       termsModal.querySelector('.modal-close').onclick = () => termsModal.classList.add('hidden');
       detailsModal.querySelector('.modal-close').onclick = () => detailsModal.classList.add('hidden');
+
+      // Copy buttons (top and bottom) for terms and details
+      const termsCopyTop = document.getElementById('termsCopyBtn');
+      const termsCopyBottom = document.getElementById('termsCopyBottomBtn');
+      const detailsCopyTop = document.getElementById('detailsCopyBtn');
+      const detailsCopyBottom = document.getElementById('detailsCopyBottomBtn');
+
+      const doCopy = async (sourceId) => {
+        try {
+          const el = document.getElementById(sourceId);
+          if (!el) return;
+          const text = el.innerText || el.textContent || '';
+          await copyToClipboard(text);
+          showToast('تم النسخ');
+        } catch (e) {
+          console.warn('copy failed', e);
+        }
+      };
+
+      if (termsCopyTop) termsCopyTop.onclick = () => doCopy('termsContent');
+      if (termsCopyBottom) termsCopyBottom.onclick = () => doCopy('termsContent');
+      if (detailsCopyTop) detailsCopyTop.onclick = () => doCopy('detailsContent');
+      if (detailsCopyBottom) detailsCopyBottom.onclick = () => doCopy('detailsContent');
 
       // Handle subscription selection
       document.querySelectorAll('[data-subscription]').forEach(btn => {
