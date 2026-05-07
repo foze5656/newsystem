@@ -4175,12 +4175,16 @@
         
         <div id="towTypeSection" class="form-section hidden">
           <h3 class="section-title">نوع الونش</h3>
-          <div class="btn-grid" id="towTypeButtons" style="grid-template-columns: repeat(5, 1fr);">
-            <button class="btn-option" data-type="normal">ونش عادي</button>
-            <button class="btn-option" data-type="flatbed">ونش فل داون</button>
-            <button class="btn-option" data-type="flatbedClose">ونش فل داون مصكر</button>
-            <button class="btn-option" data-type="jetskiBaqi">جت سكي - بقي</button>
-            <button class="btn-option" data-type="jetSki">قلص طراد</button>
+          <div class="btn-grid" id="towTypeButtons" style="grid-template-columns: 1fr;">
+            <div class="btn-grid" id="towTypeRow1" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">
+              <button class="btn-option" data-type="normal">ونش عادي</button>
+              <button class="btn-option" data-type="flatbed">ونش فل داون</button>
+              <button class="btn-option" data-type="flatbedClose">ونش فل داون مصكر</button>
+            </div>
+            <div class="btn-grid" id="towTypeRow2" style="grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 6px;">
+              <button class="btn-option" data-type="jetskiBaqi">جت سكي - بقي</button>
+              <button class="btn-option" data-type="jetSki">قلص طراد</button>
+            </div>
           </div>
 
           <div id="qalsSizeSection" class="form-section hidden" style="margin-top: 12px;">
@@ -4504,7 +4508,7 @@
       });
       
       const visibleButtons = Array.from(buttons).filter(btn => btn.style.display !== 'none');
-      towTypeButtons.style.gridTemplateColumns = `repeat(${visibleButtons.length}, 1fr)`;
+      towTypeButtons.style.gridTemplateColumns = '1fr';
       
       const activeButton = Array.from(buttons).find(btn => btn.dataset.type === formData.towType && btn.style.display !== 'none');
       buttons.forEach(btn => btn.classList.remove('active'));
