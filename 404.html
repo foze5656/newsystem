@@ -4441,14 +4441,18 @@
       let hasFlatbedMasked = false;
       let hasJetSkiBaki = false;
       
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        if (row[4] || row[1]) hasNormal = true;
-        if (row[12] || row[9]) hasFlatbed = true;
-        if (formData.company.toLowerCase() === 'portarage towtruk') {
+      if (formData.company.toLowerCase() === 'portarage towtruk') {
+        for (let i = 2; i < rows.length; i++) {
+          const row = rows[i];
+          if (row[4] || row[1]) hasNormal = true;
+          if (row[12] || row[9]) hasFlatbed = true;
           if (row[20] || row[17]) hasFlatbedMasked = true;
           if (row[12] || row[9]) hasJetSkiBaki = true; // Same as flatbed
         }
+      } else {
+        // For other companies, assume they have normal and flatbed
+        hasNormal = true;
+        hasFlatbed = true;
       }
       
       // Update buttons visibility
