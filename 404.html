@@ -4438,11 +4438,17 @@
       const rows = sheetsData[sheetName];
       let hasNormal = false;
       let hasFlatbed = false;
+      let hasFlatbedMasked = false;
+      let hasJetSkiBaki = false;
       
       for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
         if (row[4] || row[1]) hasNormal = true;
         if (row[12] || row[9]) hasFlatbed = true;
+        if (formData.company.toLowerCase() === 'portarage towtruk') {
+          if (row[20] || row[17]) hasFlatbedMasked = true;
+          if (row[12] || row[9]) hasJetSkiBaki = true; // Same as flatbed
+        }
       }
       
       // Update buttons visibility
@@ -4455,13 +4461,23 @@
           btn.style.display = 'none';
         } else if (type === 'flatbed' && !hasFlatbed) {
           btn.style.display = 'none';
+        } else if (type === 'flatbed_masked' && (!hasFlatbedMasked || formData.company.toLowerCase() !== 'portarage towtruk')) {
+          btn.style.display = 'none';
+        } else if (type === 'jet_ski_baki' && (!hasJetSkiBaki || formData.company.toLowerCase() !== 'portarage towtruk')) {
+          btn.style.display = 'none';
         } else {
           btn.style.display = 'block';
         }
       });
       
       const visibleButtons = Array.from(buttons).filter(btn => btn.style.display !== 'none');
-      towTypeButtons.style.gridTemplateColumns = `repeat(${visibleButtons.length}, 1fr)`;
+      if (formData.company.toLowerCase() === 'portarage towtruk' && visibleButtons.length === 4) {
+        towTypeButtons.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        towTypeButtons.style.gridTemplateRows = 'repeat(2, auto)';
+      } else {
+        towTypeButtons.style.gridTemplateColumns = `repeat(${Math.min(visibleButtons.length, 2)}, 1fr)`;
+        towTypeButtons.style.gridTemplateRows = 'auto';
+      }
       
       buttons.forEach(btn => btn.classList.remove('active'));
       
@@ -4779,67 +4795,18 @@
         rows = `
           <tr>
             <td>سعر ${formData.companyArabic}</td>
-            <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr>
-            <td>السعر الأصلي (بورتراج)</td>
-            <td>${portaragePrice.toFixed(2)} ${config.currency}</td>
-          </tr>
-          <tr style="background: #1a4a2a;">
-            <td><strong>قيمة الخصم</strong></td>
-            <td class="highlight" style="color: #10b981;"><strong>${discount.toFixed(2)} ${config.currency}</strong></td>
+            <td class="highlight">${finalPrice.toFixed(2)} ${config.currency}</td>
           </tr>
         `;
-        
-        if (extraCharges > 0) {
-          rows += `
-            <tr>
-              <td>رسوم إضافية</td>
-              <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
-            </tr>
-          `;
-          rows += `
-            <tr style="background: #262626;">
-              <td><strong>الإجمالي النهائي</strong></td>
-              <td class="highlight"><strong>${finalPrice.toFixed(2)} ${config.currency}</strong></td>
-            </tr>
-          `;
-        }
       } else {
         const finalPrice = portaragePrice + extraCharges;
         
         rows = `
           <tr>
             <td>سعر بورتراج الأساسي</td>
-            <td class="highlight">${companyPrice.toFixed(2)} ${config.currency}</td>
+            <td class="highlight">${finalPrice.toFixed(2)} ${config.currency}</td>
           </tr>
         `;
-        
-        if (extraCharges > 0) {
-          rows += `
-            <tr>
-              <td>رسوم إضافية</td>
-              <td class="highlight">${extraCharges.toFixed(2)} ${config.currency}</td>
-            </tr>
-          `;
-          const total = companyPrice + extraCharges;
-          rows += `
-            <tr style="background: #262626;">
-              <td><strong>الإجمالي</strong></td>
-              <td class="highlight"><strong>${total.toFixed(2)} ${config.currency}</strong></td>
-            </tr>
-          `;
-        }
-        
-        const cancelPrice = getCancellationPrice(formData.from, formData.to, formData.towType);
-        if (cancelPrice) {
-          rows += `
-            <tr>
-              <td>رسوم الإلغاء</td>
-              <td>${cancelPrice}</td>
-            </tr>
-          `;
-        }
       }
       
       tbody.innerHTML = rows;
