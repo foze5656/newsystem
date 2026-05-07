@@ -4478,13 +4478,14 @@
         if (row[12] || row[9]) hasFlatbed = true;
         if (row[22] || row[16]) hasFlatbedClose = true;
         if (row[22] || row[16]) hasJetSki = true;
-        if (row[4] || row[1]) hasJetSkiBaqi = true;
+        if (row[8] || row[6]) hasJetSkiBaqi = true;
       }
       
       // Update buttons visibility
       const towTypeButtons = document.getElementById('towTypeButtons');
       const buttons = towTypeButtons.querySelectorAll('.btn-option');
       
+      const isPortarageCompany = formData.companyArabic === 'بورتراج';
       buttons.forEach(btn => {
         const type = btn.dataset.type;
         if (type === 'normal' && !hasNormal) {
@@ -4493,7 +4494,7 @@
           btn.style.display = 'none';
         } else if (type === 'flatbedClose' && !hasFlatbedClose) {
           btn.style.display = 'none';
-        } else if (type === 'jetskiBaqi' && !hasJetSkiBaqi) {
+        } else if (type === 'jetskiBaqi' && (!isPortarageCompany || !hasJetSkiBaqi)) {
           btn.style.display = 'none';
         } else if (type === 'jetSki' && !hasJetSki) {
           btn.style.display = 'none';
@@ -4505,7 +4506,16 @@
       const visibleButtons = Array.from(buttons).filter(btn => btn.style.display !== 'none');
       towTypeButtons.style.gridTemplateColumns = `repeat(${visibleButtons.length}, 1fr)`;
       
+      const activeButton = Array.from(buttons).find(btn => btn.dataset.type === formData.towType && btn.style.display !== 'none');
       buttons.forEach(btn => btn.classList.remove('active'));
+      if (activeButton) {
+        activeButton.classList.add('active');
+      } else if (visibleButtons.length > 0) {
+        visibleButtons[0].classList.add('active');
+        formData.towType = visibleButtons[0].dataset.type;
+        document.getElementById('towLocationsSection').classList.add('hidden');
+        document.getElementById('towResultSection').classList.add('hidden');
+      }
       
       if (!formData.towType) {
         document.getElementById('towLocationsSection').classList.add('hidden');
@@ -4762,10 +4772,10 @@
               }
             }
           } else if (towType === 'jetskiBaqi') {
-            const from = row[3];
-            const to = row[2];
-            const price = row[1];
-            const cancelCol = 0;
+            const from = row[8];
+            const to = row[7];
+            const price = row[6];
+            const cancelCol = 5;
             if (from && to && price) {
               routes.push({ from, to, price, cancelCol });
             }
@@ -4970,8 +4980,8 @@
             return `${parseFloat(row[20]).toFixed(2)} ${config.currency}`;
           }
         } else if (towType === 'jetskiBaqi') {
-          if (row[3] === from && row[2] === to && row[0]) {
-            return `${parseFloat(row[0]).toFixed(2)} ${config.currency}`;
+          if (row[8] === from && row[7] === to && row[5]) {
+            return `${parseFloat(row[5]).toFixed(2)} ${config.currency}`;
           }
         }
       }
