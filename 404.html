@@ -2146,7 +2146,7 @@
     const GOOGLE_SHEET_ID = '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk';
     const USERS_SHEET_NAME = 'users';
     const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${USERS_SHEET_NAME}`;
-    const SITE_VERSION = '2.2';
+    const SITE_VERSION = '2.4';
     
     let usersData = [];
     let isAuthenticated = false;
@@ -4188,7 +4188,7 @@
           </div>
 
           <div id="qalsSizeSection" class="form-section hidden" style="margin-top: 12px;">
-            <h3 class="section-title">نوع قلص الطراد</h3>
+            <h3 class="section-title">قم باختيار حجم الطراد</h3>
             <div class="btn-grid" style="grid-template-columns: repeat(2, 1fr); gap: 8px;">
               <button class="btn-option" data-qals-size="less27">قلص طراد (أقل من 27 قدم)</button>
               <button class="btn-option" data-qals-size="28plus">قلص طراد (28 قدم فما فوق)</button>
@@ -4565,6 +4565,8 @@
             
             flatbedOnlyNote.classList.add('hidden');
             flatbedExtraChargesSection.classList.add('hidden');
+            document.getElementById('extraChargesSection').classList.add('hidden');
+            document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
           } else if (formData.towType === 'jetskiBaqi') {
             qalsSizeSection.classList.add('hidden');
             qalsNote.classList.add('hidden');
@@ -4573,6 +4575,8 @@
             
             flatbedOnlyNote.classList.add('hidden');
             flatbedExtraChargesSection.classList.add('hidden');
+            document.getElementById('extraChargesSection').classList.add('hidden');
+            document.getElementById('flatbedPortarageExtraChargesSection').classList.add('hidden');
           } else {
             qalsSizeSection.classList.add('hidden');
             qalsNote.classList.add('hidden');
@@ -7064,7 +7068,6 @@
                 makeTypeButtons(formData.origin);
               };
             });
-          } else if (formData.mechanicalService === 'wipers') {
           } else if (formData.mechanicalService === 'wipers') {
             // تبديل المساحات — مناطق من خدمات ميكانيكية2 (أعمدة I,J,K و M,N,O)
             document.getElementById('mechAreaSection').classList.remove('hidden');
