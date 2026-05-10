@@ -1116,70 +1116,6 @@
       color: #93c5fd;
       margin-top: 7px;
     }
-
-    .assistant-chat {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 12px;
-      min-height: 240px;
-      max-height: 360px;
-      overflow-y: auto;
-      box-sizing: border-box;
-      margin-top: 10px;
-    }
-
-    .assistant-messages {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .assistant-message {
-      display: flex;
-      width: 100%;
-    }
-
-    .assistant-message.user {
-      justify-content: flex-end;
-    }
-
-    .assistant-message.bot {
-      justify-content: flex-start;
-    }
-
-    .assistant-bubble {
-      max-width: 85%;
-      padding: 10px 14px;
-      border-radius: 18px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .assistant-message.user .assistant-bubble {
-      background: #F2BC1B;
-      color: #000;
-      border-bottom-right-radius: 4px;
-    }
-
-    .assistant-message.bot .assistant-bubble {
-      background: #1f2a38;
-      color: #e2e8f0;
-      border-bottom-left-radius: 4px;
-    }
-
-    .assistant-input-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .assistant-input-row .form-control {
-      flex: 1;
-      min-width: 220px;
-    }
     
     .warning-box {
       background: #4a3a1a;
@@ -2132,8 +2068,6 @@
     </div>
     <div class="service-item" data-service="coords"><span class="icon">📍</span> <span class="label">الاحداثيات</span>
     </div>
-    <div class="service-item" data-service="priceAssistant"><span class="icon">🤖</span> <span class="label">مساعد الأسعار</span>
-    </div>
     <div class="service-item" data-service="tow"><span class="icon">🚚</span> <span class="label">ونشات</span>
     </div>
     <div class="service-item has-submenu" data-service="battery"><span class="icon">🔋</span> <span class="label">بطارية</span> <span class="arrow">▼</span>
@@ -2212,7 +2146,7 @@
     const GOOGLE_SHEET_ID = '1x2ongtstODqEEWh_jAwN8zLHjsYeIppk8EH_Q1CXMzk';
     const USERS_SHEET_NAME = 'users';
     const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${USERS_SHEET_NAME}`;
-    const SITE_VERSION = '2.4';
+    const SITE_VERSION = '2.5';
     
     let usersData = [];
     let isAuthenticated = false;
@@ -2833,7 +2767,6 @@
           'balance': 'ميزان وتركيب',
           'ringRepair': 'تصليح الرنقات',
           'mechanical': 'خدمات ميكانيكية',
-          'priceAssistant': 'مساعد الأسعار',
           'staff_centers': 'مراكز الطلبات',
           'driver_status': 'جدول السائقين',
           'carwash': 'غسيل السيارات',
@@ -2847,9 +2780,6 @@
         document.getElementById('serviceTitle').textContent = serviceTitles[currentService];
         
         switch(currentService) {
-          case 'priceAssistant':
-            renderPriceAssistantInterface();
-            break;
           case 'tow':
             renderTowInterface();
             break;
@@ -5299,256 +5229,6 @@
       `;
       
       document.getElementById('fuelResultSection').classList.remove('hidden');
-    }
-
-    function renderPriceAssistantInterface() {
-      const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = `
-        <div class="form-section full-width">
-          <h3 class="section-title">مساعد الأسعار</h3>
-          <div id="assistantChat" class="assistant-chat">
-            <div id="assistantMessages" class="assistant-messages"></div>
-          </div>
-          <div class="assistant-input-row">
-            <input id="assistantInput" class="form-control" placeholder="اكتب سؤال مثل: جم سعر الونش من حولي الى السالميه" />
-            <button id="assistantSendBtn" class="btn-primary" type="button">اسأل</button>
-          </div>
-          <div id="assistantHint" class="info-box" style="display:none;"></div>
-        </div>
-      `;
-      initPriceAssistant();
-    }
-
-    function initPriceAssistant() {
-      const assistantMessages = document.getElementById('assistantMessages');
-      const assistantInput = document.getElementById('assistantInput');
-      const assistantSendBtn = document.getElementById('assistantSendBtn');
-      assistantMessages.innerHTML = '';
-      assistantAddMessage('مرحبا! ممكن تسألني بالشكل اللي ترتاح له، مثل: جم سعر الونش من حولي الى السالميه؟', false);
-      assistantAddMessage('إذا الكلام ناقص أقولك: هل تقصد ونش عادي، ونش فل داون، أم ونش فل داون مصكر؟', false);
-
-      const submit = () => {
-        const text = assistantInput.value.trim();
-        if (!text) return;
-        assistantInput.value = '';
-        assistantAddMessage(text, true);
-        const typing = assistantShowTyping();
-        setTimeout(() => {
-          if (typing) typing.remove();
-          const answer = processAssistantQuery(text);
-          assistantAddMessage(answer, false);
-        }, 600);
-      };
-
-      assistantSendBtn.onclick = submit;
-      assistantInput.onkeydown = (event) => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          submit();
-        }
-      };
-    }
-
-    function assistantAddMessage(text, isUser) {
-      const assistantMessages = document.getElementById('assistantMessages');
-      if (!assistantMessages) return;
-      const msg = document.createElement('div');
-      msg.className = `assistant-message ${isUser ? 'user' : 'bot'}`;
-      const bubble = document.createElement('div');
-      bubble.className = 'assistant-bubble';
-      bubble.textContent = text;
-      msg.appendChild(bubble);
-      assistantMessages.appendChild(msg);
-      assistantMessages.scrollTop = assistantMessages.scrollHeight;
-    }
-
-    function assistantShowTyping() {
-      const assistantMessages = document.getElementById('assistantMessages');
-      if (!assistantMessages) return null;
-      const msg = document.createElement('div');
-      msg.className = 'assistant-message bot';
-      msg.id = 'assistantTyping';
-      const bubble = document.createElement('div');
-      bubble.className = 'assistant-bubble';
-      bubble.textContent = 'جاري التفكير...';
-      msg.appendChild(bubble);
-      assistantMessages.appendChild(msg);
-      assistantMessages.scrollTop = assistantMessages.scrollHeight;
-      return msg;
-    }
-
-    function processAssistantQuery(rawText) {
-      const text = normalizeText(rawText);
-      const service = detectAssistantService(text);
-      if (service !== 'tow') {
-        return 'حالياً أقدر أحسب أسعار ونشات فقط. اكتب مثال مثل: جم سعر الونش من حولي الى السالميه';
-      }
-      return processTowAssistant(text);
-    }
-
-    function detectAssistantService(text) {
-      const towKeywords = ['ونش', 'ونشات', 'سحب', 'نقل', 'طراد', 'جت سكي', 'قلص'];
-      if (towKeywords.some(keyword => text.includes(normalizeText(keyword)))) {
-        return 'tow';
-      }
-      return null;
-    }
-
-    function processTowAssistant(text) {
-      const serviceName = 'الونش';
-      const locations = getKnownTowLocations();
-      const { fromPhrase, toPhrase } = extractFromTo(text);
-      let from = fromPhrase ? matchTowLocation(fromPhrase, locations) : null;
-      let to = toPhrase ? matchTowLocation(toPhrase, locations) : null;
-
-      if (!from && /حول|حوالي|حوالي|حولى|حولي/.test(text)) {
-        from = matchTowLocation('حولى', locations);
-      }
-
-      if (!to && /السالميه|سالميه|سالمية/.test(text)) {
-        to = matchTowLocation('السالميه', locations) || matchTowLocation('سالميه', locations);
-      }
-
-      if (!from && !fromPhrase) {
-        return 'من وين؟ اكتب مثلاً: من حولي أو من حولي الى السالميه.';
-      }
-      if (!to && !toPhrase) {
-        return 'إلى أين؟ اكتب مثلاً: الى السالميه أو الى الكويت.';
-      }
-      if (!from) {
-        return 'لم أتعرف على المنطقة المبدئية. ممكن تكتب اسم المنطقة مرة ثانية؟';
-      }
-      if (!to) {
-        return 'لم أتعرف على المنطقة النهائية. ممكن تكتبها مرة ثانية؟';
-      }
-
-      const towType = detectTowType(text);
-      if (!towType) {
-        return 'هل تقصد ونش عادي، ونش فل داون، أم ونش فل داون مصكر؟';
-      }
-
-      const qalsSize = towType === 'jetSki' ? detectQalsSize(text) : null;
-      if (towType === 'jetSki' && !qalsSize) {
-        return 'هل القِلب أقل من 27 قدم أم 28 قدم فما فوق؟';
-      }
-
-      const routes = getTowRoutes('portarage towtruk', towType, qalsSize);
-      const route = routes.find(r => r.from === from && r.to === to);
-      if (!route) {
-        return `ما لقيت سعر ${serviceName} من ${from} إلى ${to} بنوع ${formatTowTypeLabel(towType)}. حاول تكتب اسم المنطقة أو النوع بشكل أبسط.`;
-      }
-
-      return `السعر التقريبي لـ ${formatTowTypeLabel(towType)} من ${from} إلى ${to} هو ${parseFloat(route.price).toFixed(2)} ${config.currency}.`;
-    }
-
-    function formatTowTypeLabel(towType) {
-      if (towType === 'normal') return 'ونش عادي';
-      if (towType === 'flatbed') return 'ونش فل داون';
-      if (towType === 'flatbedClose') return 'ونش فل داون مصكر';
-      if (towType === 'jetSki') return 'قلص طراد';
-      if (towType === 'jetskiBaqi') return 'جت سكي - بقي';
-      return towType;
-    }
-
-    function detectTowType(text) {
-      if (text.includes('مصكر') || text.includes('مسكر')) return 'flatbedClose';
-      if (text.includes('فل داون') && !text.includes('مصكر')) return 'flatbed';
-      if (text.includes('قلص') || text.includes('طراد')) return 'jetSki';
-      if (text.includes('جت سكي') || text.includes('سكي')) return 'jetskiBaqi';
-      if (text.includes('عادي') || text.includes('ونش')) return 'normal';
-      return null;
-    }
-
-    function detectQalsSize(text) {
-      if (text.includes('28') || text.includes('فوق') || text.includes('فما فوق')) return '28plus';
-      if (text.includes('27') || text.includes('اقل') || text.includes('أقل')) return 'less27';
-      return null;
-    }
-
-    function extractFromTo(text) {
-      const normalized = text.replace(/[؟?]/g, '');
-      const match = normalized.match(/من\s+(.+?)\s+(?:الى|إلى|ل|لل)\s+(.+)/);
-      if (match) {
-        return { fromPhrase: match[1].trim(), toPhrase: match[2].trim() };
-      }
-      const matchTo = normalized.match(/(?:الى|إلى|ل|لل)\s+(.+)/);
-      if (matchTo) {
-        return { fromPhrase: null, toPhrase: matchTo[1].trim() };
-      }
-      const matchFrom = normalized.match(/من\s+(.+)/);
-      if (matchFrom) {
-        return { fromPhrase: matchFrom[1].trim(), toPhrase: null };
-      }
-      return { fromPhrase: null, toPhrase: null };
-    }
-
-    function getKnownTowLocations() {
-      const rows = sheetsData['portarage towtruk'] || [];
-      const locations = new Set();
-      for (let i = 2; i < rows.length; i++) {
-        const row = rows[i];
-        [3, 2, 8, 7, 13, 12, 18, 17, 23, 22].forEach(col => {
-          if (row[col]) {
-            locations.add(row[col].toString().trim());
-          }
-        });
-      }
-      return Array.from(locations);
-    }
-
-    function matchTowLocation(phrase, locations) {
-      if (!phrase) return null;
-      const exact = locations.find(loc => normalizeText(loc) === normalizeText(phrase));
-      if (exact) return exact;
-      return fuzzyMatch(phrase, locations);
-    }
-
-    function fuzzyMatch(text, candidates) {
-      const normalized = normalizeText(text);
-      let best = { score: 0, value: null };
-      candidates.forEach(candidate => {
-        const normalizedCandidate = normalizeText(candidate);
-        if (normalizedCandidate === normalized) {
-          best = { score: 1, value: candidate };
-          return;
-        }
-        if (normalizedCandidate.includes(normalized) || normalized.includes(normalizedCandidate)) {
-          best = { score: 0.95, value: candidate };
-          return;
-        }
-        const score = stringSimilarity(normalized, normalizedCandidate);
-        if (score > best.score) {
-          best = { score, value: candidate };
-        }
-      });
-      return best.score >= 0.3 ? best.value : null;
-    }
-
-    function stringSimilarity(a, b) {
-      const aChars = a.split('');
-      const bChars = b.split('');
-      let common = 0;
-      const bCopy = [...bChars];
-      aChars.forEach(char => {
-        const idx = bCopy.indexOf(char);
-        if (idx !== -1) {
-          common += 1;
-          bCopy.splice(idx, 1);
-        }
-      });
-      return common / Math.max(aChars.length, bChars.length, 1);
-    }
-
-    function normalizeText(text) {
-      return text.toString().toLowerCase()
-        .replace(/[أإآ]/g, 'ا')
-        .replace(/ى/g, 'ي')
-        .replace(/ؤ/g, 'و')
-        .replace(/ئ/g, 'ي')
-        .replace(/ة/g, 'ه')
-        .replace(/[^\u0600-\u06FF0-9a-z\s]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
     }
 
     // Calculate price for فتح قفل when performed by بورتراج
@@ -8129,7 +7809,7 @@
       const tbody = document.getElementById('mechResultBody');
       tbody.innerHTML = `
         <tr>
-          <td>رسوم خدمة تبديل المساحات</td>
+          <td>رسوم خدمة تبديل + المساحات </td>
           <td class="highlight">${servicePrice.toFixed(2)} ${config.currency}</td>
         </tr>
         <tr>
